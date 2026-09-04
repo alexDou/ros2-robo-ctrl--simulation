@@ -1,0 +1,25 @@
+[project]
+name = "hand-sim-ai"
+version = "0.1.0"
+description = "Edge AI & ROS2 Ingestion Automation Service"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "eclipse-zenoh>=1.1.0",
+    "onnxruntime>=1.18.0",
+    "pydantic>=2.7.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+ai = [
+    "ultralytics>=8.2.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
