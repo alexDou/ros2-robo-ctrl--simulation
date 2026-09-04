@@ -1,0 +1,4 @@
+/home/ros2/projects/hand-sim/.agents/rules/graphify.md
+/home/ros2/projects/hand-sim/.agents/workflows/graphify.md
+/home/ros2/projects/hand-sim/AGENTS.local.md
+/home/ros2/projects/hand-sim/AGENTS.md
