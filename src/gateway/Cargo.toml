@@ -1,0 +1,23 @@
+[package]
+name = "gateway"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+actix-web.workspace = true
+actix-ws.workspace = true
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+zenoh.workspace = true
+log.workspace = true
+env_logger.workspace = true
+thiserror.workspace = true
+futures-util.workspace = true
+
+[dev-dependencies]
+actix-web = { workspace = true }
