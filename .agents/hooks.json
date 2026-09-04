@@ -1,0 +1,37 @@
+{
+  "enabled": true,
+  "PostToolUse": [
+    {
+      "matcher": "run_command",
+      "type": "command",
+      "command": "bash -c 'if [ -f .agents/scripts/trim_logs.sh ]; then .agents/scripts/trim_logs.sh; fi'",
+      "timeout": 10
+    },
+    {
+      "matcher": "write_to_file|replace_file_content",
+      "type": "command",
+      "command": "bash -c 'if git diff --name-only | grep -E \"\\.rs$\"; then cargo clippy --workspace --all-targets --message-format=short -q; fi'",
+      "timeout": 45
+    },
+    {
+      "matcher": "write_to_file|replace_file_content",
+      "type": "command",
+      "command": "bash -c 'if git diff --name-only | grep -E \"\\.(ts|tsx)$\"; then npm run --prefix web typecheck; fi'",
+      "timeout": 30
+    },
+    {
+      "matcher": "write_to_file|replace_file_content",
+      "type": "command",
+      "command": ".agents/hooks/rust_feedback.sh",
+      "timeout": 30
+    }
+  ],
+  "PreToolUse": [
+    {
+      "matcher": "run_command",
+      "type": "command",
+      "command": "python3 -c 'import sys, json; cmd = sys.argv[1]; sys.exit(1 if any(b in cmd for b in [\"rm -rf /\", \"ros2 node kill -a\"]) else 0)'",
+      "timeout": 5
+    }
+  ]
+}

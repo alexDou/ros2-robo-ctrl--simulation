@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "rust-analyzer": {
+      "command": "/home/ros2/.cargo/bin/rust-analyzer-mcp",
+      "args": ["--all-features"],
+      "env": {
+        "RA_LOG": "error"
+      }
+    }
+  }
+}
