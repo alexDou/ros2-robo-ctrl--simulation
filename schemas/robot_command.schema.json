@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://handsim.io/schemas/robot_command.schema.json",
+  "title": "RobotCommand",
+  "description": "Canonical schema for inbound commands sent to EdgeNode over WebSocket or DataFabric",
+  "type": "object",
+  "required": [
+    "command_id",
+    "sender_id",
+    "timestamp_ns",
+    "type",
+    "payload"
+  ],
+  "properties": {
+    "command_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique UUID v4 identifying the command"
+    },
+    "sender_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the originating sender"
+    },
+    "timestamp_ns": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Nanoseconds since Unix epoch when command was dispatched"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "PING",
+        "TELEOP_JOINT_TARGET",
+        "TRAJECTORY_EXECUTE",
+        "EMERGENCY_STOP",
+        "RESET_FAULT"
+      ],
+      "description": "Operational command type"
+    },
+    "payload": {
+      "type": "object",
+      "description": "Command-specific payload arguments"
+    }
+  },
+  "additionalProperties": false
+}

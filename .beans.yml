@@ -1,0 +1,7 @@
+beans:
+    path: .beans
+    prefix: hand-sim-
+    id_length: 4
+    default_status: todo
+    default_type: task
+
