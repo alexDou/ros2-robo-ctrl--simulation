@@ -54,21 +54,21 @@
     "semantic_hash": ""
   },
   "src/gateway/Cargo.toml": {
-    "mtime": 1788966076.5718315,
-    "seen": 1788970426.1734054,
-    "ast_hash": "eb85aa232a9650dd999a159d55111135",
+    "mtime": 1788976427.0100741,
+    "seen": 1788977145.2829795,
+    "ast_hash": "d3105779c088c4df1c51d21b609c7733",
     "semantic_hash": ""
   },
   "src/gateway/src/lib.rs": {
-    "mtime": 1788974694.677143,
-    "seen": 1788975283.315681,
-    "ast_hash": "e162e9bd514a7a63db1f3abc0382f191",
+    "mtime": 1788976686.4381895,
+    "seen": 1788977145.2830143,
+    "ast_hash": "c6443d58771316c85b59781775444bdb",
     "semantic_hash": ""
   },
   "src/gateway/src/main.rs": {
-    "mtime": 1788966076.5719485,
-    "seen": 1788970426.1734066,
-    "ast_hash": "cf6a13d36a6caeb047cddebb82486f41",
+    "mtime": 1788976691.6721172,
+    "seen": 1788977145.2830155,
+    "ast_hash": "9ec87bc254700370f24826bd03b20e9a",
     "semantic_hash": ""
   },
   "web/package.json": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "web/src/main.tsx": {
-    "mtime": 1788966076.5737276,
-    "seen": 1788970426.173408,
-    "ast_hash": "22eb05f74febcf77cb1788cc9f20625f",
+    "mtime": 1788977050.882778,
+    "seen": 1788977145.2831783,
+    "ast_hash": "89965d29642831bed02499a73e24ccc1",
     "semantic_hash": ""
   },
   "web/tsconfig.json": {
@@ -642,9 +642,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md": {
-    "mtime": 1788966847.677618,
-    "seen": 1788970426.1734688,
-    "ast_hash": "55379de0be18e930a5eafc462c18ae61",
+    "mtime": 1788976321.0282686,
+    "seen": 1788977145.2865052,
+    "ast_hash": "74acc135b6b6078b8bf7b3eff397e38a",
     "semantic_hash": ""
   },
   ".beans/hand-sim-e8n5--phase-1-distributed-telemetry-streaming-3d-teleope.md": {
@@ -654,9 +654,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md": {
-    "mtime": 1788966850.349608,
-    "seen": 1788970426.1734703,
-    "ast_hash": "e24d349e7e52761f03d5219880a1a78c",
+    "mtime": 1788976321.0712693,
+    "seen": 1788977145.286543,
+    "ast_hash": "23570980461f48c853b102efe8e4d0e5",
     "semantic_hash": ""
   },
   ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md": {
@@ -666,15 +666,15 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-myia--unit-11-domain-schemas-datafabric-contract-baselin.md": {
-    "mtime": 1788966845.1006281,
-    "seen": 1788970426.1734712,
-    "ast_hash": "a33c69a584f5e40bcdc347e039644042",
+    "mtime": 1788975291.580848,
+    "seen": 1788977145.2865715,
+    "ast_hash": "5f968f7f12de4d529a28d32f990e4cf9",
     "semantic_hash": ""
   },
   ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md": {
-    "mtime": 1788966853.9565942,
-    "seen": 1788970426.1734717,
-    "ast_hash": "220e1e48995f9684ffde5c58ea8b4f1b",
+    "mtime": 1788976321.12527,
+    "seen": 1788977145.2866018,
+    "ast_hash": "44c27c19ce84390b4f7d7b1ba5d592c3",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
-    "mtime": 1788975079.058437,
-    "seen": 1788975283.3156445,
-    "ast_hash": "5c624b7138cfd0bae2f48737016cab76",
+    "mtime": 1788976966.539595,
+    "seen": 1788977145.2829401,
+    "ast_hash": "3f0270447ea44e6d1674b0c993e321d6",
     "semantic_hash": ""
   },
   "src/edge_node/domain.py": {
@@ -828,9 +828,63 @@
     "semantic_hash": ""
   },
   "web/src/contracts.ts": {
-    "mtime": 1788975110.761964,
-    "seen": 1788975283.3157144,
-    "ast_hash": "c6fa576b5c0dad15f15832faf1a3e631",
+    "mtime": 1788977078.8157794,
+    "seen": 1788977145.2831764,
+    "ast_hash": "3518058060ee356cb936fc207323ec17",
+    "semantic_hash": ""
+  },
+  "src/edge_node/main.py": {
+    "mtime": 1788977404.8011458,
+    "seen": 1788977495.6026237,
+    "ast_hash": "3ce1e6c60ab3684b1f0a321c3c5c66ce",
+    "semantic_hash": ""
+  },
+  "src/edge_node/node.py": {
+    "mtime": 1788976958.884564,
+    "seen": 1788977145.2829752,
+    "ast_hash": "1ef5b35af40e18a66aa1f19b19d8db18",
+    "semantic_hash": ""
+  },
+  "src/gateway/src/fabric.rs": {
+    "mtime": 1788976830.546634,
+    "seen": 1788977145.283013,
+    "ast_hash": "6d69cf9818b2d43c07ceec03f8088930",
+    "semantic_hash": ""
+  },
+  "src/gateway/src/session.rs": {
+    "mtime": 1788977442.9918,
+    "seen": 1788977495.6028633,
+    "ast_hash": "bc6c2fcd304af3f624062972b130eae7",
+    "semantic_hash": ""
+  },
+  "src/gateway/src/ws.rs": {
+    "mtime": 1788976881.0070975,
+    "seen": 1788977145.2830172,
+    "ast_hash": "5484d59ffab31677c167e0392d160c1b",
+    "semantic_hash": ""
+  },
+  "src/gateway/tests/ws_gateway_test.rs": {
+    "mtime": 1788976814.375456,
+    "seen": 1788977145.2830558,
+    "ast_hash": "3e4912b5b339152fe4b39cfe078e76a3",
+    "semantic_hash": ""
+  },
+  "tests/test_edge_node.py": {
+    "mtime": 1788976945.0035012,
+    "seen": 1788977145.2830896,
+    "ast_hash": "b03048f79fdcb5cadba1afbb3aedeea0",
+    "semantic_hash": ""
+  },
+  "web/src/TeleopClient.test.tsx": {
+    "mtime": 1788977012.2627287,
+    "seen": 1788977145.2831268,
+    "ast_hash": "fa8027ddd856d6abe0bebc5893e418cd",
+    "semantic_hash": ""
+  },
+  "web/src/TeleopClient.tsx": {
+    "mtime": 1788977475.6784847,
+    "seen": 1788977495.6031122,
+    "ast_hash": "35918f630d16361500b191ad4c1e0b32",
     "semantic_hash": ""
   }
 }

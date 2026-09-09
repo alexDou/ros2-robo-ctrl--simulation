@@ -221,3 +221,36 @@ export function parseRobotTopic(
     channel: parts[2],
   };
 }
+
+export function serializeCommand(cmd: RobotCommand): string {
+  return JSON.stringify(cmd, (_, v) =>
+    typeof v === 'bigint' ? Number(v) : v
+  );
+}
+
+export function isRobotTelemetryEvent(input: unknown): input is RobotTelemetryEvent {
+  try {
+    parseRobotTelemetryEvent(input);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function isErrorFrame(input: unknown): input is ErrorFrame {
+  try {
+    parseErrorFrame(input);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function isRobotCommand(input: unknown): input is RobotCommand {
+  try {
+    parseRobotCommand(input);
+    return true;
+  } catch {
+    return false;
+  }
+}

@@ -1,12 +1,13 @@
 ---
 # hand-sim-bplp
 title: 'Unit 1.2: Gateway Actix-Web Boundary & ActiveSession Mediation'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-09T15:14:07Z
-updated_at: 2026-09-09T15:14:07Z
+updated_at: 2026-09-09T18:11:39Z
 parent: hand-sim-e8n5
 blocked_by:
     - hand-sim-myia
@@ -33,3 +34,10 @@ Implement the Gateway boundary service in Rust using Actix-Web and Actix-Ws, ter
 ## Blocked by
 
 - hand-sim-1sc2 (Unit 1.1: Domain Schemas & DataFabric Contract Baseline)
+
+## Verification Summary
+- Implemented ActiveSessionRegistry with RAII guard for single active session per robot.
+- Implemented DataFabricPort deep facade abstracting Zenoh session and in-memory test adapter.
+- Exposed /ws/teleop/robot/{id} Actix-Web endpoint enforcing 409 Conflict on duplicate sessions.
+- Inbound RobotCommand frame validation with structured ERROR frames emitted on schema errors.
+- Verified via integration tests in ws_gateway_test.rs and clippy zero-warning policy.
