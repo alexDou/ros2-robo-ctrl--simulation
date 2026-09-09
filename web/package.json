@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "lint": "oxlint"
   },
   "dependencies": {
@@ -17,8 +18,10 @@
     "urdf-loader": "^0.12.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@preact/preset-vite": "^2.9.0",
     "@testing-library/preact": "^3.2.4",
+    "@types/node": "^22.20.2",
     "@types/three": "^0.165.0",
     "autoprefixer": "^10.4.19",
     "jsdom": "^24.1.0",

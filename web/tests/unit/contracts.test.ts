@@ -9,7 +9,7 @@ import {
   robotTelemetryTopic,
   parseRobotTopic,
   createPingCommand,
-} from './contracts';
+} from '@contracts';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
   describe('RobotCommand', () => {
@@ -160,9 +160,9 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 
   describe('Canonical JSON Schemas', () => {
     it('matches schema definitions for core contracts', async () => {
-      const robotCommandSchema = await import('../../schemas/robot_command.schema.json');
-      const robotTelemetrySchema = await import('../../schemas/robot_telemetry_event.schema.json');
-      const errorFrameSchema = await import('../../schemas/error_frame.schema.json');
+      const robotCommandSchema = await import('@schemas/robot_command.schema.json');
+      const robotTelemetrySchema = await import('@schemas/robot_telemetry_event.schema.json');
+      const errorFrameSchema = await import('@schemas/error_frame.schema.json');
 
       expect(robotCommandSchema.title).toBe('RobotCommand');
       expect(robotCommandSchema.properties.type.enum).toContain('PING');

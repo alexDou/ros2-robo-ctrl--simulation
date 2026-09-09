@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/preact';
-import { TeleopClient } from './TeleopClient';
-import { CommandType, RobotState, RobotTelemetryEvent, ErrorFrame } from './contracts';
+import { TeleopClient } from '@components/TeleopClient';
+import { CommandType, RobotState, RobotTelemetryEvent, ErrorFrame } from '@contracts';
 
 // Mock WebSocket
 class MockWebSocket {

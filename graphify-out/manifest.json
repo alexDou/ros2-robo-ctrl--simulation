@@ -66,33 +66,33 @@
     "semantic_hash": ""
   },
   "src/gateway/src/main.rs": {
-    "mtime": 1788976691.6721172,
-    "seen": 1788977145.2830155,
-    "ast_hash": "9ec87bc254700370f24826bd03b20e9a",
+    "mtime": 1788979613.2524164,
+    "seen": 1788982056.4709167,
+    "ast_hash": "a25f429d2d65e824ede6e98978f5ec89",
     "semantic_hash": ""
   },
   "web/package.json": {
-    "mtime": 1788975248.1902366,
-    "seen": 1788975283.315713,
-    "ast_hash": "1bd3d45fd829ed7050a285345e4395f4",
+    "mtime": 1788980973.3566365,
+    "seen": 1788982056.4711754,
+    "ast_hash": "d16fbff52424b06215a6faa5de991986",
     "semantic_hash": ""
   },
   "web/src/main.tsx": {
-    "mtime": 1788977050.882778,
-    "seen": 1788977145.2831783,
-    "ast_hash": "89965d29642831bed02499a73e24ccc1",
+    "mtime": 1788980791.851969,
+    "seen": 1788982056.4712415,
+    "ast_hash": "17c39638167d5cf67696f0b036e82d32",
     "semantic_hash": ""
   },
   "web/tsconfig.json": {
-    "mtime": 1788966076.5737276,
-    "seen": 1788970426.1734085,
-    "ast_hash": "25f71bb4a1efd5501709b8f4b25e0496",
+    "mtime": 1788980881.2220948,
+    "seen": 1788982056.4712563,
+    "ast_hash": "a9a632e88aa79f71076360e0bfa691c8",
     "semantic_hash": ""
   },
   "web/vite.config.ts": {
-    "mtime": 1788966076.5737276,
-    "seen": 1788970426.173409,
-    "ast_hash": "96a881040fa9243f50cf5703ec2ce125",
+    "mtime": 1788980874.5869956,
+    "seen": 1788982056.4712582,
+    "ast_hash": "ee8c866184e2264c39a88fa2598a3af6",
     "semantic_hash": ""
   },
   ".agents/agents/code-reviewer.md": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788977966.2662027,
-    "seen": 1788977986.7770865,
-    "ast_hash": "8ab9d6b5ba22d02504cc29f3a135d61a",
+    "mtime": 1788980629.583586,
+    "seen": 1788982056.4773788,
+    "ast_hash": "67a9e74864223963cd8b3151ae7e38ff",
     "semantic_hash": ""
   },
   "CONTEXT.md": {
@@ -821,12 +821,6 @@
     "ast_hash": "34d8ff5aeb4900f67508c4372c26f4bf",
     "semantic_hash": ""
   },
-  "web/src/contracts.test.ts": {
-    "mtime": 1788975185.8401046,
-    "seen": 1788975283.315714,
-    "ast_hash": "a7a8143bcc99848ad26e7ca5335a595b",
-    "semantic_hash": ""
-  },
   "web/src/contracts.ts": {
     "mtime": 1788977078.8157794,
     "seen": 1788977145.2831764,
@@ -858,9 +852,9 @@
     "semantic_hash": ""
   },
   "src/gateway/src/ws.rs": {
-    "mtime": 1788976881.0070975,
-    "seen": 1788977145.2830172,
-    "ast_hash": "5484d59ffab31677c167e0392d160c1b",
+    "mtime": 1788981124.9076395,
+    "seen": 1788982056.4709704,
+    "ast_hash": "fbe770723223010045cda9a2370752f2",
     "semantic_hash": ""
   },
   "src/gateway/tests/ws_gateway_test.rs": {
@@ -875,16 +869,70 @@
     "ast_hash": "b03048f79fdcb5cadba1afbb3aedeea0",
     "semantic_hash": ""
   },
-  "web/src/TeleopClient.test.tsx": {
-    "mtime": 1788977012.2627287,
-    "seen": 1788977145.2831268,
-    "ast_hash": "fa8027ddd856d6abe0bebc5893e418cd",
+  "web/playwright.config.ts": {
+    "mtime": 1788980946.2719734,
+    "seen": 1788982056.4711776,
+    "ast_hash": "aaf5130746fcade0737e42ab974fad73",
     "semantic_hash": ""
   },
-  "web/src/TeleopClient.tsx": {
-    "mtime": 1788977475.6784847,
-    "seen": 1788977495.6031122,
-    "ast_hash": "35918f630d16361500b191ad4c1e0b32",
+  "web/src/components/TeleopClient.tsx": {
+    "mtime": 1788980802.8508573,
+    "seen": 1788982056.4711795,
+    "ast_hash": "198841e9e975192bb94978385a6321b3",
+    "semantic_hash": ""
+  },
+  "web/src/utils/env.ts": {
+    "mtime": 1788980352.0131688,
+    "seen": 1788982056.4712427,
+    "ast_hash": "e6299c51acae0eacbe10d736a54e5b1a",
+    "semantic_hash": ""
+  },
+  "web/src/utils/url.ts": {
+    "mtime": 1788980809.3459177,
+    "seen": 1788982056.4712443,
+    "ast_hash": "6816f5ceb9a042677e2377ff1cba88c7",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/harness.ts": {
+    "mtime": 1788980930.2727726,
+    "seen": 1788982056.4712455,
+    "ast_hash": "58463c7446efcbc7778e49897ea8b3c2",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/teleop.spec.ts": {
+    "mtime": 1788981021.9558008,
+    "seen": 1788982056.471247,
+    "ast_hash": "fc84d9c264f0ddedda0337009e71b952",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/TeleopClient.test.tsx": {
+    "mtime": 1788980827.385235,
+    "seen": 1788982056.4712481,
+    "ast_hash": "53d6f41f33d0a534f7e797f94cf55b8c",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/contracts.test.ts": {
+    "mtime": 1788980885.4091566,
+    "seen": 1788982056.47125,
+    "ast_hash": "669deeaee75a912c9523d19ddc3f5183",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/env.test.ts": {
+    "mtime": 1788980846.5945566,
+    "seen": 1788982056.471252,
+    "ast_hash": "5131fae6b34b9118baff738f01a84617",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/url.test.ts": {
+    "mtime": 1788980855.739704,
+    "seen": 1788982056.4712539,
+    "ast_hash": "68306671e9e6d36211379719e7a14802",
+    "semantic_hash": ""
+  },
+  ".agents/rules/structure.md": {
+    "mtime": 1788980636.743516,
+    "seen": 1788982056.4720476,
+    "ast_hash": "94df69c9d51d8c3f4a715cf2f8cb306c",
     "semantic_hash": ""
   }
 }

@@ -1,12 +1,13 @@
 ---
 # hand-sim-hadi
 title: 'Unit 1.5: Playwright End-to-End Suite & Multi-Service Integration Verification'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-09T15:14:16Z
-updated_at: 2026-09-09T15:14:16Z
+updated_at: 2026-09-09T19:27:42Z
 parent: hand-sim-e8n5
 blocked_by:
     - hand-sim-bplp
@@ -24,12 +25,12 @@ Create an automated end-to-end integration harness and Playwright test suite ver
 
 ## Acceptance criteria
 
-- [ ] Playwright test suite configured and executable with a single command.
-- [ ] Test harness manages startup, health checking, and graceful shutdown of Gateway, EdgeNode, and TeleopClient.
-- [ ] E2E Test 1: Operator opens TeleopClient, clicks "Ping", and verifies DOM event log updates with confirmation RobotTelemetryEvent while ROS2 node logs command receipt.
-- [ ] E2E Test 2: Second browser instance connects to `/ws/teleop/robot/0` and is rejected with 409 Conflict; UI reflects conflict state.
-- [ ] E2E Test 3: Raw malformed frame injected onto the connection returns structured ERROR frame to event log without terminating WebSocket session.
-- [ ] CI/CLI test command exits cleanly with zero errors.
+- [x] Playwright test suite configured and executable with a single command.
+- [x] Test harness manages startup, health checking, and graceful shutdown of Gateway, EdgeNode, and TeleopClient.
+- [x] E2E Test 1: Operator opens TeleopClient, clicks "Ping", and verifies DOM event log updates with confirmation RobotTelemetryEvent while ROS2 node logs command receipt.
+- [x] E2E Test 2: Second browser instance connects to `/ws/teleop/robot/0` and is rejected with 409 Conflict; UI reflects conflict state.
+- [x] E2E Test 3: Raw malformed frame injected onto the connection returns structured ERROR frame to event log without terminating WebSocket session.
+- [x] CI/CLI test command exits cleanly with zero errors.
 
 ## Blocked by
 

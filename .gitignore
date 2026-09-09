@@ -29,6 +29,8 @@ node_modules/
 dist/
 coverage/
 .npm/
+test-results/
+playwright-report/
 
 # Model checkpoints & weights
 *.pt

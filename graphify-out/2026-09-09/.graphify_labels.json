@@ -49,7 +49,7 @@
   "47": "trim_logs.sh",
   "48": "HandSim",
   "49": "ActiveSessionRegistry",
-  "50": "robot_telemetry_event.schema.json",
+  "50": "inference_metrics",
   "51": "sim-auditor.md",
   "52": "rust_feedback.sh",
   "53": "rules/graphify.md",
@@ -79,7 +79,7 @@
   "77": "hand-sim-ai",
   "78": "vite.config.ts",
   "79": "robot_command.schema.json",
-  "80": "properties",
+  "80": "robot_telemetry_event.schema.json",
   "81": "EdgeNode",
   "82": "error_frame.schema.json",
   "84": "contracts.ts"
