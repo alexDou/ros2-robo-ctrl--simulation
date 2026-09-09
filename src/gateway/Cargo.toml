@@ -30,3 +30,11 @@ futures-util.workspace = true
 [dev-dependencies]
 actix-web = { workspace = true }
 tokio-tungstenite = "0.24"
+
+[[test]]
+name = "domain_contract_test"
+path = "tests/domain_contract_test.rs"
+
+[[test]]
+name = "ws_gateway_test"
+path = "tests/ws_gateway_test.rs"

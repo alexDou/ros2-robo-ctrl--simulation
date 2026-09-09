@@ -2,9 +2,7 @@ use std::time::Duration;
 use actix_web::{test, web, App, HttpServer};
 use futures_util::{SinkExt, StreamExt};
 use gateway::domain::{CommandType, ErrorFrame, RobotCommand, RobotState, RobotTelemetryEvent};
-use gateway::fabric::DataFabricPort;
-use gateway::session::ActiveSessionRegistry;
-use gateway::ws::teleop_ws;
+use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
 use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
 
