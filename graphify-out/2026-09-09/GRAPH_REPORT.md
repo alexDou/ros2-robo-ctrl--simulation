@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-09)
 
 ## Corpus Check
-- 104 files · ~42,187 words
+- 124 files · ~48,871 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 580 nodes · 528 edges · 79 communities (46 shown, 14 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
+- 871 nodes · 989 edges · 85 communities (53 shown, 12 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `8ff0439e`
+- Built from commit: `cf1b09ba`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -26,7 +26,7 @@
 - HTML Report Format
 - implementation_wireframe.md
 - template.sh
-- package.json
+- DataFabricPort
 - Diagnosing Bugs
 - Test-Driven Development
 - Process
@@ -36,7 +36,7 @@
 - Cargo Workspace & Toolchain Orchestrator
 - ROS2 Rust Development Conventions
 - to-spec/SKILL.md
-- ws_index
+- domain.rs
 - <Questionnaire title>
 - hand-sim-e8n5--phase-1-distributed-telemetry-streaming-3d-teleope.md
 - Agent Skill Generation Standard
@@ -64,8 +64,7 @@
 - code-reviewer.md
 - trim_logs.sh
 - HandSim
-- main
-- main.tsx
+- ActiveSessionRegistry
 - sim-auditor.md
 - rust_feedback.sh
 - rules/graphify.md
@@ -75,26 +74,41 @@
 - overview.md
 - gateway
 - hand-sim-ai
+- robot_command.schema.json
+- robot_telemetry_event.schema.json
+- EdgeNode
+- error_frame.schema.json
+- inference_metrics
+- contracts.ts
 
 ## God Nodes (most connected - your core abstractions)
-1. `compilerOptions` - 17 edges
-2. `template.sh script` - 11 edges
-3. `Triage` - 9 edges
-4. `Ask Matt` - 8 edges
-5. `Codebase Design` - 8 edges
-6. `Diagnosing Bugs` - 8 edges
-7. `HTML Report Format` - 8 edges
-8. `During the session` - 7 edges
-9. `Process` - 7 edges
-10. `ws_index()` - 6 edges
+1. `EdgeNode` - 18 edges
+2. `compilerOptions` - 17 edges
+3. `DataFabricPort` - 13 edges
+4. `template.sh script` - 11 edges
+5. `teleop_ws()` - 11 edges
+6. `CommandType` - 10 edges
+7. `RobotState` - 10 edges
+8. `RobotCommand` - 10 edges
+9. `RobotTelemetryEvent` - 10 edges
+10. `MemoryFabric` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- None detected - all connections are within the same source files.
+- `test_robot_command_malformed_fails_validation()` --uses--> `RobotCommand`  [INFERRED]
+  tests/test_domain.py → src/edge_node/domain.py
+- `test_robot_telemetry_event_malformed_fails()` --uses--> `RobotTelemetryEvent`  [INFERRED]
+  tests/test_domain.py → src/edge_node/domain.py
+- `test_error_frame_serialization_round_trip()` --uses--> `ErrorFrame`  [INFERRED]
+  tests/test_domain.py → src/edge_node/domain.py
+- `test_edge_node_command_handling_malformed_payload()` --uses--> `EdgeNode`  [INFERRED]
+  tests/test_edge_node.py → src/edge_node/node.py
+- `test_robot_command_ping_serialization_round_trip()` --uses--> `CommandType`  [INFERRED]
+  tests/test_domain.py → src/edge_node/domain.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (79 total, 14 thin omitted)
+## Communities (85 total, 12 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -125,8 +139,8 @@ Cohesion: 0.09
 Nodes (19): ADR Format, Numbering, Optional sections, Template, What qualifies, When to offer an ADR, CONTEXT.md Format, Rules (+11 more)
 
 ### Community 7 - "devDependencies"
-Cohesion: 0.10
-Nodes (21): autoprefixer, jsdom, postcss, @preact/preset-vite, tailwindcss, @testing-library/preact, @types/three, typescript (+13 more)
+Cohesion: 0.05
+Nodes (41): autoprefixer, jsdom, oxlint, postcss, preact, @preact/preset-vite, tailwindcss, @testing-library/preact (+33 more)
 
 ### Community 8 - "HTML Report Format"
 Cohesion: 0.10
@@ -140,9 +154,9 @@ Nodes (17): Step 1: Initialize the Python Environment using uv, Step 2: Establis
 Cohesion: 0.23
 Nodes (17): ask(), ask_secret(), banner(), _clear(), _existing(), finish(), note(), open_url() (+9 more)
 
-### Community 11 - "package.json"
+### Community 11 - "DataFabricPort"
 Cohesion: 0.11
-Nodes (17): preact, three, urdf-loader, dependencies, preact, three, urdf-loader, name (+9 more)
+Nodes (25): Data, HashMap, HttpRequest, HttpResponse, Path, Payload, Receiver, RobotCommand (+17 more)
 
 ### Community 12 - "Diagnosing Bugs"
 Cohesion: 0.13
@@ -180,9 +194,9 @@ Nodes (8): Build System Architecture, `Cargo.toml`, Configuration Files, Node Im
 Cohesion: 0.22
 Nodes (8): Further Notes, Implementation Decisions, Out of Scope, Problem Statement, Process, Solution, Testing Decisions, User Stories
 
-### Community 21 - "ws_index"
-Cohesion: 0.22
-Nodes (6): Error, HttpRequest, HttpResponse, Payload, Result, ws_index()
+### Community 21 - "domain.rs"
+Cohesion: 0.14
+Nodes (18): Into, Option, CommandType, DomainError, ErrorFrame, InferenceMetrics, parse_robot_topic(), robot_command_topic() (+10 more)
 
 ### Community 22 - "<Questionnaire title>"
 Cohesion: 0.25
@@ -280,25 +294,53 @@ Nodes (3): 1. URDF Loading & Mesh Path Resolution, Architecture Overview, URDF &
 Cohesion: 0.50
 Nodes (3): AI Agent Execution Directive & Constraints, Domain Definitions & Serialization Contracts (DDD Baseline), Specification-Driven Development (SDD) blueprint.
 
+### Community 49 - "ActiveSessionRegistry"
+Cohesion: 0.14
+Nodes (14): Drop, HashSet, Responder, health_check(), main(), Result, ActiveSessionGuard, ActiveSessionRegistry (+6 more)
+
+### Community 79 - "robot_command.schema.json"
+Cohesion: 0.05
+Nodes (37): command_id, EMERGENCY_STOP, payload, PING, RESET_FAULT, sender_id, TELEOP_JOINT_TARGET, TRAJECTORY_EXECUTE (+29 more)
+
+### Community 80 - "robot_telemetry_event.schema.json"
+Cohesion: 0.06
+Nodes (34): BOOTING, EXECUTING, FAULT, IDLE, joint_positions, PROCESSING, robot_state, additionalProperties (+26 more)
+
+### Community 81 - "EdgeNode"
+Cohesion: 0.08
+Nodes (44): Any, BaseModel, Enum, fixture, RobotTelemetryEvent, CommandType, ErrorFrame, InferenceMetrics (+36 more)
+
+### Community 82 - "error_frame.schema.json"
+Cohesion: 0.07
+Nodes (28): error_code, message, additionalProperties, description, description, minLength, type, $id (+20 more)
+
+### Community 83 - "inference_metrics"
+Cohesion: 0.09
+Nodes (22): confidence, detected_object, latency_ms, description, maximum, minimum, type, description (+14 more)
+
+### Community 84 - "contracts.ts"
+Cohesion: 0.10
+Nodes (26): ArmJointPositions, CommandType, createPingCommand(), ErrorFrame, InferenceMetrics, isErrorFrame(), isRobotCommand(), isRobotTelemetryEvent() (+18 more)
+
 ## Knowledge Gaps
-- **355 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `gateway`, `name`, `private` (+350 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 411 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **455 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+450 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 548 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `devDependencies` connect `devDependencies` to `package.json`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **What connects `rust_feedback.sh script`, `hand-sim-ai`, `gateway` to the rest of the system?**
-  _355 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Why does `properties` connect `robot_telemetry_event.schema.json` to `inference_metrics`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **Why does `teleop_ws()` connect `DataFabricPort` to `ActiveSessionRegistry`?**
+  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `test_canonical_json_schemas()` connect `DataFabricPort` to `EdgeNode`?**
+  _High betweenness centrality (0.012) - this node is a cross-community bridge._
+- **Are the 7 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
+  _`EdgeNode` has 7 INFERRED edges - model-reasoned connections that need verification._
+- **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
+  _455 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**
   _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
-- **Should `teach/SKILL.md` be split into smaller, more focused modules?**
-  _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
-- **Should `Process` be split into smaller, more focused modules?**
-  _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._
-- **Should `Codebase Design` be split into smaller, more focused modules?**
-  _Cohesion score 0.08695652173913043 - nodes in this community are weakly interconnected._

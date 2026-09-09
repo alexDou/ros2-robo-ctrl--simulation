@@ -1,12 +1,13 @@
 ---
 # hand-sim-h25q
 title: 'Unit 1.3: EdgeNode ROS2 Node & DataFabric Command Ingestion'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-09T15:14:10Z
-updated_at: 2026-09-09T15:14:10Z
+updated_at: 2026-09-09T18:11:39Z
 parent: hand-sim-e8n5
 blocked_by:
     - hand-sim-myia
@@ -32,3 +33,10 @@ Implement the Python EdgeNode combining ROS2 Jazzy (`rclpy`) and `eclipse-zenoh`
 ## Blocked by
 
 - hand-sim-1sc2 (Unit 1.1: Domain Schemas & DataFabric Contract Baseline)
+
+## Verification Summary
+- Implemented EdgeNode combining rclpy Node logger and Eclipse Zenoh session.
+- Subscribes to robot/{id}/command and deserializes RobotCommand.
+- On PING command, logs via ROS2 node logger and publishes acknowledging RobotTelemetryEvent to robot/{id}/telemetry with IDLE state and 6 zero-angle joint positions.
+- Malformed payloads handled gracefully without crashing process.
+- Verified via pytest in tests/test_edge_node.py.

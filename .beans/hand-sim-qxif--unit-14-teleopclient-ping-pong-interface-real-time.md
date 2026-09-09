@@ -1,12 +1,13 @@
 ---
 # hand-sim-qxif
 title: 'Unit 1.4: TeleopClient Ping-Pong Interface & Real-Time Event Log'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-09T15:14:13Z
-updated_at: 2026-09-09T15:14:13Z
+updated_at: 2026-09-09T18:11:39Z
 parent: hand-sim-e8n5
 blocked_by:
     - hand-sim-myia
@@ -32,3 +33,10 @@ Implement the browser-based TeleopClient application in Preact (`web/`). Manage 
 ## Blocked by
 
 - hand-sim-1sc2 (Unit 1.1: Domain Schemas & DataFabric Contract Baseline)
+
+## Verification Summary
+- Implemented TeleopClient Preact component managing WebSocket lifecycle states (CONNECTING, CONNECTED, DISCONNECTED, CONFLICT).
+- Displays connection status badge and 409 Conflict banner with HTTP probe detection.
+- Ping button dispatches structured PING RobotCommand over socket.
+- Real-time scrollable event log appends RobotTelemetryEvent and ERROR frames with highlighting and 100-item bounded memory limit.
+- Verified via Vitest unit tests, TypeScript typechecking, and oxlint.

@@ -12,7 +12,10 @@ from .domain import (
     robot_telemetry_topic,
 )
 
+from .node import EdgeNode
+
 __all__ = [
+    "EdgeNode",
     "CommandType",
     "ErrorFrame",
     "InferenceMetrics",
