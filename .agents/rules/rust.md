@@ -17,3 +17,7 @@ apply_to: "src/**/*.rs"
 * **Zero-Allocation Hot Paths:** Inside subscriber callbacks (`>50 Hz`), avoid heap allocations (`String`, `Vec::clone()`, `Box`).
 * **Fixed Buffers:** Use `arrayvec::ArrayVec` or `smallvec::SmallVec` for fixed-capacity sensor vectors (e.g., IMU quaternions, transform chains).
 * **Concurrency:** Favor atomics (`std::sync::atomic`) or bounded lock-free channels (`crossbeam-channel`) over heavy `Arc<Mutex<T>>` structures where possible.
+
+## Target Configuration & Pre-Flight Verification
+* **Explicit Targets & Cargo Configuration:** When `[[bin]]` or `[lib]` are declared in `Cargo.toml`, explicitly declare `[[test]]` sections for all integration test files in `tests/` so rust-analyzer and Cargo link library dependencies cleanly.
+* **All-Target Checking:** Always execute `cargo check --workspace --all-targets` alongside `cargo clippy --workspace --all-targets` and test suites to verify that test binaries, library crates, and examples resolve imports without configuration discrepancies.
