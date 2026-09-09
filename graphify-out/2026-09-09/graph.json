@@ -307,7 +307,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "src/edge_node/main.py",
-      "source_location": "L12"
+      "source_location": "L10"
     },
     {
       "id": "src_edge_node_node_edgenode_close",
@@ -2109,6 +2109,17 @@
       "norm_label": ".new()",
       "source_file": "src/gateway/src/fabric.rs",
       "source_location": "L55"
+    },
+    {
+      "id": "src_gateway_src_lib",
+      "label": "lib.rs",
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "DataFabricPort",
+      "file_type": "code",
+      "norm_label": "lib.rs",
+      "source_file": "src/gateway/src/lib.rs",
+      "source_location": "L1"
     },
     {
       "id": "src_gateway_src_ws",
@@ -5483,10 +5494,11 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 1.2: Gateway Actix-Web Boundary &amp; ActiveSession Mediation",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
+        "priority": "normal",
         "created_at": "2026-09-09T15:14:07Z",
-        "updated_at": "2026-09-09T15:14:07Z",
+        "updated_at": "2026-09-09T18:11:39Z",
         "parent": "hand-sim-e8n5"
       },
       "node_kind": "page",
@@ -5504,7 +5516,7 @@
       "node_kind": "heading",
       "norm_label": "acceptance criteria",
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
       "id": "beans_hand_sim_bplp_unit_12_gateway_actix_web_boundary_activesession_m_blocked_by",
@@ -5516,7 +5528,7 @@
       "node_kind": "heading",
       "norm_label": "blocked by",
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "beans_hand_sim_bplp_unit_12_gateway_actix_web_boundary_activesession_m_parent",
@@ -5528,7 +5540,19 @@
       "node_kind": "heading",
       "norm_label": "parent",
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L15"
+      "source_location": "L16"
+    },
+    {
+      "id": "beans_hand_sim_bplp_unit_12_gateway_actix_web_boundary_activesession_m_verification_summary",
+      "label": "Verification Summary",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "verification summary",
+      "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
+      "source_location": "L38"
     },
     {
       "id": "beans_hand_sim_bplp_unit_12_gateway_actix_web_boundary_activesession_m_what_to_build",
@@ -5540,7 +5564,7 @@
       "node_kind": "heading",
       "norm_label": "what to build",
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "beans_hand_sim_h25q_unit_13_edgenode_ros2_node_datafabric_command_inge",
@@ -5551,10 +5575,11 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 1.3: EdgeNode ROS2 Node &amp; DataFabric Command Ingestion",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
+        "priority": "normal",
         "created_at": "2026-09-09T15:14:10Z",
-        "updated_at": "2026-09-09T15:14:10Z",
+        "updated_at": "2026-09-09T18:11:39Z",
         "parent": "hand-sim-e8n5"
       },
       "node_kind": "page",
@@ -5572,7 +5597,7 @@
       "node_kind": "heading",
       "norm_label": "acceptance criteria",
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
       "id": "beans_hand_sim_h25q_unit_13_edgenode_ros2_node_datafabric_command_inge_blocked_by",
@@ -5584,7 +5609,7 @@
       "node_kind": "heading",
       "norm_label": "blocked by",
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "beans_hand_sim_h25q_unit_13_edgenode_ros2_node_datafabric_command_inge_parent",
@@ -5596,7 +5621,19 @@
       "node_kind": "heading",
       "norm_label": "parent",
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L15"
+      "source_location": "L16"
+    },
+    {
+      "id": "beans_hand_sim_h25q_unit_13_edgenode_ros2_node_datafabric_command_inge_verification_summary",
+      "label": "Verification Summary",
+      "_origin": "ast",
+      "community": 36,
+      "community_name": "hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "verification summary",
+      "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
+      "source_location": "L37"
     },
     {
       "id": "beans_hand_sim_h25q_unit_13_edgenode_ros2_node_datafabric_command_inge_what_to_build",
@@ -5608,7 +5645,7 @@
       "node_kind": "heading",
       "norm_label": "what to build",
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "beans_hand_sim_hadi_unit_15_playwright_end_to_end_suite_multi_service",
@@ -5755,10 +5792,11 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 1.4: TeleopClient Ping-Pong Interface &amp; Real-Time Event Log",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
+        "priority": "normal",
         "created_at": "2026-09-09T15:14:13Z",
-        "updated_at": "2026-09-09T15:14:13Z",
+        "updated_at": "2026-09-09T18:11:39Z",
         "parent": "hand-sim-e8n5"
       },
       "node_kind": "page",
@@ -5776,7 +5814,7 @@
       "node_kind": "heading",
       "norm_label": "acceptance criteria",
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
       "id": "beans_hand_sim_qxif_unit_14_teleopclient_ping_pong_interface_real_time_blocked_by",
@@ -5788,7 +5826,7 @@
       "node_kind": "heading",
       "norm_label": "blocked by",
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "beans_hand_sim_qxif_unit_14_teleopclient_ping_pong_interface_real_time_parent",
@@ -5800,7 +5838,19 @@
       "node_kind": "heading",
       "norm_label": "parent",
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L15"
+      "source_location": "L16"
+    },
+    {
+      "id": "beans_hand_sim_qxif_unit_14_teleopclient_ping_pong_interface_real_time_verification_summary",
+      "label": "Verification Summary",
+      "_origin": "ast",
+      "community": 39,
+      "community_name": "hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "verification summary",
+      "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
+      "source_location": "L37"
     },
     {
       "id": "beans_hand_sim_qxif_unit_14_teleopclient_ping_pong_interface_real_time_what_to_build",
@@ -5812,7 +5862,7 @@
       "node_kind": "heading",
       "norm_label": "what to build",
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "agents_skills_codebase_design_skill",
@@ -6659,7 +6709,7 @@
       "file_type": "code",
       "norm_label": "activesessionregistry",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L35"
+      "source_location": "L36"
     },
     {
       "id": "src_gateway_src_session_activesessionregistry_is_active",
@@ -6670,7 +6720,7 @@
       "file_type": "code",
       "norm_label": ".is_active()",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L71"
+      "source_location": "L72"
     },
     {
       "id": "src_gateway_src_session_activesessionregistry_try_acquire",
@@ -6681,7 +6731,7 @@
       "file_type": "code",
       "norm_label": ".try_acquire()",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L45"
+      "source_location": "L46"
     },
     {
       "id": "src_gateway_src_session_rs_arc",
@@ -6758,7 +6808,7 @@
       "file_type": "code",
       "norm_label": "test_ws_end_to_end_messaging_and_session_lifecycle()",
       "source_file": "src/gateway/tests/ws_gateway_test.rs",
-      "source_location": "L62"
+      "source_location": "L60"
     },
     {
       "id": "src_gateway_tests_ws_gateway_test_test_ws_handshake_success_and_conflict_rejection",
@@ -6769,7 +6819,7 @@
       "file_type": "code",
       "norm_label": "test_ws_handshake_success_and_conflict_rejection()",
       "source_file": "src/gateway/tests/ws_gateway_test.rs",
-      "source_location": "L12"
+      "source_location": "L10"
     },
     {
       "id": "web_tsconfig",
@@ -7025,15 +7075,125 @@
       "source_location": "L20"
     },
     {
-      "id": "src_gateway_src_lib",
-      "label": "lib.rs",
+      "id": "schemas_robot_telemetry_event_schema",
+      "label": "robot_telemetry_event.schema.json",
       "_origin": "ast",
       "community": 50,
-      "community_name": "lib.rs",
+      "community_name": "robot_telemetry_event.schema.json",
       "file_type": "code",
-      "norm_label": "lib.rs",
-      "source_file": "src/gateway/src/lib.rs",
+      "norm_label": "robot_telemetry_event.schema.json",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L1"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_additionalproperties",
+      "label": "additionalProperties",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "additionalproperties",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L71"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_id",
+      "label": "$id",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "$id",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_required",
+      "label": "required",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "required",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_schema",
+      "label": "$schema",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "$schema",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "ref_joint_positions",
+      "label": "joint_positions",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "concept",
+      "norm_label": "joint_positions",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "ref_robot_state",
+      "label": "robot_state",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "concept",
+      "norm_label": "robot_state",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_json_ref_timestamp_ns",
+      "label": "timestamp_ns",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "concept",
+      "norm_label": "timestamp_ns",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L7"
     },
     {
       "id": "agents_agents_sim_auditor",
@@ -8939,33 +9099,11 @@
       "source_location": "L16"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema",
-      "label": "robot_telemetry_event.schema.json",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "robot_telemetry_event.schema.json",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L1"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_additionalproperties",
-      "label": "additionalProperties",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "additionalproperties",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L71"
-    },
-    {
       "id": "schemas_robot_telemetry_event_schema_command_id_description",
       "label": "description",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -8976,40 +9114,150 @@
       "label": "type",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L67"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_description",
+      "id": "schemas_robot_telemetry_event_schema_confidence_description",
       "label": "description",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L5"
+      "source_location": "L56"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_id",
-      "label": "$id",
+      "id": "schemas_robot_telemetry_event_schema_confidence_maximum",
+      "label": "maximum",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
-      "norm_label": "$id",
+      "norm_label": "maximum",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L3"
+      "source_location": "L55"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_minimum",
+      "label": "minimum",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "minimum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L54"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L53"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L61"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_minlength",
+      "label": "minLength",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "minlength",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L60"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L59"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_additionalproperties",
+      "label": "additionalProperties",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "additionalproperties",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L64"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
+      "label": "properties",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "properties",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L46"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_required",
+      "label": "required",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "required",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L39"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_items_type",
       "label": "type",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9020,7 +9268,7 @@
       "label": "description",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9031,7 +9279,7 @@
       "label": "items",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "items",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9042,7 +9290,7 @@
       "label": "maxItems",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "maxitems",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9053,7 +9301,7 @@
       "label": "minItems",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "minitems",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9064,18 +9312,51 @@
       "label": "type",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L30"
     },
     {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L50"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_minimum",
+      "label": "minimum",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "minimum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L49"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L48"
+    },
+    {
       "id": "schemas_robot_telemetry_event_schema_properties",
       "label": "properties",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "properties",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9086,29 +9367,73 @@
       "label": "command_id",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "command_id",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L66"
     },
     {
+      "id": "schemas_robot_telemetry_event_schema_properties_confidence",
+      "label": "confidence",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "confidence",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L52"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_detected_object",
+      "label": "detected_object",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "detected_object",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L58"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
+      "label": "inference_metrics",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "inference_metrics",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L38"
+    },
+    {
       "id": "schemas_robot_telemetry_event_schema_properties_joint_positions",
       "label": "joint_positions",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "joint_positions",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L29"
     },
     {
+      "id": "schemas_robot_telemetry_event_schema_properties_latency_ms",
+      "label": "latency_ms",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "latency_ms",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L47"
+    },
+    {
       "id": "schemas_robot_telemetry_event_schema_properties_robot_state",
       "label": "robot_state",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "robot_state",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9119,29 +9444,18 @@
       "label": "timestamp_ns",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "timestamp_ns",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L13"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_required",
-      "label": "required",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "required",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
-    },
-    {
       "id": "schemas_robot_telemetry_event_schema_robot_state_description",
       "label": "description",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9152,7 +9466,7 @@
       "label": "enum",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9163,29 +9477,18 @@
       "label": "type",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L19"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_schema",
-      "label": "$schema",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "$schema",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L2"
-    },
-    {
       "id": "schemas_robot_telemetry_event_schema_timestamp_ns_description",
       "label": "description",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9196,7 +9499,7 @@
       "label": "minimum",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "minimum",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9207,51 +9510,51 @@
       "label": "type",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L14"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L4"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L6"
-    },
-    {
       "id": "ref_booting",
       "label": "BOOTING",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "concept",
       "norm_label": "booting",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L20"
     },
     {
+      "id": "ref_confidence",
+      "label": "confidence",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "concept",
+      "norm_label": "confidence",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "ref_detected_object",
+      "label": "detected_object",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "properties",
+      "file_type": "concept",
+      "norm_label": "detected_object",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L41"
+    },
+    {
       "id": "ref_executing",
       "label": "EXECUTING",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "concept",
       "norm_label": "executing",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9262,7 +9565,7 @@
       "label": "FAULT",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "concept",
       "norm_label": "fault",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9273,55 +9576,33 @@
       "label": "IDLE",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "concept",
       "norm_label": "idle",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L20"
     },
     {
-      "id": "ref_joint_positions",
-      "label": "joint_positions",
+      "id": "ref_latency_ms",
+      "label": "latency_ms",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "concept",
-      "norm_label": "joint_positions",
+      "norm_label": "latency_ms",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
+      "source_location": "L41"
     },
     {
       "id": "ref_processing",
       "label": "PROCESSING",
       "_origin": "ast",
       "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
+      "community_name": "properties",
       "file_type": "concept",
       "norm_label": "processing",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L20"
-    },
-    {
-      "id": "ref_robot_state",
-      "label": "robot_state",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "robot_state",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_json_ref_timestamp_ns",
-      "label": "timestamp_ns",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "timestamp_ns",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
     },
     {
       "id": "any",
@@ -9949,248 +10230,6 @@
       "norm_label": "type",
       "source_file": "schemas/error_frame.schema.json",
       "source_location": "L7"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L56"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_maximum",
-      "label": "maximum",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "maximum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L55"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_minimum",
-      "label": "minimum",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "minimum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L54"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L53"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L61"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_minlength",
-      "label": "minLength",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "minlength",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L60"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L59"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_additionalproperties",
-      "label": "additionalProperties",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "additionalproperties",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L64"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L40"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
-      "label": "properties",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "properties",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L46"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_required",
-      "label": "required",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "required",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L41"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L39"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L50"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_minimum",
-      "label": "minimum",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "minimum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L49"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L48"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_confidence",
-      "label": "confidence",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "confidence",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L52"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_detected_object",
-      "label": "detected_object",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "detected_object",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L58"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
-      "label": "inference_metrics",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "inference_metrics",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L38"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_latency_ms",
-      "label": "latency_ms",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "code",
-      "norm_label": "latency_ms",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L47"
-    },
-    {
-      "id": "ref_confidence",
-      "label": "confidence",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "concept",
-      "norm_label": "confidence",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L41"
-    },
-    {
-      "id": "ref_detected_object",
-      "label": "detected_object",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "concept",
-      "norm_label": "detected_object",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L41"
-    },
-    {
-      "id": "ref_latency_ms",
-      "label": "latency_ms",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "inference_metrics",
-      "file_type": "concept",
-      "norm_label": "latency_ms",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L41"
     },
     {
       "id": "web_src_contracts",
@@ -10821,7 +10860,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/main.py",
-      "source_location": "L16",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -10989,7 +11028,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L61",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -11133,7 +11172,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L123",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -11145,7 +11184,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L124",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -11157,7 +11196,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L58",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -11169,7 +11208,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L68",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -11397,7 +11436,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -11841,7 +11880,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -11853,7 +11892,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -11865,7 +11904,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -11877,7 +11916,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -11889,7 +11928,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -12429,7 +12468,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/edge_node/main.py",
-      "source_location": "L9",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -12945,7 +12984,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "src/edge_node/main.py",
-      "source_location": "L9",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -12982,6 +13021,30 @@
       "context": "import",
       "source_file": "src/gateway/src/fabric.rs",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gateway_src_lib",
+      "target": "src_gateway_src_fabric",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/gateway/src/lib.rs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_gateway_src_lib",
+      "target": "session",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "src/gateway/src/lib.rs",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -13042,30 +13105,6 @@
       "context": "import",
       "source_file": "src/gateway/src/ws.rs",
       "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gateway_tests_ws_gateway_test",
-      "target": "src_gateway_src_fabric_datafabricport",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/gateway/tests/ws_gateway_test.rs",
-      "source_location": "L5",
-      "weight": 1.0
-    },
-    {
-      "source": "src_gateway_tests_ws_gateway_test",
-      "target": "src_gateway_src_session_activesessionregistry",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "src/gateway/tests/ws_gateway_test.rs",
-      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -13485,7 +13524,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -16984,7 +17023,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -16995,7 +17034,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -17006,7 +17045,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -17017,7 +17056,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
-      "source_location": "L33",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "beans_hand_sim_bplp_unit_12_gateway_actix_web_boundary_activesession_m",
+      "target": "beans_hand_sim_bplp_unit_12_gateway_actix_web_boundary_activesession_m_verification_summary",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".beans/hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -17105,7 +17155,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -17116,7 +17166,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -17127,7 +17177,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -17138,7 +17188,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
-      "source_location": "L32",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "beans_hand_sim_h25q_unit_13_edgenode_ros2_node_datafabric_command_inge",
+      "target": "beans_hand_sim_h25q_unit_13_edgenode_ros2_node_datafabric_command_inge_verification_summary",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".beans/hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -17237,7 +17298,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -17248,7 +17309,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -17259,7 +17320,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -17270,7 +17331,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
-      "source_location": "L32",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "beans_hand_sim_qxif_unit_14_teleopclient_ping_pong_interface_real_time",
+      "target": "beans_hand_sim_qxif_unit_14_teleopclient_ping_pong_interface_real_time_verification_summary",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".beans/hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -18601,7 +18673,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/edge_node/main.py",
-      "source_location": "L12",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -18821,7 +18893,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -18931,7 +19003,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gateway/tests/ws_gateway_test.rs",
-      "source_location": "L12",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -18942,7 +19014,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gateway/tests/ws_gateway_test.rs",
-      "source_location": "L62",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -20751,7 +20823,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L45",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -20762,7 +20834,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L71",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -21329,7 +21401,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gateway/src/session.rs",
-      "source_location": "L47",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -21365,7 +21437,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/gateway/tests/ws_gateway_test.rs",
-      "source_location": "L172",
+      "source_location": "L170",
       "weight": 1.0
     },
     {
@@ -21635,5 +21707,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "cf1b09ba7d12f89f6b3584664b5278aba058d799"
+  "built_at_commit": "da73fe3cefdea648ed060ceef97dc3318ac02343"
 }

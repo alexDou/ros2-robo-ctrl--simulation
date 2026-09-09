@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-09)
 
 ## Corpus Check
-- 124 files · ~48,878 words
+- 124 files · ~49,175 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 871 nodes · 989 edges · 85 communities (53 shown, 12 thin omitted)
+- 875 nodes · 993 edges · 84 communities (53 shown, 12 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 33 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cf1b09ba`
+- Built from commit: `da73fe3c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -65,6 +65,7 @@
 - trim_logs.sh
 - HandSim
 - ActiveSessionRegistry
+- inference_metrics
 - sim-auditor.md
 - rust_feedback.sh
 - rules/graphify.md
@@ -78,13 +79,12 @@
 - robot_telemetry_event.schema.json
 - EdgeNode
 - error_frame.schema.json
-- inference_metrics
 - contracts.ts
 
 ## God Nodes (most connected - your core abstractions)
 1. `EdgeNode` - 18 edges
 2. `compilerOptions` - 17 edges
-3. `DataFabricPort` - 13 edges
+3. `DataFabricPort` - 12 edges
 4. `template.sh script` - 11 edges
 5. `teleop_ws()` - 11 edges
 6. `CommandType` - 10 edges
@@ -108,7 +108,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (85 total, 12 thin omitted)
+## Communities (84 total, 12 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -251,12 +251,12 @@ Cohesion: 0.40
 Nodes (4): Coordinate Conventions, Position Translation, REP 103 to Three.js Frame Alignment, Rotation and URDF Alignment Rules
 
 ### Community 35 - "hand-sim-bplp--unit-12-gateway-actix-web-boundary-activesession-m.md"
-Cohesion: 0.40
-Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
+Cohesion: 0.33
+Nodes (5): Acceptance criteria, Blocked by, Parent, Verification Summary, What to build
 
 ### Community 36 - "hand-sim-h25q--unit-13-edgenode-ros2-node-datafabric-command-inge.md"
-Cohesion: 0.40
-Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
+Cohesion: 0.33
+Nodes (5): Acceptance criteria, Blocked by, Parent, Verification Summary, What to build
 
 ### Community 37 - "hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md"
 Cohesion: 0.40
@@ -267,12 +267,12 @@ Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ### Community 39 - "hand-sim-qxif--unit-14-teleopclient-ping-pong-interface-real-time.md"
-Cohesion: 0.40
-Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
+Cohesion: 0.33
+Nodes (5): Acceptance criteria, Blocked by, Parent, Verification Summary, What to build
 
 ### Community 40 - "Idiomatic Rust Architecture Guidelines"
-Cohesion: 0.50
-Nodes (3): Idiomatic Rust Architecture Guidelines, Invariant Safety vs. Operational Errors, Real-Time Constraints & Allocations (ROS2 / Simulation)
+Cohesion: 0.40
+Nodes (4): Idiomatic Rust Architecture Guidelines, Invariant Safety vs. Operational Errors, Real-Time Constraints & Allocations (ROS2 / Simulation), Target Configuration & Pre-Flight Verification
 
 ### Community 41 - "Code Simplification Playbook"
 Cohesion: 0.50
@@ -298,6 +298,10 @@ Nodes (3): AI Agent Execution Directive & Constraints, Domain Definitions & Seri
 Cohesion: 0.14
 Nodes (14): Drop, HashSet, Responder, health_check(), main(), Result, ActiveSessionGuard, ActiveSessionRegistry (+6 more)
 
+### Community 50 - "inference_metrics"
+Cohesion: 0.09
+Nodes (22): confidence, detected_object, latency_ms, description, maximum, minimum, type, description (+14 more)
+
 ### Community 79 - "robot_command.schema.json"
 Cohesion: 0.05
 Nodes (37): command_id, EMERGENCY_STOP, payload, PING, RESET_FAULT, sender_id, TELEOP_JOINT_TARGET, TRAJECTORY_EXECUTE (+29 more)
@@ -314,24 +318,20 @@ Nodes (44): Any, BaseModel, Enum, fixture, RobotTelemetryEvent, CommandType, Err
 Cohesion: 0.07
 Nodes (28): error_code, message, additionalProperties, description, description, minLength, type, $id (+20 more)
 
-### Community 83 - "inference_metrics"
-Cohesion: 0.09
-Nodes (22): confidence, detected_object, latency_ms, description, maximum, minimum, type, description (+14 more)
-
 ### Community 84 - "contracts.ts"
 Cohesion: 0.10
 Nodes (26): ArmJointPositions, CommandType, createPingCommand(), ErrorFrame, InferenceMetrics, isErrorFrame(), isRobotCommand(), isRobotTelemetryEvent() (+18 more)
 
 ## Knowledge Gaps
-- **455 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+450 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 548 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **459 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+454 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 551 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **12 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `properties` connect `robot_telemetry_event.schema.json` to `inference_metrics`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **Why does `teleop_ws()` connect `DataFabricPort` to `ActiveSessionRegistry`?**
   _High betweenness centrality (0.014) - this node is a cross-community bridge._
 - **Why does `test_canonical_json_schemas()` connect `DataFabricPort` to `EdgeNode`?**
@@ -339,7 +339,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 7 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
-  _455 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _459 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**
