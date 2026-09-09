@@ -24,6 +24,12 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
 - **Message Contracts**: Explicit domain schemas for `RobotCommand` and `RobotTelemetryEvent`. Never send raw ROS2 DDS structs over external networks.
 - **Error Semantics**: Schema validation errors return structured `ERROR` frames over WebSocket without terminating connection.
 
+## Code Organization & Directory Invariants
+
+- **Tests**: Keep all test files strictly in dedicated `tests/` directories (never colocated with source implementation files). Web tests live in `web/tests/` (`web/tests/unit/` and `web/tests/e2e/`).
+- **Utilities**: Keep shared helpers and utilities in `utils/` directories (e.g. `web/src/utils/`).
+- **Components**: Keep all UI views/components in `components/` directories (e.g. `web/src/components/`).
+
 ## Agent Skills & Tracking
 
 - **Issue Tracker**: Tracked locally via `beans` in `.beans/`. See `docs/agents/issue-tracker.md`.

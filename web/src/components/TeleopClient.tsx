@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
+import { isBrowser } from '@utils/env';
 import {
   RobotTelemetryEvent,
   ErrorFrame,
@@ -6,7 +7,7 @@ import {
   serializeCommand,
   isRobotTelemetryEvent,
   isErrorFrame,
-} from './contracts';
+} from '@contracts';
 
 export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
 
@@ -24,9 +25,9 @@ export interface TeleopClientProps {
 
 export function TeleopClient({ robotId = 'robot-0', gatewayWsUrl }: TeleopClientProps) {
   const defaultProto =
-    typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const defaultHost =
-    typeof window !== 'undefined' && window.location.hostname ? window.location.hostname : 'localhost';
+    isBrowser() && window.location.hostname ? window.location.hostname : 'localhost';
   const wsUrl =
     gatewayWsUrl || `${defaultProto}//${defaultHost}:8080/ws/teleop/robot/${robotId}`;
 
@@ -43,6 +44,9 @@ export function TeleopClient({ robotId = 'robot-0', gatewayWsUrl }: TeleopClient
 
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
+    if (isBrowser()) {
+      (window as unknown as { __teleop_ws?: WebSocket }).__teleop_ws = ws;
+    }
 
     ws.onopen = () => {
       if (isCleaningUp.current) return;
@@ -109,6 +113,9 @@ export function TeleopClient({ robotId = 'robot-0', gatewayWsUrl }: TeleopClient
     connect();
     return () => {
       isCleaningUp.current = true;
+      if (isBrowser()) {
+        delete (window as unknown as { __teleop_ws?: WebSocket }).__teleop_ws;
+      }
       if (wsRef.current) {
         wsRef.current.close();
       }

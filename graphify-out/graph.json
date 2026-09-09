@@ -95,6 +95,71 @@
       "source_location": "L20"
     },
     {
+      "id": "web_tests_e2e_harness_harnessconfig",
+      "label": "HarnessConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "harnessconfig",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L11"
+    },
+    {
+      "id": "web_tests_e2e_harness_serviceharness",
+      "label": "ServiceHarness",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "serviceharness",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "web_src_components_teleopclient_connectionstate",
+      "label": "ConnectionState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "connectionstate",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L12"
+    },
+    {
+      "id": "web_src_components_teleopclient_logentry",
+      "label": "LogEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "logentry",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L14"
+    },
+    {
+      "id": "web_src_components_teleopclient_teleopclientprops",
+      "label": "TeleopClientProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "teleopclientprops",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L21"
+    },
+    {
       "id": "web_src_contracts_armjointpositions",
       "label": "ArmJointPositions",
       "_callable": true,
@@ -186,46 +251,7 @@
       "source_location": "L41"
     },
     {
-      "id": "web_src_teleopclient_connectionstate",
-      "label": "ConnectionState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "connectionstate",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L11"
-    },
-    {
-      "id": "web_src_teleopclient_logentry",
-      "label": "LogEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "logentry",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L13"
-    },
-    {
-      "id": "web_src_teleopclient_teleopclientprops",
-      "label": "TeleopClientProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "teleopclientprops",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L20"
-    },
-    {
-      "id": "web_src_teleopclient_test_mockwebsocket",
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket",
       "label": "MockWebSocket",
       "_callable": true,
       "_callable_class": true,
@@ -234,7 +260,7 @@
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": "mockwebsocket",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L7"
     },
     {
@@ -502,6 +528,90 @@
       "source_location": "L61"
     },
     {
+      "id": "web_tests_e2e_harness_serviceharness_cleanstaleports",
+      "label": ".cleanStalePorts()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".cleanstaleports()",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L36"
+    },
+    {
+      "id": "web_tests_e2e_harness_serviceharness_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L29"
+    },
+    {
+      "id": "web_tests_e2e_harness_serviceharness_getcapturedlogs",
+      "label": ".getCapturedLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".getcapturedlogs()",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L130"
+    },
+    {
+      "id": "web_tests_e2e_harness_serviceharness_pollhttp",
+      "label": ".pollHttp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".pollhttp()",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L44"
+    },
+    {
+      "id": "web_tests_e2e_harness_serviceharness_start",
+      "label": ".start()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".start()",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L69"
+    },
+    {
+      "id": "web_tests_e2e_harness_serviceharness_stop",
+      "label": ".stop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".stop()",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L134"
+    },
+    {
+      "id": "web_src_components_teleopclient_teleopclient",
+      "label": "TeleopClient()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "teleopclient()",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L26"
+    },
+    {
       "id": "web_src_contracts_createpingcommand",
       "label": "createPingCommand()",
       "_callable": true,
@@ -667,22 +777,46 @@
       "file_type": "code",
       "norm_label": "app()",
       "source_file": "web/src/main.tsx",
-      "source_location": "L4"
+      "source_location": "L5"
     },
     {
-      "id": "web_src_teleopclient_teleopclient",
-      "label": "TeleopClient()",
+      "id": "web_src_utils_env_isbrowser",
+      "label": "isBrowser()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
       "community_name": "contracts.ts",
       "file_type": "code",
-      "norm_label": "teleopclient()",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L25"
+      "norm_label": "isbrowser()",
+      "source_file": "web/src/utils/env.ts",
+      "source_location": "L8"
     },
     {
-      "id": "web_src_teleopclient_test_mockwebsocket_close",
+      "id": "web_src_utils_url_getallparams",
+      "label": "getAllParams()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "getallparams()",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "web_src_utils_url_getparam",
+      "label": "getParam()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "getparam()",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_close",
       "label": ".close()",
       "_callable": true,
       "_origin": "ast",
@@ -690,11 +824,11 @@
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": ".close()",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L29"
     },
     {
-      "id": "web_src_teleopclient_test_mockwebsocket_constructor",
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
@@ -702,11 +836,11 @@
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L20"
     },
     {
-      "id": "web_src_teleopclient_test_mockwebsocket_send",
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_send",
       "label": ".send()",
       "_callable": true,
       "_origin": "ast",
@@ -714,11 +848,11 @@
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": ".send()",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L25"
     },
     {
-      "id": "web_src_teleopclient_test_mockwebsocket_simulateerrorandclose",
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateerrorandclose",
       "label": ".simulateErrorAndClose()",
       "_callable": true,
       "_origin": "ast",
@@ -726,11 +860,11 @@
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": ".simulateerrorandclose()",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L49"
     },
     {
-      "id": "web_src_teleopclient_test_mockwebsocket_simulatemessage",
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulatemessage",
       "label": ".simulateMessage()",
       "_callable": true,
       "_origin": "ast",
@@ -738,11 +872,11 @@
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": ".simulatemessage()",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L43"
     },
     {
-      "id": "web_src_teleopclient_test_mockwebsocket_simulateopen",
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateopen",
       "label": ".simulateOpen()",
       "_callable": true,
       "_origin": "ast",
@@ -750,8 +884,20 @@
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": ".simulateopen()",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L36"
+    },
+    {
+      "id": "web_tests_unit_url_test_setwindowsearch",
+      "label": "setWindowSearch()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "setwindowsearch()",
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L14"
     },
     {
       "id": "agents_skills_triage_skill",
@@ -4601,6 +4747,18 @@
       "node_kind": "heading",
       "norm_label": "agent skills & tracking",
       "source_file": "AGENTS.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "agents_code_organization_directory_invariants",
+      "label": "Code Organization & Directory Invariants",
+      "_origin": "ast",
+      "community": 27,
+      "community_name": "HandSim Project Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "code organization & directory invariants",
+      "source_file": "AGENTS.md",
       "source_location": "L27"
     },
     {
@@ -6856,15 +7014,15 @@
       "source_location": "L2"
     },
     {
-      "id": "web_tsconfig_compileroptions_allowimportingtsextensions",
-      "label": "allowImportingTsExtensions",
+      "id": "web_tsconfig_compileroptions_baseurl",
+      "label": "baseUrl",
       "_origin": "ast",
       "community": 5,
       "community_name": "compilerOptions",
       "file_type": "code",
-      "norm_label": "allowimportingtsextensions",
+      "norm_label": "baseurl",
       "source_file": "web/tsconfig.json",
-      "source_location": "L9"
+      "source_location": "L18"
     },
     {
       "id": "web_tsconfig_compileroptions_isolatedmodules",
@@ -6875,7 +7033,7 @@
       "file_type": "code",
       "norm_label": "isolatedmodules",
       "source_file": "web/tsconfig.json",
-      "source_location": "L11"
+      "source_location": "L10"
     },
     {
       "id": "web_tsconfig_compileroptions_jsx",
@@ -6886,7 +7044,7 @@
       "file_type": "code",
       "norm_label": "jsx",
       "source_file": "web/tsconfig.json",
-      "source_location": "L13"
+      "source_location": "L12"
     },
     {
       "id": "web_tsconfig_compileroptions_jsximportsource",
@@ -6897,7 +7055,7 @@
       "file_type": "code",
       "norm_label": "jsximportsource",
       "source_file": "web/tsconfig.json",
-      "source_location": "L14"
+      "source_location": "L13"
     },
     {
       "id": "web_tsconfig_compileroptions_lib",
@@ -6941,7 +7099,7 @@
       "file_type": "code",
       "norm_label": "noemit",
       "source_file": "web/tsconfig.json",
-      "source_location": "L12"
+      "source_location": "L11"
     },
     {
       "id": "web_tsconfig_compileroptions_nofallthroughcasesinswitch",
@@ -6952,7 +7110,7 @@
       "file_type": "code",
       "norm_label": "nofallthroughcasesinswitch",
       "source_file": "web/tsconfig.json",
-      "source_location": "L18"
+      "source_location": "L17"
     },
     {
       "id": "web_tsconfig_compileroptions_nounusedlocals",
@@ -6963,7 +7121,7 @@
       "file_type": "code",
       "norm_label": "nounusedlocals",
       "source_file": "web/tsconfig.json",
-      "source_location": "L16"
+      "source_location": "L15"
     },
     {
       "id": "web_tsconfig_compileroptions_nounusedparameters",
@@ -6974,7 +7132,18 @@
       "file_type": "code",
       "norm_label": "nounusedparameters",
       "source_file": "web/tsconfig.json",
-      "source_location": "L17"
+      "source_location": "L16"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_paths",
+      "label": "paths",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "code",
+      "norm_label": "paths",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L19"
     },
     {
       "id": "web_tsconfig_compileroptions_resolvejsonmodule",
@@ -6985,7 +7154,7 @@
       "file_type": "code",
       "norm_label": "resolvejsonmodule",
       "source_file": "web/tsconfig.json",
-      "source_location": "L10"
+      "source_location": "L9"
     },
     {
       "id": "web_tsconfig_compileroptions_skiplibcheck",
@@ -7007,7 +7176,7 @@
       "file_type": "code",
       "norm_label": "strict",
       "source_file": "web/tsconfig.json",
-      "source_location": "L15"
+      "source_location": "L14"
     },
     {
       "id": "web_tsconfig_compileroptions_target",
@@ -7040,7 +7209,51 @@
       "file_type": "code",
       "norm_label": "include",
       "source_file": "web/tsconfig.json",
-      "source_location": "L20"
+      "source_location": "L28"
+    },
+    {
+      "id": "web_tsconfig_paths_components",
+      "label": "@components/*",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "code",
+      "norm_label": "@components/*",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "web_tsconfig_paths_contracts",
+      "label": "@contracts",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "code",
+      "norm_label": "@contracts",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "web_tsconfig_paths_schemas",
+      "label": "@schemas/*",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "code",
+      "norm_label": "@schemas/*",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "web_tsconfig_paths_utils",
+      "label": "@utils/*",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "code",
+      "norm_label": "@utils/*",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L22"
     },
     {
       "id": "ref_dom",
@@ -7076,6 +7289,17 @@
       "source_location": "L6"
     },
     {
+      "id": "ref_schemas",
+      "label": "../schemas/*",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "concept",
+      "norm_label": "../schemas/*",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L25"
+    },
+    {
       "id": "ref_src",
       "label": "src",
       "_origin": "ast",
@@ -7084,7 +7308,51 @@
       "file_type": "concept",
       "norm_label": "src",
       "source_file": "web/tsconfig.json",
-      "source_location": "L20"
+      "source_location": "L28"
+    },
+    {
+      "id": "ref_src_components",
+      "label": "src/components/*",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "concept",
+      "norm_label": "src/components/*",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "ref_src_contracts",
+      "label": "src/contracts",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "concept",
+      "norm_label": "src/contracts",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "ref_src_utils",
+      "label": "src/utils/*",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "concept",
+      "norm_label": "src/utils/*",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "ref_tests",
+      "label": "tests",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "concept",
+      "norm_label": "tests",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L28"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_confidence_description",
@@ -7988,7 +8256,7 @@
       "file_type": "code",
       "norm_label": "dependencies",
       "source_file": "web/package.json",
-      "source_location": "L14"
+      "source_location": "L15"
     },
     {
       "id": "web_package_dependencies_preact",
@@ -7999,7 +8267,7 @@
       "file_type": "code",
       "norm_label": "preact",
       "source_file": "web/package.json",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
       "id": "web_package_dependencies_three",
@@ -8010,7 +8278,7 @@
       "file_type": "code",
       "norm_label": "three",
       "source_file": "web/package.json",
-      "source_location": "L16"
+      "source_location": "L17"
     },
     {
       "id": "web_package_dependencies_urdf_loader",
@@ -8021,7 +8289,7 @@
       "file_type": "code",
       "norm_label": "urdf-loader",
       "source_file": "web/package.json",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "web_package_devdependencies",
@@ -8032,7 +8300,7 @@
       "file_type": "code",
       "norm_label": "devdependencies",
       "source_file": "web/package.json",
-      "source_location": "L19"
+      "source_location": "L20"
     },
     {
       "id": "web_package_devdependencies_autoprefixer",
@@ -8043,7 +8311,7 @@
       "file_type": "code",
       "norm_label": "autoprefixer",
       "source_file": "web/package.json",
-      "source_location": "L23"
+      "source_location": "L26"
     },
     {
       "id": "web_package_devdependencies_jsdom",
@@ -8054,7 +8322,7 @@
       "file_type": "code",
       "norm_label": "jsdom",
       "source_file": "web/package.json",
-      "source_location": "L24"
+      "source_location": "L27"
     },
     {
       "id": "web_package_devdependencies_oxlint",
@@ -8065,7 +8333,18 @@
       "file_type": "code",
       "norm_label": "oxlint",
       "source_file": "web/package.json",
-      "source_location": "L25"
+      "source_location": "L28"
+    },
+    {
+      "id": "web_package_devdependencies_playwright_test",
+      "label": "@playwright/test",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@playwright/test",
+      "source_file": "web/package.json",
+      "source_location": "L21"
     },
     {
       "id": "web_package_devdependencies_postcss",
@@ -8076,7 +8355,7 @@
       "file_type": "code",
       "norm_label": "postcss",
       "source_file": "web/package.json",
-      "source_location": "L26"
+      "source_location": "L29"
     },
     {
       "id": "web_package_devdependencies_preact_preset_vite",
@@ -8087,7 +8366,7 @@
       "file_type": "code",
       "norm_label": "@preact/preset-vite",
       "source_file": "web/package.json",
-      "source_location": "L20"
+      "source_location": "L22"
     },
     {
       "id": "web_package_devdependencies_tailwindcss",
@@ -8098,7 +8377,7 @@
       "file_type": "code",
       "norm_label": "tailwindcss",
       "source_file": "web/package.json",
-      "source_location": "L27"
+      "source_location": "L30"
     },
     {
       "id": "web_package_devdependencies_testing_library_preact",
@@ -8109,7 +8388,18 @@
       "file_type": "code",
       "norm_label": "@testing-library/preact",
       "source_file": "web/package.json",
-      "source_location": "L21"
+      "source_location": "L23"
+    },
+    {
+      "id": "web_package_devdependencies_types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/node",
+      "source_file": "web/package.json",
+      "source_location": "L24"
     },
     {
       "id": "web_package_devdependencies_types_three",
@@ -8120,7 +8410,7 @@
       "file_type": "code",
       "norm_label": "@types/three",
       "source_file": "web/package.json",
-      "source_location": "L22"
+      "source_location": "L25"
     },
     {
       "id": "web_package_devdependencies_typescript",
@@ -8131,7 +8421,7 @@
       "file_type": "code",
       "norm_label": "typescript",
       "source_file": "web/package.json",
-      "source_location": "L28"
+      "source_location": "L31"
     },
     {
       "id": "web_package_devdependencies_vite",
@@ -8142,7 +8432,7 @@
       "file_type": "code",
       "norm_label": "vite",
       "source_file": "web/package.json",
-      "source_location": "L29"
+      "source_location": "L32"
     },
     {
       "id": "web_package_devdependencies_vitest",
@@ -8153,7 +8443,7 @@
       "file_type": "code",
       "norm_label": "vitest",
       "source_file": "web/package.json",
-      "source_location": "L30"
+      "source_location": "L33"
     },
     {
       "id": "web_package_name",
@@ -8219,7 +8509,7 @@
       "file_type": "code",
       "norm_label": "lint",
       "source_file": "web/package.json",
-      "source_location": "L12"
+      "source_location": "L13"
     },
     {
       "id": "web_package_scripts_preview",
@@ -8242,6 +8532,17 @@
       "norm_label": "test",
       "source_file": "web/package.json",
       "source_location": "L11"
+    },
+    {
+      "id": "web_package_scripts_test_e2e",
+      "label": "test:e2e",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "test:e2e",
+      "source_file": "web/package.json",
+      "source_location": "L12"
     },
     {
       "id": "web_package_scripts_typecheck",
@@ -8285,7 +8586,7 @@
       "file_type": "concept",
       "norm_label": "autoprefixer",
       "source_file": "web/package.json",
-      "source_location": "L23"
+      "source_location": "L26"
     },
     {
       "id": "jsdom",
@@ -8296,7 +8597,7 @@
       "file_type": "concept",
       "norm_label": "jsdom",
       "source_file": "web/package.json",
-      "source_location": "L24"
+      "source_location": "L27"
     },
     {
       "id": "oxlint",
@@ -8307,7 +8608,18 @@
       "file_type": "concept",
       "norm_label": "oxlint",
       "source_file": "web/package.json",
-      "source_location": "L25"
+      "source_location": "L28"
+    },
+    {
+      "id": "playwright_test",
+      "label": "@playwright/test",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@playwright/test",
+      "source_file": "web/package.json",
+      "source_location": "L21"
     },
     {
       "id": "postcss",
@@ -8318,7 +8630,7 @@
       "file_type": "concept",
       "norm_label": "postcss",
       "source_file": "web/package.json",
-      "source_location": "L26"
+      "source_location": "L29"
     },
     {
       "id": "preact",
@@ -8329,7 +8641,7 @@
       "file_type": "concept",
       "norm_label": "preact",
       "source_file": "web/package.json",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
       "id": "preact_preset_vite",
@@ -8340,7 +8652,7 @@
       "file_type": "concept",
       "norm_label": "@preact/preset-vite",
       "source_file": "web/package.json",
-      "source_location": "L20"
+      "source_location": "L22"
     },
     {
       "id": "tailwindcss",
@@ -8351,7 +8663,7 @@
       "file_type": "concept",
       "norm_label": "tailwindcss",
       "source_file": "web/package.json",
-      "source_location": "L27"
+      "source_location": "L30"
     },
     {
       "id": "testing_library_preact",
@@ -8362,7 +8674,7 @@
       "file_type": "concept",
       "norm_label": "@testing-library/preact",
       "source_file": "web/package.json",
-      "source_location": "L21"
+      "source_location": "L23"
     },
     {
       "id": "three",
@@ -8373,7 +8685,18 @@
       "file_type": "concept",
       "norm_label": "three",
       "source_file": "web/package.json",
-      "source_location": "L16"
+      "source_location": "L17"
+    },
+    {
+      "id": "types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/node",
+      "source_file": "web/package.json",
+      "source_location": "L24"
     },
     {
       "id": "types_three",
@@ -8384,7 +8707,7 @@
       "file_type": "concept",
       "norm_label": "@types/three",
       "source_file": "web/package.json",
-      "source_location": "L22"
+      "source_location": "L25"
     },
     {
       "id": "typescript",
@@ -8395,7 +8718,7 @@
       "file_type": "concept",
       "norm_label": "typescript",
       "source_file": "web/package.json",
-      "source_location": "L28"
+      "source_location": "L31"
     },
     {
       "id": "urdf_loader",
@@ -8406,7 +8729,7 @@
       "file_type": "concept",
       "norm_label": "urdf-loader",
       "source_file": "web/package.json",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "vite",
@@ -8417,7 +8740,7 @@
       "file_type": "concept",
       "norm_label": "vite",
       "source_file": "web/package.json",
-      "source_location": "L29"
+      "source_location": "L32"
     },
     {
       "id": "vitest",
@@ -8428,7 +8751,7 @@
       "file_type": "concept",
       "norm_label": "vitest",
       "source_file": "web/package.json",
-      "source_location": "L30"
+      "source_location": "L33"
     },
     {
       "id": "agents_skills_grilling_skill",
@@ -10244,6 +10567,94 @@
       "source_location": "L7"
     },
     {
+      "id": "web_tests_e2e_harness",
+      "label": "harness.ts",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "harness.ts",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_harness_dirname",
+      "label": "__dirname",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "__dirname",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "web_tests_e2e_harness_filename",
+      "label": "__filename",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "__filename",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "web_tests_e2e_harness_root_dir",
+      "label": "ROOT_DIR",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "root_dir",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "web_tests_e2e_harness_web_dir",
+      "label": "WEB_DIR",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "web_dir",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "web_tests_e2e_teleop_spec",
+      "label": "teleop.spec.ts",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "teleop.spec.ts",
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_teleop_spec_test",
+      "label": "test",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "test",
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "web_src_components_teleopclient",
+      "label": "TeleopClient.tsx",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "teleopclient.tsx",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "web_src_contracts",
       "label": "contracts.ts",
       "_origin": "ast",
@@ -10252,17 +10663,6 @@
       "file_type": "code",
       "norm_label": "contracts.ts",
       "source_file": "web/src/contracts.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_src_contracts_test",
-      "label": "contracts.test.ts",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "contracts.test.ts",
-      "source_file": "web/src/contracts.test.ts",
       "source_location": "L1"
     },
     {
@@ -10285,28 +10685,107 @@
       "file_type": "code",
       "norm_label": "root",
       "source_file": "web/src/main.tsx",
-      "source_location": "L12"
+      "source_location": "L37"
     },
     {
-      "id": "web_src_teleopclient",
-      "label": "TeleopClient.tsx",
+      "id": "web_src_utils_env",
+      "label": "env.ts",
       "_origin": "ast",
       "community": 84,
       "community_name": "contracts.ts",
       "file_type": "code",
-      "norm_label": "teleopclient.tsx",
-      "source_file": "web/src/TeleopClient.tsx",
+      "norm_label": "env.ts",
+      "source_file": "web/src/utils/env.ts",
       "source_location": "L1"
     },
     {
-      "id": "web_src_teleopclient_test",
+      "id": "web_src_utils_url",
+      "label": "url.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "url.ts",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_unit_contracts_test",
+      "label": "contracts.test.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "contracts.test.ts",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_unit_env_test",
+      "label": "env.test.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "env.test.ts",
+      "source_file": "web/tests/unit/env.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test",
       "label": "TeleopClient.test.tsx",
       "_origin": "ast",
       "community": 84,
       "community_name": "contracts.ts",
       "file_type": "code",
       "norm_label": "teleopclient.test.tsx",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_unit_url_test",
+      "label": "url.test.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "url.test.ts",
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_rules_structure",
+      "label": "structure.md",
+      "_origin": "ast",
+      "community": 85,
+      "community_name": "structure.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "norm_label": "structure.md",
+      "source_file": ".agents/rules/structure.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "agents_rules_structure_codebase_organization_directory_structure",
+      "label": "Codebase Organization & Directory Structure",
+      "_origin": "ast",
+      "community": 85,
+      "community_name": "structure.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "codebase organization & directory structure",
+      "source_file": ".agents/rules/structure.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_playwright_config",
+      "label": "playwright.config.ts",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "playwright.config.ts",
+      "file_type": "code",
+      "norm_label": "playwright.config.ts",
+      "source_file": "web/playwright.config.ts",
       "source_location": "L1"
     },
     {
@@ -11080,6 +11559,66 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_teleopclient_teleopclient",
+      "target": "web_src_contracts_createpingcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient_teleopclient",
+      "target": "web_src_contracts_serializecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient_teleopclient",
+      "target": "web_src_utils_env_isbrowser",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient_teleopclient",
+      "target": "web_src_contracts_isrobottelemetryevent",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient_teleopclient",
+      "target": "web_src_contracts_iserrorframe",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_contracts_iserrorframe",
       "target": "web_src_contracts_parseerrorframe",
       "relation": "calls",
@@ -11176,51 +11715,87 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_teleopclient",
-      "target": "web_src_contracts_createpingcommand",
+      "source": "web_src_main_app",
+      "target": "web_src_utils_url_getparam",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L120",
+      "source_file": "web/src/main.tsx",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_teleopclient",
-      "target": "web_src_contracts_serializecommand",
+      "source": "web_src_utils_url_getallparams",
+      "target": "web_src_utils_env_isbrowser",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L121",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_teleopclient",
-      "target": "web_src_contracts_isrobottelemetryevent",
+      "source": "web_src_utils_url_getparam",
+      "target": "web_src_utils_env_isbrowser",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L59",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_teleopclient",
-      "target": "web_src_contracts_iserrorframe",
+      "source": "web_tests_e2e_harness_serviceharness_start",
+      "target": "web_tests_e2e_harness_serviceharness_pollhttp",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L67",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_harness_serviceharness_start",
+      "target": "web_tests_e2e_harness_serviceharness_cleanstaleports",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_harness_serviceharness_stop",
+      "target": "web_tests_e2e_harness_serviceharness_cleanstaleports",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_teleop_spec_test",
+      "target": "web_tests_e2e_harness_serviceharness",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -11464,27 +12039,27 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_logentry",
+      "source": "web_src_components_teleopclient_logentry",
       "target": "web_src_contracts_errorframe",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "field",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L17",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_logentry",
+      "source": "web_src_components_teleopclient_logentry",
       "target": "web_src_contracts_robottelemetryevent",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "field",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L17",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -12348,7 +12923,67 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/tsconfig.json",
-      "source_location": "L20",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_include",
+      "target": "ref_tests",
+      "relation": "extends",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_paths_components",
+      "target": "ref_src_components",
+      "relation": "extends",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_paths_contracts",
+      "target": "ref_src_contracts",
+      "relation": "extends",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_paths_schemas",
+      "target": "ref_schemas",
+      "relation": "extends",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_paths_utils",
+      "target": "ref_src_utils",
+      "relation": "extends",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -12564,7 +13199,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -12576,7 +13211,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -12588,7 +13223,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -12600,7 +13235,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L23",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -12612,7 +13247,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L24",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -12624,7 +13259,19 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L25",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_playwright_test",
+      "target": "playwright_test",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/package.json",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -12636,7 +13283,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L26",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -12648,7 +13295,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L20",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -12660,7 +13307,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L27",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -12672,7 +13319,19 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L21",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_types_node",
+      "target": "types_node",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/package.json",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -12684,7 +13343,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L22",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -12696,7 +13355,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L28",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -12708,7 +13367,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L29",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -12720,120 +13379,96 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L30",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_commandtype",
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_utils_env_isbrowser",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
+      "source_file": "web/src/components/TeleopClient.tsx",
       "source_location": "L2",
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
+      "source": "web_src_components_teleopclient",
       "target": "web_src_contracts_createpingcommand",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_parseerrorframe",
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_contracts_errorframe",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_parserobotcommand",
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_contracts_iserrorframe",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_parserobottelemetryevent",
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_contracts_isrobottelemetryevent",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_parserobottopic",
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_contracts_robottelemetryevent",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_robotcommandtopic",
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_contracts_serializecommand",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_robotstate",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_contracts_test",
-      "target": "web_src_contracts_robottelemetrytopic",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
       "source": "web_src_main",
-      "target": "web_src_teleopclient_teleopclient",
+      "target": "web_src_components_teleopclient_teleopclient",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -12844,135 +13479,243 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient",
-      "target": "web_src_contracts_createpingcommand",
+      "source": "web_src_main",
+      "target": "web_src_utils_url_getparam",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient",
-      "target": "web_src_contracts_errorframe",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient",
-      "target": "web_src_contracts_iserrorframe",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient",
-      "target": "web_src_contracts_isrobottelemetryevent",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient",
-      "target": "web_src_contracts_robottelemetryevent",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient",
-      "target": "web_src_contracts_serializecommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient_test",
-      "target": "web_src_teleopclient_teleopclient",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/src/main.tsx",
       "source_location": "L3",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test",
+      "source": "web_src_utils_url",
+      "target": "web_src_utils_env_isbrowser",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_teleop_spec",
+      "target": "web_tests_e2e_harness_serviceharness",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
       "target": "web_src_contracts_commandtype",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/TeleopClient.test.tsx",
-      "source_location": "L4",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test",
-      "target": "web_src_contracts_errorframe",
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_src_contracts_createpingcommand",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/TeleopClient.test.tsx",
-      "source_location": "L4",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test",
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_src_contracts_parseerrorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_src_contracts_parserobotcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_src_contracts_parserobottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_src_contracts_parserobottopic",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_src_contracts_robotcommandtopic",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
       "target": "web_src_contracts_robotstate",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_src_contracts_robottelemetrytopic",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_env_test",
+      "target": "web_src_utils_env_isbrowser",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/env.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test",
+      "target": "web_src_components_teleopclient_teleopclient",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test",
+      "target": "web_src_contracts_commandtype",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L4",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test",
+      "source": "web_tests_unit_teleopclient_test",
+      "target": "web_src_contracts_errorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test",
+      "target": "web_src_contracts_robotstate",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test",
       "target": "web_src_contracts_robottelemetryevent",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_url_test",
+      "target": "web_src_utils_url_getallparams",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_url_test",
+      "target": "web_src_utils_url_getparam",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -13156,20 +13899,32 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_utils_env",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
       "target": "web_src_contracts",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/contracts.test.ts",
-      "source_location": "L2",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
       "source": "web_src_main",
-      "target": "web_src_teleopclient",
+      "target": "web_src_components_teleopclient",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -13180,39 +13935,99 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient",
-      "target": "web_src_contracts",
+      "source": "web_src_main",
+      "target": "web_src_utils_url",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient_test",
-      "target": "web_src_teleopclient",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/src/main.tsx",
       "source_location": "L3",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test",
+      "source": "web_src_utils_url",
+      "target": "web_src_utils_env",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_teleop_spec",
+      "target": "web_tests_e2e_harness",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
       "target": "web_src_contracts",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_env_test",
+      "target": "web_src_utils_env",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/env.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test",
+      "target": "web_src_components_teleopclient",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test",
+      "target": "web_src_contracts",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_url_test",
+      "target": "web_src_utils_url",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -13619,7 +14434,7 @@
     },
     {
       "source": "agents_handsim_project_instructions",
-      "target": "agents_agent_skills_tracking",
+      "target": "agents_code_organization_directory_invariants",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -13637,6 +14452,17 @@
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_handsim_project_instructions",
+      "target": "agents_agent_skills_tracking",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "AGENTS.md",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -13703,6 +14529,17 @@
       "confidence_score": 1.0,
       "source_file": ".agents/rules/rust.md",
       "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "agents_rules_structure",
+      "target": "agents_rules_structure_codebase_organization_directory_structure",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".agents/rules/structure.md",
+      "source_location": "L1",
       "weight": 1.0
     },
     {
@@ -19521,18 +20358,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
-      "source_location": "L14",
-      "weight": 1.0
-    },
-    {
-      "source": "web_package",
-      "target": "web_package_devdependencies",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/package.json",
-      "source_location": "L19",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -19544,6 +20370,17 @@
       "confidence_score": 1.0,
       "source_file": "web/package.json",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package",
+      "target": "web_package_devdependencies",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -19598,7 +20435,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -19609,7 +20446,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -19620,23 +20457,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_preact_preset_vite",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/package.json",
-      "source_location": "L20",
-      "weight": 1.0
-    },
-    {
-      "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_testing_library_preact",
+      "target": "web_package_devdependencies_playwright_test",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19647,7 +20473,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_types_three",
+      "target": "web_package_devdependencies_preact_preset_vite",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19658,7 +20484,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_autoprefixer",
+      "target": "web_package_devdependencies_testing_library_preact",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19669,7 +20495,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_jsdom",
+      "target": "web_package_devdependencies_types_node",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19680,7 +20506,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_oxlint",
+      "target": "web_package_devdependencies_types_three",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19691,7 +20517,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_postcss",
+      "target": "web_package_devdependencies_autoprefixer",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19702,7 +20528,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_tailwindcss",
+      "target": "web_package_devdependencies_jsdom",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19713,7 +20539,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_typescript",
+      "target": "web_package_devdependencies_oxlint",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19724,7 +20550,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_vite",
+      "target": "web_package_devdependencies_postcss",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -19735,13 +20561,46 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_vitest",
+      "target": "web_package_devdependencies_tailwindcss",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
       "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_typescript",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_vite",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_vitest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -19768,13 +20627,24 @@
     },
     {
       "source": "web_package_scripts",
-      "target": "web_package_scripts_lint",
+      "target": "web_package_scripts_test_e2e",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
       "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_scripts",
+      "target": "web_package_scripts_lint",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -19808,6 +20678,50 @@
       "confidence_score": 1.0,
       "source_file": "web/package.json",
       "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_teleopclient_connectionstate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_teleopclient_logentry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_teleopclient_teleopclientprops",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_teleopclient_teleopclient",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -20038,7 +20952,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/main.tsx",
-      "source_location": "L12",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -20049,62 +20963,139 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/main.tsx",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient",
-      "target": "web_src_teleopclient_connectionstate",
+      "source": "web_src_utils_env",
+      "target": "web_src_utils_env_isbrowser",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.tsx",
+      "source_file": "web/src/utils/env.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_utils_url",
+      "target": "web_src_utils_url_getallparams",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_utils_url",
+      "target": "web_src_utils_url_getparam",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_harness",
+      "target": "web_tests_e2e_harness_harnessconfig",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/harness.ts",
       "source_location": "L11",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient",
-      "target": "web_src_teleopclient_logentry",
+      "source": "web_tests_e2e_harness",
+      "target": "web_tests_e2e_harness_serviceharness",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L13",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient",
-      "target": "web_src_teleopclient_teleopclientprops",
+      "source": "web_tests_e2e_harness",
+      "target": "web_tests_e2e_harness_filename",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L20",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient",
-      "target": "web_src_teleopclient_teleopclient",
+      "source": "web_tests_e2e_harness",
+      "target": "web_tests_e2e_harness_dirname",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.tsx",
-      "source_location": "L25",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_teleopclient_test",
-      "target": "web_src_teleopclient_test_mockwebsocket",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/e2e/harness.ts",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_harness",
+      "target": "web_tests_e2e_harness_root_dir",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_harness",
+      "target": "web_tests_e2e_harness_web_dir",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_teleop_spec",
+      "target": "web_tests_e2e_teleop_spec_test",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test",
+      "target": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_url_test",
+      "target": "web_tests_unit_url_test_setwindowsearch",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -20126,18 +21117,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L20",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tsconfig_compileroptions",
-      "target": "web_tsconfig_compileroptions_resolvejsonmodule",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tsconfig.json",
-      "source_location": "L10",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -20148,7 +21128,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L11",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -20159,7 +21139,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L12",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -20170,7 +21150,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L13",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -20181,7 +21161,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -20192,7 +21172,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L15",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -20203,7 +21183,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L16",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -20214,7 +21194,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -20225,7 +21205,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_baseurl",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tsconfig.json",
       "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_paths",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tsconfig.json",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -20296,13 +21298,57 @@
     },
     {
       "source": "web_tsconfig_compileroptions",
-      "target": "web_tsconfig_compileroptions_allowimportingtsextensions",
+      "target": "web_tsconfig_compileroptions_resolvejsonmodule",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
       "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions_paths",
+      "target": "web_tsconfig_paths_components",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tsconfig.json",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions_paths",
+      "target": "web_tsconfig_paths_utils",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tsconfig.json",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions_paths",
+      "target": "web_tsconfig_paths_contracts",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tsconfig.json",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions_paths",
+      "target": "web_tsconfig_paths_schemas",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tsconfig.json",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -20526,31 +21572,31 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_contracts_test",
+      "source": "web_tests_unit_contracts_test",
       "target": "schemas_error_frame_schema",
       "relation": "dynamic_import",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/contracts.test.ts"
+      "source_file": "web/tests/unit/contracts.test.ts"
     },
     {
-      "source": "web_src_contracts_test",
+      "source": "web_tests_unit_contracts_test",
       "target": "schemas_robot_command_schema",
       "relation": "dynamic_import",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/contracts.test.ts"
+      "source_file": "web/tests/unit/contracts.test.ts"
     },
     {
-      "source": "web_src_contracts_test",
+      "source": "web_tests_unit_contracts_test",
       "target": "schemas_robot_telemetry_event_schema",
       "relation": "dynamic_import",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/contracts.test.ts"
+      "source_file": "web/tests/unit/contracts.test.ts"
     },
     {
       "source": "src_gateway_src_session_activesessionguard",
@@ -20861,68 +21907,134 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test_mockwebsocket",
-      "target": "web_src_teleopclient_test_mockwebsocket_constructor",
+      "source": "web_tests_e2e_harness_serviceharness",
+      "target": "web_tests_e2e_harness_serviceharness_getcapturedlogs",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.test.tsx",
-      "source_location": "L20",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L130",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test_mockwebsocket",
-      "target": "web_src_teleopclient_test_mockwebsocket_send",
+      "source": "web_tests_e2e_harness_serviceharness",
+      "target": "web_tests_e2e_harness_serviceharness_stop",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.test.tsx",
-      "source_location": "L25",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L134",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test_mockwebsocket",
-      "target": "web_src_teleopclient_test_mockwebsocket_close",
+      "source": "web_tests_e2e_harness_serviceharness",
+      "target": "web_tests_e2e_harness_serviceharness_constructor",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/e2e/harness.ts",
       "source_location": "L29",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test_mockwebsocket",
-      "target": "web_src_teleopclient_test_mockwebsocket_simulateopen",
+      "source": "web_tests_e2e_harness_serviceharness",
+      "target": "web_tests_e2e_harness_serviceharness_cleanstaleports",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/e2e/harness.ts",
       "source_location": "L36",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test_mockwebsocket",
-      "target": "web_src_teleopclient_test_mockwebsocket_simulatemessage",
+      "source": "web_tests_e2e_harness_serviceharness",
+      "target": "web_tests_e2e_harness_serviceharness_pollhttp",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_harness_serviceharness",
+      "target": "web_tests_e2e_harness_serviceharness_start",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/harness.ts",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "target": "web_tests_unit_teleopclient_test_mockwebsocket_constructor",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "target": "web_tests_unit_teleopclient_test_mockwebsocket_send",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "target": "web_tests_unit_teleopclient_test_mockwebsocket_close",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "target": "web_tests_unit_teleopclient_test_mockwebsocket_simulateopen",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "target": "web_tests_unit_teleopclient_test_mockwebsocket_simulatemessage",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L43",
       "weight": 1.0
     },
     {
-      "source": "web_src_teleopclient_test_mockwebsocket",
-      "target": "web_src_teleopclient_test_mockwebsocket_simulateerrorandclose",
+      "source": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "target": "web_tests_unit_teleopclient_test_mockwebsocket_simulateerrorandclose",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/src/TeleopClient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L49",
       "weight": 1.0
     },
@@ -21356,6 +22468,30 @@
       "weight": 1.0
     },
     {
+      "source": "web_tests_e2e_teleop_spec_test",
+      "target": "web_tests_e2e_harness_serviceharness_stop",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_teleop_spec_test",
+      "target": "web_tests_e2e_harness_serviceharness_start",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "context": "call",
+      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
       "source": "src_gateway_src_fabric_datafabricport_publish_command",
       "target": "src_gateway_src_domain_robot_command_topic",
       "relation": "calls",
@@ -21730,5 +22866,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "da73fe3cefdea648ed060ceef97dc3318ac02343"
+  "built_at_commit": "1426edc472f2e8412aded73b9c853f16f70378e2"
 }

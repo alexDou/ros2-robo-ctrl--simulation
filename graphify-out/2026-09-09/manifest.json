@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   ".agents/rules/rust.md": {
-    "mtime": 1788966076.5657413,
-    "seen": 1788970426.1734173,
-    "ast_hash": "52c98498638f4fa71df97fa379d55822",
+    "mtime": 1788977976.0400567,
+    "seen": 1788977986.773912,
+    "ast_hash": "d2f917f1da543b62ce581af16f916850",
     "semantic_hash": ""
   },
   ".agents/rules/telemetry-contract.md": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788966809.5769734,
-    "seen": 1788970426.1734722,
-    "ast_hash": "c20e064018962f5a68be8f0ecb151d07",
+    "mtime": 1788977966.2662027,
+    "seen": 1788977986.7770865,
+    "ast_hash": "8ab9d6b5ba22d02504cc29f3a135d61a",
     "semantic_hash": ""
   },
   "CONTEXT.md": {

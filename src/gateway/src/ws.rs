@@ -33,11 +33,15 @@ pub async fn teleop_ws(
         Ok(g) => g,
         Err(SessionError::Conflict(id)) => {
             warn!("Rejected concurrent teleoperation session for robot '{id}': 409 Conflict");
-            return Ok(HttpResponse::Conflict().body(format!("Active session already exists for robot '{id}'")));
+            return Ok(HttpResponse::Conflict()
+                .insert_header(("Access-Control-Allow-Origin", "*"))
+                .body(format!("Active session already exists for robot '{id}'")));
         }
         Err(SessionError::InvalidRobotId(id)) => {
             warn!("Rejected invalid robot ID '{id}': 400 Bad Request");
-            return Ok(HttpResponse::BadRequest().body(format!("Invalid robot ID '{id}'")));
+            return Ok(HttpResponse::BadRequest()
+                .insert_header(("Access-Control-Allow-Origin", "*"))
+                .body(format!("Invalid robot ID '{id}'")));
         }
     };
 

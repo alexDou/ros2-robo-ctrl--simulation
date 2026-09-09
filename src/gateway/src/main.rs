@@ -8,7 +8,7 @@ async fn health_check() -> impl Responder {
     HttpResponse::Ok().json(serde_json::json!({ "status": "UP" }))
 }
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
     let host = std::env::var("GATEWAY_HOST").unwrap_or_else(|_| "0.0.0.0".to_string());
