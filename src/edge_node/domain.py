@@ -1,0 +1,97 @@
+"""Domain schemas and DataFabric topic contracts for EdgeNode."""
+
+from enum import Enum
+from typing import Annotated, Any, Literal, Optional
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class CommandType(str, Enum):
+    """Permitted operational command types for the EdgeNode."""
+
+    PING = "PING"
+    TELEOP_JOINT_TARGET = "TELEOP_JOINT_TARGET"
+    TRAJECTORY_EXECUTE = "TRAJECTORY_EXECUTE"
+    EMERGENCY_STOP = "EMERGENCY_STOP"
+    RESET_FAULT = "RESET_FAULT"
+
+
+class RobotState(str, Enum):
+    """Operational lifecycle state of the robotic manipulator."""
+
+    BOOTING = "BOOTING"
+    IDLE = "IDLE"
+    PROCESSING = "PROCESSING"
+    EXECUTING = "EXECUTING"
+    FAULT = "FAULT"
+
+
+class InferenceMetrics(BaseModel):
+    """Inference performance and classification metrics from Edge AI models."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    latency_ms: float = Field(..., ge=0.0, description="Inference execution time in milliseconds")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Detection confidence score")
+    detected_object: str = Field(..., min_length=1, description="Detected object class label")
+
+
+class RobotCommand(BaseModel):
+    """Structured inbound instruction sent to EdgeNode."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    command_id: str = Field(..., min_length=1, description="Command UUID v4")
+    sender_id: str = Field(..., min_length=1, description="Sender component identifier")
+    timestamp_ns: int = Field(..., ge=0, description="Timestamp in nanoseconds since epoch")
+    type: CommandType = Field(..., description="Operational command enum")
+    payload: dict[str, Any] = Field(default_factory=dict, description="Command-specific payload object")
+
+
+class RobotTelemetryEvent(BaseModel):
+    """Structured domain event emitted by EdgeNode."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    timestamp_ns: int = Field(..., ge=0, description="Timestamp in nanoseconds since epoch")
+    robot_state: RobotState = Field(..., description="Operational lifecycle state")
+    joint_positions: Annotated[list[float], Field(..., min_length=6, max_length=6, description="UR5e 6-DoF joint angles in radians")]
+    inference_metrics: Optional[InferenceMetrics] = Field(default=None, description="Optional Edge AI detection metrics")
+    command_id: Optional[str] = Field(default=None, description="Optional command acknowledgment ID")
+
+
+class ErrorFrame(BaseModel):
+    """Structured error message sent by Gateway on schema or validation errors."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: Literal["ERROR"] = "ERROR"
+    error_code: str = Field(..., min_length=1, description="Diagnostic error code")
+    message: str = Field(..., min_length=1, description="Diagnostic error message")
+    timestamp_ns: int = Field(..., ge=0, description="Timestamp in nanoseconds since epoch")
+
+
+def _validate_robot_id(robot_id: str) -> None:
+    if not robot_id or "/" in robot_id or "\\" in robot_id or " " in robot_id:
+        raise ValueError(f"Invalid robot ID '{robot_id}': must be non-empty and not contain slashes or whitespace")
+
+
+def robot_command_topic(robot_id: str) -> str:
+    """Returns the locked DataFabric command key expression for a robot."""
+    _validate_robot_id(robot_id)
+    return f"robot/{robot_id}/command"
+
+
+def robot_telemetry_topic(robot_id: str) -> str:
+    """Returns the locked DataFabric telemetry key expression for a robot."""
+    _validate_robot_id(robot_id)
+    return f"robot/{robot_id}/telemetry"
+
+
+def parse_robot_topic(topic: str) -> tuple[str, str] | None:
+    """Parses a DataFabric key expression into (robot_id, channel) or returns None if invalid."""
+    parts = topic.split("/")
+    if len(parts) != 3 or parts[0] != "robot" or not parts[1]:
+        return None
+    if parts[2] not in ("command", "telemetry"):
+        return None
+    return (parts[1], parts[2])

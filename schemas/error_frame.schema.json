@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://handsim.io/schemas/error_frame.schema.json",
+  "title": "ErrorFrame",
+  "description": "Canonical schema for structured error frames returned by Gateway over WebSocket",
+  "type": "object",
+  "required": [
+    "type",
+    "error_code",
+    "message",
+    "timestamp_ns"
+  ],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "ERROR",
+      "description": "Fixed message type identifier"
+    },
+    "error_code": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Structured diagnostic error code"
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable diagnostic error description"
+    },
+    "timestamp_ns": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Nanoseconds since Unix epoch when error was generated"
+    }
+  },
+  "additionalProperties": false
+}
