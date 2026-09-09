@@ -82,8 +82,9 @@
   "80": "robot_telemetry_event.schema.json",
   "81": "EdgeNode",
   "82": "error_frame.schema.json",
-  "83": "ServiceHarness",
+  "83": "TeleopPage",
   "84": "contracts.ts",
   "85": "structure.md",
-  "86": "playwright.config.ts"
+  "86": "scripts",
+  "87": "MockWebSocket"
 }

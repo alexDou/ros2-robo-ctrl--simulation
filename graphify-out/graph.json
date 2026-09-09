@@ -95,30 +95,69 @@
       "source_location": "L20"
     },
     {
-      "id": "web_tests_e2e_harness_harnessconfig",
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "label": "TeleopPage",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": "teleoppage",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_harnessconfig",
       "label": "HarnessConfig",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": "harnessconfig",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L11"
     },
     {
-      "id": "web_tests_e2e_harness_serviceharness",
+      "id": "web_tests_e2e_support_harness_serviceharness",
       "label": "ServiceHarness",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": "serviceharness",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L17"
+    },
+    {
+      "id": "web_tests_e2e_support_world_customworld",
+      "label": "CustomWorld",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": "customworld",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "web_tests_e2e_support_world_icustomworld",
+      "label": "ICustomWorld",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": "icustomworld",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L6"
     },
     {
       "id": "web_src_components_teleopclient_connectionstate",
@@ -256,8 +295,8 @@
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
+      "community": 87,
+      "community_name": "MockWebSocket",
       "file_type": "code",
       "norm_label": "mockwebsocket",
       "source_file": "web/tests/unit/TeleopClient.test.tsx",
@@ -528,76 +567,184 @@
       "source_location": "L61"
     },
     {
-      "id": "web_tests_e2e_harness_serviceharness_cleanstaleports",
-      "label": ".cleanStalePorts()",
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickping",
+      "label": ".clickPing()",
       "_callable": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
-      "norm_label": ".cleanstaleports()",
-      "source_file": "web/tests/e2e/harness.ts",
-      "source_location": "L36"
+      "norm_label": ".clickping()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L28"
     },
     {
-      "id": "web_tests_e2e_harness_serviceharness_constructor",
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_constructor",
       "label": ".constructor()",
       "_callable": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": ".constructor()",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L11"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectconflictbanner",
+      "label": ".expectConflictBanner()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectconflictbanner()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L37"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectconnectionstatus",
+      "label": ".expectConnectionStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectconnectionstatus()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L24"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecterrordiagnostic",
+      "label": ".expectErrorDiagnostic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expecterrordiagnostic()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L50"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecteventlogcontains",
+      "label": ".expectEventLogContains()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expecteventlogcontains()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L33"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_goto",
+      "label": ".goto()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".goto()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_injectrawframe",
+      "label": ".injectRawFrame()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".injectrawframe()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L42"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
+      "label": ".cleanStalePorts()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".cleanstaleports()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L36"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L29"
     },
     {
-      "id": "web_tests_e2e_harness_serviceharness_getcapturedlogs",
+      "id": "web_tests_e2e_support_harness_serviceharness_getcapturedlogs",
       "label": ".getCapturedLogs()",
       "_callable": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": ".getcapturedlogs()",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L130"
     },
     {
-      "id": "web_tests_e2e_harness_serviceharness_pollhttp",
+      "id": "web_tests_e2e_support_harness_serviceharness_pollhttp",
       "label": ".pollHttp()",
       "_callable": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": ".pollhttp()",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L44"
     },
     {
-      "id": "web_tests_e2e_harness_serviceharness_start",
+      "id": "web_tests_e2e_support_harness_serviceharness_start",
       "label": ".start()",
       "_callable": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": ".start()",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L69"
     },
     {
-      "id": "web_tests_e2e_harness_serviceharness_stop",
+      "id": "web_tests_e2e_support_harness_serviceharness_stop",
       "label": ".stop()",
       "_callable": true,
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": ".stop()",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L134"
+    },
+    {
+      "id": "web_tests_e2e_support_world_customworld_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L29"
     },
     {
       "id": "web_src_components_teleopclient_teleopclient",
@@ -816,78 +963,6 @@
       "source_location": "L39"
     },
     {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_close",
-      "label": ".close()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".close()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L29"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L20"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_send",
-      "label": ".send()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".send()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L25"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateerrorandclose",
-      "label": ".simulateErrorAndClose()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".simulateerrorandclose()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L49"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulatemessage",
-      "label": ".simulateMessage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".simulatemessage()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L43"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateopen",
-      "label": ".simulateOpen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".simulateopen()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L36"
-    },
-    {
       "id": "web_tests_unit_url_test_setwindowsearch",
       "label": "setWindowSearch()",
       "_callable": true,
@@ -898,6 +973,78 @@
       "norm_label": "setwindowsearch()",
       "source_file": "web/tests/unit/url.test.ts",
       "source_location": "L14"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_close",
+      "label": ".close()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".close()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L29"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L20"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_send",
+      "label": ".send()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".send()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L25"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateerrorandclose",
+      "label": ".simulateErrorAndClose()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".simulateerrorandclose()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L49"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulatemessage",
+      "label": ".simulateMessage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".simulatemessage()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L43"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateopen",
+      "label": ".simulateOpen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 87,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".simulateopen()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L36"
     },
     {
       "id": "agents_skills_triage_skill",
@@ -5814,10 +5961,11 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 1.5: Playwright End-to-End Suite &amp; Multi-Service Integration Verification",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
+        "priority": "normal",
         "created_at": "2026-09-09T15:14:16Z",
-        "updated_at": "2026-09-09T15:14:16Z",
+        "updated_at": "2026-09-09T19:27:42Z",
         "parent": "hand-sim-e8n5"
       },
       "node_kind": "page",
@@ -5835,7 +5983,7 @@
       "node_kind": "heading",
       "norm_label": "acceptance criteria",
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "beans_hand_sim_hadi_unit_15_playwright_end_to_end_suite_multi_service_blocked_by",
@@ -5847,7 +5995,7 @@
       "node_kind": "heading",
       "norm_label": "blocked by",
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "beans_hand_sim_hadi_unit_15_playwright_end_to_end_suite_multi_service_parent",
@@ -5859,7 +6007,7 @@
       "node_kind": "heading",
       "norm_label": "parent",
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "beans_hand_sim_hadi_unit_15_playwright_end_to_end_suite_multi_service_what_to_build",
@@ -5871,7 +6019,7 @@
       "node_kind": "heading",
       "norm_label": "what to build",
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L21"
+      "source_location": "L22"
     },
     {
       "id": "beans_hand_sim_myia_unit_11_domain_schemas_datafabric_contract_baselin",
@@ -8237,61 +8385,6 @@
       "source_location": "L1"
     },
     {
-      "id": "web_package",
-      "label": "package.json",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "package.json",
-      "source_file": "web/package.json",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_package_dependencies",
-      "label": "dependencies",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "dependencies",
-      "source_file": "web/package.json",
-      "source_location": "L15"
-    },
-    {
-      "id": "web_package_dependencies_preact",
-      "label": "preact",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "preact",
-      "source_file": "web/package.json",
-      "source_location": "L16"
-    },
-    {
-      "id": "web_package_dependencies_three",
-      "label": "three",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "three",
-      "source_file": "web/package.json",
-      "source_location": "L17"
-    },
-    {
-      "id": "web_package_dependencies_urdf_loader",
-      "label": "urdf-loader",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "urdf-loader",
-      "source_file": "web/package.json",
-      "source_location": "L18"
-    },
-    {
       "id": "web_package_devdependencies",
       "label": "devDependencies",
       "_origin": "ast",
@@ -8311,7 +8404,18 @@
       "file_type": "code",
       "norm_label": "autoprefixer",
       "source_file": "web/package.json",
-      "source_location": "L26"
+      "source_location": "L27"
+    },
+    {
+      "id": "web_package_devdependencies_cucumber_cucumber",
+      "label": "@cucumber/cucumber",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@cucumber/cucumber",
+      "source_file": "web/package.json",
+      "source_location": "L21"
     },
     {
       "id": "web_package_devdependencies_jsdom",
@@ -8322,7 +8426,7 @@
       "file_type": "code",
       "norm_label": "jsdom",
       "source_file": "web/package.json",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
       "id": "web_package_devdependencies_oxlint",
@@ -8333,7 +8437,7 @@
       "file_type": "code",
       "norm_label": "oxlint",
       "source_file": "web/package.json",
-      "source_location": "L28"
+      "source_location": "L29"
     },
     {
       "id": "web_package_devdependencies_playwright_test",
@@ -8344,7 +8448,7 @@
       "file_type": "code",
       "norm_label": "@playwright/test",
       "source_file": "web/package.json",
-      "source_location": "L21"
+      "source_location": "L22"
     },
     {
       "id": "web_package_devdependencies_postcss",
@@ -8355,7 +8459,7 @@
       "file_type": "code",
       "norm_label": "postcss",
       "source_file": "web/package.json",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "web_package_devdependencies_preact_preset_vite",
@@ -8366,7 +8470,7 @@
       "file_type": "code",
       "norm_label": "@preact/preset-vite",
       "source_file": "web/package.json",
-      "source_location": "L22"
+      "source_location": "L23"
     },
     {
       "id": "web_package_devdependencies_tailwindcss",
@@ -8377,7 +8481,7 @@
       "file_type": "code",
       "norm_label": "tailwindcss",
       "source_file": "web/package.json",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "web_package_devdependencies_testing_library_preact",
@@ -8388,7 +8492,18 @@
       "file_type": "code",
       "norm_label": "@testing-library/preact",
       "source_file": "web/package.json",
-      "source_location": "L23"
+      "source_location": "L24"
+    },
+    {
+      "id": "web_package_devdependencies_tsx",
+      "label": "tsx",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "tsx",
+      "source_file": "web/package.json",
+      "source_location": "L32"
     },
     {
       "id": "web_package_devdependencies_types_node",
@@ -8399,7 +8514,7 @@
       "file_type": "code",
       "norm_label": "@types/node",
       "source_file": "web/package.json",
-      "source_location": "L24"
+      "source_location": "L25"
     },
     {
       "id": "web_package_devdependencies_types_three",
@@ -8410,7 +8525,7 @@
       "file_type": "code",
       "norm_label": "@types/three",
       "source_file": "web/package.json",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "web_package_devdependencies_typescript",
@@ -8421,7 +8536,7 @@
       "file_type": "code",
       "norm_label": "typescript",
       "source_file": "web/package.json",
-      "source_location": "L31"
+      "source_location": "L33"
     },
     {
       "id": "web_package_devdependencies_vite",
@@ -8432,7 +8547,7 @@
       "file_type": "code",
       "norm_label": "vite",
       "source_file": "web/package.json",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "web_package_devdependencies_vitest",
@@ -8443,139 +8558,7 @@
       "file_type": "code",
       "norm_label": "vitest",
       "source_file": "web/package.json",
-      "source_location": "L33"
-    },
-    {
-      "id": "web_package_name",
-      "label": "name",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "name",
-      "source_file": "web/package.json",
-      "source_location": "L2"
-    },
-    {
-      "id": "web_package_private",
-      "label": "private",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "private",
-      "source_file": "web/package.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "web_package_scripts",
-      "label": "scripts",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "scripts",
-      "source_file": "web/package.json",
-      "source_location": "L6"
-    },
-    {
-      "id": "web_package_scripts_build",
-      "label": "build",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "build",
-      "source_file": "web/package.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "web_package_scripts_dev",
-      "label": "dev",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "dev",
-      "source_file": "web/package.json",
-      "source_location": "L7"
-    },
-    {
-      "id": "web_package_scripts_lint",
-      "label": "lint",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "lint",
-      "source_file": "web/package.json",
-      "source_location": "L13"
-    },
-    {
-      "id": "web_package_scripts_preview",
-      "label": "preview",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "preview",
-      "source_file": "web/package.json",
-      "source_location": "L9"
-    },
-    {
-      "id": "web_package_scripts_test",
-      "label": "test",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "test",
-      "source_file": "web/package.json",
-      "source_location": "L11"
-    },
-    {
-      "id": "web_package_scripts_test_e2e",
-      "label": "test:e2e",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "test:e2e",
-      "source_file": "web/package.json",
-      "source_location": "L12"
-    },
-    {
-      "id": "web_package_scripts_typecheck",
-      "label": "typecheck",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "typecheck",
-      "source_file": "web/package.json",
-      "source_location": "L10"
-    },
-    {
-      "id": "web_package_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "web/package.json",
-      "source_location": "L5"
-    },
-    {
-      "id": "web_package_version",
-      "label": "version",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "version",
-      "source_file": "web/package.json",
-      "source_location": "L4"
+      "source_location": "L35"
     },
     {
       "id": "autoprefixer",
@@ -8586,7 +8569,18 @@
       "file_type": "concept",
       "norm_label": "autoprefixer",
       "source_file": "web/package.json",
-      "source_location": "L26"
+      "source_location": "L27"
+    },
+    {
+      "id": "cucumber_cucumber",
+      "label": "@cucumber/cucumber",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@cucumber/cucumber",
+      "source_file": "web/package.json",
+      "source_location": "L21"
     },
     {
       "id": "jsdom",
@@ -8597,7 +8591,7 @@
       "file_type": "concept",
       "norm_label": "jsdom",
       "source_file": "web/package.json",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
       "id": "oxlint",
@@ -8608,7 +8602,7 @@
       "file_type": "concept",
       "norm_label": "oxlint",
       "source_file": "web/package.json",
-      "source_location": "L28"
+      "source_location": "L29"
     },
     {
       "id": "playwright_test",
@@ -8619,7 +8613,7 @@
       "file_type": "concept",
       "norm_label": "@playwright/test",
       "source_file": "web/package.json",
-      "source_location": "L21"
+      "source_location": "L22"
     },
     {
       "id": "postcss",
@@ -8630,18 +8624,7 @@
       "file_type": "concept",
       "norm_label": "postcss",
       "source_file": "web/package.json",
-      "source_location": "L29"
-    },
-    {
-      "id": "preact",
-      "label": "preact",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "preact",
-      "source_file": "web/package.json",
-      "source_location": "L16"
+      "source_location": "L30"
     },
     {
       "id": "preact_preset_vite",
@@ -8652,7 +8635,7 @@
       "file_type": "concept",
       "norm_label": "@preact/preset-vite",
       "source_file": "web/package.json",
-      "source_location": "L22"
+      "source_location": "L23"
     },
     {
       "id": "tailwindcss",
@@ -8663,7 +8646,7 @@
       "file_type": "concept",
       "norm_label": "tailwindcss",
       "source_file": "web/package.json",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "testing_library_preact",
@@ -8674,18 +8657,18 @@
       "file_type": "concept",
       "norm_label": "@testing-library/preact",
       "source_file": "web/package.json",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
-      "id": "three",
-      "label": "three",
+      "id": "tsx",
+      "label": "tsx",
       "_origin": "ast",
       "community": 7,
       "community_name": "devDependencies",
       "file_type": "concept",
-      "norm_label": "three",
+      "norm_label": "tsx",
       "source_file": "web/package.json",
-      "source_location": "L17"
+      "source_location": "L32"
     },
     {
       "id": "types_node",
@@ -8696,7 +8679,7 @@
       "file_type": "concept",
       "norm_label": "@types/node",
       "source_file": "web/package.json",
-      "source_location": "L24"
+      "source_location": "L25"
     },
     {
       "id": "types_three",
@@ -8707,7 +8690,7 @@
       "file_type": "concept",
       "norm_label": "@types/three",
       "source_file": "web/package.json",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "typescript",
@@ -8718,18 +8701,7 @@
       "file_type": "concept",
       "norm_label": "typescript",
       "source_file": "web/package.json",
-      "source_location": "L31"
-    },
-    {
-      "id": "urdf_loader",
-      "label": "urdf-loader",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "urdf-loader",
-      "source_file": "web/package.json",
-      "source_location": "L18"
+      "source_location": "L33"
     },
     {
       "id": "vite",
@@ -8740,7 +8712,7 @@
       "file_type": "concept",
       "norm_label": "vite",
       "source_file": "web/package.json",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "vitest",
@@ -8751,7 +8723,7 @@
       "file_type": "concept",
       "norm_label": "vitest",
       "source_file": "web/package.json",
-      "source_location": "L33"
+      "source_location": "L35"
     },
     {
       "id": "agents_skills_grilling_skill",
@@ -10567,81 +10539,103 @@
       "source_location": "L7"
     },
     {
-      "id": "web_tests_e2e_harness",
+      "id": "web_tests_e2e_pages_teleoppage",
+      "label": "TeleopPage.ts",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": "teleoppage.ts",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_steps_teleop_steps",
+      "label": "teleop.steps.ts",
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": "teleop.steps.ts",
+      "source_file": "web/tests/e2e/steps/teleop.steps.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_support_harness",
       "label": "harness.ts",
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": "harness.ts",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L1"
     },
     {
-      "id": "web_tests_e2e_harness_dirname",
+      "id": "web_tests_e2e_support_harness_dirname",
       "label": "__dirname",
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": "__dirname",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L7"
     },
     {
-      "id": "web_tests_e2e_harness_filename",
+      "id": "web_tests_e2e_support_harness_filename",
       "label": "__filename",
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": "__filename",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L6"
     },
     {
-      "id": "web_tests_e2e_harness_root_dir",
+      "id": "web_tests_e2e_support_harness_root_dir",
       "label": "ROOT_DIR",
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": "root_dir",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L8"
     },
     {
-      "id": "web_tests_e2e_harness_web_dir",
+      "id": "web_tests_e2e_support_harness_web_dir",
       "label": "WEB_DIR",
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
       "norm_label": "web_dir",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L9"
     },
     {
-      "id": "web_tests_e2e_teleop_spec",
-      "label": "teleop.spec.ts",
+      "id": "web_tests_e2e_support_hooks",
+      "label": "hooks.ts",
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
-      "norm_label": "teleop.spec.ts",
-      "source_file": "web/tests/e2e/teleop.spec.ts",
+      "norm_label": "hooks.ts",
+      "source_file": "web/tests/e2e/support/hooks.ts",
       "source_location": "L1"
     },
     {
-      "id": "web_tests_e2e_teleop_spec_test",
-      "label": "test",
+      "id": "web_tests_e2e_support_world",
+      "label": "world.ts",
       "_origin": "ast",
       "community": 83,
-      "community_name": "ServiceHarness",
+      "community_name": "TeleopPage",
       "file_type": "code",
-      "norm_label": "test",
-      "source_file": "web/tests/e2e/teleop.spec.ts",
-      "source_location": "L4"
+      "norm_label": "world.ts",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L1"
     },
     {
       "id": "web_src_components_teleopclient",
@@ -10778,15 +10772,224 @@
       "source_location": "L1"
     },
     {
-      "id": "web_playwright_config",
-      "label": "playwright.config.ts",
+      "id": "web_package",
+      "label": "package.json",
       "_origin": "ast",
       "community": 86,
-      "community_name": "playwright.config.ts",
+      "community_name": "scripts",
       "file_type": "code",
-      "norm_label": "playwright.config.ts",
-      "source_file": "web/playwright.config.ts",
+      "norm_label": "package.json",
+      "source_file": "web/package.json",
       "source_location": "L1"
+    },
+    {
+      "id": "web_package_dependencies",
+      "label": "dependencies",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "dependencies",
+      "source_file": "web/package.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "web_package_dependencies_preact",
+      "label": "preact",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "preact",
+      "source_file": "web/package.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "web_package_dependencies_three",
+      "label": "three",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "three",
+      "source_file": "web/package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "web_package_dependencies_urdf_loader",
+      "label": "urdf-loader",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "urdf-loader",
+      "source_file": "web/package.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "web_package_name",
+      "label": "name",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "name",
+      "source_file": "web/package.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "web_package_private",
+      "label": "private",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "private",
+      "source_file": "web/package.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_package_scripts",
+      "label": "scripts",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "scripts",
+      "source_file": "web/package.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "web_package_scripts_build",
+      "label": "build",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "build",
+      "source_file": "web/package.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "web_package_scripts_dev",
+      "label": "dev",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "dev",
+      "source_file": "web/package.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "web_package_scripts_lint",
+      "label": "lint",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "lint",
+      "source_file": "web/package.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "web_package_scripts_preview",
+      "label": "preview",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "preview",
+      "source_file": "web/package.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "web_package_scripts_test",
+      "label": "test",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "test",
+      "source_file": "web/package.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "web_package_scripts_test_e2e",
+      "label": "test:e2e",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "test:e2e",
+      "source_file": "web/package.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "web_package_scripts_typecheck",
+      "label": "typecheck",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "typecheck",
+      "source_file": "web/package.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "web_package_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "web/package.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "web_package_version",
+      "label": "version",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "version",
+      "source_file": "web/package.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "preact",
+      "label": "preact",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "concept",
+      "norm_label": "preact",
+      "source_file": "web/package.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "three",
+      "label": "three",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "concept",
+      "norm_label": "three",
+      "source_file": "web/package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "urdf_loader",
+      "label": "urdf-loader",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "concept",
+      "norm_label": "urdf-loader",
+      "source_file": "web/package.json",
+      "source_location": "L18"
     },
     {
       "id": "support_files_specs_phase1_implementation_wireframe",
@@ -11751,51 +11954,51 @@
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness_start",
-      "target": "web_tests_e2e_harness_serviceharness_pollhttp",
+      "source": "web_tests_e2e_support_harness_serviceharness_start",
+      "target": "web_tests_e2e_support_harness_serviceharness_pollhttp",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L122",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness_start",
-      "target": "web_tests_e2e_harness_serviceharness_cleanstaleports",
+      "source": "web_tests_e2e_support_harness_serviceharness_start",
+      "target": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L70",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness_stop",
-      "target": "web_tests_e2e_harness_serviceharness_cleanstaleports",
+      "source": "web_tests_e2e_support_harness_serviceharness_stop",
+      "target": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L155",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_teleop_spec_test",
-      "target": "web_tests_e2e_harness_serviceharness",
+      "source": "web_tests_e2e_support_world_customworld_constructor",
+      "target": "web_tests_e2e_support_harness_serviceharness",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/tests/e2e/teleop.spec.ts",
-      "source_location": "L7",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -12060,6 +12263,54 @@
       "context": "field",
       "source_file": "web/src/components/TeleopClient.tsx",
       "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world_customworld",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world_customworld",
+      "target": "web_tests_e2e_support_harness_serviceharness",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world_icustomworld",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world_icustomworld",
+      "target": "web_tests_e2e_support_harness_serviceharness",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -13235,7 +13486,19 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L26",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_cucumber_cucumber",
+      "target": "cucumber_cucumber",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/package.json",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -13247,7 +13510,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -13259,7 +13522,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -13271,7 +13534,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -13283,7 +13546,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -13295,7 +13558,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -13307,7 +13570,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -13319,7 +13582,19 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L23",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_tsx",
+      "target": "tsx",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/package.json",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -13331,7 +13606,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -13343,7 +13618,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -13355,7 +13630,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -13367,7 +13642,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -13379,7 +13654,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L33",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -13503,15 +13778,87 @@
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_teleop_spec",
-      "target": "web_tests_e2e_harness_serviceharness",
+      "source": "web_tests_e2e_steps_teleop_steps",
+      "target": "web_tests_e2e_support_world_customworld",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/tests/e2e/teleop.spec.ts",
-      "source_location": "L2",
+      "source_file": "web/tests/e2e/steps/teleop.steps.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_steps_teleop_steps",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/teleop.steps.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_hooks",
+      "target": "web_tests_e2e_support_world_customworld",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/hooks.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_hooks",
+      "target": "web_tests_e2e_support_harness_serviceharness",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/hooks.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_hooks",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/hooks.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world",
+      "target": "web_tests_e2e_support_harness_serviceharness",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -13959,15 +14306,87 @@
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_teleop_spec",
-      "target": "web_tests_e2e_harness",
+      "source": "web_tests_e2e_steps_teleop_steps",
+      "target": "web_tests_e2e_support_world",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
-      "source_file": "web/tests/e2e/teleop.spec.ts",
-      "source_location": "L2",
+      "source_file": "web/tests/e2e/steps/teleop.steps.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_steps_teleop_steps",
+      "target": "web_tests_e2e_pages_teleoppage",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/teleop.steps.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_hooks",
+      "target": "web_tests_e2e_support_world",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/hooks.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_hooks",
+      "target": "web_tests_e2e_support_harness",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/hooks.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_hooks",
+      "target": "web_tests_e2e_pages_teleoppage",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/hooks.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world",
+      "target": "web_tests_e2e_support_harness",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world",
+      "target": "web_tests_e2e_pages_teleoppage",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -14364,6 +14783,18 @@
       "context": "return_type",
       "source_file": "src/gateway/src/ws.rs",
       "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world_customworld",
+      "target": "web_tests_e2e_support_world_icustomworld",
+      "relation": "implements",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "type",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -18070,7 +18501,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -18081,7 +18512,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -18092,7 +18523,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -18103,7 +18534,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-hadi--unit-15-playwright-end-to-end-suite-multi-service.md",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -20462,7 +20893,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_playwright_test",
+      "target": "web_package_devdependencies_cucumber_cucumber",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20473,7 +20904,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_preact_preset_vite",
+      "target": "web_package_devdependencies_playwright_test",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20484,7 +20915,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_testing_library_preact",
+      "target": "web_package_devdependencies_preact_preset_vite",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20495,7 +20926,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_types_node",
+      "target": "web_package_devdependencies_testing_library_preact",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20506,7 +20937,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_types_three",
+      "target": "web_package_devdependencies_types_node",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20517,7 +20948,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_autoprefixer",
+      "target": "web_package_devdependencies_types_three",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20528,7 +20959,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_jsdom",
+      "target": "web_package_devdependencies_autoprefixer",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20539,7 +20970,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_oxlint",
+      "target": "web_package_devdependencies_jsdom",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20550,7 +20981,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_postcss",
+      "target": "web_package_devdependencies_oxlint",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20561,7 +20992,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_tailwindcss",
+      "target": "web_package_devdependencies_postcss",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20572,7 +21003,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_typescript",
+      "target": "web_package_devdependencies_tailwindcss",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20583,7 +21014,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_vite",
+      "target": "web_package_devdependencies_tsx",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20594,13 +21025,35 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_vitest",
+      "target": "web_package_devdependencies_typescript",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
       "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_vite",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_vitest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -21000,80 +21453,102 @@
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness",
-      "target": "web_tests_e2e_harness_harnessconfig",
+      "source": "web_tests_e2e_pages_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_harness",
+      "target": "web_tests_e2e_support_harness_harnessconfig",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L11",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness",
-      "target": "web_tests_e2e_harness_serviceharness",
+      "source": "web_tests_e2e_support_harness",
+      "target": "web_tests_e2e_support_harness_serviceharness",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L17",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness",
-      "target": "web_tests_e2e_harness_filename",
+      "source": "web_tests_e2e_support_harness",
+      "target": "web_tests_e2e_support_harness_filename",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L6",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness",
-      "target": "web_tests_e2e_harness_dirname",
+      "source": "web_tests_e2e_support_harness",
+      "target": "web_tests_e2e_support_harness_dirname",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L7",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness",
-      "target": "web_tests_e2e_harness_root_dir",
+      "source": "web_tests_e2e_support_harness",
+      "target": "web_tests_e2e_support_harness_root_dir",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L8",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness",
-      "target": "web_tests_e2e_harness_web_dir",
+      "source": "web_tests_e2e_support_harness",
+      "target": "web_tests_e2e_support_harness_web_dir",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L9",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_teleop_spec",
-      "target": "web_tests_e2e_teleop_spec_test",
+      "source": "web_tests_e2e_support_world",
+      "target": "web_tests_e2e_support_world_customworld",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/teleop.spec.ts",
-      "source_location": "L4",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world",
+      "target": "web_tests_e2e_support_world_icustomworld",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -21907,69 +22382,168 @@
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness",
-      "target": "web_tests_e2e_harness_serviceharness_getcapturedlogs",
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_constructor",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_goto",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectconnectionstatus",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickping",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecteventlogcontains",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectconflictbanner",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_injectrawframe",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecterrordiagnostic",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_getcapturedlogs",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L130",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness",
-      "target": "web_tests_e2e_harness_serviceharness_stop",
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_stop",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L134",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness",
-      "target": "web_tests_e2e_harness_serviceharness_constructor",
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_constructor",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L29",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness",
-      "target": "web_tests_e2e_harness_serviceharness_cleanstaleports",
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L36",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness",
-      "target": "web_tests_e2e_harness_serviceharness_pollhttp",
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_pollhttp",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L44",
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_harness_serviceharness",
-      "target": "web_tests_e2e_harness_serviceharness_start",
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_start",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_world_customworld",
+      "target": "web_tests_e2e_support_world_customworld_constructor",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -22468,30 +23042,6 @@
       "weight": 1.0
     },
     {
-      "source": "web_tests_e2e_teleop_spec_test",
-      "target": "web_tests_e2e_harness_serviceharness_stop",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "context": "call",
-      "source_file": "web/tests/e2e/teleop.spec.ts",
-      "source_location": "L10",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_teleop_spec_test",
-      "target": "web_tests_e2e_harness_serviceharness_start",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "context": "call",
-      "source_file": "web/tests/e2e/teleop.spec.ts",
-      "source_location": "L8",
-      "weight": 1.0
-    },
-    {
       "source": "src_gateway_src_fabric_datafabricport_publish_command",
       "target": "src_gateway_src_domain_robot_command_topic",
       "relation": "calls",
@@ -22866,5 +23416,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1426edc472f2e8412aded73b9c853f16f70378e2"
+  "built_at_commit": "eb70d95fe809e4b2e2b981cd2ab35338652711d3"
 }
