@@ -24,7 +24,17 @@ class JointStateMapper:
             return [self._positions[name] for name in CANONICAL_UR5E_JOINTS]
 
     def update_from_joint_state(self, msg: Any) -> list[float]:
-        """Updates internal joint state from a sensor_msgs/msg/JointState or compatible message."""
+        """Updates internal joint state from a sensor_msgs/msg/JointState or compatible message.
+
+        Args:
+            msg: Inbound message. Accepted types:
+                - sensor_msgs.msg.JointState (ROS2 message with .name and .position)
+                - dict[str, Any] (mapping containing 'name' and 'position' sequences)
+                - Any duck-typed object exposing .name and .position
+
+        Returns:
+            list[float]: Current canonical 6-DoF UR5e joint positions in radians.
+        """
         if hasattr(msg, "name") and hasattr(msg, "position"):
             names = msg.name or []
             positions = msg.position or []
