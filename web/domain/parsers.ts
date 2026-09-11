@@ -2,6 +2,8 @@ import {
   robotCommandSchema,
   robotTelemetryEventSchema,
   errorFrameSchema,
+  robotIdSchema,
+  robotTopicSchema,
 } from './validators';
 import {
   CommandType,
@@ -10,42 +12,29 @@ import {
   type ErrorFrame,
 } from './contracts';
 
-export function parseJsonIfNeeded(input: string | unknown): unknown {
-  if (typeof input === 'string') {
-    return JSON.parse(input);
-  }
-  return input;
-}
-
-function unwrapZod<T>(result: { success: true; data: unknown } | { success: false; error: { issues: Array<{ message: string }> } }): T {
+function unwrapZod<T>(result: {
+  success: true;
+  data: unknown;
+} | {
+  success: false;
+  error: { issues: Array<{ message: string }> };
+}): T {
   if (!result.success) {
     throw new Error(result.error.issues[0]?.message ?? 'Validation failed');
   }
   return result.data as T;
 }
 
-export function parseRobotCommand(input: string | unknown): RobotCommand {
-  const data = parseJsonIfNeeded(input);
-  if (!data || typeof data !== 'object') {
-    throw new Error('RobotCommand payload must be an object');
-  }
-  return unwrapZod<RobotCommand>(robotCommandSchema.safeParse(data));
+export function parseRobotCommand(input: unknown): RobotCommand {
+  return unwrapZod<RobotCommand>(robotCommandSchema.safeParse(input));
 }
 
-export function parseRobotTelemetryEvent(input: string | unknown): RobotTelemetryEvent {
-  const data = parseJsonIfNeeded(input);
-  if (!data || typeof data !== 'object') {
-    throw new Error('RobotTelemetryEvent payload must be an object');
-  }
-  return unwrapZod<RobotTelemetryEvent>(robotTelemetryEventSchema.safeParse(data));
+export function parseRobotTelemetryEvent(input: unknown): RobotTelemetryEvent {
+  return unwrapZod<RobotTelemetryEvent>(robotTelemetryEventSchema.safeParse(input));
 }
 
-export function parseErrorFrame(input: string | unknown): ErrorFrame {
-  const data = parseJsonIfNeeded(input);
-  if (!data || typeof data !== 'object') {
-    throw new Error('ErrorFrame payload must be an object');
-  }
-  return unwrapZod<ErrorFrame>(errorFrameSchema.safeParse(data));
+export function parseErrorFrame(input: unknown): ErrorFrame {
+  return unwrapZod<ErrorFrame>(errorFrameSchema.safeParse(input));
 }
 
 export function createPingCommand(params?: {
@@ -72,34 +61,19 @@ export function serializeCommand(cmd: RobotCommand): string {
   );
 }
 
-function validateRobotId(robotId: string): void {
-  if (!robotId || robotId.includes('/') || robotId.includes('\\') || robotId.includes(' ')) {
-    throw new Error(`Invalid robot ID '${robotId}': must be non-empty and not contain slashes or whitespace`);
-  }
-}
-
 export function robotCommandTopic(robotId: string): string {
-  validateRobotId(robotId);
-  return `robot/${robotId}/command`;
+  const validId = robotIdSchema.parse(robotId);
+  return `robot/${validId}/command`;
 }
 
 export function robotTelemetryTopic(robotId: string): string {
-  validateRobotId(robotId);
-  return `robot/${robotId}/telemetry`;
+  const validId = robotIdSchema.parse(robotId);
+  return `robot/${validId}/telemetry`;
 }
 
 export function parseRobotTopic(
   topic: string
 ): { robotId: string; channel: 'command' | 'telemetry' } | null {
-  const parts = topic.split('/');
-  if (parts.length !== 3 || parts[0] !== 'robot' || !parts[1]) {
-    return null;
-  }
-  if (parts[2] !== 'command' && parts[2] !== 'telemetry') {
-    return null;
-  }
-  return {
-    robotId: parts[1],
-    channel: parts[2] as 'command' | 'telemetry',
-  };
+  const result = robotTopicSchema.safeParse(topic);
+  return result.success ? result.data : null;
 }
