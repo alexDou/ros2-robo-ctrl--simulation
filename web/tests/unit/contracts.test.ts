@@ -2,6 +2,11 @@ import { describe, it, expect } from 'vitest';
 import {
   CommandType,
   RobotState,
+  UR5E_JOINTS,
+  CANONICAL_UR5E_JOINTS,
+  type UR5eJoint,
+} from '@contracts';
+import {
   parseRobotCommand,
   parseRobotTelemetryEvent,
   parseErrorFrame,
@@ -9,10 +14,15 @@ import {
   robotTelemetryTopic,
   parseRobotTopic,
   createPingCommand,
-  UR5E_JOINTS,
-  CANONICAL_UR5E_JOINTS,
-  type UR5eJoint,
-} from '@contracts';
+} from '@domain/parsers';
+import {
+  isRobotCommand,
+  isRobotTelemetryEvent,
+  isErrorFrame,
+  robotCommandSchema,
+  robotTelemetryEventSchema,
+  errorFrameSchema,
+} from '@domain/validators';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
   describe('RobotCommand', () => {
@@ -246,22 +256,64 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 
   describe('Canonical JSON Schemas', () => {
     it('matches schema definitions for core contracts', async () => {
-      const robotCommandSchema = await import('@schemas/robot_command.schema.json');
-      const robotTelemetrySchema = await import('@schemas/robot_telemetry_event.schema.json');
-      const errorFrameSchema = await import('@schemas/error_frame.schema.json');
+      const rawCmdSchema = await import('@schemas/robot_command.schema.json');
+      const rawTelemSchema = await import('@schemas/robot_telemetry_event.schema.json');
+      const rawErrorSchema = await import('@schemas/error_frame.schema.json');
 
-      expect(robotCommandSchema.title).toBe('RobotCommand');
-      expect(robotCommandSchema.properties.type.enum).toContain('PING');
+      expect(rawCmdSchema.title).toBe('RobotCommand');
+      expect(rawCmdSchema.properties.type.enum).toContain('PING');
 
-      expect(robotTelemetrySchema.title).toBe('RobotTelemetryEvent');
-      expect(robotTelemetrySchema.properties.joint_positions.minItems).toBe(6);
-      expect(robotTelemetrySchema.properties.joint_positions.maxItems).toBe(6);
-      expect(robotTelemetrySchema.properties.timestamp_ns.minimum).toBe(0);
-      expect(robotTelemetrySchema.$defs.canonical_joints.enum).toEqual(UR5E_JOINTS);
+      expect(rawTelemSchema.title).toBe('RobotTelemetryEvent');
+      expect(rawTelemSchema.properties.joint_positions.minItems).toBe(6);
+      expect(rawTelemSchema.properties.joint_positions.maxItems).toBe(6);
+      expect(rawTelemSchema.properties.timestamp_ns.minimum).toBe(0);
+      expect(rawTelemSchema.$defs.canonical_joints.enum).toEqual(UR5E_JOINTS);
 
-      expect(errorFrameSchema.title).toBe('ErrorFrame');
-      expect(errorFrameSchema.properties.type.const).toBe('ERROR');
+      expect(rawErrorSchema.title).toBe('ErrorFrame');
+      expect(rawErrorSchema.properties.type.const).toBe('ERROR');
+    });
+  });
+
+  describe('Zod Validators & Type Guards', () => {
+    it('validates with Zod schemas and type guards', () => {
+      const validTelem = {
+        timestamp_ns: 1000,
+        robot_state: 'IDLE',
+        joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      };
+      expect(isRobotTelemetryEvent(validTelem)).toBe(true);
+      expect(isRobotTelemetryEvent(JSON.stringify(validTelem))).toBe(true);
+      expect(robotTelemetryEventSchema.safeParse(validTelem).success).toBe(true);
+
+      const invalidTelem = {
+        timestamp_ns: -1,
+        robot_state: 'IDLE',
+        joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      };
+      expect(isRobotTelemetryEvent(invalidTelem)).toBe(false);
+
+      const validCmd = {
+        command_id: 'cmd-1',
+        sender_id: 'ui',
+        timestamp_ns: '1000',
+        type: 'PING',
+        payload: {},
+      };
+      expect(isRobotCommand(validCmd)).toBe(true);
+      expect(robotCommandSchema.safeParse(validCmd).success).toBe(true);
+      expect(isRobotCommand({ type: 'UNKNOWN' })).toBe(false);
+
+      const validErr = {
+        type: 'ERROR',
+        error_code: 'BAD_REQUEST',
+        message: 'Something broke',
+        timestamp_ns: 500,
+      };
+      expect(isErrorFrame(validErr)).toBe(true);
+      expect(errorFrameSchema.safeParse(validErr).success).toBe(true);
+      expect(isErrorFrame({ type: 'INFO' })).toBe(false);
     });
   });
 });
+
 
