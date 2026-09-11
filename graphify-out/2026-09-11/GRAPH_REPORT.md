@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-11)
 
 ## Corpus Check
-- 149 files · ~59,892 words
+- 148 files · ~61,104 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1049 nodes · 1218 edges · 97 communities (63 shown, 15 thin omitted)
+- 1056 nodes · 1219 edges · 97 communities (63 shown, 15 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1decf261`
+- Built from commit: `55dfe474`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -80,7 +80,7 @@
 - EdgeNode
 - error_frame.schema.json
 - TeleopPage
-- validators.ts
+- contracts.ts
 - structure.md
 - scripts
 - hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md
@@ -208,8 +208,8 @@ Cohesion: 0.22
 Nodes (8): Further Notes, Implementation Decisions, Out of Scope, Problem Statement, Process, Solution, Testing Decisions, User Stories
 
 ### Community 21 - "generate_domain.py"
-Cohesion: 0.23
-Nodes (13): ConstantDef, DomainIR, emit_python(), emit_rust(), emit_typescript(), EnumDef, FieldDef, FixedArrayDef (+5 more)
+Cohesion: 0.26
+Nodes (16): ConstantDef, DomainIR, emit_python(), emit_rust(), emit_typescript(), EnumDef, FieldDef, FixedArrayDef (+8 more)
 
 ### Community 22 - "<Questionnaire title>"
 Cohesion: 0.25
@@ -331,9 +331,9 @@ Nodes (28): error_code, message, additionalProperties, description, description,
 Cohesion: 0.12
 Nodes (9): TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR, CustomWorld (+1 more)
 
-### Community 84 - "validators.ts"
-Cohesion: 0.08
-Nodes (44): ArmJointPositions, CANONICAL_UR5E_JOINTS, CommandType, ErrorFrame, InferenceMetrics, RobotCommand, RobotState, RobotTelemetryEvent (+36 more)
+### Community 84 - "contracts.ts"
+Cohesion: 0.06
+Nodes (50): ArmJointPositions, armJointPositionsSchema, CANONICAL_UR5E_JOINTS, CommandType, commandTypeSchema, ErrorFrame, errorFrameSchema, InferenceMetrics (+42 more)
 
 ### Community 86 - "scripts"
 Cohesion: 0.09
@@ -376,8 +376,8 @@ Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ## Knowledge Gaps
-- **542 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+537 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 654 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **545 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+540 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 655 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -390,7 +390,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 7 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
-  _542 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _545 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**

@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789158571.6522613,
-    "seen": 1789158680.4874737,
-    "ast_hash": "2b7cb3f6dfceb39be1a5d11ee51491a9",
+    "mtime": 1789160981.7376254,
+    "seen": 1789161070.0862243,
+    "ast_hash": "8afd067149ed081c4363a155440855aa",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
-    "mtime": 1789158613.745597,
-    "seen": 1789158680.4884052,
-    "ast_hash": "8f625e0ab1b64a655b31e10c24596419",
+    "mtime": 1789161041.095474,
+    "seen": 1789161070.0866308,
+    "ast_hash": "e23037ce094d3aad852419ffa9ccfb52",
     "semantic_hash": ""
   },
   "web/tests/unit/env.test.ts": {
@@ -930,9 +930,9 @@
     "semantic_hash": ""
   },
   "scripts/generate_domain.py": {
-    "mtime": 1789158474.1726136,
-    "seen": 1789158680.485868,
-    "ast_hash": "fbe67058910c83e68fd573dbc1327293",
+    "mtime": 1789160945.5976293,
+    "seen": 1789161070.085491,
+    "ast_hash": "6ae7c8cc252886242956faa1fcd294d5",
     "semantic_hash": ""
   },
   "src/domain/__init__.py": {
@@ -942,21 +942,21 @@
     "semantic_hash": ""
   },
   "src/domain/domain.py": {
-    "mtime": 1789158476.4833431,
-    "seen": 1789158680.4859934,
+    "mtime": 1789160949.784515,
+    "seen": 1789161070.085574,
     "ast_hash": "0700452ca937247f5a51baba90990c00",
     "semantic_hash": ""
   },
   "src/domain/domain.rs": {
-    "mtime": 1789158476.4828517,
-    "seen": 1789158680.4859955,
+    "mtime": 1789160949.7841356,
+    "seen": 1789161070.085575,
     "ast_hash": "9e3f815a87fcc21082e95baef0b1b5ea",
     "semantic_hash": ""
   },
   "web/domain/contracts.ts": {
-    "mtime": 1789158476.4836433,
-    "seen": 1789158680.4874518,
-    "ast_hash": "07c80c2ca2b830be261795c645f7e9b8",
+    "mtime": 1789160949.784727,
+    "seen": 1789161070.0861397,
+    "ast_hash": "2e465c595bf35dbfa45a38483eb873b8",
     "semantic_hash": ""
   },
   "support_files/specs/units.md": {
@@ -1014,21 +1014,15 @@
     "semantic_hash": ""
   },
   "web/domain/index.ts": {
-    "mtime": 1789158503.3436105,
-    "seen": 1789158680.487456,
-    "ast_hash": "3a548a278351d58ac561eff00e444399",
+    "mtime": 1789161293.5895915,
+    "seen": 1789161314.7523098,
+    "ast_hash": "a6e5cda13e386c97746fa51ebcc5bb22",
     "semantic_hash": ""
   },
   "web/domain/parsers.ts": {
-    "mtime": 1789159653.5797698,
-    "seen": 1789159679.022824,
-    "ast_hash": "40aed638e876cc4b496797eb73df56a4",
-    "semantic_hash": ""
-  },
-  "web/domain/validators.ts": {
-    "mtime": 1789159656.7367697,
-    "seen": 1789159679.0228293,
-    "ast_hash": "9b88236389cde4f25929eab1a51c65c5",
+    "mtime": 1789161193.3478467,
+    "seen": 1789161314.7523124,
+    "ast_hash": "eb6f773865d2a22de403bb8bf2fb04e1",
     "semantic_hash": ""
   }
 }
