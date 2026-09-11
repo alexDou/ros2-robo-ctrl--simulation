@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-11)
 
 ## Corpus Check
-- 149 files · ~59,892 words
+- 148 files · ~59,877 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1049 nodes · 1218 edges · 97 communities (63 shown, 15 thin omitted)
+- 1045 nodes · 1214 edges · 97 communities (63 shown, 15 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1decf261`
+- Built from commit: `9a64c194`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -80,7 +80,7 @@
 - EdgeNode
 - error_frame.schema.json
 - TeleopPage
-- validators.ts
+- contracts.test.ts
 - structure.md
 - scripts
 - hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md
@@ -331,9 +331,9 @@ Nodes (28): error_code, message, additionalProperties, description, description,
 Cohesion: 0.12
 Nodes (9): TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR, CustomWorld (+1 more)
 
-### Community 84 - "validators.ts"
-Cohesion: 0.08
-Nodes (44): ArmJointPositions, CANONICAL_UR5E_JOINTS, CommandType, ErrorFrame, InferenceMetrics, RobotCommand, RobotState, RobotTelemetryEvent (+36 more)
+### Community 84 - "contracts.test.ts"
+Cohesion: 0.09
+Nodes (41): ArmJointPositions, CANONICAL_UR5E_JOINTS, CommandType, ErrorFrame, InferenceMetrics, RobotCommand, RobotState, RobotTelemetryEvent (+33 more)
 
 ### Community 86 - "scripts"
 Cohesion: 0.09
@@ -376,24 +376,24 @@ Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ## Knowledge Gaps
-- **542 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+537 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 654 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **539 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+534 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 650 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `properties` connect `joint_positions` to `robot_telemetry_event.schema.json`, `inference_metrics`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `inference_metrics` connect `inference_metrics` to `joint_positions`?**
-  _High betweenness centrality (0.007) - this node is a cross-community bridge._
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
-  _542 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _539 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**
   _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
 - **Should `teach/SKILL.md` be split into smaller, more focused modules?**
   _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
+- **Should `Process` be split into smaller, more focused modules?**
+  _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._
