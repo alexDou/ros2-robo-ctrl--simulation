@@ -1019,22 +1019,16 @@
     "ast_hash": "3a548a278351d58ac561eff00e444399",
     "semantic_hash": ""
   },
-  "web/domain/parser.ts": {
-    "mtime": 1789158503.3416104,
-    "seen": 1789158680.4874578,
-    "ast_hash": "8958d085102abb8d393a762f21ea910d",
-    "semantic_hash": ""
-  },
   "web/domain/parsers.ts": {
-    "mtime": 1789159264.7477713,
-    "seen": 1789159287.1867726,
+    "mtime": 1789159653.5797698,
+    "seen": 1789159679.022824,
     "ast_hash": "40aed638e876cc4b496797eb73df56a4",
     "semantic_hash": ""
   },
   "web/domain/validators.ts": {
-    "mtime": 1789159257.4504225,
-    "seen": 1789159287.1867855,
-    "ast_hash": "86c54c7e67370daf0585de2b71910e52",
+    "mtime": 1789159656.7367697,
+    "seen": 1789159679.0228293,
+    "ast_hash": "9b88236389cde4f25929eab1a51c65c5",
     "semantic_hash": ""
   }
 }
