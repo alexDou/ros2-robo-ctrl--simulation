@@ -4,6 +4,84 @@
   "graph": {},
   "nodes": [
     {
+      "id": "scripts_generate_domain_constantdef",
+      "label": "ConstantDef",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "constantdef",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "scripts_generate_domain_domainir",
+      "label": "DomainIR",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "domainir",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L76"
+    },
+    {
+      "id": "scripts_generate_domain_enumdef",
+      "label": "EnumDef",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "enumdef",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L30"
+    },
+    {
+      "id": "scripts_generate_domain_fielddef",
+      "label": "FieldDef",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "fielddef",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L54"
+    },
+    {
+      "id": "scripts_generate_domain_fixedarraydef",
+      "label": "FixedArrayDef",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "fixedarraydef",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L46"
+    },
+    {
+      "id": "scripts_generate_domain_modeldef",
+      "label": "ModelDef",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "modeldef",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L67"
+    },
+    {
       "id": "src_domain_domain_py_src_domain_domain_commandtype",
       "label": "CommandType",
       "_callable": true,
@@ -27,7 +105,7 @@
       "file_type": "code",
       "norm_label": "errorframe",
       "source_file": "src/domain/domain.py",
-      "source_location": "L87"
+      "source_location": "L64"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_inferencemetrics",
@@ -40,7 +118,7 @@
       "file_type": "code",
       "norm_label": "inferencemetrics",
       "source_file": "src/domain/domain.py",
-      "source_location": "L53"
+      "source_location": "L54"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_robotcommand",
@@ -53,7 +131,7 @@
       "file_type": "code",
       "norm_label": "robotcommand",
       "source_file": "src/domain/domain.py",
-      "source_location": "L63"
+      "source_location": "L75"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_robotstate",
@@ -79,7 +157,7 @@
       "file_type": "code",
       "norm_label": "robottelemetryevent",
       "source_file": "src/domain/domain.py",
-      "source_location": "L75"
+      "source_location": "L87"
     },
     {
       "id": "src_edge_node_node_edgenode",
@@ -196,7 +274,7 @@
       "file_type": "code",
       "norm_label": "errorframe",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L63"
+      "source_location": "L47"
     },
     {
       "id": "web_domain_contracts_inferencemetrics",
@@ -222,7 +300,7 @@
       "file_type": "code",
       "norm_label": "robotcommand",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L47"
+      "source_location": "L54"
     },
     {
       "id": "web_domain_contracts_robotstate",
@@ -248,7 +326,7 @@
       "file_type": "code",
       "norm_label": "robottelemetryevent",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L55"
+      "source_location": "L62"
     },
     {
       "id": "web_domain_contracts_ur5ejoint",
@@ -316,52 +394,40 @@
       "source_location": "L7"
     },
     {
-      "id": "scripts_generate_domain_generate_python",
-      "label": "generate_python()",
+      "id": "scripts_generate_domain_emit_python",
+      "label": "emit_python()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "generate_domain.py",
       "file_type": "code",
-      "norm_label": "generate_python()",
+      "norm_label": "emit_python()",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L206"
+      "source_location": "L480"
     },
     {
-      "id": "scripts_generate_domain_generate_rust",
-      "label": "generate_rust()",
+      "id": "scripts_generate_domain_emit_rust",
+      "label": "emit_rust()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "generate_domain.py",
       "file_type": "code",
-      "norm_label": "generate_rust()",
+      "norm_label": "emit_rust()",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L26"
+      "source_location": "L277"
     },
     {
-      "id": "scripts_generate_domain_generate_typescript",
-      "label": "generate_typescript()",
+      "id": "scripts_generate_domain_emit_typescript",
+      "label": "emit_typescript()",
       "_callable": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "generate_domain.py",
       "file_type": "code",
-      "norm_label": "generate_typescript()",
+      "norm_label": "emit_typescript()",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L325"
-    },
-    {
-      "id": "scripts_generate_domain_load_schemas",
-      "label": "load_schemas()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "generate_domain.py",
-      "file_type": "code",
-      "norm_label": "load_schemas()",
-      "source_file": "scripts/generate_domain.py",
-      "source_location": "L16"
+      "source_location": "L615"
     },
     {
       "id": "scripts_generate_domain_main",
@@ -373,7 +439,31 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L609"
+      "source_location": "L863"
+    },
+    {
+      "id": "scripts_generate_domain_parse_schemas",
+      "label": "parse_schemas()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "parse_schemas()",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L84"
+    },
+    {
+      "id": "scripts_generate_domain_to_camel_case",
+      "label": "to_camel_case()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "to_camel_case()",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L19"
     },
     {
       "id": "scripts_generate_domain_to_pascal_case",
@@ -385,7 +475,19 @@
       "file_type": "code",
       "norm_label": "to_pascal_case()",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L12"
+      "source_location": "L15"
+    },
+    {
+      "id": "scripts_generate_domain_to_snake_case",
+      "label": "to_snake_case()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "generate_domain.py",
+      "file_type": "code",
+      "norm_label": "to_snake_case()",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L24"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
@@ -397,7 +499,7 @@
       "file_type": "code",
       "norm_label": "parse_robot_topic()",
       "source_file": "src/domain/domain.py",
-      "source_location": "L115"
+      "source_location": "L116"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_robot_command_topic",
@@ -409,7 +511,7 @@
       "file_type": "code",
       "norm_label": "robot_command_topic()",
       "source_file": "src/domain/domain.py",
-      "source_location": "L103"
+      "source_location": "L104"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
@@ -421,7 +523,7 @@
       "file_type": "code",
       "norm_label": "robot_telemetry_topic()",
       "source_file": "src/domain/domain.py",
-      "source_location": "L109"
+      "source_location": "L110"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_validate_robot_id",
@@ -433,7 +535,7 @@
       "file_type": "code",
       "norm_label": "_validate_robot_id()",
       "source_file": "src/domain/domain.py",
-      "source_location": "L98"
+      "source_location": "L99"
     },
     {
       "id": "src_edge_node_main_main",
@@ -865,7 +967,7 @@
       "file_type": "code",
       "norm_label": "iserrorframe()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L266"
+      "source_location": "L138"
     },
     {
       "id": "web_domain_contracts_isrobotcommand",
@@ -877,7 +979,7 @@
       "file_type": "code",
       "norm_label": "isrobotcommand()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L275"
+      "source_location": "L178"
     },
     {
       "id": "web_domain_contracts_isrobottelemetryevent",
@@ -889,7 +991,7 @@
       "file_type": "code",
       "norm_label": "isrobottelemetryevent()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L257"
+      "source_location": "L231"
     },
     {
       "id": "web_domain_contracts_parseerrorframe",
@@ -901,7 +1003,7 @@
       "file_type": "code",
       "norm_label": "parseerrorframe()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L193"
+      "source_location": "L109"
     },
     {
       "id": "web_domain_contracts_parsejsonifneeded",
@@ -925,7 +1027,7 @@
       "file_type": "code",
       "norm_label": "parserobotcommand()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L109"
+      "source_location": "L147"
     },
     {
       "id": "web_domain_contracts_parserobottelemetryevent",
@@ -937,7 +1039,7 @@
       "file_type": "code",
       "norm_label": "parserobottelemetryevent()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L142"
+      "source_location": "L187"
     },
     {
       "id": "web_domain_contracts_parserobottopic",
@@ -949,7 +1051,7 @@
       "file_type": "code",
       "norm_label": "parserobottopic()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L235"
+      "source_location": "L256"
     },
     {
       "id": "web_domain_contracts_parsetimestampns",
@@ -973,7 +1075,7 @@
       "file_type": "code",
       "norm_label": "robotcommandtopic()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L225"
+      "source_location": "L246"
     },
     {
       "id": "web_domain_contracts_robottelemetrytopic",
@@ -985,7 +1087,7 @@
       "file_type": "code",
       "norm_label": "robottelemetrytopic()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L230"
+      "source_location": "L251"
     },
     {
       "id": "web_domain_contracts_serializecommand",
@@ -997,7 +1099,7 @@
       "file_type": "code",
       "norm_label": "serializecommand()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L251"
+      "source_location": "L272"
     },
     {
       "id": "web_domain_contracts_validaterobotid",
@@ -1009,7 +1111,7 @@
       "file_type": "code",
       "norm_label": "validaterobotid()",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L219"
+      "source_location": "L240"
     },
     {
       "id": "web_src_components_teleopclient_teleopclient",
@@ -7330,7 +7432,7 @@
       "file_type": "code",
       "norm_label": "additionalproperties",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L93"
+      "source_location": "L100"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_canonical_joints_description",
@@ -7341,7 +7443,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L23"
+      "source_location": "L27"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_canonical_joints_enum",
@@ -7352,7 +7454,18 @@
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
+      "source_location": "L19"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L16"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_canonical_joints_type",
@@ -7363,7 +7476,29 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L14"
+      "source_location": "L15"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_alias",
+      "label": "x-constant-alias",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "x-constant-alias",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_name",
+      "label": "x-constant-name",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "x-constant-name",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L17"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_defs",
@@ -7374,7 +7509,7 @@
       "file_type": "code",
       "norm_label": "$defs",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L12"
+      "source_location": "L13"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_defs_canonical_joints",
@@ -7385,7 +7520,7 @@
       "file_type": "code",
       "norm_label": "canonical_joints",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_description",
@@ -7396,7 +7531,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L5"
+      "source_location": "L6"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_id",
@@ -7418,7 +7553,7 @@
       "file_type": "code",
       "norm_label": "required",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_schema",
@@ -7451,7 +7586,18 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L6"
+      "source_location": "L7"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_x_datafabric_channel",
+      "label": "x-datafabric-channel",
+      "_origin": "ast",
+      "community": 50,
+      "community_name": "robot_telemetry_event.schema.json",
+      "file_type": "code",
+      "norm_label": "x-datafabric-channel",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L5"
     },
     {
       "id": "ref_elbow_joint",
@@ -7462,7 +7608,7 @@
       "file_type": "concept",
       "norm_label": "elbow_joint",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
+      "source_location": "L19"
     },
     {
       "id": "ref_joint_positions",
@@ -7473,7 +7619,7 @@
       "file_type": "concept",
       "norm_label": "joint_positions",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "ref_robot_state",
@@ -7484,7 +7630,7 @@
       "file_type": "concept",
       "norm_label": "robot_state",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "ref_shoulder_lift_joint",
@@ -7495,7 +7641,7 @@
       "file_type": "concept",
       "norm_label": "shoulder_lift_joint",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
+      "source_location": "L19"
     },
     {
       "id": "ref_shoulder_pan_joint",
@@ -7506,7 +7652,7 @@
       "file_type": "concept",
       "norm_label": "shoulder_pan_joint",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
+      "source_location": "L19"
     },
     {
       "id": "ref_wrist_1_joint",
@@ -7517,7 +7663,7 @@
       "file_type": "concept",
       "norm_label": "wrist_1_joint",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
+      "source_location": "L19"
     },
     {
       "id": "ref_wrist_2_joint",
@@ -7528,7 +7674,7 @@
       "file_type": "concept",
       "norm_label": "wrist_2_joint",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
+      "source_location": "L19"
     },
     {
       "id": "ref_wrist_3_joint",
@@ -7539,7 +7685,7 @@
       "file_type": "concept",
       "norm_label": "wrist_3_joint",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
+      "source_location": "L19"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_json_ref_timestamp_ns",
@@ -7550,7 +7696,7 @@
       "file_type": "concept",
       "norm_label": "timestamp_ns",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "agents_agents_sim_auditor",
@@ -8691,7 +8837,7 @@
       "file_type": "code",
       "norm_label": "additionalproperties",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L46"
+      "source_location": "L48"
     },
     {
       "id": "schemas_robot_command_schema_command_id_description",
@@ -8702,7 +8848,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L18"
+      "source_location": "L19"
     },
     {
       "id": "schemas_robot_command_schema_command_id_format",
@@ -8713,7 +8859,7 @@
       "file_type": "code",
       "norm_label": "format",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "schemas_robot_command_schema_command_id_type",
@@ -8724,7 +8870,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L16"
+      "source_location": "L17"
     },
     {
       "id": "schemas_robot_command_schema_description",
@@ -8735,7 +8881,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L5"
+      "source_location": "L6"
     },
     {
       "id": "schemas_robot_command_schema_id",
@@ -8757,7 +8903,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L43"
+      "source_location": "L45"
     },
     {
       "id": "schemas_robot_command_schema_payload_type",
@@ -8768,7 +8914,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L42"
+      "source_location": "L44"
     },
     {
       "id": "schemas_robot_command_schema_properties",
@@ -8779,7 +8925,7 @@
       "file_type": "code",
       "norm_label": "properties",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L14"
+      "source_location": "L15"
     },
     {
       "id": "schemas_robot_command_schema_properties_command_id",
@@ -8790,7 +8936,7 @@
       "file_type": "code",
       "norm_label": "command_id",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
       "id": "schemas_robot_command_schema_properties_payload",
@@ -8801,7 +8947,7 @@
       "file_type": "code",
       "norm_label": "payload",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L41"
+      "source_location": "L43"
     },
     {
       "id": "schemas_robot_command_schema_properties_sender_id",
@@ -8812,7 +8958,7 @@
       "file_type": "code",
       "norm_label": "sender_id",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L20"
+      "source_location": "L21"
     },
     {
       "id": "schemas_robot_command_schema_properties_timestamp_ns",
@@ -8823,7 +8969,7 @@
       "file_type": "code",
       "norm_label": "timestamp_ns",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "schemas_robot_command_schema_properties_type",
@@ -8834,7 +8980,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "schemas_robot_command_schema_required",
@@ -8845,7 +8991,7 @@
       "file_type": "code",
       "norm_label": "required",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "schemas_robot_command_schema_schema",
@@ -8867,7 +9013,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
       "id": "schemas_robot_command_schema_sender_id_minlength",
@@ -8878,7 +9024,7 @@
       "file_type": "code",
       "norm_label": "minlength",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L22"
+      "source_location": "L23"
     },
     {
       "id": "schemas_robot_command_schema_sender_id_type",
@@ -8889,7 +9035,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L21"
+      "source_location": "L22"
     },
     {
       "id": "schemas_robot_command_schema_timestamp_ns_description",
@@ -8900,7 +9046,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L28"
+      "source_location": "L29"
     },
     {
       "id": "schemas_robot_command_schema_timestamp_ns_minimum",
@@ -8911,7 +9057,7 @@
       "file_type": "code",
       "norm_label": "minimum",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
       "id": "schemas_robot_command_schema_timestamp_ns_type",
@@ -8922,7 +9068,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "schemas_robot_command_schema_title",
@@ -8944,7 +9090,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L6"
+      "source_location": "L7"
     },
     {
       "id": "schemas_robot_command_schema_type_description",
@@ -8955,7 +9101,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L39"
+      "source_location": "L41"
     },
     {
       "id": "schemas_robot_command_schema_type_enum",
@@ -8966,7 +9112,18 @@
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32"
+      "source_location": "L34"
+    },
+    {
+      "id": "schemas_robot_command_schema_type_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "robot_command.schema.json",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L33"
     },
     {
       "id": "schemas_robot_command_schema_type_type",
@@ -8977,7 +9134,18 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L31"
+      "source_location": "L32"
+    },
+    {
+      "id": "schemas_robot_command_schema_x_datafabric_channel",
+      "label": "x-datafabric-channel",
+      "_origin": "ast",
+      "community": 79,
+      "community_name": "robot_command.schema.json",
+      "file_type": "code",
+      "norm_label": "x-datafabric-channel",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L5"
     },
     {
       "id": "ref_command_id",
@@ -8988,7 +9156,7 @@
       "file_type": "concept",
       "norm_label": "command_id",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "ref_emergency_stop",
@@ -8999,7 +9167,7 @@
       "file_type": "concept",
       "norm_label": "emergency_stop",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "ref_payload",
@@ -9010,7 +9178,7 @@
       "file_type": "concept",
       "norm_label": "payload",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "ref_ping",
@@ -9021,7 +9189,7 @@
       "file_type": "concept",
       "norm_label": "ping",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "ref_reset_fault",
@@ -9032,7 +9200,7 @@
       "file_type": "concept",
       "norm_label": "reset_fault",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "ref_sender_id",
@@ -9043,7 +9211,7 @@
       "file_type": "concept",
       "norm_label": "sender_id",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "ref_teleop_joint_target",
@@ -9054,7 +9222,7 @@
       "file_type": "concept",
       "norm_label": "teleop_joint_target",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "ref_trajectory_execute",
@@ -9065,7 +9233,7 @@
       "file_type": "concept",
       "norm_label": "trajectory_execute",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32"
+      "source_location": "L34"
     },
     {
       "id": "schemas_robot_command_schema_json_ref_timestamp_ns",
@@ -9076,7 +9244,7 @@
       "file_type": "concept",
       "norm_label": "timestamp_ns",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "schemas_robot_command_schema_json_ref_type",
@@ -9087,7 +9255,7 @@
       "file_type": "concept",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "agents_skills_improve_codebase_architecture_skill",
@@ -9343,7 +9511,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L90"
+      "source_location": "L97"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_command_id_type",
@@ -9354,139 +9522,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L89"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L78"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_maximum",
-      "label": "maximum",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "maximum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L77"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_minimum",
-      "label": "minimum",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "minimum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L76"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L75"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L83"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_minlength",
-      "label": "minLength",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "minlength",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L82"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L81"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_additionalproperties",
-      "label": "additionalProperties",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "additionalproperties",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L86"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L62"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
-      "label": "properties",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "properties",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L68"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_required",
-      "label": "required",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "required",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L61"
+      "source_location": "L96"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_items_type",
@@ -9497,7 +9533,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L55"
+      "source_location": "L61"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_joint_positions_description",
@@ -9508,7 +9544,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L45"
+      "source_location": "L51"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_joint_positions_items",
@@ -9519,7 +9555,7 @@
       "file_type": "code",
       "norm_label": "items",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L54"
+      "source_location": "L60"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_joint_positions_maxitems",
@@ -9530,7 +9566,7 @@
       "file_type": "code",
       "norm_label": "maxitems",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L58"
+      "source_location": "L64"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_joint_positions_minitems",
@@ -9541,7 +9577,7 @@
       "file_type": "code",
       "norm_label": "minitems",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L57"
+      "source_location": "L63"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_joint_positions_prefixitems",
@@ -9552,7 +9588,18 @@
       "file_type": "code",
       "norm_label": "prefixitems",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L46"
+      "source_location": "L52"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L50"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_joint_positions_type",
@@ -9563,40 +9610,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L44"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L72"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_minimum",
-      "label": "minimum",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "minimum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L71"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L70"
+      "source_location": "L49"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_properties",
@@ -9607,7 +9621,7 @@
       "file_type": "code",
       "norm_label": "properties",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L26"
+      "source_location": "L30"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_properties_command_id",
@@ -9618,40 +9632,7 @@
       "file_type": "code",
       "norm_label": "command_id",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L88"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_confidence",
-      "label": "confidence",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "confidence",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L74"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_detected_object",
-      "label": "detected_object",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "detected_object",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L80"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
-      "label": "inference_metrics",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "inference_metrics",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L60"
+      "source_location": "L95"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_properties_joint_positions",
@@ -9662,18 +9643,7 @@
       "file_type": "code",
       "norm_label": "joint_positions",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L43"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_latency_ms",
-      "label": "latency_ms",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "latency_ms",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L69"
+      "source_location": "L48"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_properties_robot_state",
@@ -9684,7 +9654,7 @@
       "file_type": "code",
       "norm_label": "robot_state",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L32"
+      "source_location": "L36"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_properties_timestamp_ns",
@@ -9695,7 +9665,7 @@
       "file_type": "code",
       "norm_label": "timestamp_ns",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L27"
+      "source_location": "L31"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_robot_state_description",
@@ -9706,7 +9676,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L41"
+      "source_location": "L46"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_robot_state_enum",
@@ -9717,7 +9687,18 @@
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34"
+      "source_location": "L39"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_robot_state_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 80,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L38"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_robot_state_type",
@@ -9728,7 +9709,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L33"
+      "source_location": "L37"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_timestamp_ns_description",
@@ -9739,7 +9720,7 @@
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L30"
+      "source_location": "L34"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_timestamp_ns_minimum",
@@ -9750,7 +9731,7 @@
       "file_type": "code",
       "norm_label": "minimum",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L29"
+      "source_location": "L33"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_timestamp_ns_type",
@@ -9761,7 +9742,7 @@
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L28"
+      "source_location": "L32"
     },
     {
       "id": "ref_booting",
@@ -9772,29 +9753,7 @@
       "file_type": "concept",
       "norm_label": "booting",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "ref_confidence",
-      "label": "confidence",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "concept",
-      "norm_label": "confidence",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63"
-    },
-    {
-      "id": "ref_detected_object",
-      "label": "detected_object",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "concept",
-      "norm_label": "detected_object",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63"
+      "source_location": "L39"
     },
     {
       "id": "ref_executing",
@@ -9805,7 +9764,7 @@
       "file_type": "concept",
       "norm_label": "executing",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34"
+      "source_location": "L39"
     },
     {
       "id": "ref_fault",
@@ -9816,7 +9775,7 @@
       "file_type": "concept",
       "norm_label": "fault",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34"
+      "source_location": "L39"
     },
     {
       "id": "ref_idle",
@@ -9827,18 +9786,7 @@
       "file_type": "concept",
       "norm_label": "idle",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "ref_latency_ms",
-      "label": "latency_ms",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "concept",
-      "norm_label": "latency_ms",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63"
+      "source_location": "L39"
     },
     {
       "id": "ref_processing",
@@ -9849,7 +9797,7 @@
       "file_type": "concept",
       "norm_label": "processing",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34"
+      "source_location": "L39"
     },
     {
       "id": "any",
@@ -9996,17 +9944,17 @@
     },
     {
       "id": "src_domain_domain_rationale_10",
-      "label": "Permitted operational command types for the EdgeNode.",
+      "label": "Operational command type",
       "_origin": "ast",
       "community": 81,
       "community_name": "EdgeNode",
       "file_type": "rationale",
-      "norm_label": "permitted operational command types for the edgenode.",
+      "norm_label": "operational command type",
       "source_file": "src/domain/domain.py",
       "source_location": "L10"
     },
     {
-      "id": "src_domain_domain_rationale_104",
+      "id": "src_domain_domain_rationale_105",
       "label": "Returns the locked DataFabric command key expression for a robot.",
       "_origin": "ast",
       "community": 81,
@@ -10014,10 +9962,10 @@
       "file_type": "rationale",
       "norm_label": "returns the locked datafabric command key expression for a robot.",
       "source_file": "src/domain/domain.py",
-      "source_location": "L104"
+      "source_location": "L105"
     },
     {
-      "id": "src_domain_domain_rationale_110",
+      "id": "src_domain_domain_rationale_111",
       "label": "Returns the locked DataFabric telemetry key expression for a robot.",
       "_origin": "ast",
       "community": 81,
@@ -10025,10 +9973,10 @@
       "file_type": "rationale",
       "norm_label": "returns the locked datafabric telemetry key expression for a robot.",
       "source_file": "src/domain/domain.py",
-      "source_location": "L110"
+      "source_location": "L111"
     },
     {
-      "id": "src_domain_domain_rationale_116",
+      "id": "src_domain_domain_rationale_117",
       "label": "Parses a DataFabric key expression into (robot_id, channel) or returns None if\u2026",
       "_origin": "ast",
       "community": 81,
@@ -10036,60 +9984,60 @@
       "file_type": "rationale",
       "norm_label": "parses a datafabric key expression into (robot_id, channel) or returns none if...",
       "source_file": "src/domain/domain.py",
-      "source_location": "L116"
+      "source_location": "L117"
     },
     {
       "id": "src_domain_domain_rationale_20",
-      "label": "Operational lifecycle state of the robotic manipulator.",
+      "label": "Current lifecycle state of the robotic manipulator",
       "_origin": "ast",
       "community": 81,
       "community_name": "EdgeNode",
       "file_type": "rationale",
-      "norm_label": "operational lifecycle state of the robotic manipulator.",
+      "norm_label": "current lifecycle state of the robotic manipulator",
       "source_file": "src/domain/domain.py",
       "source_location": "L20"
     },
     {
-      "id": "src_domain_domain_rationale_54",
-      "label": "Inference performance and classification metrics from Edge AI models.",
+      "id": "src_domain_domain_rationale_55",
+      "label": "Edge AI inference latency and object classification metrics",
       "_origin": "ast",
       "community": 81,
       "community_name": "EdgeNode",
       "file_type": "rationale",
-      "norm_label": "inference performance and classification metrics from edge ai models.",
+      "norm_label": "edge ai inference latency and object classification metrics",
       "source_file": "src/domain/domain.py",
-      "source_location": "L54"
+      "source_location": "L55"
     },
     {
-      "id": "src_domain_domain_rationale_64",
-      "label": "Structured inbound instruction sent to EdgeNode.",
+      "id": "src_domain_domain_rationale_65",
+      "label": "Canonical schema for structured error frames returned by Gateway over WebSocket",
       "_origin": "ast",
       "community": 81,
       "community_name": "EdgeNode",
       "file_type": "rationale",
-      "norm_label": "structured inbound instruction sent to edgenode.",
+      "norm_label": "canonical schema for structured error frames returned by gateway over websocket",
       "source_file": "src/domain/domain.py",
-      "source_location": "L64"
+      "source_location": "L65"
     },
     {
       "id": "src_domain_domain_rationale_76",
-      "label": "Structured domain event emitted by EdgeNode.",
+      "label": "Canonical schema for inbound commands sent to EdgeNode over WebSocket or\u2026",
       "_origin": "ast",
       "community": 81,
       "community_name": "EdgeNode",
       "file_type": "rationale",
-      "norm_label": "structured domain event emitted by edgenode.",
+      "norm_label": "canonical schema for inbound commands sent to edgenode over websocket or...",
       "source_file": "src/domain/domain.py",
       "source_location": "L76"
     },
     {
       "id": "src_domain_domain_rationale_88",
-      "label": "Structured error message sent by Gateway on schema or validation errors.",
+      "label": "Canonical schema for outbound telemetry events emitted by EdgeNode over\u2026",
       "_origin": "ast",
       "community": 81,
       "community_name": "EdgeNode",
       "file_type": "rationale",
-      "norm_label": "structured error message sent by gateway on schema or validation errors.",
+      "norm_label": "canonical schema for outbound telemetry events emitted by edgenode over...",
       "source_file": "src/domain/domain.py",
       "source_location": "L88"
     },
@@ -11110,7 +11058,7 @@
       "file_type": "code",
       "norm_label": "deserialize_finite_joints()",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L70"
+      "source_location": "L52"
     },
     {
       "id": "src_domain_domain_domainerror",
@@ -11132,7 +11080,7 @@
       "file_type": "code",
       "norm_label": ".new()",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L130"
+      "source_location": "L97"
     },
     {
       "id": "src_domain_domain_robottelemetryevent_validate",
@@ -11143,7 +11091,7 @@
       "file_type": "code",
       "norm_label": ".validate()",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L103"
+      "source_location": "L135"
     },
     {
       "id": "src_domain_domain_rs_error",
@@ -11209,7 +11157,7 @@
       "file_type": "code",
       "norm_label": "errorframe",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L121"
+      "source_location": "L88"
     },
     {
       "id": "src_domain_domain_rs_src_domain_domain_inferencemetrics",
@@ -11220,7 +11168,7 @@
       "file_type": "code",
       "norm_label": "inferencemetrics",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L54"
+      "source_location": "L80"
     },
     {
       "id": "src_domain_domain_rs_src_domain_domain_parse_robot_topic",
@@ -11264,7 +11212,7 @@
       "file_type": "code",
       "norm_label": "robotcommand",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L62"
+      "source_location": "L109"
     },
     {
       "id": "src_domain_domain_rs_src_domain_domain_robotstate",
@@ -11286,7 +11234,7 @@
       "file_type": "code",
       "norm_label": "robottelemetryevent",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L87"
+      "source_location": "L119"
     },
     {
       "id": "src_domain_domain_rs_src_domain_domain_validate_robot_id",
@@ -11319,7 +11267,7 @@
       "file_type": "code",
       "norm_label": "validate_joint_positions()",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L112"
+      "source_location": "L71"
     },
     {
       "id": "src_gateway_tests_domain_contract_test",
@@ -11874,6 +11822,259 @@
       "norm_label": "unit 4: bidirectional teleoperation & state machine",
       "source_file": "support_files/specs/units.md",
       "source_location": "L62"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L85"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_maximum",
+      "label": "maximum",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "maximum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L84"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_minimum",
+      "label": "minimum",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "minimum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L83"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L82"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L90"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_minlength",
+      "label": "minLength",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "minlength",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L89"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L88"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_additionalproperties",
+      "label": "additionalProperties",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "additionalproperties",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L93"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L69"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
+      "label": "properties",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "properties",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L75"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_required",
+      "label": "required",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "required",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L70"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L68"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L67"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L79"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_minimum",
+      "label": "minimum",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "minimum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L78"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L77"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_confidence",
+      "label": "confidence",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "confidence",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L81"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_detected_object",
+      "label": "detected_object",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "detected_object",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L87"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
+      "label": "inference_metrics",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "inference_metrics",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L66"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_latency_ms",
+      "label": "latency_ms",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "code",
+      "norm_label": "latency_ms",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L76"
+    },
+    {
+      "id": "ref_confidence",
+      "label": "confidence",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "concept",
+      "norm_label": "confidence",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L70"
+    },
+    {
+      "id": "ref_detected_object",
+      "label": "detected_object",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "concept",
+      "norm_label": "detected_object",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L70"
+    },
+    {
+      "id": "ref_latency_ms",
+      "label": "latency_ms",
+      "_origin": "ast",
+      "community": 90,
+      "community_name": "inference_metrics",
+      "file_type": "concept",
+      "norm_label": "latency_ms",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L70"
     },
     {
       "id": "beans_hand_sim_1o1z_unit_21_edgenode_robust_jointstate_extraction_hybr",
@@ -12506,7 +12707,7 @@
       "weight": 1.0
     },
     {
-      "source": "scripts_generate_domain_generate_rust",
+      "source": "scripts_generate_domain_emit_rust",
       "target": "scripts_generate_domain_to_pascal_case",
       "relation": "calls",
       "_origin": "ast",
@@ -12514,7 +12715,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L33",
+      "source_location": "L302",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_emit_typescript",
+      "target": "scripts_generate_domain_to_snake_case",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L740",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_emit_typescript",
+      "target": "scripts_generate_domain_to_pascal_case",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L824",
       "weight": 1.0
     },
     {
@@ -12526,55 +12751,103 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L614",
+      "source_location": "L868",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain_main",
-      "target": "scripts_generate_domain_load_schemas",
+      "target": "scripts_generate_domain_parse_schemas",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L621",
+      "source_location": "L875",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain_main",
-      "target": "scripts_generate_domain_generate_rust",
+      "target": "scripts_generate_domain_emit_rust",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L623",
+      "source_location": "L877",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain_main",
-      "target": "scripts_generate_domain_generate_python",
+      "target": "scripts_generate_domain_emit_python",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L624",
+      "source_location": "L878",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain_main",
-      "target": "scripts_generate_domain_generate_typescript",
+      "target": "scripts_generate_domain_emit_typescript",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L625",
+      "source_location": "L879",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_parse_schemas",
+      "target": "scripts_generate_domain_to_pascal_case",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L242",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_parse_schemas",
+      "target": "scripts_generate_domain_constantdef",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_parse_schemas",
+      "target": "scripts_generate_domain_enumdef",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_parse_schemas",
+      "target": "scripts_generate_domain_domainir",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -12586,7 +12859,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/domain/domain.py",
-      "source_location": "L105",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -12598,7 +12871,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/domain/domain.py",
-      "source_location": "L111",
+      "source_location": "L112",
       "weight": 1.0
     },
     {
@@ -12610,7 +12883,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L104",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -12778,7 +13051,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L268",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -12790,7 +13063,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L277",
+      "source_location": "L180",
       "weight": 1.0
     },
     {
@@ -12802,35 +13075,11 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L259",
+      "source_location": "L233",
       "weight": 1.0
     },
     {
       "source": "web_domain_contracts_parseerrorframe",
-      "target": "web_domain_contracts_parsejsonifneeded",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L194",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts_parseerrorframe",
-      "target": "web_domain_contracts_parsetimestampns",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L209",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts_parserobotcommand",
       "target": "web_domain_contracts_parsejsonifneeded",
       "relation": "calls",
       "_origin": "ast",
@@ -12842,6 +13091,30 @@
       "weight": 1.0
     },
     {
+      "source": "web_domain_contracts_parseerrorframe",
+      "target": "web_domain_contracts_parsetimestampns",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_contracts_parserobotcommand",
+      "target": "web_domain_contracts_parsejsonifneeded",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L148",
+      "weight": 1.0
+    },
+    {
       "source": "web_domain_contracts_parserobotcommand",
       "target": "web_domain_contracts_parsetimestampns",
       "relation": "calls",
@@ -12850,7 +13123,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L122",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -12862,7 +13135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L143",
+      "source_location": "L188",
       "weight": 1.0
     },
     {
@@ -12874,7 +13147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L149",
+      "source_location": "L194",
       "weight": 1.0
     },
     {
@@ -12886,7 +13159,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L226",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
@@ -12898,7 +13171,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L231",
+      "source_location": "L252",
       "weight": 1.0
     },
     {
@@ -13090,7 +13363,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L124",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -13102,7 +13375,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L57",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -13114,7 +13387,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L64",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -13126,7 +13399,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L66",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -13138,7 +13411,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L67",
+      "source_location": "L114",
       "weight": 1.0
     },
     {
@@ -13150,7 +13423,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L89",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -13162,7 +13435,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L95",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -13366,7 +13639,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L70",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -13378,7 +13651,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L130",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -13390,7 +13663,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L103",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -13462,7 +13735,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L93",
+      "source_location": "L125",
       "weight": 1.0
     },
     {
@@ -13474,7 +13747,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L95",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -13498,7 +13771,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L112",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -13966,7 +14239,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -13978,7 +14251,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -13990,7 +14263,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -14002,7 +14275,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -14014,7 +14287,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -14026,7 +14299,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -14038,7 +14311,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -14050,7 +14323,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -14062,7 +14335,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -14074,7 +14347,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -14086,7 +14359,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -14098,7 +14371,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -14110,7 +14383,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -14122,7 +14395,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -14134,7 +14407,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -14146,7 +14419,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -14158,7 +14431,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -14170,7 +14443,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -14182,7 +14455,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -14194,7 +14467,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -14206,7 +14479,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -14218,7 +14491,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -14230,7 +14503,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -14242,7 +14515,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -14254,7 +14527,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -14266,7 +14539,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -14278,7 +14551,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -15482,7 +15755,43 @@
       "weight": 1.0
     },
     {
-      "source": "scripts_generate_domain_load_schemas",
+      "source": "scripts_generate_domain_emit_python",
+      "target": "scripts_generate_domain_domainir",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L480",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_emit_rust",
+      "target": "scripts_generate_domain_domainir",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L277",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_emit_typescript",
+      "target": "scripts_generate_domain_domainir",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L615",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain_parse_schemas",
       "target": "scripts_generate_domain_py_path",
       "relation": "references",
       "_origin": "ast",
@@ -15490,7 +15799,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L16",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -15502,7 +15811,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L70",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -15514,7 +15823,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L130",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -15634,7 +15943,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L70",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -15646,7 +15955,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L130",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -15658,7 +15967,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L103",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -15718,7 +16027,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/domain/domain.rs",
-      "source_location": "L112",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
@@ -20451,7 +20760,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -20495,12 +20804,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L46",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
       "source": "schemas_robot_command_schema",
-      "target": "schemas_robot_command_schema_description",
+      "target": "schemas_robot_command_schema_x_datafabric_channel",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20511,7 +20820,7 @@
     },
     {
       "source": "schemas_robot_command_schema",
-      "target": "schemas_robot_command_schema_type",
+      "target": "schemas_robot_command_schema_description",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20522,13 +20831,24 @@
     },
     {
       "source": "schemas_robot_command_schema",
-      "target": "schemas_robot_command_schema_required",
+      "target": "schemas_robot_command_schema_type",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_command_schema",
+      "target": "schemas_robot_command_schema_required",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -20539,7 +20859,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -20550,7 +20870,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -20561,7 +20881,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -20572,7 +20892,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -20583,7 +20903,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L41",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -20594,7 +20914,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -20605,7 +20925,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -20616,7 +20936,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -20627,7 +20947,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L42",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -20638,7 +20958,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L43",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -20649,7 +20969,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -20660,7 +20980,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -20671,7 +20991,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -20682,7 +21002,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -20693,7 +21013,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -20704,7 +21024,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -20715,7 +21035,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L31",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_command_schema_properties_type",
+      "target": "schemas_robot_command_schema_type_title",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -20726,7 +21057,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L32",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -20737,7 +21068,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L39",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema",
+      "target": "schemas_robot_telemetry_event_schema_additionalproperties",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
@@ -20748,7 +21090,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -20764,17 +21106,6 @@
     },
     {
       "source": "schemas_robot_telemetry_event_schema",
-      "target": "schemas_robot_telemetry_event_schema_properties",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L26",
-      "weight": 1.0
-    },
-    {
-      "source": "schemas_robot_telemetry_event_schema",
       "target": "schemas_robot_telemetry_event_schema_id",
       "relation": "contains",
       "_origin": "ast",
@@ -20782,6 +21113,17 @@
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema",
+      "target": "schemas_robot_telemetry_event_schema_properties",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -20797,7 +21139,7 @@
     },
     {
       "source": "schemas_robot_telemetry_event_schema",
-      "target": "schemas_robot_telemetry_event_schema_description",
+      "target": "schemas_robot_telemetry_event_schema_x_datafabric_channel",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20808,7 +21150,7 @@
     },
     {
       "source": "schemas_robot_telemetry_event_schema",
-      "target": "schemas_robot_telemetry_event_schema_type",
+      "target": "schemas_robot_telemetry_event_schema_description",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20819,7 +21161,7 @@
     },
     {
       "source": "schemas_robot_telemetry_event_schema",
-      "target": "schemas_robot_telemetry_event_schema_required",
+      "target": "schemas_robot_telemetry_event_schema_type",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20830,13 +21172,13 @@
     },
     {
       "source": "schemas_robot_telemetry_event_schema",
-      "target": "schemas_robot_telemetry_event_schema_additionalproperties",
+      "target": "schemas_robot_telemetry_event_schema_required",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L93",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -20847,7 +21189,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -20858,7 +21200,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L14",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_defs_canonical_joints",
+      "target": "schemas_robot_telemetry_event_schema_canonical_joints_title",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_defs_canonical_joints",
+      "target": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_name",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_defs_canonical_joints",
+      "target": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_alias",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -20869,7 +21244,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -20880,7 +21255,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L23",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -20891,7 +21266,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L69",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -20902,7 +21277,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L74",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -20913,7 +21288,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L80",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -20924,7 +21299,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L55",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -20935,7 +21310,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L27",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -20946,7 +21321,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L32",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -20957,7 +21332,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L43",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -20968,7 +21343,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L60",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -20979,7 +21354,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L88",
+      "source_location": "L95",
       "weight": 1.0
     },
     {
@@ -20990,7 +21365,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L89",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -21001,7 +21376,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L90",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -21012,7 +21387,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L75",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
@@ -21023,7 +21398,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L76",
+      "source_location": "L83",
       "weight": 1.0
     },
     {
@@ -21034,7 +21409,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L77",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -21045,7 +21420,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L78",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -21056,7 +21431,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L81",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -21067,7 +21442,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L82",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -21078,7 +21453,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L83",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -21089,34 +21464,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L61",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
       "source": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
-      "target": "schemas_robot_telemetry_event_schema_inference_metrics_description",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L62",
-      "weight": 1.0
-    },
-    {
-      "source": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
-      "target": "schemas_robot_telemetry_event_schema_inference_metrics_required",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63",
-      "weight": 1.0
-    },
-    {
-      "source": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
-      "target": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
+      "target": "schemas_robot_telemetry_event_schema_inference_metrics_title",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -21127,13 +21480,46 @@
     },
     {
       "source": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
+      "target": "schemas_robot_telemetry_event_schema_inference_metrics_description",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
+      "target": "schemas_robot_telemetry_event_schema_inference_metrics_required",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
+      "target": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_properties_inference_metrics",
       "target": "schemas_robot_telemetry_event_schema_inference_metrics_additionalproperties",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L86",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -21144,7 +21530,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L44",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_properties_joint_positions",
+      "target": "schemas_robot_telemetry_event_schema_joint_positions_title",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -21155,7 +21552,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L45",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -21166,7 +21563,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L46",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -21177,7 +21574,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L54",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -21188,7 +21585,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L57",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -21199,7 +21596,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L58",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -21210,7 +21607,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L70",
+      "source_location": "L77",
       "weight": 1.0
     },
     {
@@ -21221,7 +21618,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L71",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -21232,7 +21629,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L72",
+      "source_location": "L79",
       "weight": 1.0
     },
     {
@@ -21243,7 +21640,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L33",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "schemas_robot_telemetry_event_schema_properties_robot_state",
+      "target": "schemas_robot_telemetry_event_schema_robot_state_title",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -21254,7 +21662,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -21265,7 +21673,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L41",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -21276,7 +21684,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L28",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -21287,7 +21695,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L29",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -21298,7 +21706,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L30",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -21309,51 +21717,139 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L12",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain",
-      "target": "scripts_generate_domain_load_schemas",
+      "target": "scripts_generate_domain_to_camel_case",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L16",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain",
-      "target": "scripts_generate_domain_generate_python",
+      "target": "scripts_generate_domain_to_snake_case",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L206",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain",
-      "target": "scripts_generate_domain_generate_rust",
+      "target": "scripts_generate_domain_emit_rust",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L26",
+      "source_location": "L277",
       "weight": 1.0
     },
     {
       "source": "scripts_generate_domain",
-      "target": "scripts_generate_domain_generate_typescript",
+      "target": "scripts_generate_domain_enumdef",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L325",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_constantdef",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_fixedarraydef",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_emit_python",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L480",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_fielddef",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_emit_typescript",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L615",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_modeldef",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_domainir",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_parse_schemas",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
@@ -21364,7 +21860,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L609",
+      "source_location": "L863",
       "weight": 1.0
     },
     {
@@ -21375,7 +21871,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L103",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -21386,7 +21882,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L109",
+      "source_location": "L110",
       "weight": 1.0
     },
     {
@@ -21397,7 +21893,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L115",
+      "source_location": "L116",
       "weight": 1.0
     },
     {
@@ -21419,7 +21915,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L53",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "src_domain_domain_py_src_domain_domain",
+      "target": "src_domain_domain_py_src_domain_domain_errorframe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/domain/domain.py",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -21430,23 +21937,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L63",
-      "weight": 1.0
-    },
-    {
-      "source": "src_domain_domain_py_src_domain_domain",
-      "target": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/domain/domain.py",
       "source_location": "L75",
       "weight": 1.0
     },
     {
       "source": "src_domain_domain_py_src_domain_domain",
-      "target": "src_domain_domain_py_src_domain_domain_errorframe",
+      "target": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -21474,29 +21970,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L98",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
       "source": "src_domain_domain_rs_src_domain_domain",
-      "target": "src_domain_domain_validate_joint_positions",
+      "target": "src_domain_domain_rs_src_domain_domain_robotcommand",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.rs",
-      "source_location": "L112",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
       "source": "src_domain_domain_rs_src_domain_domain",
-      "target": "src_domain_domain_rs_src_domain_domain_errorframe",
+      "target": "src_domain_domain_rs_src_domain_domain_robottelemetryevent",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.rs",
-      "source_location": "L121",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -21567,24 +22063,13 @@
     },
     {
       "source": "src_domain_domain_rs_src_domain_domain",
-      "target": "src_domain_domain_rs_src_domain_domain_inferencemetrics",
+      "target": "src_domain_domain_deserialize_finite_joints",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.rs",
-      "source_location": "L54",
-      "weight": 1.0
-    },
-    {
-      "source": "src_domain_domain_rs_src_domain_domain",
-      "target": "src_domain_domain_rs_src_domain_domain_robotcommand",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/domain/domain.rs",
-      "source_location": "L62",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -21600,24 +22085,35 @@
     },
     {
       "source": "src_domain_domain_rs_src_domain_domain",
-      "target": "src_domain_domain_deserialize_finite_joints",
+      "target": "src_domain_domain_validate_joint_positions",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.rs",
-      "source_location": "L70",
+      "source_location": "L71",
       "weight": 1.0
     },
     {
       "source": "src_domain_domain_rs_src_domain_domain",
-      "target": "src_domain_domain_rs_src_domain_domain_robottelemetryevent",
+      "target": "src_domain_domain_rs_src_domain_domain_inferencemetrics",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.rs",
-      "source_location": "L87",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "src_domain_domain_rs_src_domain_domain",
+      "target": "src_domain_domain_rs_src_domain_domain_errorframe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/domain/domain.rs",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -22480,13 +22976,24 @@
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parserobotcommand",
+      "target": "web_domain_contracts_parseerrorframe",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
       "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_contracts",
+      "target": "web_domain_contracts_iserrorframe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L138",
       "weight": 1.0
     },
     {
@@ -22502,68 +23009,46 @@
     },
     {
       "source": "web_domain_contracts",
+      "target": "web_domain_contracts_parserobotcommand",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_contracts",
+      "target": "web_domain_contracts_isrobotcommand",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_contracts",
       "target": "web_domain_contracts_parserobottelemetryevent",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L142",
+      "source_location": "L187",
       "weight": 1.0
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parseerrorframe",
+      "target": "web_domain_contracts_isrobottelemetryevent",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L193",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_validaterobotid",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L219",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_robotcommandtopic",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L225",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_robottelemetrytopic",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L230",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parserobottopic",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L235",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -22579,7 +23064,29 @@
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_serializecommand",
+      "target": "web_domain_contracts_validaterobotid",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L240",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_contracts",
+      "target": "web_domain_contracts_robotcommandtopic",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_contracts",
+      "target": "web_domain_contracts_robottelemetrytopic",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -22590,13 +23097,13 @@
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_isrobottelemetryevent",
+      "target": "web_domain_contracts_parserobottopic",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L257",
+      "source_location": "L256",
       "weight": 1.0
     },
     {
@@ -22612,24 +23119,13 @@
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_iserrorframe",
+      "target": "web_domain_contracts_serializecommand",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L266",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_isrobotcommand",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L275",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -22678,7 +23174,7 @@
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_robotcommand",
+      "target": "web_domain_contracts_errorframe",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -22689,24 +23185,24 @@
     },
     {
       "source": "web_domain_contracts",
+      "target": "web_domain_contracts_robotcommand",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_contracts",
       "target": "web_domain_contracts_robottelemetryevent",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L55",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_errorframe",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L63",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -23866,7 +24362,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L87",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -23877,7 +24373,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L53",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -23888,7 +24384,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L63",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -23921,7 +24417,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L75",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -23932,7 +24428,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.rs",
-      "source_location": "L130",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -23943,7 +24439,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.rs",
-      "source_location": "L103",
+      "source_location": "L135",
       "weight": 1.0
     },
     {
@@ -24387,36 +24883,36 @@
       "weight": 1.0
     },
     {
-      "source": "src_domain_domain_rationale_104",
+      "source": "src_domain_domain_rationale_105",
       "target": "src_domain_domain_py_src_domain_domain_robot_command_topic",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L104",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
-      "source": "src_domain_domain_rationale_110",
+      "source": "src_domain_domain_rationale_111",
       "target": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L110",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
-      "source": "src_domain_domain_rationale_116",
+      "source": "src_domain_domain_rationale_117",
       "target": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L116",
+      "source_location": "L117",
       "weight": 1.0
     },
     {
@@ -24431,30 +24927,30 @@
       "weight": 1.0
     },
     {
-      "source": "src_domain_domain_rationale_54",
+      "source": "src_domain_domain_rationale_55",
       "target": "src_domain_domain_py_src_domain_domain_inferencemetrics",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L54",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
-      "source": "src_domain_domain_rationale_64",
-      "target": "src_domain_domain_py_src_domain_domain_robotcommand",
+      "source": "src_domain_domain_rationale_65",
+      "target": "src_domain_domain_py_src_domain_domain_errorframe",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/domain/domain.py",
-      "source_location": "L64",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
       "source": "src_domain_domain_rationale_76",
-      "target": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
+      "target": "src_domain_domain_py_src_domain_domain_robotcommand",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -24465,7 +24961,7 @@
     },
     {
       "source": "src_domain_domain_rationale_88",
-      "target": "src_domain_domain_py_src_domain_domain_errorframe",
+      "target": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",

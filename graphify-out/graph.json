@@ -4,6 +4,19 @@
   "graph": {},
   "nodes": [
     {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket",
+      "label": "MockWebSocket",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 100,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": "mockwebsocket",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L7"
+    },
+    {
       "id": "scripts_generate_domain_constantdef",
       "label": "ConstantDef",
       "_callable": true,
@@ -244,7 +257,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "armjointpositions",
       "source_file": "web/domain/contracts.ts",
@@ -257,7 +270,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "commandtype",
       "source_file": "web/domain/contracts.ts",
@@ -270,7 +283,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "errorframe",
       "source_file": "web/domain/contracts.ts",
@@ -283,7 +296,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "inferencemetrics",
       "source_file": "web/domain/contracts.ts",
@@ -296,7 +309,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "robotcommand",
       "source_file": "web/domain/contracts.ts",
@@ -309,7 +322,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "robotstate",
       "source_file": "web/domain/contracts.ts",
@@ -322,7 +335,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "robottelemetryevent",
       "source_file": "web/domain/contracts.ts",
@@ -335,7 +348,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "ur5ejoint",
       "source_file": "web/domain/contracts.ts",
@@ -348,11 +361,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "connectionstate",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L12"
+      "source_location": "L7"
     },
     {
       "id": "web_src_components_teleopclient_logentry",
@@ -361,11 +374,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "logentry",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L14"
+      "source_location": "L9"
     },
     {
       "id": "web_src_components_teleopclient_teleopclientprops",
@@ -374,24 +387,83 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "teleopclientprops",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L21"
+      "source_location": "L16"
     },
     {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket",
-      "label": "MockWebSocket",
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_close",
+      "label": ".close()",
       "_callable": true,
-      "_callable_class": true,
       "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
+      "community": 100,
+      "community_name": "MockWebSocket",
       "file_type": "code",
-      "norm_label": "mockwebsocket",
+      "norm_label": ".close()",
       "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L7"
+      "source_location": "L29"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 100,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L20"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_send",
+      "label": ".send()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 100,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".send()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L25"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateerrorandclose",
+      "label": ".simulateErrorAndClose()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 100,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".simulateerrorandclose()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L49"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulatemessage",
+      "label": ".simulateMessage()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 100,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".simulatemessage()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L43"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateopen",
+      "label": ".simulateOpen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 100,
+      "community_name": "MockWebSocket",
+      "file_type": "code",
+      "norm_label": ".simulateopen()",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L36"
     },
     {
       "id": "scripts_generate_domain_emit_python",
@@ -439,7 +511,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L863"
+      "source_location": "L673"
     },
     {
       "id": "scripts_generate_domain_parse_schemas",
@@ -946,172 +1018,184 @@
       "source_location": "L29"
     },
     {
-      "id": "web_domain_contracts_createpingcommand",
+      "id": "web_domain_parsers_createpingcommand",
       "label": "createPingCommand()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "createpingcommand()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L70"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L51"
     },
     {
-      "id": "web_domain_contracts_iserrorframe",
-      "label": "isErrorFrame()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "iserrorframe()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L138"
-    },
-    {
-      "id": "web_domain_contracts_isrobotcommand",
-      "label": "isRobotCommand()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "isrobotcommand()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L178"
-    },
-    {
-      "id": "web_domain_contracts_isrobottelemetryevent",
-      "label": "isRobotTelemetryEvent()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "isrobottelemetryevent()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L231"
-    },
-    {
-      "id": "web_domain_contracts_parseerrorframe",
+      "id": "web_domain_parsers_parseerrorframe",
       "label": "parseErrorFrame()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "parseerrorframe()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L109"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L43"
     },
     {
-      "id": "web_domain_contracts_parsejsonifneeded",
+      "id": "web_domain_parsers_parsejsonifneeded",
       "label": "parseJsonIfNeeded()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "parsejsonifneeded()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L84"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L13"
     },
     {
-      "id": "web_domain_contracts_parserobotcommand",
+      "id": "web_domain_parsers_parserobotcommand",
       "label": "parseRobotCommand()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "parserobotcommand()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L147"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L27"
     },
     {
-      "id": "web_domain_contracts_parserobottelemetryevent",
+      "id": "web_domain_parsers_parserobottelemetryevent",
       "label": "parseRobotTelemetryEvent()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "parserobottelemetryevent()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L187"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L35"
     },
     {
-      "id": "web_domain_contracts_parserobottopic",
+      "id": "web_domain_parsers_parserobottopic",
       "label": "parseRobotTopic()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "parserobottopic()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L256"
-    },
-    {
-      "id": "web_domain_contracts_parsetimestampns",
-      "label": "parseTimestampNs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "parsetimestampns()",
-      "source_file": "web/domain/contracts.ts",
+      "source_file": "web/domain/parsers.ts",
       "source_location": "L91"
     },
     {
-      "id": "web_domain_contracts_robotcommandtopic",
+      "id": "web_domain_parsers_robotcommandtopic",
       "label": "robotCommandTopic()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "robotcommandtopic()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L246"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L81"
     },
     {
-      "id": "web_domain_contracts_robottelemetrytopic",
+      "id": "web_domain_parsers_robottelemetrytopic",
       "label": "robotTelemetryTopic()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "robottelemetrytopic()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L251"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L86"
     },
     {
-      "id": "web_domain_contracts_serializecommand",
+      "id": "web_domain_parsers_serializecommand",
       "label": "serializeCommand()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "serializecommand()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L272"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L69"
     },
     {
-      "id": "web_domain_contracts_validaterobotid",
+      "id": "web_domain_parsers_unwrapzod",
+      "label": "unwrapZod()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "unwrapzod()",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "web_domain_parsers_validaterobotid",
       "label": "validateRobotId()",
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "validaterobotid()",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L240"
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L75"
+    },
+    {
+      "id": "web_domain_validators_iserrorframe",
+      "label": "isErrorFrame()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "iserrorframe()",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L117"
+    },
+    {
+      "id": "web_domain_validators_isrobotcommand",
+      "label": "isRobotCommand()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "isrobotcommand()",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L107"
+    },
+    {
+      "id": "web_domain_validators_isrobottelemetryevent",
+      "label": "isRobotTelemetryEvent()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "isrobottelemetryevent()",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L112"
+    },
+    {
+      "id": "web_domain_validators_safeparsejson",
+      "label": "safeParseJson()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "safeparsejson()",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L96"
     },
     {
       "id": "web_src_components_teleopclient_teleopclient",
@@ -1119,11 +1203,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "teleopclient()",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L26"
+      "source_location": "L21"
     },
     {
       "id": "web_src_main_app",
@@ -1131,7 +1215,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "app()",
       "source_file": "web/src/main.tsx",
@@ -1143,7 +1227,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "isbrowser()",
       "source_file": "web/src/utils/env.ts",
@@ -1155,7 +1239,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "getallparams()",
       "source_file": "web/src/utils/url.ts",
@@ -1167,83 +1251,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "getparam()",
       "source_file": "web/src/utils/url.ts",
       "source_location": "L39"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_close",
-      "label": ".close()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".close()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L29"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L20"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_send",
-      "label": ".send()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".send()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L25"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateerrorandclose",
-      "label": ".simulateErrorAndClose()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".simulateerrorandclose()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L49"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulatemessage",
-      "label": ".simulateMessage()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".simulatemessage()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L43"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test_mockwebsocket_simulateopen",
-      "label": ".simulateOpen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": ".simulateopen()",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L36"
     },
     {
       "id": "web_tests_unit_url_test_setwindowsearch",
@@ -1251,7 +1263,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "setwindowsearch()",
       "source_file": "web/tests/unit/url.test.ts",
@@ -2283,6 +2295,50 @@
       "norm_label": "write_env()",
       "source_file": ".agents/skills/wizard/template.sh",
       "source_location": "L130"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_required",
+      "label": "required",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "required",
+      "file_type": "code",
+      "norm_label": "required",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "ref_joint_positions",
+      "label": "joint_positions",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "joint_positions",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "ref_robot_state",
+      "label": "robot_state",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "robot_state",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_json_ref_timestamp_ns",
+      "label": "timestamp_ns",
+      "_origin": "ast",
+      "community": 101,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "timestamp_ns",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L8"
     },
     {
       "id": "data",
@@ -7256,7 +7312,7 @@
       "file_type": "code",
       "norm_label": "include",
       "source_file": "web/tsconfig.json",
-      "source_location": "L28"
+      "source_location": "L30"
     },
     {
       "id": "web_tsconfig_paths_components",
@@ -7281,6 +7337,17 @@
       "source_location": "L23"
     },
     {
+      "id": "web_tsconfig_paths_domain",
+      "label": "@domain",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "code",
+      "norm_label": "@domain",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L25"
+    },
+    {
       "id": "web_tsconfig_paths_schemas",
       "label": "@schemas/*",
       "_origin": "ast",
@@ -7289,7 +7356,7 @@
       "file_type": "code",
       "norm_label": "@schemas/*",
       "source_file": "web/tsconfig.json",
-      "source_location": "L25"
+      "source_location": "L27"
     },
     {
       "id": "web_tsconfig_paths_utils",
@@ -7326,14 +7393,14 @@
     },
     {
       "id": "ref_domain",
-      "label": "domain",
+      "label": "domain/*",
       "_origin": "ast",
       "community": 5,
       "community_name": "compilerOptions",
       "file_type": "concept",
-      "norm_label": "domain",
+      "norm_label": "domain/*",
       "source_file": "web/tsconfig.json",
-      "source_location": "L28"
+      "source_location": "L26"
     },
     {
       "id": "ref_domain_contracts",
@@ -7345,6 +7412,17 @@
       "norm_label": "domain/contracts",
       "source_file": "web/tsconfig.json",
       "source_location": "L23"
+    },
+    {
+      "id": "ref_domain_index",
+      "label": "domain/index",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "compilerOptions",
+      "file_type": "concept",
+      "norm_label": "domain/index",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L25"
     },
     {
       "id": "ref_es2022",
@@ -7366,7 +7444,7 @@
       "file_type": "concept",
       "norm_label": "../schemas/*",
       "source_file": "web/tsconfig.json",
-      "source_location": "L25"
+      "source_location": "L27"
     },
     {
       "id": "ref_src",
@@ -7377,7 +7455,7 @@
       "file_type": "concept",
       "norm_label": "src",
       "source_file": "web/tsconfig.json",
-      "source_location": "L28"
+      "source_location": "L30"
     },
     {
       "id": "ref_src_components",
@@ -7410,7 +7488,7 @@
       "file_type": "concept",
       "norm_label": "tests",
       "source_file": "web/tsconfig.json",
-      "source_location": "L28"
+      "source_location": "L30"
     },
     {
       "id": "schemas_robot_telemetry_event_schema",
@@ -7435,94 +7513,6 @@
       "source_location": "L100"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_canonical_joints_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L27"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_canonical_joints_enum",
-      "label": "enum",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_canonical_joints_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L16"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_canonical_joints_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L15"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_alias",
-      "label": "x-constant-alias",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "x-constant-alias",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L18"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_name",
-      "label": "x-constant-name",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "x-constant-name",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L17"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_defs",
-      "label": "$defs",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "$defs",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L13"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_defs_canonical_joints",
-      "label": "canonical_joints",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "canonical_joints",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L14"
-    },
-    {
       "id": "schemas_robot_telemetry_event_schema_description",
       "label": "description",
       "_origin": "ast",
@@ -7543,17 +7533,6 @@
       "norm_label": "$id",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L3"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_required",
-      "label": "required",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "code",
-      "norm_label": "required",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L8"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_schema",
@@ -7598,105 +7577,6 @@
       "norm_label": "x-datafabric-channel",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L5"
-    },
-    {
-      "id": "ref_elbow_joint",
-      "label": "elbow_joint",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "elbow_joint",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "ref_joint_positions",
-      "label": "joint_positions",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "joint_positions",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "ref_robot_state",
-      "label": "robot_state",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "robot_state",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "ref_shoulder_lift_joint",
-      "label": "shoulder_lift_joint",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "shoulder_lift_joint",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "ref_shoulder_pan_joint",
-      "label": "shoulder_pan_joint",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "shoulder_pan_joint",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "ref_wrist_1_joint",
-      "label": "wrist_1_joint",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "wrist_1_joint",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "ref_wrist_2_joint",
-      "label": "wrist_2_joint",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "wrist_2_joint",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "ref_wrist_3_joint",
-      "label": "wrist_3_joint",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "wrist_3_joint",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_json_ref_timestamp_ns",
-      "label": "timestamp_ns",
-      "_origin": "ast",
-      "community": 50,
-      "community_name": "robot_telemetry_event.schema.json",
-      "file_type": "concept",
-      "norm_label": "timestamp_ns",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L8"
     },
     {
       "id": "agents_agents_sim_auditor",
@@ -8347,7 +8227,7 @@
       "file_type": "code",
       "norm_label": "devdependencies",
       "source_file": "web/package.json",
-      "source_location": "L20"
+      "source_location": "L21"
     },
     {
       "id": "web_package_devdependencies_autoprefixer",
@@ -8358,7 +8238,7 @@
       "file_type": "code",
       "norm_label": "autoprefixer",
       "source_file": "web/package.json",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
       "id": "web_package_devdependencies_cucumber_cucumber",
@@ -8369,7 +8249,7 @@
       "file_type": "code",
       "norm_label": "@cucumber/cucumber",
       "source_file": "web/package.json",
-      "source_location": "L21"
+      "source_location": "L22"
     },
     {
       "id": "web_package_devdependencies_jsdom",
@@ -8380,7 +8260,7 @@
       "file_type": "code",
       "norm_label": "jsdom",
       "source_file": "web/package.json",
-      "source_location": "L28"
+      "source_location": "L29"
     },
     {
       "id": "web_package_devdependencies_oxlint",
@@ -8391,7 +8271,7 @@
       "file_type": "code",
       "norm_label": "oxlint",
       "source_file": "web/package.json",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "web_package_devdependencies_playwright_test",
@@ -8402,7 +8282,7 @@
       "file_type": "code",
       "norm_label": "@playwright/test",
       "source_file": "web/package.json",
-      "source_location": "L22"
+      "source_location": "L23"
     },
     {
       "id": "web_package_devdependencies_postcss",
@@ -8413,7 +8293,7 @@
       "file_type": "code",
       "norm_label": "postcss",
       "source_file": "web/package.json",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "web_package_devdependencies_preact_preset_vite",
@@ -8424,7 +8304,7 @@
       "file_type": "code",
       "norm_label": "@preact/preset-vite",
       "source_file": "web/package.json",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
       "id": "web_package_devdependencies_tailwindcss",
@@ -8435,7 +8315,7 @@
       "file_type": "code",
       "norm_label": "tailwindcss",
       "source_file": "web/package.json",
-      "source_location": "L31"
+      "source_location": "L32"
     },
     {
       "id": "web_package_devdependencies_testing_library_preact",
@@ -8446,7 +8326,7 @@
       "file_type": "code",
       "norm_label": "@testing-library/preact",
       "source_file": "web/package.json",
-      "source_location": "L24"
+      "source_location": "L25"
     },
     {
       "id": "web_package_devdependencies_tsx",
@@ -8457,7 +8337,7 @@
       "file_type": "code",
       "norm_label": "tsx",
       "source_file": "web/package.json",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "web_package_devdependencies_types_node",
@@ -8468,7 +8348,7 @@
       "file_type": "code",
       "norm_label": "@types/node",
       "source_file": "web/package.json",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "web_package_devdependencies_types_three",
@@ -8479,7 +8359,7 @@
       "file_type": "code",
       "norm_label": "@types/three",
       "source_file": "web/package.json",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "web_package_devdependencies_typescript",
@@ -8490,7 +8370,7 @@
       "file_type": "code",
       "norm_label": "typescript",
       "source_file": "web/package.json",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "web_package_devdependencies_vite",
@@ -8501,7 +8381,7 @@
       "file_type": "code",
       "norm_label": "vite",
       "source_file": "web/package.json",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "web_package_devdependencies_vitest",
@@ -8512,7 +8392,7 @@
       "file_type": "code",
       "norm_label": "vitest",
       "source_file": "web/package.json",
-      "source_location": "L35"
+      "source_location": "L36"
     },
     {
       "id": "autoprefixer",
@@ -8523,7 +8403,7 @@
       "file_type": "concept",
       "norm_label": "autoprefixer",
       "source_file": "web/package.json",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
       "id": "cucumber_cucumber",
@@ -8534,7 +8414,7 @@
       "file_type": "concept",
       "norm_label": "@cucumber/cucumber",
       "source_file": "web/package.json",
-      "source_location": "L21"
+      "source_location": "L22"
     },
     {
       "id": "jsdom",
@@ -8545,7 +8425,7 @@
       "file_type": "concept",
       "norm_label": "jsdom",
       "source_file": "web/package.json",
-      "source_location": "L28"
+      "source_location": "L29"
     },
     {
       "id": "oxlint",
@@ -8556,7 +8436,7 @@
       "file_type": "concept",
       "norm_label": "oxlint",
       "source_file": "web/package.json",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "playwright_test",
@@ -8567,7 +8447,7 @@
       "file_type": "concept",
       "norm_label": "@playwright/test",
       "source_file": "web/package.json",
-      "source_location": "L22"
+      "source_location": "L23"
     },
     {
       "id": "postcss",
@@ -8578,7 +8458,7 @@
       "file_type": "concept",
       "norm_label": "postcss",
       "source_file": "web/package.json",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "preact_preset_vite",
@@ -8589,7 +8469,7 @@
       "file_type": "concept",
       "norm_label": "@preact/preset-vite",
       "source_file": "web/package.json",
-      "source_location": "L23"
+      "source_location": "L24"
     },
     {
       "id": "tailwindcss",
@@ -8600,7 +8480,7 @@
       "file_type": "concept",
       "norm_label": "tailwindcss",
       "source_file": "web/package.json",
-      "source_location": "L31"
+      "source_location": "L32"
     },
     {
       "id": "testing_library_preact",
@@ -8611,7 +8491,7 @@
       "file_type": "concept",
       "norm_label": "@testing-library/preact",
       "source_file": "web/package.json",
-      "source_location": "L24"
+      "source_location": "L25"
     },
     {
       "id": "tsx",
@@ -8622,7 +8502,7 @@
       "file_type": "concept",
       "norm_label": "tsx",
       "source_file": "web/package.json",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "types_node",
@@ -8633,7 +8513,7 @@
       "file_type": "concept",
       "norm_label": "@types/node",
       "source_file": "web/package.json",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "types_three",
@@ -8644,7 +8524,7 @@
       "file_type": "concept",
       "norm_label": "@types/three",
       "source_file": "web/package.json",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "typescript",
@@ -8655,7 +8535,7 @@
       "file_type": "concept",
       "norm_label": "typescript",
       "source_file": "web/package.json",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "vite",
@@ -8666,7 +8546,7 @@
       "file_type": "concept",
       "norm_label": "vite",
       "source_file": "web/package.json",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "vitest",
@@ -8677,7 +8557,7 @@
       "file_type": "concept",
       "norm_label": "vitest",
       "source_file": "web/package.json",
-      "source_location": "L35"
+      "source_location": "L36"
     },
     {
       "id": "agents_skills_grilling_skill",
@@ -9503,176 +9383,22 @@
       "source_location": "L16"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_command_id_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L97"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_command_id_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L96"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_items_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L61"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_joint_positions_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L51"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_joint_positions_items",
-      "label": "items",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "items",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L60"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_joint_positions_maxitems",
-      "label": "maxItems",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "maxitems",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L64"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_joint_positions_minitems",
-      "label": "minItems",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "minitems",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L63"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_joint_positions_prefixitems",
-      "label": "prefixItems",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "prefixitems",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L52"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_joint_positions_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L50"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_joint_positions_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L49"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties",
-      "label": "properties",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "properties",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L30"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_command_id",
-      "label": "command_id",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "command_id",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L95"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_joint_positions",
-      "label": "joint_positions",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "joint_positions",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L48"
-    },
-    {
       "id": "schemas_robot_telemetry_event_schema_properties_robot_state",
       "label": "robot_state",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "code",
       "norm_label": "robot_state",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L36"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_properties_timestamp_ns",
-      "label": "timestamp_ns",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "timestamp_ns",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L31"
-    },
-    {
       "id": "schemas_robot_telemetry_event_schema_robot_state_description",
       "label": "description",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9683,7 +9409,7 @@
       "label": "enum",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9694,7 +9420,7 @@
       "label": "title",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "code",
       "norm_label": "title",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9705,51 +9431,18 @@
       "label": "type",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L37"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_timestamp_ns_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_timestamp_ns_minimum",
-      "label": "minimum",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "minimum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L33"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_timestamp_ns_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 80,
-      "community_name": "joint_positions",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L32"
-    },
-    {
       "id": "ref_booting",
       "label": "BOOTING",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "concept",
       "norm_label": "booting",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9760,7 +9453,7 @@
       "label": "EXECUTING",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "concept",
       "norm_label": "executing",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9771,7 +9464,7 @@
       "label": "FAULT",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "concept",
       "norm_label": "fault",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9782,7 +9475,7 @@
       "label": "IDLE",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "concept",
       "norm_label": "idle",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -9793,7 +9486,7 @@
       "label": "PROCESSING",
       "_origin": "ast",
       "community": 80,
-      "community_name": "joint_positions",
+      "community_name": "enum",
       "file_type": "concept",
       "norm_label": "processing",
       "source_file": "schemas/robot_telemetry_event.schema.json",
@@ -10530,7 +10223,7 @@
       "label": "contracts.ts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "contracts.ts",
       "source_file": "web/domain/contracts.ts",
@@ -10541,7 +10234,7 @@
       "label": "CANONICAL_UR5E_JOINTS",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "canonical_ur5e_joints",
       "source_file": "web/domain/contracts.ts",
@@ -10552,18 +10245,128 @@
       "label": "UR5E_JOINTS",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "ur5e_joints",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L26"
     },
     {
+      "id": "web_domain_index",
+      "label": "index.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "index.ts",
+      "source_file": "web/domain/index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_domain_parser",
+      "label": "parser.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "parser.ts",
+      "source_file": "web/domain/parser.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_domain_parsers",
+      "label": "parsers.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "parsers.ts",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_domain_validators",
+      "label": "validators.ts",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "validators.ts",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_domain_validators_errorframeschema",
+      "label": "errorFrameSchema",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "errorframeschema",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L83"
+    },
+    {
+      "id": "web_domain_validators_inferencemetricsschema",
+      "label": "inferenceMetricsSchema",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "inferencemetricsschema",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L44"
+    },
+    {
+      "id": "web_domain_validators_jointpositionsschema",
+      "label": "jointPositionsSchema",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "jointpositionsschema",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L33"
+    },
+    {
+      "id": "web_domain_validators_robotcommandschema",
+      "label": "robotCommandSchema",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "robotcommandschema",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L57"
+    },
+    {
+      "id": "web_domain_validators_robottelemetryeventschema",
+      "label": "robotTelemetryEventSchema",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "robottelemetryeventschema",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L73"
+    },
+    {
+      "id": "web_domain_validators_timestampnsschema",
+      "label": "timestampNsSchema",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "parsers.ts",
+      "file_type": "code",
+      "norm_label": "timestampnsschema",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L11"
+    },
+    {
       "id": "web_src_components_teleopclient",
       "label": "TeleopClient.tsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "teleopclient.tsx",
       "source_file": "web/src/components/TeleopClient.tsx",
@@ -10574,7 +10377,7 @@
       "label": "main.tsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "main.tsx",
       "source_file": "web/src/main.tsx",
@@ -10585,7 +10388,7 @@
       "label": "DEFAULT_ROBOT_ID",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "default_robot_id",
       "source_file": "web/src/main.tsx",
@@ -10596,7 +10399,7 @@
       "label": "root",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "root",
       "source_file": "web/src/main.tsx",
@@ -10607,7 +10410,7 @@
       "label": "env.ts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "env.ts",
       "source_file": "web/src/utils/env.ts",
@@ -10618,7 +10421,7 @@
       "label": "url.ts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "url.ts",
       "source_file": "web/src/utils/url.ts",
@@ -10629,7 +10432,7 @@
       "label": "contracts.test.ts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "contracts.test.ts",
       "source_file": "web/tests/unit/contracts.test.ts",
@@ -10640,7 +10443,7 @@
       "label": "env.test.ts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "env.test.ts",
       "source_file": "web/tests/unit/env.test.ts",
@@ -10651,7 +10454,7 @@
       "label": "TeleopClient.test.tsx",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "teleopclient.test.tsx",
       "source_file": "web/tests/unit/TeleopClient.test.tsx",
@@ -10662,7 +10465,7 @@
       "label": "url.test.ts",
       "_origin": "ast",
       "community": 84,
-      "community_name": "contracts.ts",
+      "community_name": "parsers.ts",
       "file_type": "code",
       "norm_label": "url.test.ts",
       "source_file": "web/tests/unit/url.test.ts",
@@ -10746,6 +10549,17 @@
       "norm_label": "urdf-loader",
       "source_file": "web/package.json",
       "source_location": "L18"
+    },
+    {
+      "id": "web_package_dependencies_zod",
+      "label": "zod",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "code",
+      "norm_label": "zod",
+      "source_file": "web/package.json",
+      "source_location": "L19"
     },
     {
       "id": "web_package_name",
@@ -10911,6 +10725,17 @@
       "norm_label": "urdf-loader",
       "source_file": "web/package.json",
       "source_location": "L18"
+    },
+    {
+      "id": "zod",
+      "label": "zod",
+      "_origin": "ast",
+      "community": 86,
+      "community_name": "scripts",
+      "file_type": "concept",
+      "norm_label": "zod",
+      "source_file": "web/package.json",
+      "source_location": "L19"
     },
     {
       "id": "beans_hand_sim_8n0g_phase_2_frame_aggregation_continuous_6_dof_telemet",
@@ -12221,10 +12046,11 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 2.0: Domain Schemas &amp; Canonical Joint Constants Sync",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
+        "priority": "normal",
         "created_at": "2026-09-11T16:01:56Z",
-        "updated_at": "2026-09-11T16:01:56Z",
+        "updated_at": "2026-09-11T20:17:37Z",
         "parent": "hand-sim-8n0g"
       },
       "node_kind": "page",
@@ -12242,7 +12068,7 @@
       "node_kind": "heading",
       "norm_label": "acceptance criteria",
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L21"
+      "source_location": "L22"
     },
     {
       "id": "beans_hand_sim_awta_unit_20_domain_schemas_canonical_joint_constants_s_blocked_by",
@@ -12254,7 +12080,7 @@
       "node_kind": "heading",
       "norm_label": "blocked by",
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "beans_hand_sim_awta_unit_20_domain_schemas_canonical_joint_constants_s_parent",
@@ -12266,7 +12092,7 @@
       "node_kind": "heading",
       "norm_label": "parent",
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "beans_hand_sim_awta_unit_20_domain_schemas_canonical_joint_constants_s_what_to_build",
@@ -12278,7 +12104,7 @@
       "node_kind": "heading",
       "norm_label": "what to build",
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "beans_hand_sim_iy13_unit_22_gateway_high_throughput_30_hz_telemetry_mu",
@@ -12415,6 +12241,347 @@
       "norm_label": "what to build",
       "source_file": ".beans/hand-sim-n9ch--unit-24-multi-service-30-hz-end-to-end-playwright.md",
       "source_location": "L21"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_items_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L61"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L51"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_items",
+      "label": "items",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "items",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L60"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_maxitems",
+      "label": "maxItems",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "maxitems",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L64"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_minitems",
+      "label": "minItems",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "minitems",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L63"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_prefixitems",
+      "label": "prefixItems",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "prefixitems",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L52"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L50"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_joint_positions_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L49"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_joint_positions",
+      "label": "joint_positions",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "joint_positions",
+      "file_type": "code",
+      "norm_label": "joint_positions",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L48"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_command_id_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L97"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_command_id_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L96"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties",
+      "label": "properties",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "properties",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_command_id",
+      "label": "command_id",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "command_id",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L95"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_timestamp_ns",
+      "label": "timestamp_ns",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "timestamp_ns",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_timestamp_ns_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_timestamp_ns_minimum",
+      "label": "minimum",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "minimum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_timestamp_ns_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_enum",
+      "label": "enum",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "enum",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "ref_elbow_joint",
+      "label": "elbow_joint",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "enum",
+      "file_type": "concept",
+      "norm_label": "elbow_joint",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "ref_shoulder_lift_joint",
+      "label": "shoulder_lift_joint",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "enum",
+      "file_type": "concept",
+      "norm_label": "shoulder_lift_joint",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "ref_shoulder_pan_joint",
+      "label": "shoulder_pan_joint",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "enum",
+      "file_type": "concept",
+      "norm_label": "shoulder_pan_joint",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "ref_wrist_1_joint",
+      "label": "wrist_1_joint",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "enum",
+      "file_type": "concept",
+      "norm_label": "wrist_1_joint",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "ref_wrist_2_joint",
+      "label": "wrist_2_joint",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "enum",
+      "file_type": "concept",
+      "norm_label": "wrist_2_joint",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "ref_wrist_3_joint",
+      "label": "wrist_3_joint",
+      "_origin": "ast",
+      "community": 98,
+      "community_name": "enum",
+      "file_type": "concept",
+      "norm_label": "wrist_3_joint",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "canonical_joints",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "canonical_joints",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "canonical_joints",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_alias",
+      "label": "x-constant-alias",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "canonical_joints",
+      "file_type": "code",
+      "norm_label": "x-constant-alias",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_canonical_joints_x_constant_name",
+      "label": "x-constant-name",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "canonical_joints",
+      "file_type": "code",
+      "norm_label": "x-constant-name",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_defs",
+      "label": "$defs",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "canonical_joints",
+      "file_type": "code",
+      "norm_label": "$defs",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_defs_canonical_joints",
+      "label": "canonical_joints",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "canonical_joints",
+      "file_type": "code",
+      "norm_label": "canonical_joints",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L14"
     }
   ],
   "links": [
@@ -12719,30 +12886,6 @@
       "weight": 1.0
     },
     {
-      "source": "scripts_generate_domain_emit_typescript",
-      "target": "scripts_generate_domain_to_snake_case",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "scripts/generate_domain.py",
-      "source_location": "L740",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_generate_domain_emit_typescript",
-      "target": "scripts_generate_domain_to_pascal_case",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "scripts/generate_domain.py",
-      "source_location": "L824",
-      "weight": 1.0
-    },
-    {
       "source": "scripts_generate_domain_main",
       "target": "scripts_generate_domain_py_path",
       "relation": "calls",
@@ -12751,7 +12894,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L868",
+      "source_location": "L678",
       "weight": 1.0
     },
     {
@@ -12763,7 +12906,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L875",
+      "source_location": "L685",
       "weight": 1.0
     },
     {
@@ -12775,7 +12918,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L877",
+      "source_location": "L687",
       "weight": 1.0
     },
     {
@@ -12787,7 +12930,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L878",
+      "source_location": "L688",
       "weight": 1.0
     },
     {
@@ -12799,7 +12942,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "scripts/generate_domain.py",
-      "source_location": "L879",
+      "source_location": "L689",
       "weight": 1.0
     },
     {
@@ -13043,159 +13186,159 @@
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_iserrorframe",
-      "target": "web_domain_contracts_parseerrorframe",
+      "source": "web_domain_parsers_parseerrorframe",
+      "target": "web_domain_parsers_parsejsonifneeded",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L140",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_isrobotcommand",
-      "target": "web_domain_contracts_parserobotcommand",
+      "source": "web_domain_parsers_parseerrorframe",
+      "target": "web_domain_parsers_unwrapzod",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L180",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_isrobottelemetryevent",
-      "target": "web_domain_contracts_parserobottelemetryevent",
+      "source": "web_domain_parsers_parserobotcommand",
+      "target": "web_domain_parsers_parsejsonifneeded",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L233",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_parseerrorframe",
-      "target": "web_domain_contracts_parsejsonifneeded",
+      "source": "web_domain_parsers_parserobotcommand",
+      "target": "web_domain_parsers_unwrapzod",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L110",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_parseerrorframe",
-      "target": "web_domain_contracts_parsetimestampns",
+      "source": "web_domain_parsers_parserobottelemetryevent",
+      "target": "web_domain_parsers_parsejsonifneeded",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L128",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_parserobotcommand",
-      "target": "web_domain_contracts_parsejsonifneeded",
+      "source": "web_domain_parsers_parserobottelemetryevent",
+      "target": "web_domain_parsers_unwrapzod",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L148",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_parserobotcommand",
-      "target": "web_domain_contracts_parsetimestampns",
+      "source": "web_domain_parsers_robotcommandtopic",
+      "target": "web_domain_parsers_validaterobotid",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L160",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L82",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_parserobottelemetryevent",
-      "target": "web_domain_contracts_parsejsonifneeded",
+      "source": "web_domain_parsers_robottelemetrytopic",
+      "target": "web_domain_parsers_validaterobotid",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L188",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_parserobottelemetryevent",
-      "target": "web_domain_contracts_parsetimestampns",
+      "source": "web_domain_validators_iserrorframe",
+      "target": "web_domain_validators_safeparsejson",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L194",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L118",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_robotcommandtopic",
-      "target": "web_domain_contracts_validaterobotid",
+      "source": "web_domain_validators_isrobotcommand",
+      "target": "web_domain_validators_safeparsejson",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L247",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts_robottelemetrytopic",
-      "target": "web_domain_contracts_validaterobotid",
+      "source": "web_domain_validators_isrobottelemetryevent",
+      "target": "web_domain_validators_safeparsejson",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L252",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_contracts_createpingcommand",
+      "target": "web_domain_parsers_createpingcommand",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L127",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_contracts_serializecommand",
+      "target": "web_domain_parsers_serializecommand",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L128",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -13207,31 +13350,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L28",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_contracts_isrobottelemetryevent",
+      "target": "web_domain_validators_isrobottelemetryevent",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L63",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_contracts_iserrorframe",
+      "target": "web_domain_validators_iserrorframe",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L71",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -13352,6 +13495,54 @@
       "context": "export",
       "source_file": "src/edge_node/__init__.py",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_index",
+      "target": "web_domain_contracts",
+      "relation": "re_exports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "export",
+      "source_file": "web/domain/index.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_index",
+      "target": "web_domain_validators",
+      "relation": "re_exports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "export",
+      "source_file": "web/domain/index.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_index",
+      "target": "web_domain_parsers",
+      "relation": "re_exports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "export",
+      "source_file": "web/domain/index.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parser",
+      "target": "web_domain_parsers",
+      "relation": "re_exports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "export",
+      "source_file": "web/domain/parser.ts",
+      "source_location": "L1",
       "weight": 1.0
     },
     {
@@ -13567,7 +13758,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L18",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -13579,7 +13770,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L18",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -14599,7 +14790,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/tsconfig.json",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -14611,7 +14802,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/tsconfig.json",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -14623,7 +14814,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/tsconfig.json",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -14651,6 +14842,30 @@
       "weight": 1.0
     },
     {
+      "source": "web_tsconfig_paths_domain",
+      "target": "ref_domain_index",
+      "relation": "extends",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_paths_domain",
+      "target": "ref_domain",
+      "relation": "extends",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tsconfig.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
       "source": "web_tsconfig_paths_schemas",
       "target": "ref_schemas",
       "relation": "extends",
@@ -14659,7 +14874,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/tsconfig.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -14699,6 +14914,162 @@
       "weight": 1.0
     },
     {
+      "source": "web_domain_parsers",
+      "target": "web_domain_validators_errorframeschema",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_validators_robotcommandschema",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_validators_robottelemetryeventschema",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_contracts_commandtype",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_contracts_errorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_contracts_robotcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_contracts_robottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_contracts_commandtype",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_contracts_errorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_contracts_robotcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_contracts_robotstate",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_contracts_robottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_contracts_ur5e_joints",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "web_package_dependencies_preact",
       "target": "preact",
       "relation": "imports",
@@ -14735,6 +15106,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_package_dependencies_zod",
+      "target": "zod",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/package.json",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
       "source": "web_package_devdependencies_autoprefixer",
       "target": "autoprefixer",
       "relation": "imports",
@@ -14743,7 +15126,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -14755,7 +15138,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -14767,7 +15150,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -14779,7 +15162,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -14791,7 +15174,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -14803,7 +15186,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -14815,7 +15198,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -14827,7 +15210,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -14839,7 +15222,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -14851,7 +15234,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -14863,7 +15246,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -14875,7 +15258,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -14887,7 +15270,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -14899,7 +15282,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -14911,7 +15294,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/package.json",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -14928,43 +15311,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_createpingcommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
       "target": "web_domain_contracts_errorframe",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_iserrorframe",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_isrobottelemetryevent",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -14988,14 +15335,50 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_serializecommand",
+      "target": "web_domain_validators_iserrorframe",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_domain_validators_isrobottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_domain_parsers_createpingcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_domain_parsers_serializecommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -15120,6 +15503,78 @@
     },
     {
       "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_validators_errorframeschema",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_validators_iserrorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_validators_isrobotcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_validators_isrobottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_validators_robotcommandschema",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_validators_robottelemetryeventschema",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
       "target": "web_domain_contracts_canonical_ur5e_joints",
       "relation": "imports",
       "_origin": "ast",
@@ -15144,91 +15599,7 @@
     },
     {
       "source": "web_tests_unit_contracts_test",
-      "target": "web_domain_contracts_createpingcommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/tests/unit/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_unit_contracts_test",
-      "target": "web_domain_contracts_parseerrorframe",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/tests/unit/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_unit_contracts_test",
-      "target": "web_domain_contracts_parserobotcommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/tests/unit/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_unit_contracts_test",
-      "target": "web_domain_contracts_parserobottelemetryevent",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/tests/unit/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_unit_contracts_test",
-      "target": "web_domain_contracts_parserobottopic",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/tests/unit/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_unit_contracts_test",
-      "target": "web_domain_contracts_robotcommandtopic",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/tests/unit/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_unit_contracts_test",
       "target": "web_domain_contracts_robotstate",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/tests/unit/contracts.test.ts",
-      "source_location": "L2",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_unit_contracts_test",
-      "target": "web_domain_contracts_robottelemetrytopic",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -15260,6 +15631,90 @@
       "context": "import",
       "source_file": "web/tests/unit/contracts.test.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers_createpingcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers_parseerrorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers_parserobotcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers_parserobottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers_parserobottopic",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers_robotcommandtopic",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers_robottelemetrytopic",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -15551,6 +16006,42 @@
       "weight": 1.0
     },
     {
+      "source": "web_domain_parsers",
+      "target": "web_domain_validators",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_contracts",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_contracts",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_teleopclient",
       "target": "web_src_utils_env",
       "relation": "imports_from",
@@ -15572,6 +16063,31 @@
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
       "source_location": "L3",
+      "type_only": true,
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_domain_validators",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_domain_parsers",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -15696,6 +16212,18 @@
     },
     {
       "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_validators",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
       "target": "web_domain_contracts",
       "relation": "imports_from",
       "_origin": "ast",
@@ -15704,6 +16232,18 @@
       "context": "import",
       "source_file": "web/tests/unit/contracts.test.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_contracts_test",
+      "target": "web_domain_parsers",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/contracts.test.ts",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -19880,7 +20420,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -19891,7 +20431,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -19902,7 +20442,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -19913,7 +20453,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -21832,6 +22372,17 @@
     },
     {
       "source": "scripts_generate_domain",
+      "target": "scripts_generate_domain_main",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "scripts/generate_domain.py",
+      "source_location": "L673",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_generate_domain",
       "target": "scripts_generate_domain_domainir",
       "relation": "contains",
       "_origin": "ast",
@@ -21850,17 +22401,6 @@
       "confidence_score": 1.0,
       "source_file": "scripts/generate_domain.py",
       "source_location": "L84",
-      "weight": 1.0
-    },
-    {
-      "source": "scripts_generate_domain",
-      "target": "scripts_generate_domain_main",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "scripts/generate_domain.py",
-      "source_location": "L863",
       "weight": 1.0
     },
     {
@@ -22976,28 +23516,6 @@
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parseerrorframe",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L109",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_iserrorframe",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L138",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
       "target": "web_domain_contracts_commandtype",
       "relation": "contains",
       "_origin": "ast",
@@ -23005,50 +23523,6 @@
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
       "source_location": "L14",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parserobotcommand",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L147",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_isrobotcommand",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L178",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parserobottelemetryevent",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L187",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_isrobottelemetryevent",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -23064,50 +23538,6 @@
     },
     {
       "source": "web_domain_contracts",
-      "target": "web_domain_contracts_validaterobotid",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L240",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_robotcommandtopic",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L246",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_robottelemetrytopic",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L251",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parserobottopic",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L256",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
       "target": "web_domain_contracts_ur5e_joints",
       "relation": "contains",
       "_origin": "ast",
@@ -23115,17 +23545,6 @@
       "confidence_score": 1.0,
       "source_file": "web/domain/contracts.ts",
       "source_location": "L26",
-      "weight": 1.0
-    },
-    {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_serializecommand",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -23206,36 +23625,234 @@
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_createpingcommand",
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_parsejsonifneeded",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L70",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parsejsonifneeded",
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_unwrapzod",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L84",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
-      "source": "web_domain_contracts",
-      "target": "web_domain_contracts_parsetimestampns",
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_parserobotcommand",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "web/domain/contracts.ts",
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_parserobottelemetryevent",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_parseerrorframe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_createpingcommand",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_serializecommand",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_validaterobotid",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_robotcommandtopic",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_robottelemetrytopic",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_parsers",
+      "target": "web_domain_parsers_parserobottopic",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/parsers.ts",
       "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_isrobotcommand",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_timestampnsschema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_isrobottelemetryevent",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_iserrorframe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L117",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_jointpositionsschema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_inferencemetricsschema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_robotcommandschema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_robottelemetryeventschema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_errorframeschema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "web_domain_validators",
+      "target": "web_domain_validators_safeparsejson",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/domain/validators.ts",
+      "source_location": "L96",
       "weight": 1.0
     },
     {
@@ -23268,7 +23885,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -23349,19 +23966,19 @@
       "weight": 1.0
     },
     {
-      "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_cucumber_cucumber",
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_zod",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
-      "source_location": "L21",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_playwright_test",
+      "target": "web_package_devdependencies_cucumber_cucumber",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23372,7 +23989,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_preact_preset_vite",
+      "target": "web_package_devdependencies_playwright_test",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23383,7 +24000,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_testing_library_preact",
+      "target": "web_package_devdependencies_preact_preset_vite",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23394,7 +24011,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_types_node",
+      "target": "web_package_devdependencies_testing_library_preact",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23405,7 +24022,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_types_three",
+      "target": "web_package_devdependencies_types_node",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23416,7 +24033,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_autoprefixer",
+      "target": "web_package_devdependencies_types_three",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23427,7 +24044,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_jsdom",
+      "target": "web_package_devdependencies_autoprefixer",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23438,7 +24055,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_oxlint",
+      "target": "web_package_devdependencies_jsdom",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23449,7 +24066,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_postcss",
+      "target": "web_package_devdependencies_oxlint",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23460,7 +24077,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_tailwindcss",
+      "target": "web_package_devdependencies_postcss",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23471,7 +24088,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_tsx",
+      "target": "web_package_devdependencies_tailwindcss",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23482,7 +24099,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_typescript",
+      "target": "web_package_devdependencies_tsx",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23493,7 +24110,7 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_vite",
+      "target": "web_package_devdependencies_typescript",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23504,13 +24121,24 @@
     },
     {
       "source": "web_package_devdependencies",
-      "target": "web_package_devdependencies_vitest",
+      "target": "web_package_devdependencies_vite",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/package.json",
       "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_vitest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/package.json",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -23592,35 +24220,13 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_teleopclient_connectionstate",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L12",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_teleopclient_logentry",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L14",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
       "target": "web_src_components_teleopclient_teleopclientprops",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L21",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -23631,7 +24237,29 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L26",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_teleopclient_connectionstate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_teleopclient_logentry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -23840,7 +24468,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -24065,13 +24693,24 @@
     },
     {
       "source": "web_tsconfig_compileroptions_paths",
+      "target": "web_tsconfig_paths_domain",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tsconfig.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions_paths",
       "target": "web_tsconfig_paths_schemas",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tsconfig.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -25734,5 +26373,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3438dab410db52bfb6c1d9cde4fead777eac2cb1"
+  "built_at_commit": "cdafbbb7a97469f93a9b3c3312f52d17744d7567"
 }

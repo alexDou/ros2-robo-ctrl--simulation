@@ -1,13 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { isBrowser } from '@utils/env';
-import {
-  RobotTelemetryEvent,
-  ErrorFrame,
-  createPingCommand,
-  serializeCommand,
-  isRobotTelemetryEvent,
-  isErrorFrame,
-} from '@contracts';
+import type { RobotTelemetryEvent, ErrorFrame } from '@contracts';
+import { isRobotTelemetryEvent, isErrorFrame } from '@domain/validators';
+import { createPingCommand, serializeCommand } from '@domain/parsers';
 
 export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
 

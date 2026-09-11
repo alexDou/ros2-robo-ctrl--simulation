@@ -774,15 +774,15 @@
     "semantic_hash": ""
   },
   "schemas/robot_command.schema.json": {
-    "mtime": 1788975133.3422022,
-    "seen": 1788975283.3156192,
-    "ast_hash": "2e01b726f08cf978ad39cf9107a30028",
+    "mtime": 1789157468.1161501,
+    "seen": 1789157851.8852253,
+    "ast_hash": "21cb32fad7e83a172e512cfe45a8543c",
     "semantic_hash": ""
   },
   "schemas/robot_telemetry_event.schema.json": {
-    "mtime": 1789155851.9241664,
-    "seen": 1789156125.7758203,
-    "ast_hash": "72180770174541827fc3360fc1219d79",
+    "mtime": 1789157802.1199975,
+    "seen": 1789157851.88523,
+    "ast_hash": "aec8b1a57b5770949c68dd64e3b13975",
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
@@ -930,9 +930,9 @@
     "semantic_hash": ""
   },
   "scripts/generate_domain.py": {
-    "mtime": 1789156074.5037968,
-    "seen": 1789156125.77583,
-    "ast_hash": "9354a145aa5fe81795465adabfbc813e",
+    "mtime": 1789157818.2499268,
+    "seen": 1789157851.885233,
+    "ast_hash": "016539d6031ea97f665d559a4c185e60",
     "semantic_hash": ""
   },
   "src/domain/__init__.py": {
@@ -942,21 +942,21 @@
     "semantic_hash": ""
   },
   "src/domain/domain.py": {
-    "mtime": 1789156077.097549,
-    "seen": 1789156125.7759497,
-    "ast_hash": "e72b99c600d8595823bafd304317431a",
+    "mtime": 1789157820.1687868,
+    "seen": 1789157851.8853421,
+    "ast_hash": "0700452ca937247f5a51baba90990c00",
     "semantic_hash": ""
   },
   "src/domain/domain.rs": {
-    "mtime": 1789156077.0971656,
-    "seen": 1789156125.7759528,
-    "ast_hash": "eea4db96fe8c26a55af2508927f31973",
+    "mtime": 1789157820.1684737,
+    "seen": 1789157851.8853455,
+    "ast_hash": "9e3f815a87fcc21082e95baef0b1b5ea",
     "semantic_hash": ""
   },
   "web/domain/contracts.ts": {
-    "mtime": 1789156077.0977309,
-    "seen": 1789156125.776442,
-    "ast_hash": "bcb3b9a2337bc6fbb349b501d0434e4d",
+    "mtime": 1789157820.1689868,
+    "seen": 1789157851.8859186,
+    "ast_hash": "1a256a651555f3a730bfa7b9bb46e6a0",
     "semantic_hash": ""
   },
   "support_files/specs/units.md": {

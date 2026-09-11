@@ -1,11 +1,11 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-11)
 
 ## Corpus Check
-- 145 files · ~59,676 words
+- 145 files · ~60,616 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1014 nodes · 1155 edges · 95 communities (62 shown, 14 thin omitted)
+- 1031 nodes · 1181 edges · 96 communities (63 shown, 14 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
@@ -86,6 +86,7 @@
 - hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md
 - domain.rs
 - phase1/implementation_wireframe.md
+- inference_metrics
 - hand-sim-1o1z--unit-21-edgenode-robust-jointstate-extraction-hybr.md
 - hand-sim-6vku--unit-23-teleopclient-telemetrymonitor-showcase-dir.md
 - hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md
@@ -119,7 +120,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (95 total, 14 thin omitted)
+## Communities (96 total, 14 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -206,8 +207,8 @@ Cohesion: 0.22
 Nodes (8): Further Notes, Implementation Decisions, Out of Scope, Problem Statement, Process, Solution, Testing Decisions, User Stories
 
 ### Community 21 - "generate_domain.py"
-Cohesion: 0.46
-Nodes (7): generate_python(), generate_rust(), generate_typescript(), load_schemas(), main(), Path, to_pascal_case()
+Cohesion: 0.25
+Nodes (14): ConstantDef, DomainIR, emit_python(), emit_rust(), emit_typescript(), EnumDef, FieldDef, FixedArrayDef (+6 more)
 
 ### Community 22 - "<Questionnaire title>"
 Cohesion: 0.25
@@ -306,16 +307,16 @@ Cohesion: 0.14
 Nodes (14): Drop, HashSet, Responder, health_check(), main(), Result, ActiveSessionGuard, ActiveSessionRegistry (+6 more)
 
 ### Community 50 - "robot_telemetry_event.schema.json"
-Cohesion: 0.09
-Nodes (21): elbow_joint, joint_positions, robot_state, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint, wrist_3_joint (+13 more)
+Cohesion: 0.08
+Nodes (25): elbow_joint, joint_positions, robot_state, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint, wrist_3_joint (+17 more)
 
 ### Community 79 - "robot_command.schema.json"
 Cohesion: 0.05
-Nodes (37): command_id, EMERGENCY_STOP, payload, PING, RESET_FAULT, sender_id, TELEOP_JOINT_TARGET, TRAJECTORY_EXECUTE (+29 more)
+Nodes (39): command_id, EMERGENCY_STOP, payload, PING, RESET_FAULT, sender_id, TELEOP_JOINT_TARGET, TRAJECTORY_EXECUTE (+31 more)
 
 ### Community 80 - "joint_positions"
-Cohesion: 0.04
-Nodes (47): BOOTING, confidence, detected_object, EXECUTING, FAULT, IDLE, latency_ms, PROCESSING (+39 more)
+Cohesion: 0.07
+Nodes (27): BOOTING, EXECUTING, FAULT, IDLE, PROCESSING, description, type, type (+19 more)
 
 ### Community 81 - "EdgeNode"
 Cohesion: 0.06
@@ -349,6 +350,10 @@ Nodes (22): D, Into, Option, deserialize_finite_joints(), DomainError, Error, Re
 Cohesion: 0.25
 Nodes (7): Step 1: Initialize the Python Environment using uv, Step 2: Establish the Python Skeleton (main.py), Step 3: Scaffold the Rust Actix-web Gateway, Step 4: Build the Ultra-Lightweight Preact Frontend, Step 5: Containerize and Wire the Network Boundary, The Integration Verification (The First End-to-End Test), Welcome to Phase 1: The "Ping" Pipeline. As a senior engineer, my goal isn't just to make a button click light up a terminal—it’s to establish our system's core network topology and data contracts. We are building a minimal, end-to-end, architectural skeleton.
 
+### Community 90 - "inference_metrics"
+Cohesion: 0.09
+Nodes (23): confidence, detected_object, latency_ms, description, maximum, minimum, type, description (+15 more)
+
 ### Community 91 - "hand-sim-1o1z--unit-21-edgenode-robust-jointstate-extraction-hybr.md"
 Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
@@ -370,24 +375,24 @@ Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ## Knowledge Gaps
-- **523 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+518 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 632 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **535 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+530 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 645 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `properties` connect `joint_positions` to `robot_telemetry_event.schema.json`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
+- **Why does `properties` connect `joint_positions` to `robot_telemetry_event.schema.json`, `inference_metrics`?**
+  _High betweenness centrality (0.017) - this node is a cross-community bridge._
+- **Why does `inference_metrics` connect `inference_metrics` to `joint_positions`?**
+  _High betweenness centrality (0.010) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
-  _523 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _535 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**
   _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
 - **Should `teach/SKILL.md` be split into smaller, more focused modules?**
   _Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected._
-- **Should `Process` be split into smaller, more focused modules?**
-  _Cohesion score 0.07407407407407407 - nodes in this community are weakly interconnected._

@@ -22,6 +22,8 @@
       "@utils/*": ["src/utils/*"],
       "@contracts": ["domain/contracts"],
       "@contracts/*": ["domain/contracts/*"],
+      "@domain": ["domain/index"],
+      "@domain/*": ["domain/*"],
       "@schemas/*": ["../schemas/*"]
     }
   },
