@@ -97,3 +97,106 @@ def test_edge_node_zenoh_pub_sub_round_trip(mock_ros_node):
 
     edge.close()
     client_session.close()
+
+
+def test_joint_state_mapper_canonical_order_and_zero_order_hold():
+    import math
+    from edge_node.mapper import JointStateMapper
+    from sensor_msgs.msg import JointState
+
+    mapper = JointStateMapper()
+    # 1. Initial state must be exactly 6 zeros
+    assert mapper.get_positions() == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    # 2. Out of order message with extraneous joints
+    msg = JointState()
+    msg.name = [
+        "robotiq_85_left_knuckle_joint",
+        "wrist_3_joint",
+        "elbow_joint",
+        "wrist_1_joint",
+        "shoulder_lift_joint",
+        "wrist_2_joint",
+        "shoulder_pan_joint",
+        "gripper_finger_joint",
+    ]
+    msg.position = [0.99, 0.6, 0.3, 0.4, 0.2, 0.5, 0.1, -0.99]
+    positions = mapper.update_from_joint_state(msg)
+
+    # Must be canonical sequence: [pan, lift, elbow, wrist1, wrist2, wrist3]
+    expected = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+    assert positions == expected
+    assert mapper.get_positions() == expected
+
+    # 3. Partial update preserves omitted joints (zero-order hold)
+    msg2 = JointState()
+    msg2.name = ["wrist_3_joint", "shoulder_pan_joint"]
+    msg2.position = [0.95, 0.15]
+    positions2 = mapper.update_from_joint_state(msg2)
+
+    assert positions2 == [0.15, 0.2, 0.3, 0.4, 0.5, 0.95]
+    assert mapper.get_positions() == [0.15, 0.2, 0.3, 0.4, 0.5, 0.95]
+
+    # 4. Non-finite values (NaN / Inf) are rejected, preserving previous valid values
+    msg3 = JointState()
+    msg3.name = ["shoulder_lift_joint", "elbow_joint"]
+    msg3.position = [float("nan"), float("inf")]
+    positions3 = mapper.update_from_joint_state(msg3)
+
+    assert positions3 == [0.15, 0.2, 0.3, 0.4, 0.5, 0.95]
+    assert mapper.get_positions() == [0.15, 0.2, 0.3, 0.4, 0.5, 0.95]
+
+
+def test_edge_node_joint_state_subscription_and_streaming(mock_ros_node):
+    from sensor_msgs.msg import JointState
+
+    # EdgeNode initializes mapper and joint_states subscription
+    edge = EdgeNode(robot_id="robot-stream", ros2_node=mock_ros_node, auto_connect=False)
+    assert hasattr(edge, "mapper")
+
+    # Simulate arrival of joint state message
+    msg = JointState()
+    msg.name = [
+        "shoulder_pan_joint",
+        "shoulder_lift_joint",
+        "elbow_joint",
+        "wrist_1_joint",
+        "wrist_2_joint",
+        "wrist_3_joint",
+    ]
+    msg.position = [0.1, -0.2, 0.3, -0.4, 0.5, -0.6]
+    edge.on_joint_state(msg)
+
+    assert edge.mapper.get_positions() == [0.1, -0.2, 0.3, -0.4, 0.5, -0.6]
+
+    # Test periodic telemetry tick emission
+    event = edge.publish_telemetry_tick()
+    assert event is not None
+    assert event.joint_positions == [0.1, -0.2, 0.3, -0.4, 0.5, -0.6]
+    assert event.robot_state == RobotState.IDLE
+    assert event.timestamp_ns > 0
+
+
+def test_mock_joint_state_publisher(mock_ros_node):
+    from unittest.mock import patch
+    import rclpy
+    from edge_node.mock_publisher import MockJointStatePublisher
+    from domain import CANONICAL_UR5E_JOINTS
+
+    if not rclpy.ok():
+        rclpy.init()
+
+    pub_node = MockJointStatePublisher(rate_hz=30.0)
+    try:
+        msg = pub_node.create_joint_state_msg()
+        assert msg.name == list(CANONICAL_UR5E_JOINTS)
+        assert list(msg.position) == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        assert list(msg.velocity) == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        assert list(msg.effort) == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+        pub_msg = pub_node.publish_joint_state()
+        assert list(pub_msg.position) == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    finally:
+        pub_node.destroy_node()
+
+

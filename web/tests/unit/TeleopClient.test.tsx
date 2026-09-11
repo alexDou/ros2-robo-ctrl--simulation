@@ -195,4 +195,43 @@ describe('TeleopClient Component', () => {
     expect(screen.getByTestId('conflict-banner')).toBeDefined();
     expect(screen.getByTestId('conflict-banner').textContent).toContain('Active session already exists');
   });
+
+  it('removes Ping controls from DOM once telemetry streams and transitions to CONNECTED / IDLE', () => {
+    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+    const ws = MockWebSocket.instances[0];
+
+    act(() => {
+      ws.simulateOpen();
+    });
+
+    // Before telemetry: Ping button is in the DOM
+    expect(screen.queryByRole('button', { name: /ping/i })).not.toBeNull();
+    expect(screen.getByTestId('connection-badge').textContent).toBe('CONNECTED');
+
+    // Inbound telemetry frame arrives
+    const telemetry: RobotTelemetryEvent = {
+      timestamp_ns: 1700000000000000000n.toString(),
+      robot_state: RobotState.IDLE,
+      joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    };
+
+    act(() => {
+      ws.simulateMessage(JSON.stringify(telemetry));
+    });
+
+    // Stream-aware cleanup: Ping controls are removed from DOM!
+    expect(screen.queryByRole('button', { name: /ping/i })).toBeNull();
+    expect(screen.getByTestId('connection-badge').textContent).toBe('CONNECTED / IDLE');
+
+    // TelemetryMonitor showcase is present
+    expect(screen.getByTestId('telemetry-monitor')).toBeDefined();
+
+    // When connection drops, controls are restored
+    act(() => {
+      ws.close();
+    });
+    expect(screen.getByTestId('connection-badge').textContent).toBe('DISCONNECTED');
+    expect(screen.queryByRole('button', { name: /reconnect/i })).not.toBeNull();
+  });
 });
+

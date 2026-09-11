@@ -1,12 +1,13 @@
 ---
 # hand-sim-iy13
 title: 'Unit 2.2: Gateway High-Throughput 30 Hz Telemetry Multiplexing'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-11T16:02:08Z
-updated_at: 2026-09-11T16:02:08Z
+updated_at: 2026-09-11T21:29:26Z
 parent: hand-sim-8n0g
 blocked_by:
     - hand-sim-awta
