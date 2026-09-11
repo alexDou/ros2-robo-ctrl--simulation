@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { isBrowser } from '@utils/env';
 import {
-  isRobotTelemetryEvent,
   isErrorFrame,
   type RobotTelemetryEvent,
   type ErrorFrame,
 } from '@contracts';
 import { createPingCommand, serializeCommand } from '@domain/parsers';
+import { useTelemetryStream } from '@/hooks/useTelemetryStream';
+import { TelemetryMonitor } from '@components/TelemetryMonitor';
 
 export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
 
@@ -36,10 +37,19 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
   const wsRef = useRef<WebSocket | null>(null);
   const isCleaningUp = useRef(false);
 
+  const {
+    bufferRef,
+    isStreaming,
+    robotState,
+    handleIncomingFrame,
+    resetStream,
+  } = useTelemetryStream();
+
   const connect = useCallback(() => {
     isCleaningUp.current = false;
     setConnectionState('CONNECTING');
     setConflictReason(null);
+    resetStream();
 
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
@@ -59,14 +69,24 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
         const logId = `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
         const timeStr = new Date().toLocaleTimeString();
 
-        if (isRobotTelemetryEvent(parsed)) {
-          const entry: LogEntry = {
-            id: logId,
-            type: 'telemetry',
-            timestamp: timeStr,
-            data: parsed,
-          };
-          setLogs((prev) => [entry, ...prev].slice(0, 100));
+        const handled = handleIncomingFrame(parsed);
+        if (handled) {
+          const telem = parsed as RobotTelemetryEvent;
+          setLogs((prev) => {
+            const isFirst = prev.length === 0;
+            const lastTelem = prev.find((p) => p.type === 'telemetry')?.data as RobotTelemetryEvent | undefined;
+            const stateChanged = !lastTelem || lastTelem.robot_state !== telem.robot_state;
+            if (telem.command_id || isFirst || stateChanged) {
+              const entry: LogEntry = {
+                id: logId,
+                type: 'telemetry',
+                timestamp: timeStr,
+                data: telem,
+              };
+              return [entry, ...prev].slice(0, 100);
+            }
+            return prev;
+          });
         } else if (isErrorFrame(parsed)) {
           const entry: LogEntry = {
             id: logId,
@@ -99,6 +119,7 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
 
     ws.onclose = (event: CloseEvent) => {
       if (isCleaningUp.current) return;
+      resetStream();
       if (event.code === 4409 || event.reason === 'Conflict') {
         setConnectionState('CONFLICT');
         setConflictReason('Active session already exists for robot');
@@ -106,7 +127,7 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
         setConnectionState((curr) => (curr === 'CONFLICT' ? 'CONFLICT' : 'DISCONNECTED'));
       }
     };
-  }, [wsUrl]);
+  }, [wsUrl, handleIncomingFrame, resetStream]);
 
   useEffect(() => {
     connect();
@@ -171,7 +192,9 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
               marginRight: '0.5rem',
             }}
           />
-          {connectionState}
+          {isStreaming && connectionState === 'CONNECTED'
+            ? `CONNECTED / ${robotState || 'IDLE'}`
+            : connectionState}
         </div>
       </header>
 
@@ -191,24 +214,30 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-        <button
-          onClick={handlePing}
-          disabled={connectionState !== 'CONNECTED'}
-          style={{
-            backgroundColor: connectionState === 'CONNECTED' ? '#2563eb' : '#9ca3af',
-            color: '#fff',
-            fontWeight: 600,
-            padding: '0.5rem 1.5rem',
-            borderRadius: '0.375rem',
-            border: 'none',
-            cursor: connectionState === 'CONNECTED' ? 'pointer' : 'not-allowed',
-          }}
-        >
-          Ping Robot
-        </button>
+      <TelemetryMonitor bufferRef={bufferRef} isStreaming={isStreaming} />
 
-        {connectionState === 'DISCONNECTED' && (
+      {!isStreaming && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+          <button
+            onClick={handlePing}
+            disabled={connectionState !== 'CONNECTED'}
+            style={{
+              backgroundColor: connectionState === 'CONNECTED' ? '#2563eb' : '#9ca3af',
+              color: '#fff',
+              fontWeight: 600,
+              padding: '0.5rem 1.5rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              cursor: connectionState === 'CONNECTED' ? 'pointer' : 'not-allowed',
+            }}
+          >
+            Ping Robot
+          </button>
+        </div>
+      )}
+
+      {connectionState === 'DISCONNECTED' && (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
           <button
             onClick={connect}
             style={{
@@ -223,8 +252,8 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
           >
             Reconnect
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <section>
         <h2 style={{ fontSize: '1.125rem', marginBottom: '0.75rem' }}>Real-Time Event Log</h2>

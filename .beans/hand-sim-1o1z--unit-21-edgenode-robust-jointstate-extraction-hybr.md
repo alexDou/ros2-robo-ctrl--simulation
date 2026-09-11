@@ -1,12 +1,13 @@
 ---
 # hand-sim-1o1z
 title: 'Unit 2.1: EdgeNode Robust JointState Extraction & Hybrid Mock Publisher'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-11T16:02:02Z
-updated_at: 2026-09-11T16:02:02Z
+updated_at: 2026-09-11T21:21:40Z
 parent: hand-sim-8n0g
 blocked_by:
     - hand-sim-awta

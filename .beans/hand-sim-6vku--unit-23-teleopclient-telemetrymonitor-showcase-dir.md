@@ -1,12 +1,13 @@
 ---
 # hand-sim-6vku
 title: 'Unit 2.3: TeleopClient TelemetryMonitor Showcase & Direct DOM Ingestion'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-11T16:02:15Z
-updated_at: 2026-09-11T16:02:15Z
+updated_at: 2026-09-11T21:31:29Z
 parent: hand-sim-8n0g
 blocked_by:
     - hand-sim-awta
