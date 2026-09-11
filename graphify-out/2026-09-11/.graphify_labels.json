@@ -48,7 +48,7 @@
   "46": "code-reviewer.md",
   "47": "trim_logs.sh",
   "48": "HandSim",
-  "49": "ActiveSessionRegistry",
+  "49": "teleop_ws",
   "50": "inference_metrics",
   "51": "sim-auditor.md",
   "52": "rust_feedback.sh",
@@ -83,9 +83,9 @@
   "81": "EdgeNode",
   "82": "error_frame.schema.json",
   "83": "TeleopPage",
-  "84": "contracts.ts",
+  "84": "domain/contracts.ts",
   "85": "structure.md",
   "86": "scripts",
   "87": "MockWebSocket",
-  "88": "domain.rs"
+  "88": "domain/__init__.py"
 }

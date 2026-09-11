@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1789136589.2929132,
-    "seen": 1789136674.750067,
-    "ast_hash": "9a7cdbe9b8e67444a03120a3a2703cc8",
+    "mtime": 1788975060.8148596,
+    "seen": 1788975283.3156173,
+    "ast_hash": "d021a2c5040bb84698e0a2823765a054",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -84,9 +84,9 @@
     "semantic_hash": ""
   },
   "web/tsconfig.json": {
-    "mtime": 1789136656.6539898,
-    "seen": 1789136674.7511437,
-    "ast_hash": "288f153c4ee4c687c0af69edcb4c2890",
+    "mtime": 1789136383.1399357,
+    "seen": 1789136417.7689438,
+    "ast_hash": "87e6f03bfa9fbfa5af025582477d7fbe",
     "semantic_hash": ""
   },
   "web/vite.config.ts": {
@@ -792,9 +792,15 @@
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
-    "mtime": 1789136606.7449114,
-    "seen": 1789136674.7503216,
-    "ast_hash": "b104fe24be9cc911bb9055be8eb7c699",
+    "mtime": 1788976966.539595,
+    "seen": 1788977145.2829401,
+    "ast_hash": "3f0270447ea44e6d1674b0c993e321d6",
+    "semantic_hash": ""
+  },
+  "src/edge_node/domain.py": {
+    "mtime": 1789136031.219879,
+    "seen": 1789136417.7677534,
+    "ast_hash": "da092dad5e40abb86f8d5cb47bf805bc",
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
@@ -804,9 +810,15 @@
     "semantic_hash": ""
   },
   "tests/test_domain.py": {
-    "mtime": 1789136565.7121646,
-    "seen": 1789136674.7506173,
-    "ast_hash": "221b2b6700e95fadaeedb83bb2e96551",
+    "mtime": 1788975170.6122932,
+    "seen": 1788975283.3157122,
+    "ast_hash": "34d8ff5aeb4900f67508c4372c26f4bf",
+    "semantic_hash": ""
+  },
+  "web/src/contracts.ts": {
+    "mtime": 1789136348.3149395,
+    "seen": 1789136417.7683287,
+    "ast_hash": "eceeef23fad76af85dce004097d37881",
     "semantic_hash": ""
   },
   "src/edge_node/main.py": {
@@ -816,9 +828,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789136560.9539163,
-    "seen": 1789136674.7503557,
-    "ast_hash": "36b2d0d8c2c1ef948ed0f057e25b9916",
+    "mtime": 1789132508.5596669,
+    "seen": 1789132591.666012,
+    "ast_hash": "b7f1b76d36808b49f971710d140f9dae",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
@@ -846,9 +858,9 @@
     "semantic_hash": ""
   },
   "tests/test_edge_node.py": {
-    "mtime": 1789136575.1719148,
-    "seen": 1789136674.7506185,
-    "ast_hash": "614c0a6d5c81202f54f5a746b714267d",
+    "mtime": 1788976945.0035012,
+    "seen": 1788977145.2830896,
+    "ast_hash": "b03048f79fdcb5cadba1afbb3aedeea0",
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {

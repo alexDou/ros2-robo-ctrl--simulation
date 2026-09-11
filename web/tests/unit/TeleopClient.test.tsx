@@ -87,6 +87,12 @@ describe('TeleopClient Component', () => {
     expect(screen.getByTestId('connection-badge').textContent).toMatch(/CONNECTED/i);
   });
 
+  it('defaults to arm-ur5 when robotId is omitted', () => {
+    render(<TeleopClient />);
+    expect(screen.getByText(/Teleop Control — arm-ur5/i)).toBeDefined();
+    expect(MockWebSocket.instances[0].url).toContain('/ws/teleop/robot/arm-ur5');
+  });
+
   it('transmits structured PING command when clicking Ping button', () => {
     render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     const ws = MockWebSocket.instances[0];

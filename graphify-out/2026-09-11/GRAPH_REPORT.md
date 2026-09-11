@@ -1,11 +1,11 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-11)
 
 ## Corpus Check
-- 137 files · ~53,232 words
+- 139 files · ~53,250 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 944 nodes · 1078 edges · 89 communities (56 shown, 14 thin omitted)
+- 947 nodes · 1080 edges · 89 communities (55 shown, 14 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
@@ -64,7 +64,7 @@
 - code-reviewer.md
 - trim_logs.sh
 - HandSim
-- ActiveSessionRegistry
+- teleop_ws
 - inference_metrics
 - sim-auditor.md
 - rust_feedback.sh
@@ -80,11 +80,10 @@
 - EdgeNode
 - error_frame.schema.json
 - TeleopPage
-- contracts.ts
+- domain/contracts.ts
 - structure.md
 - scripts
 - MockWebSocket
-- domain.rs
 
 ## God Nodes (most connected - your core abstractions)
 1. `EdgeNode` - 18 edges
@@ -137,7 +136,7 @@ Nodes (21): 1. In-process, 2. Local-substitutable, 3. Remote but owned (Ports & 
 
 ### Community 5 - "compilerOptions"
 Cohesion: 0.06
-Nodes (33): DOM, DOM.Iterable, domain, domain/contracts, ES2022, ../schemas/*, src, src/components/* (+25 more)
+Nodes (34): DOM, DOM.Iterable, domain, domain/contracts, ES2022, ../schemas/*, src, src/components/* (+26 more)
 
 ### Community 6 - "During the session"
 Cohesion: 0.09
@@ -160,8 +159,8 @@ Cohesion: 0.23
 Nodes (17): ask(), ask_secret(), banner(), _clear(), _existing(), finish(), note(), open_url() (+9 more)
 
 ### Community 11 - "DataFabricPort"
-Cohesion: 0.11
-Nodes (24): Data, HashMap, HttpRequest, HttpResponse, Payload, Receiver, RobotCommand, Sender (+16 more)
+Cohesion: 0.08
+Nodes (33): HashMap, Into, Option, Receiver, RobotCommand, Sender, Session, DomainError (+25 more)
 
 ### Community 12 - "Diagnosing Bugs"
 Cohesion: 0.13
@@ -299,9 +298,9 @@ Nodes (3): 1. URDF Loading & Mesh Path Resolution, Architecture Overview, URDF &
 Cohesion: 0.50
 Nodes (3): AI Agent Execution Directive & Constraints, Domain Definitions & Serialization Contracts (DDD Baseline), Specification-Driven Development (SDD) blueprint.
 
-### Community 49 - "ActiveSessionRegistry"
-Cohesion: 0.14
-Nodes (14): Drop, HashSet, Responder, health_check(), main(), Result, ActiveSessionGuard, ActiveSessionRegistry (+6 more)
+### Community 49 - "teleop_ws"
+Cohesion: 0.09
+Nodes (23): Data, Drop, HashSet, HttpRequest, HttpResponse, Payload, Responder, health_check() (+15 more)
 
 ### Community 50 - "inference_metrics"
 Cohesion: 0.09
@@ -327,7 +326,7 @@ Nodes (28): error_code, message, additionalProperties, description, description,
 Cohesion: 0.12
 Nodes (9): TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR, CustomWorld (+1 more)
 
-### Community 84 - "contracts.ts"
+### Community 84 - "domain/contracts.ts"
 Cohesion: 0.11
 Nodes (30): ArmJointPositions, CommandType, createPingCommand(), ErrorFrame, InferenceMetrics, isErrorFrame(), isRobotCommand(), isRobotTelemetryEvent() (+22 more)
 
@@ -335,13 +334,9 @@ Nodes (30): ArmJointPositions, CommandType, createPingCommand(), ErrorFrame, Inf
 Cohesion: 0.10
 Nodes (19): preact, three, urdf-loader, dependencies, preact, three, urdf-loader, name (+11 more)
 
-### Community 88 - "domain.rs"
-Cohesion: 0.14
-Nodes (18): Into, Option, DomainError, Result, Self, CommandType, ErrorFrame, InferenceMetrics (+10 more)
-
 ## Knowledge Gaps
-- **478 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+473 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 582 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **479 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+474 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 585 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -354,7 +349,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 7 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
-  _478 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _479 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**
