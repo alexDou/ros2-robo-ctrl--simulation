@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-11)
 
 ## Corpus Check
-- 145 files · ~60,616 words
+- 149 files · ~59,909 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1031 nodes · 1181 edges · 96 communities (63 shown, 14 thin omitted)
+- 1046 nodes · 1221 edges · 102 communities (68 shown, 15 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 38 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3438dab4`
+- Built from commit: `cdafbbb7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -76,11 +76,11 @@
 - gateway
 - hand-sim-ai
 - robot_command.schema.json
-- joint_positions
+- enum
 - EdgeNode
 - error_frame.schema.json
 - TeleopPage
-- contracts.ts
+- parsers.ts
 - structure.md
 - scripts
 - hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md
@@ -92,6 +92,12 @@
 - hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md
 - hand-sim-iy13--unit-22-gateway-high-throughput-30-hz-telemetry-mu.md
 - hand-sim-n9ch--unit-24-multi-service-30-hz-end-to-end-playwright.md
+- joint_positions
+- properties
+- enum
+- canonical_joints
+- MockWebSocket
+- required
 
 ## God Nodes (most connected - your core abstractions)
 1. `EdgeNode` - 18 edges
@@ -120,7 +126,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (96 total, 14 thin omitted)
+## Communities (102 total, 15 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -144,7 +150,7 @@ Nodes (21): 1. In-process, 2. Local-substitutable, 3. Remote but owned (Ports & 
 
 ### Community 5 - "compilerOptions"
 Cohesion: 0.06
-Nodes (33): DOM, DOM.Iterable, domain, domain/contracts, ES2022, ../schemas/*, src, src/components/* (+25 more)
+Nodes (35): DOM, DOM.Iterable, domain/*, domain/contracts, domain/index, ES2022, ../schemas/*, src (+27 more)
 
 ### Community 6 - "During the session"
 Cohesion: 0.09
@@ -207,8 +213,8 @@ Cohesion: 0.22
 Nodes (8): Further Notes, Implementation Decisions, Out of Scope, Problem Statement, Process, Solution, Testing Decisions, User Stories
 
 ### Community 21 - "generate_domain.py"
-Cohesion: 0.25
-Nodes (14): ConstantDef, DomainIR, emit_python(), emit_rust(), emit_typescript(), EnumDef, FieldDef, FixedArrayDef (+6 more)
+Cohesion: 0.23
+Nodes (13): ConstantDef, DomainIR, emit_python(), emit_rust(), emit_typescript(), EnumDef, FieldDef, FixedArrayDef (+5 more)
 
 ### Community 22 - "<Questionnaire title>"
 Cohesion: 0.25
@@ -307,16 +313,16 @@ Cohesion: 0.14
 Nodes (14): Drop, HashSet, Responder, health_check(), main(), Result, ActiveSessionGuard, ActiveSessionRegistry (+6 more)
 
 ### Community 50 - "robot_telemetry_event.schema.json"
-Cohesion: 0.08
-Nodes (25): elbow_joint, joint_positions, robot_state, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint, wrist_3_joint (+17 more)
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, $schema, title, type, x-datafabric-channel
 
 ### Community 79 - "robot_command.schema.json"
 Cohesion: 0.05
 Nodes (39): command_id, EMERGENCY_STOP, payload, PING, RESET_FAULT, sender_id, TELEOP_JOINT_TARGET, TRAJECTORY_EXECUTE (+31 more)
 
-### Community 80 - "joint_positions"
-Cohesion: 0.07
-Nodes (27): BOOTING, EXECUTING, FAULT, IDLE, PROCESSING, description, type, type (+19 more)
+### Community 80 - "enum"
+Cohesion: 0.20
+Nodes (10): BOOTING, EXECUTING, FAULT, IDLE, PROCESSING, robot_state, description, enum (+2 more)
 
 ### Community 81 - "EdgeNode"
 Cohesion: 0.06
@@ -330,13 +336,13 @@ Nodes (28): error_code, message, additionalProperties, description, description,
 Cohesion: 0.12
 Nodes (9): TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR, CustomWorld (+1 more)
 
-### Community 84 - "contracts.ts"
-Cohesion: 0.08
-Nodes (35): ArmJointPositions, CANONICAL_UR5E_JOINTS, CommandType, createPingCommand(), ErrorFrame, InferenceMetrics, isErrorFrame(), isRobotCommand() (+27 more)
+### Community 84 - "parsers.ts"
+Cohesion: 0.09
+Nodes (41): ArmJointPositions, CANONICAL_UR5E_JOINTS, CommandType, ErrorFrame, InferenceMetrics, RobotCommand, RobotState, RobotTelemetryEvent (+33 more)
 
 ### Community 86 - "scripts"
-Cohesion: 0.10
-Nodes (19): preact, three, urdf-loader, dependencies, preact, three, urdf-loader, name (+11 more)
+Cohesion: 0.09
+Nodes (21): preact, three, urdf-loader, dependencies, preact, three, urdf-loader, zod (+13 more)
 
 ### Community 87 - "hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md"
 Cohesion: 0.25
@@ -374,22 +380,42 @@ Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
+### Community 96 - "joint_positions"
+Cohesion: 0.22
+Nodes (9): type, description, items, maxItems, minItems, prefixItems, title, type (+1 more)
+
+### Community 97 - "properties"
+Cohesion: 0.25
+Nodes (8): description, type, properties, command_id, timestamp_ns, description, minimum, type
+
+### Community 98 - "enum"
+Cohesion: 0.29
+Nodes (7): elbow_joint, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint, wrist_3_joint, enum
+
+### Community 99 - "canonical_joints"
+Cohesion: 0.29
+Nodes (7): description, title, type, x-constant-alias, x-constant-name, $defs, canonical_joints
+
+### Community 101 - "required"
+Cohesion: 0.50
+Nodes (4): joint_positions, robot_state, timestamp_ns, required
+
 ## Knowledge Gaps
-- **535 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+530 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 645 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **538 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+533 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 650 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **15 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `properties` connect `joint_positions` to `robot_telemetry_event.schema.json`, `inference_metrics`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `inference_metrics` connect `inference_metrics` to `joint_positions`?**
-  _High betweenness centrality (0.010) - this node is a cross-community bridge._
+- **Why does `properties` connect `properties` to `joint_positions`, `robot_telemetry_event.schema.json`, `enum`, `inference_metrics`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+- **Why does `inference_metrics` connect `inference_metrics` to `properties`?**
+  _High betweenness centrality (0.007) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
-  _535 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _538 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**
