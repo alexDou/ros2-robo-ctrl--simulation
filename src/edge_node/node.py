@@ -123,7 +123,11 @@ class EdgeNode:
         self.handle_command_payload(payload_str)
 
     def on_joint_state(self, msg: Any) -> list[float]:
-        """Ingests a JointState ROS2 message and updates canonical joint positions."""
+        """Ingests a JointState ROS2 message and updates canonical joint positions.
+
+        Args:
+            msg: Inbound message (sensor_msgs.msg.JointState or dict with .name and .position).
+        """
         return self.mapper.update_from_joint_state(msg)
 
     def publish_telemetry_tick(self) -> RobotTelemetryEvent:
