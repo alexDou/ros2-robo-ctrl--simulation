@@ -3,11 +3,20 @@ Feature: Distributed Robot Teleoperation
   I want to connect to a robot, monitor telemetry, and dispatch commands
   So that I can safely control and verify manipulator operations
 
-  @smoke @teleoperation
-  Scenario: Operator connects, clicks Ping, and receives telemetry confirmation
+  @smoke @telemetry @30hz
+  Scenario: Continuous 30 Hz telemetry streaming from mock ROS2 publisher to browser DOM
     When the operator opens the teleoperation visualizer for robot "0"
-    Then the connection status should indicate "CONNECTED"
-    When the operator clicks the Ping button
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the telemetry streaming frequency should be approximately 30 Hz
+    And the telemetry latency should remain below 50 ms
+    And all 6 canonical UR5e joint readouts should update accurately in the DOM
+    And the connection verification controls should be removed from the DOM
+
+  @command @ping
+  Scenario: Operator dispatches Ping command and receives telemetry confirmation
+    When the operator opens the teleoperation visualizer for robot "0"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    When the operator dispatches a PING command
     Then the event log should contain a "[TELEMETRY]" event with state "IDLE"
     And the EdgeNode ROS2 logger should record receipt of the PING command
 
@@ -21,9 +30,8 @@ Feature: Distributed Robot Teleoperation
   @resilience @diagnostics
   Scenario: Raw malformed frame returns structured error diagnostics without dropping connection
     When the operator opens the teleoperation visualizer for robot "0"
-    Then the connection status should indicate "CONNECTED"
+    Then the connection status should indicate "CONNECTED / IDLE"
     When the operator dispatches a malformed raw payload "INVALID_RAW_NON_JSON_PAYLOAD"
     Then the event log should contain an error diagnostic "SCHEMA_VALIDATION_ERROR" with message "Malformed RobotCommand payload"
-    And the connection status should indicate "CONNECTED"
-    When the operator clicks the Ping button
-    Then the event log should contain a "[TELEMETRY]" event with state "IDLE"
+    And the connection status should indicate "CONNECTED / IDLE"
+    And the telemetry streaming frequency should be approximately 30 Hz

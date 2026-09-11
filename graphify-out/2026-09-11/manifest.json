@@ -810,15 +810,15 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789161652.8365524,
-    "seen": 1789162309.1908681,
-    "ast_hash": "fd197abd14fdef9c55a29ecb43176ade",
+    "mtime": 1789163005.086915,
+    "seen": 1789163131.808299,
+    "ast_hash": "c95820a8d760d65fb940f46d76d704d7",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
-    "mtime": 1789162148.5946724,
-    "seen": 1789162309.1908987,
-    "ast_hash": "525c4a55b2d4903ff3e687c2cc7cc81a",
+    "mtime": 1789163084.2239065,
+    "seen": 1789163131.8083339,
+    "ast_hash": "30a76d0adc69aff68e7130d0f609aaa1",
     "semantic_hash": ""
   },
   "src/gateway/src/session.rs": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789162277.7749941,
-    "seen": 1789162309.1912086,
-    "ast_hash": "d1612984ad4a0bf7e1abdd557ba26631",
+    "mtime": 1789163097.954905,
+    "seen": 1789163131.8088055,
+    "ast_hash": "d4a47f92deecc3b8175cc0b178686f98",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -1026,21 +1026,21 @@
     "semantic_hash": ""
   },
   "src/edge_node/mapper.py": {
-    "mtime": 1789161618.0795562,
-    "seen": 1789162309.1908648,
-    "ast_hash": "573d58fc792b27973c596e73aa74e81a",
+    "mtime": 1789162984.1659174,
+    "seen": 1789163131.8082957,
+    "ast_hash": "1c6c7660039d79a7d5d508503b469c9a",
     "semantic_hash": ""
   },
   "src/edge_node/mock_publisher.py": {
-    "mtime": 1789161668.8441265,
-    "seen": 1789162309.1908672,
-    "ast_hash": "b8fa0702cf901e4d5c1f1e0459cd89fb",
+    "mtime": 1789163051.52491,
+    "seen": 1789163131.8082974,
+    "ast_hash": "dafee65c630dba3775d179f444063c1b",
     "semantic_hash": ""
   },
   "web/src/components/TelemetryMonitor.tsx": {
-    "mtime": 1789162243.547998,
-    "seen": 1789162309.1912074,
-    "ast_hash": "0fe53997cca6874bd72864a16fee7f34",
+    "mtime": 1789162974.8109183,
+    "seen": 1789163131.8088043,
+    "ast_hash": "d6b2624fb094b3192254f9c739f52e6e",
     "semantic_hash": ""
   },
   "web/src/hooks/useTelemetryStream.ts": {

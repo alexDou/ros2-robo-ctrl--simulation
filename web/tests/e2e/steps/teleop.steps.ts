@@ -60,6 +60,33 @@ When('the operator dispatches a malformed raw payload {string}', async function 
   await this.teleopPage!.injectRawFrame(payload);
 });
 
+When('the operator dispatches a PING command', async function (this: CustomWorld) {
+  const pingCmd = {
+    command_id: `ping-${Date.now()}`,
+    sender_id: 'ui-client',
+    timestamp_ns: Date.now() * 1_000_000,
+    type: 'PING',
+    payload: {},
+  };
+  await this.teleopPage!.injectRawFrame(JSON.stringify(pingCmd));
+});
+
 Then('the event log should contain an error diagnostic {string} with message {string}', async function (this: CustomWorld, code: string, message: string) {
   await this.teleopPage!.expectErrorDiagnostic(code, message);
+});
+
+Then('the telemetry streaming frequency should be approximately {int} Hz', async function (this: CustomWorld, targetHz: number) {
+  await this.teleopPage!.expectTelemetryFrequencyRange(targetHz - 10, targetHz + 10);
+});
+
+Then('the telemetry latency should remain below {int} ms', async function (this: CustomWorld, maxMs: number) {
+  await this.teleopPage!.expectTelemetryLatencyBelow(maxMs);
+});
+
+Then('all 6 canonical UR5e joint readouts should update accurately in the DOM', async function (this: CustomWorld) {
+  await this.teleopPage!.expectCanonicalJointsDisplayed();
+});
+
+Then('the connection verification controls should be removed from the DOM', async function (this: CustomWorld) {
+  await this.teleopPage!.expectVerifyConnectionControlsRemoved();
 });

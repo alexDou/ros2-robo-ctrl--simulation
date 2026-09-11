@@ -622,7 +622,7 @@ def emit_python(ir: DomainIR) -> str:
 def _ts_field_to_zod(f: FieldDef) -> str:
     if f.kind == "literal":
         base = f"z.literal('{f.ref}', {{ message: \"Expected frame type '{f.ref}'\" }})"
-        return base if f.required else f"{base}.optional()"
+        return base if f.required else f"{base}.nullish()"
 
     if f.kind == "string":
         parts = []
@@ -645,11 +645,11 @@ def _ts_field_to_zod(f: FieldDef) -> str:
             parts.append(f".regex(new RegExp({json.dumps(f.pattern)}))")
 
         res = "".join(parts)
-        return res if f.required else f"{res}.optional()"
+        return res if f.required else f"{res}.nullish()"
 
     if f.kind == "int":
         if f.name == "timestamp_ns":
-            return "timestampNsSchema" if f.required else "timestampNsSchema.optional()"
+            return "timestampNsSchema" if f.required else "timestampNsSchema.nullish()"
         parts = [f"z.union([z.bigint(), z.number(), z.string()], {{ message: \"Missing required field '{f.name}'\" }})"]
         if f.minimum is not None:
             parts.append(f""".refine(
@@ -665,7 +665,7 @@ def _ts_field_to_zod(f: FieldDef) -> str:
       {{ message: "Field '{f.name}' must be a non-negative integer" }}
     )""")
         res = "".join(parts)
-        return res if f.required else f"{res}.optional()"
+        return res if f.required else f"{res}.nullish()"
 
     if f.kind == "float":
         parts = [f"z.number({{ message: \"Field '{f.name}' must be a number\" }})"]
@@ -677,26 +677,26 @@ def _ts_field_to_zod(f: FieldDef) -> str:
         elif f.maximum is not None:
             parts.append(f".max({f.maximum})")
         res = "".join(parts)
-        return res if f.required else f"{res}.optional()"
+        return res if f.required else f"{res}.nullish()"
 
     if f.kind == "bool":
-        return "z.boolean()" if f.required else "z.boolean().optional()"
+        return "z.boolean()" if f.required else "z.boolean().nullish()"
 
     if f.kind == "enum":
         base = f"{f.ref}Schema"
-        return base if f.required else f"{base}.optional()"
+        return base if f.required else f"{base}.nullish()"
 
     if f.kind == "fixed_array":
         base = f"{f.ref}Schema"
-        return base if f.required else f"{base}.optional()"
+        return base if f.required else f"{base}.nullish()"
 
     if f.kind == "model":
         base = f"raw{f.ref}Schema"
-        return base if f.required else f"{base}.optional()"
+        return base if f.required else f"{base}.nullish()"
 
     if f.kind == "generic_map":
         base = f"z.record(z.string(), z.unknown(), {{ message: \"Missing or invalid '{f.name}' object\" }})"
-        return base if f.required else f"{base}.optional()"
+        return base if f.required else f"{base}.nullish()"
 
     raise ValueError(f"Unknown field kind: {f.kind}")
 

@@ -142,14 +142,18 @@ impl MemoryFabric {
     }
 }
 
-type TelemetrySenderEntry = (broadcast::Sender<String>, usize);
+#[derive(Debug)]
+struct ZenohStreamEntry {
+    sender: broadcast::Sender<String>,
+    sub_count: usize,
+    worker_handle: tokio::task::JoinHandle<()>,
+}
 
 /// Zenoh DataFabric adapter interfacing with real Eclipse Zenoh sessions.
 #[derive(Debug, Clone)]
 pub struct ZenohFabric {
     session: Arc<zenoh::Session>,
-    telemetry_txs: Arc<Mutex<HashMap<String, TelemetrySenderEntry>>>,
-    active_workers: Arc<Mutex<HashMap<String, tokio::task::JoinHandle<()>>>>,
+    streams: Arc<Mutex<HashMap<String, ZenohStreamEntry>>>,
 }
 
 impl ZenohFabric {
@@ -157,8 +161,7 @@ impl ZenohFabric {
     pub fn new(session: zenoh::Session) -> Self {
         Self {
             session: Arc::new(session),
-            telemetry_txs: Arc::new(Mutex::new(HashMap::new())),
-            active_workers: Arc::new(Mutex::new(HashMap::new())),
+            streams: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 
@@ -167,8 +170,11 @@ impl ZenohFabric {
     /// # Panics
     /// Panics if internal mutex is poisoned.
     pub fn active_telemetry_subscriptions(&self, robot_id: &str) -> usize {
-        let map = self.telemetry_txs.lock().expect("lock telemetry_txs");
-        map.get(robot_id).map_or(0, |(_, count)| *count)
+        let streams = self
+            .streams
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        streams.get(robot_id).map_or(0, |entry| entry.sub_count)
     }
 
     /// Subscribes to telemetry on Zenoh with asynchronous multiplexing and clean worker teardown on drop.
@@ -180,76 +186,84 @@ impl ZenohFabric {
     /// Panics if internal mutex is poisoned.
     pub fn subscribe_telemetry(&self, robot_id: &str) -> Result<TelemetrySubscription, FabricError> {
         let topic = robot_telemetry_topic(robot_id)?;
-        let mut map = self.telemetry_txs.lock().expect("lock telemetry_txs");
-
-        let (tx, rx) = if let Some((existing_tx, count)) = map.get_mut(robot_id) {
-            *count += 1;
-            (existing_tx.clone(), existing_tx.subscribe())
-        } else {
-            let (new_tx, new_rx) = broadcast::channel(CHANNEL_CAPACITY);
-            map.insert(robot_id.to_string(), (new_tx.clone(), 1));
-            (new_tx, new_rx)
-        };
-        drop(map);
-
-        let mut workers = self
-            .active_workers
+        let mut streams = self
+            .streams
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        let should_spawn = workers.get(robot_id).is_none_or(tokio::task::JoinHandle::is_finished);
-        if should_spawn {
-            let session = Arc::clone(&self.session);
-            let tx_forward = tx;
-            let topic_clone = topic;
-            let handle = tokio::spawn(async move {
-                match session.declare_subscriber(&topic_clone).await {
-                    Ok(subscriber) => {
-                        log::info!("Declared Zenoh subscriber for {topic_clone}");
-                        while let Ok(sample) = subscriber.recv_async().await {
-                            let payload_str = String::from_utf8_lossy(&sample.payload().to_bytes()).to_string();
-                            if tx_forward.send(payload_str).is_err() {
-                                // No active receivers currently
+
+        let rx = match streams.entry(robot_id.to_string()) {
+            std::collections::hash_map::Entry::Occupied(mut occ) => {
+                let entry = occ.get_mut();
+                if entry.worker_handle.is_finished() {
+                    let (new_tx, new_rx) = broadcast::channel(CHANNEL_CAPACITY);
+                    let session = Arc::clone(&self.session);
+                    let tx_forward = new_tx.clone();
+                    let topic_clone = topic;
+                    let handle = tokio::spawn(async move {
+                        match session.declare_subscriber(&topic_clone).await {
+                            Ok(subscriber) => {
+                                log::info!("Declared Zenoh subscriber for {topic_clone}");
+                                while let Ok(sample) = subscriber.recv_async().await {
+                                    let payload_str = String::from_utf8_lossy(&sample.payload().to_bytes()).into_owned();
+                                    let _ = tx_forward.send(payload_str);
+                                }
+                            }
+                            Err(err) => {
+                                log::error!("Failed to declare Zenoh subscriber on {topic_clone}: {err}");
                             }
                         }
-                    }
-                    Err(err) => {
-                        log::error!("Failed to declare Zenoh subscriber on {topic_clone}: {err}");
-                    }
+                    });
+                    entry.sender = new_tx;
+                    entry.worker_handle = handle;
+                    entry.sub_count = 1;
+                    new_rx
+                } else {
+                    entry.sub_count += 1;
+                    entry.sender.subscribe()
                 }
-            });
-            workers.insert(robot_id.to_string(), handle);
-        }
-        drop(workers);
+            }
+            std::collections::hash_map::Entry::Vacant(vac) => {
+                let (new_tx, new_rx) = broadcast::channel(CHANNEL_CAPACITY);
+                let session = Arc::clone(&self.session);
+                let tx_forward = new_tx.clone();
+                let topic_clone = topic;
+                let handle = tokio::spawn(async move {
+                    match session.declare_subscriber(&topic_clone).await {
+                        Ok(subscriber) => {
+                            log::info!("Declared Zenoh subscriber for {topic_clone}");
+                            while let Ok(sample) = subscriber.recv_async().await {
+                                let payload_str = String::from_utf8_lossy(&sample.payload().to_bytes()).into_owned();
+                                let _ = tx_forward.send(payload_str);
+                            }
+                        }
+                        Err(err) => {
+                            log::error!("Failed to declare Zenoh subscriber on {topic_clone}: {err}");
+                        }
+                    }
+                });
+                vac.insert(ZenohStreamEntry {
+                    sender: new_tx,
+                    sub_count: 1,
+                    worker_handle: handle,
+                });
+                new_rx
+            }
+        };
+        drop(streams);
 
         let r_id = robot_id.to_string();
-        let telem_map = Arc::clone(&self.telemetry_txs);
-        let workers_map = Arc::clone(&self.active_workers);
+        let streams_map = Arc::clone(&self.streams);
 
         let guard = Box::new(move || {
-            let mut map = telem_map
+            let mut streams = streams_map
                 .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
-            let should_teardown = match map.entry(r_id.clone()) {
-                std::collections::hash_map::Entry::Occupied(mut entry) => {
-                    let count = &mut entry.get_mut().1;
-                    *count = count.saturating_sub(1);
-                    if *count == 0 {
-                        entry.remove();
-                        true
-                    } else {
-                        false
-                    }
-                }
-                std::collections::hash_map::Entry::Vacant(_) => false,
-            };
-            drop(map);
-
-            if should_teardown {
-                let mut workers = workers_map
-                    .lock()
-                    .unwrap_or_else(std::sync::PoisonError::into_inner);
-                if let Some(handle) = workers.remove(&r_id) {
-                    handle.abort();
+            if let std::collections::hash_map::Entry::Occupied(mut occ) = streams.entry(r_id.clone()) {
+                let entry = occ.get_mut();
+                entry.sub_count = entry.sub_count.saturating_sub(1);
+                if entry.sub_count == 0 {
+                    let removed = occ.remove();
+                    removed.worker_handle.abort();
                     log::info!("Torn down Zenoh streaming worker for robot {r_id}");
                 }
             }

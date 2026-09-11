@@ -1,12 +1,13 @@
 ---
 # hand-sim-n9ch
 title: 'Unit 2.4: Multi-Service 30 Hz End-to-End Playwright Suite'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-11T16:02:21Z
-updated_at: 2026-09-11T16:02:21Z
+updated_at: 2026-09-11T22:03:34Z
 parent: hand-sim-8n0g
 blocked_by:
     - hand-sim-1o1z

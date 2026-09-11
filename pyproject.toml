@@ -31,3 +31,7 @@ packages = ["src/edge_node", "src/domain"]
 [dependency-groups]
 dev = []
 
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+

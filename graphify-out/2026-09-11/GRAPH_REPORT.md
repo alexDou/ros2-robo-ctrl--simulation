@@ -1,7 +1,7 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-11)
 
 ## Corpus Check
-- 152 files · ~63,958 words
+- 152 files · ~64,109 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -402,7 +402,7 @@ Nodes (14): Enum, CommandType, parse_robot_topic(), robot_command_topic(), robot
 
 ### Community 98 - "JointStateMapper"
 Cohesion: 0.19
-Nodes (7): JointStateMapper, Any, JointState extraction and mapping for canonical 6-DoF UR5e arm., Returns the canonical 6-DoF joint positions in radians., Updates internal joint state from a sensor_msgs/msg/JointState or compatible…, Extracts canonical 6-DoF UR5e joint angles from ROS2 JointState messages.…, EdgeNode ROS2 node and Zenoh DataFabric command ingestion service.
+Nodes (7): JointStateMapper, Any, JointState extraction and mapping for canonical 6-DoF UR5e arm., Extracts canonical 6-DoF UR5e joint angles from ROS2 JointState messages.…, Returns the canonical 6-DoF joint positions in radians., Updates internal joint state from a sensor_msgs/msg/JointState or compatible…, EdgeNode ROS2 node and Zenoh DataFabric command ingestion service.
 
 ### Community 99 - "test_edge_node.py"
 Cohesion: 0.22
