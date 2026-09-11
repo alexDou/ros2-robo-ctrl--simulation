@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from edge_node.domain import (
+from domain import (
     CommandType,
     ErrorFrame,
     InferenceMetrics,

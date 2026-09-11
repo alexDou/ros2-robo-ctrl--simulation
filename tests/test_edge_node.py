@@ -4,7 +4,7 @@ import json
 import time
 from unittest.mock import MagicMock
 import pytest
-from edge_node.domain import CommandType, RobotCommand, RobotState, RobotTelemetryEvent
+from domain import CommandType, RobotCommand, RobotState, RobotTelemetryEvent
 from edge_node.node import EdgeNode
 
 

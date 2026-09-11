@@ -8,7 +8,7 @@ from edge_node.node import EdgeNode
 
 
 def main() -> None:
-    robot_id = os.environ.get("ROBOT_ID", "robot-0")
+    robot_id = os.environ.get("ROBOT_ID", "arm-ur5")
     print(f"Starting EdgeNode for {robot_id}...")
     rclpy.init()
     node = EdgeNode(robot_id=robot_id, auto_connect=True)

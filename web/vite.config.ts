@@ -9,7 +9,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@components': fileURLToPath(new URL('./src/components', import.meta.url)),
       '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
-      '@contracts': fileURLToPath(new URL('./src/contracts', import.meta.url)),
+      '@contracts': fileURLToPath(new URL('./domain/contracts', import.meta.url)),
       '@schemas': fileURLToPath(new URL('../schemas', import.meta.url)),
     },
   },

@@ -1,6 +1,6 @@
 """EdgeNode package."""
 
-from .domain import (
+from domain import (
     CommandType,
     ErrorFrame,
     InferenceMetrics,

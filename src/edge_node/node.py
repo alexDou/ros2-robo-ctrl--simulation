@@ -5,7 +5,7 @@ import time
 from typing import Any, Optional
 from pydantic import ValidationError
 
-from edge_node.domain import (
+from domain import (
     CommandType,
     RobotCommand,
     RobotState,
@@ -22,7 +22,7 @@ class EdgeNode:
 
     def __init__(
         self,
-        robot_id: str = "robot-0",
+        robot_id: str = "arm-ur5",
         ros2_node: Optional[Any] = None,
         zenoh_session: Optional[Any] = None,
         auto_connect: bool = True,

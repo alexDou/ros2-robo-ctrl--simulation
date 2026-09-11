@@ -1,3 +1,4 @@
+#[path = "../../domain/domain.rs"]
 pub mod domain;
 pub mod fabric;
 pub mod session;

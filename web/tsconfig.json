@@ -20,10 +20,10 @@
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@utils/*": ["src/utils/*"],
-      "@contracts": ["src/contracts"],
-      "@contracts/*": ["src/contracts/*"],
+      "@contracts": ["domain/contracts"],
+      "@contracts/*": ["domain/contracts/*"],
       "@schemas/*": ["../schemas/*"]
     }
   },
-  "include": ["src", "tests"]
+  "include": ["src", "tests", "domain"]
 }

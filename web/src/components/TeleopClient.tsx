@@ -23,7 +23,7 @@ export interface TeleopClientProps {
   gatewayWsUrl?: string;
 }
 
-export function TeleopClient({ robotId = 'robot-0', gatewayWsUrl }: TeleopClientProps) {
+export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClientProps) {
   const defaultProto =
     isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const defaultHost =

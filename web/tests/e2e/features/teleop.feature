@@ -1,4 +1,4 @@
-`Feature: Distributed Robot Teleoperation
+Feature: Distributed Robot Teleoperation
   As a remote operator
   I want to connect to a robot, monitor telemetry, and dispatch commands
   So that I can safely control and verify manipulator operations
