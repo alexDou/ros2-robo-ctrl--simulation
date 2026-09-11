@@ -11,7 +11,7 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
 
 ## Development Methodology
 
-- **Specification Driven Development (SDD)**: Phase 1 roadmap lives in `support_files/specs/phase1/units.md`.
+- **Specification Driven Development (SDD)**: Project units roadmap lives in `support_files/specs/units.md`.
 - **Test-Driven Development (TDD)**: Every task begins with a failing test (red → green → refactor).
   - Rust: `cargo check --workspace --all-targets`, `cargo clippy --workspace --all-targets`, & `cargo test` / `cargo nextest run --workspace`
   - Python: `pytest`

@@ -678,15 +678,15 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788980629.583586,
-    "seen": 1788982056.4773788,
-    "ast_hash": "67a9e74864223963cd8b3151ae7e38ff",
+    "mtime": 1789137429.6740737,
+    "seen": 1789137446.8294096,
+    "ast_hash": "d169c852691600d52ce27b686e788050",
     "semantic_hash": ""
   },
   "CONTEXT.md": {
-    "mtime": 1788966809.5770555,
-    "seen": 1788970426.1734731,
-    "ast_hash": "4eca91e618d6bbc871e93a16c37d77e8",
+    "mtime": 1789141769.7826598,
+    "seen": 1789141777.345311,
+    "ast_hash": "f784a41184238a264e94858371d5f068",
     "semantic_hash": ""
   },
   "README.md": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "support_files/specs/phase1/implementation_wireframe.md": {
-    "mtime": 1788966809.5773773,
-    "seen": 1788970426.173477,
-    "ast_hash": "54045fd688105171f465ce29e298268a",
+    "mtime": 1789139076.488131,
+    "seen": 1789140764.439992,
+    "ast_hash": "d7fd72eafc2e0cbd1407c7f97d06cab7",
     "semantic_hash": ""
   },
   "support_files/specs/phase1/overview.md": {
@@ -738,15 +738,9 @@
     "semantic_hash": ""
   },
   "support_files/specs/phase1/steps.md": {
-    "mtime": 1788966809.5775063,
-    "seen": 1788970426.173478,
-    "ast_hash": "ebdfcf954acb7f492b15ffdb6bde556a",
-    "semantic_hash": ""
-  },
-  "support_files/specs/phase1/units.md": {
-    "mtime": 1788966809.5775867,
-    "seen": 1788970426.1734784,
-    "ast_hash": "16f7779f8746bec36499d20f54ba9f3c",
+    "mtime": 1789139066.3132222,
+    "seen": 1789140764.4400446,
+    "ast_hash": "5bc930418fe0a569db7031bfbf263f9b",
     "semantic_hash": ""
   },
   "support_files/specs/technologies.md": {
@@ -780,15 +774,15 @@
     "semantic_hash": ""
   },
   "schemas/robot_command.schema.json": {
-    "mtime": 1788975133.3422022,
-    "seen": 1788975283.3156192,
-    "ast_hash": "2e01b726f08cf978ad39cf9107a30028",
+    "mtime": 1789157468.1161501,
+    "seen": 1789157851.8852253,
+    "ast_hash": "21cb32fad7e83a172e512cfe45a8543c",
     "semantic_hash": ""
   },
   "schemas/robot_telemetry_event.schema.json": {
-    "mtime": 1788975139.9506865,
-    "seen": 1788975283.31562,
-    "ast_hash": "0610626cc7aee622e874a3bf2e2136c6",
+    "mtime": 1789157802.1199975,
+    "seen": 1789157851.88523,
+    "ast_hash": "aec8b1a57b5770949c68dd64e3b13975",
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
@@ -798,15 +792,15 @@
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
-    "mtime": 1788974642.861021,
-    "seen": 1788975283.3157115,
-    "ast_hash": "c7a2bcfed19706d3719b1e81e8c34865",
+    "mtime": 1789155901.111555,
+    "seen": 1789156125.776315,
+    "ast_hash": "1dc6c7ff3799539b2379a0e74afa09d8",
     "semantic_hash": ""
   },
   "tests/test_domain.py": {
-    "mtime": 1789136565.7121646,
-    "seen": 1789136674.7506173,
-    "ast_hash": "221b2b6700e95fadaeedb83bb2e96551",
+    "mtime": 1789155880.0281043,
+    "seen": 1789156125.7763505,
+    "ast_hash": "80e42227badccec15b925e222faf0a94",
     "semantic_hash": ""
   },
   "src/edge_node/main.py": {
@@ -876,9 +870,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
-    "mtime": 1788980885.4091566,
-    "seen": 1788982056.47125,
-    "ast_hash": "669deeaee75a912c9523d19ddc3f5183",
+    "mtime": 1789155938.7697124,
+    "seen": 1789156125.7769713,
+    "ast_hash": "7aa549926dcc5d089c65cececdb08795",
     "semantic_hash": ""
   },
   "web/tests/unit/env.test.ts": {
@@ -936,9 +930,9 @@
     "semantic_hash": ""
   },
   "scripts/generate_domain.py": {
-    "mtime": 1789136321.3659425,
-    "seen": 1789136417.7676659,
-    "ast_hash": "1a56b3f20680bef5c0d97310daf9b8f0",
+    "mtime": 1789157818.2499268,
+    "seen": 1789157851.885233,
+    "ast_hash": "016539d6031ea97f665d559a4c185e60",
     "semantic_hash": ""
   },
   "src/domain/__init__.py": {
@@ -948,21 +942,75 @@
     "semantic_hash": ""
   },
   "src/domain/domain.py": {
-    "mtime": 1789136329.419106,
-    "seen": 1789136417.7677047,
-    "ast_hash": "d9fba0ef80a3ce337254a55c35fb7c63",
+    "mtime": 1789157820.1687868,
+    "seen": 1789157851.8853421,
+    "ast_hash": "0700452ca937247f5a51baba90990c00",
     "semantic_hash": ""
   },
   "src/domain/domain.rs": {
-    "mtime": 1789136329.418745,
-    "seen": 1789136417.7677062,
-    "ast_hash": "273c2b891a84dec49af40f2770653fb9",
+    "mtime": 1789157820.1684737,
+    "seen": 1789157851.8853455,
+    "ast_hash": "9e3f815a87fcc21082e95baef0b1b5ea",
     "semantic_hash": ""
   },
   "web/domain/contracts.ts": {
-    "mtime": 1789136329.4194062,
-    "seen": 1789136417.7682757,
-    "ast_hash": "6a5e0dc16bebf9c91e661bd81d032986",
+    "mtime": 1789157820.1689868,
+    "seen": 1789157851.8859186,
+    "ast_hash": "1a256a651555f3a730bfa7b9bb46e6a0",
+    "semantic_hash": ""
+  },
+  "support_files/specs/units.md": {
+    "mtime": 1789142483.6269455,
+    "seen": 1789142555.4700754,
+    "ast_hash": "5ca275b6b7a44a9d15b2ea5d16089fd2",
+    "semantic_hash": ""
+  },
+  "support_files/specs/phase2/implementation_wireframe.md": {
+    "mtime": 1789142499.0609438,
+    "seen": 1789142555.4700117,
+    "ast_hash": "88d0550e16fdabbd0fdcb718c1218e7d",
+    "semantic_hash": ""
+  },
+  "support_files/specs/phase2/overview.md": {
+    "mtime": 1789141578.1540442,
+    "seen": 1789141777.3457863,
+    "ast_hash": "f0952cdb17aa894c886eb502ccb68e4d",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md": {
+    "mtime": 1789141739.8110266,
+    "seen": 1789141777.3449361,
+    "ast_hash": "7b957b6415bed0ca7484e21f1554bf89",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-1o1z--unit-21-edgenode-robust-jointstate-extraction-hybr.md": {
+    "mtime": 1789142522.6339414,
+    "seen": 1789142555.4694953,
+    "ast_hash": "e7ae169c6f24db10c1830ce9b261ba63",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-6vku--unit-23-teleopclient-telemetrymonitor-showcase-dir.md": {
+    "mtime": 1789142535.256162,
+    "seen": 1789142555.4694977,
+    "ast_hash": "13b6e64c6e762e20d2201a4d31f822ae",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md": {
+    "mtime": 1789155703.2985325,
+    "seen": 1789156125.784566,
+    "ast_hash": "3e223ddd07f639dddc11958a2211b51f",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-iy13--unit-22-gateway-high-throughput-30-hz-telemetry-mu.md": {
+    "mtime": 1789142528.3539407,
+    "seen": 1789142555.4696357,
+    "ast_hash": "41e9c19579267519023bbbb380cca65c",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-n9ch--unit-24-multi-service-30-hz-end-to-end-playwright.md": {
+    "mtime": 1789142541.7439394,
+    "seen": 1789142555.4696653,
+    "ast_hash": "b59604f4d1e5e4bbb88e8408c385b141",
     "semantic_hash": ""
   }
 }

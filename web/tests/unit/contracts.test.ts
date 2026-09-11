@@ -9,6 +9,9 @@ import {
   robotTelemetryTopic,
   parseRobotTopic,
   createPingCommand,
+  UR5E_JOINTS,
+  CANONICAL_UR5E_JOINTS,
+  type UR5eJoint,
 } from '@contracts';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
@@ -54,6 +57,26 @@ describe('TypeScript Domain Schemas & Contracts', () => {
     });
   });
 
+  describe('Canonical UR5e Joint Constants', () => {
+    it('defines canonical UR5e joint sequence in contracts', () => {
+      expect(UR5E_JOINTS).toEqual([
+        'shoulder_pan_joint',
+        'shoulder_lift_joint',
+        'elbow_joint',
+        'wrist_1_joint',
+        'wrist_2_joint',
+        'wrist_3_joint',
+      ]);
+      expect(CANONICAL_UR5E_JOINTS).toEqual(UR5E_JOINTS);
+      expect(UR5E_JOINTS).toHaveLength(6);
+    });
+
+    it('enforces UR5eJoint literal union type compatibility', () => {
+      const joint: UR5eJoint = 'shoulder_pan_joint';
+      expect(UR5E_JOINTS.includes(joint)).toBe(true);
+    });
+  });
+
   describe('RobotTelemetryEvent', () => {
     it('parses valid RobotTelemetryEvent with 6-DoF joint positions', () => {
       const raw = {
@@ -76,15 +99,78 @@ describe('TypeScript Domain Schemas & Contracts', () => {
     });
 
     it('rejects RobotTelemetryEvent with invalid joint count', () => {
-      const raw = {
+      const rawTooFew = {
         timestamp_ns: '1000',
         robot_state: 'IDLE',
         joint_positions: [0.0, 1.0], // only 2 joints
       };
-
-      expect(() => parseRobotTelemetryEvent(JSON.stringify(raw))).toThrow(
+      expect(() => parseRobotTelemetryEvent(JSON.stringify(rawTooFew))).toThrow(
         /must contain exactly 6 joint positions/
       );
+
+      const raw5 = {
+        timestamp_ns: '1000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, 1.0, 2.0, 3.0, 4.0], // 5 joints
+      };
+      expect(() => parseRobotTelemetryEvent(JSON.stringify(raw5))).toThrow(
+        /must contain exactly 6 joint positions/
+      );
+
+      const raw7 = {
+        timestamp_ns: '1000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0], // 7 joints
+      };
+      expect(() => parseRobotTelemetryEvent(JSON.stringify(raw7))).toThrow(
+        /must contain exactly 6 joint positions/
+      );
+    });
+
+    it('rejects RobotTelemetryEvent with non-finite or non-numeric joint values', () => {
+      const rawNaN = {
+        timestamp_ns: '1000',
+        robot_state: 'IDLE',
+        joint_positions: [NaN, 0.0, 0.0, 0.0, 0.0, 0.0],
+      };
+      expect(() => parseRobotTelemetryEvent(rawNaN)).toThrow(/not a valid finite number/);
+
+      const rawInf = {
+        timestamp_ns: '1000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, Infinity, 0.0, 0.0, 0.0, 0.0],
+      };
+      expect(() => parseRobotTelemetryEvent(rawInf)).toThrow(/not a valid finite number/);
+
+      const rawNegInf = {
+        timestamp_ns: '1000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, 0.0, -Infinity, 0.0, 0.0, 0.0],
+      };
+      expect(() => parseRobotTelemetryEvent(rawNegInf)).toThrow(/not a valid finite number/);
+
+      const rawString = {
+        timestamp_ns: '1000',
+        robot_state: 'IDLE',
+        joint_positions: ['zero', 0.0, 0.0, 0.0, 0.0, 0.0],
+      };
+      expect(() => parseRobotTelemetryEvent(rawString)).toThrow(/not a valid finite number/);
+    });
+
+    it('rejects RobotTelemetryEvent with negative timestamp_ns', () => {
+      const rawNegative = {
+        timestamp_ns: -5,
+        robot_state: 'IDLE',
+        joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      };
+      expect(() => parseRobotTelemetryEvent(rawNegative)).toThrow(/non-negative/);
+
+      const rawNegativeStr = {
+        timestamp_ns: '-1',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      };
+      expect(() => parseRobotTelemetryEvent(rawNegativeStr)).toThrow(/non-negative/);
     });
 
     it('rejects RobotTelemetryEvent with invalid robot_state', () => {
@@ -169,6 +255,9 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 
       expect(robotTelemetrySchema.title).toBe('RobotTelemetryEvent');
       expect(robotTelemetrySchema.properties.joint_positions.minItems).toBe(6);
+      expect(robotTelemetrySchema.properties.joint_positions.maxItems).toBe(6);
+      expect(robotTelemetrySchema.properties.timestamp_ns.minimum).toBe(0);
+      expect(robotTelemetrySchema.$defs.canonical_joints.enum).toEqual(UR5E_JOINTS);
 
       expect(errorFrameSchema.title).toBe('ErrorFrame');
       expect(errorFrameSchema.properties.type.const).toBe('ERROR');

@@ -1,8 +1,8 @@
 > [!IMPORTANT]
-> Superseded by [units.md](./units.md) after architectural review. Use the 4 vertical walking skeletons in `units.md` as the canonical Phase 1 specification.
+> Superseded by [units.md](../units.md) after architectural review. Use the 4 vertical walking skeletons in `units.md` as the canonical project units specification.
 
 Welcome to Phase 1: The "Ping" Pipeline. As a senior engineer, my goal isn't just to make a button click light up a terminal—it’s to establish our system's core network topology and data contracts. We are building a minimal, end-to-end, architectural skeleton.
-We will use Domain-Driven Design (DDD) to keep things decoupled, and Simulation-Driven Development (SDD) with TDD to ensure every link works reliably. By the end of this phase, clicking a button in your Preact UI will send a command through an Actix Web Socket, hop onto the Zenoh data fabric, pass through a Python worker, and cleanly print a log message inside an empty running ROS2 node.
+We will use Domain-Driven Design (DDD) to keep things decoupled, and Specification-Driven Development (SDD) with TDD to ensure every link works reliably. By the end of this phase, clicking a button in your Preact UI will send a command through an Actix Web Socket, hop onto the Zenoh data fabric, pass through a Python worker, and cleanly print a log message inside an empty running ROS2 node.
 Here is the exact step-by-step execution plan.
 ------------------------------
 ## Step 1: Initialize the Python Environment using uv

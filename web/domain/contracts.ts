@@ -23,12 +23,32 @@ export const RobotState = {
 
 export type RobotState = (typeof RobotState)[keyof typeof RobotState];
 
+export const UR5E_JOINTS = [
+  'shoulder_pan_joint',
+  'shoulder_lift_joint',
+  'elbow_joint',
+  'wrist_1_joint',
+  'wrist_2_joint',
+  'wrist_3_joint',
+] as const;
+
+export const CANONICAL_UR5E_JOINTS = UR5E_JOINTS;
+
+export type UR5eJoint = (typeof UR5E_JOINTS)[number];
+
 export type ArmJointPositions = [number, number, number, number, number, number];
 
 export interface InferenceMetrics {
   latency_ms: number;
   confidence: number;
   detected_object: string;
+}
+
+export interface ErrorFrame {
+  type: 'ERROR';
+  error_code: string;
+  message: string;
+  timestamp_ns: string | number | bigint;
 }
 
 export interface RobotCommand {
@@ -45,13 +65,6 @@ export interface RobotTelemetryEvent {
   joint_positions: ArmJointPositions;
   inference_metrics?: InferenceMetrics;
   command_id?: string;
-}
-
-export interface ErrorFrame {
-  type: 'ERROR';
-  error_code: string;
-  message: string;
-  timestamp_ns: string | number | bigint;
 }
 
 export function createPingCommand(params?: {
@@ -75,6 +88,62 @@ function parseJsonIfNeeded(input: string | unknown): unknown {
   return input;
 }
 
+function parseTimestampNs(val: unknown): string | number | bigint {
+  if (val === undefined || val === null) {
+    throw new Error("Missing required field 'timestamp_ns'");
+  }
+  let ts: bigint;
+  try {
+    ts = typeof val === 'bigint'
+      ? val
+      : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));
+  } catch {
+    throw new Error("Field 'timestamp_ns' must be a valid integer");
+  }
+  if (ts < 0n) {
+    throw new Error("Field 'timestamp_ns' must be a non-negative integer");
+  }
+  return val as string | number | bigint;
+}
+
+export function parseErrorFrame(input: string | unknown): ErrorFrame {
+  const data = parseJsonIfNeeded(input);
+  if (!data || typeof data !== 'object') {
+    throw new Error('ErrorFrame payload must be an object');
+  }
+
+  const obj = data as Record<string, unknown>;
+  if (obj.type !== 'ERROR') {
+    throw new Error(`Expected frame type 'ERROR', got '${String(obj.type)}'`);
+  }
+  if (typeof obj.type !== 'string' || !obj.type) {
+    throw new Error("Missing required field 'type'");
+  }
+  if (typeof obj.error_code !== 'string' || !obj.error_code) {
+    throw new Error("Missing required field 'error_code'");
+  }
+  if (typeof obj.message !== 'string' || !obj.message) {
+    throw new Error("Missing required field 'message'");
+  }
+  const timestamp_ns = parseTimestampNs(obj.timestamp_ns);
+
+  return {
+    type: 'ERROR',
+    error_code: obj.error_code as any,
+    message: obj.message as any,
+    timestamp_ns,
+  };
+}
+
+export function isErrorFrame(input: unknown): input is ErrorFrame {
+  try {
+    parseErrorFrame(input);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function parseRobotCommand(input: string | unknown): RobotCommand {
   const data = parseJsonIfNeeded(input);
   if (!data || typeof data !== 'object') {
@@ -88,26 +157,31 @@ export function parseRobotCommand(input: string | unknown): RobotCommand {
   if (typeof obj.sender_id !== 'string' || !obj.sender_id) {
     throw new Error("Missing required field 'sender_id'");
   }
-  if (obj.timestamp_ns === undefined || obj.timestamp_ns === null) {
-    throw new Error("Missing required field 'timestamp_ns'");
-  }
-
-  const validTypes = Object.values(CommandType) as string[];
-  if (typeof obj.type !== 'string' || !validTypes.includes(obj.type)) {
+  const timestamp_ns = parseTimestampNs(obj.timestamp_ns);
+  const validCommandType = Object.values(CommandType) as string[];
+  if (typeof obj.type !== 'string' || !validCommandType.includes(obj.type)) {
     throw new Error(`Invalid command type: ${String(obj.type)}`);
   }
-
   if (obj.payload === undefined || obj.payload === null || typeof obj.payload !== 'object' || Array.isArray(obj.payload)) {
     throw new Error("Missing or invalid 'payload' object");
   }
 
   return {
-    command_id: obj.command_id,
-    sender_id: obj.sender_id,
-    timestamp_ns: obj.timestamp_ns as string | number | bigint,
+    command_id: obj.command_id as any,
+    sender_id: obj.sender_id as any,
+    timestamp_ns,
     type: obj.type as CommandType,
     payload: obj.payload as Record<string, unknown>,
   };
+}
+
+export function isRobotCommand(input: unknown): input is RobotCommand {
+  try {
+    parseRobotCommand(input);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function parseRobotTelemetryEvent(input: string | unknown): RobotTelemetryEvent {
@@ -117,15 +191,11 @@ export function parseRobotTelemetryEvent(input: string | unknown): RobotTelemetr
   }
 
   const obj = data as Record<string, unknown>;
-  if (obj.timestamp_ns === undefined || obj.timestamp_ns === null) {
-    throw new Error("Missing required field 'timestamp_ns'");
-  }
-
-  const validStates = Object.values(RobotState) as string[];
-  if (typeof obj.robot_state !== 'string' || !validStates.includes(obj.robot_state)) {
+  const timestamp_ns = parseTimestampNs(obj.timestamp_ns);
+  const validRobotState = Object.values(RobotState) as string[];
+  if (typeof obj.robot_state !== 'string' || !validRobotState.includes(obj.robot_state)) {
     throw new Error(`Invalid robot state: ${String(obj.robot_state)}`);
   }
-
   if (!Array.isArray(obj.joint_positions) || obj.joint_positions.length !== 6) {
     throw new Error(
       `RobotTelemetryEvent must contain exactly 6 joint positions, received ${Array.isArray(obj.joint_positions) ? obj.joint_positions.length : 'non-array'}`
@@ -133,29 +203,24 @@ export function parseRobotTelemetryEvent(input: string | unknown): RobotTelemetr
   }
 
   for (let i = 0; i < 6; i++) {
-    if (typeof obj.joint_positions[i] !== 'number' || Number.isNaN(obj.joint_positions[i])) {
-      throw new Error(`Joint position at index ${i} is not a valid number`);
+    if (typeof obj.joint_positions[i] !== 'number' || !Number.isFinite(obj.joint_positions[i])) {
+      throw new Error(`Joint position at index ${i} is not a valid finite number`);
     }
   }
-
   let inference_metrics: InferenceMetrics | undefined;
   if (obj.inference_metrics && typeof obj.inference_metrics === 'object') {
-    const im = obj.inference_metrics as Record<string, unknown>;
-    if (
-      typeof im.latency_ms === 'number' &&
-      typeof im.confidence === 'number' &&
-      typeof im.detected_object === 'string'
-    ) {
+    const subObj = obj.inference_metrics as Record<string, unknown>;
+    if (typeof subObj.latency_ms === 'number' && typeof subObj.confidence === 'number' && typeof subObj.detected_object === 'string') {
       inference_metrics = {
-        latency_ms: im.latency_ms,
-        confidence: im.confidence,
-        detected_object: im.detected_object,
+        latency_ms: subObj.latency_ms as any,
+        confidence: subObj.confidence as any,
+        detected_object: subObj.detected_object as any,
       };
     }
   }
 
   return {
-    timestamp_ns: obj.timestamp_ns as string | number | bigint,
+    timestamp_ns,
     robot_state: obj.robot_state as RobotState,
     joint_positions: obj.joint_positions as ArmJointPositions,
     inference_metrics,
@@ -163,32 +228,13 @@ export function parseRobotTelemetryEvent(input: string | unknown): RobotTelemetr
   };
 }
 
-export function parseErrorFrame(input: string | unknown): ErrorFrame {
-  const data = parseJsonIfNeeded(input);
-  if (!data || typeof data !== 'object') {
-    throw new Error('ErrorFrame payload must be an object');
+export function isRobotTelemetryEvent(input: unknown): input is RobotTelemetryEvent {
+  try {
+    parseRobotTelemetryEvent(input);
+    return true;
+  } catch {
+    return false;
   }
-
-  const obj = data as Record<string, unknown>;
-  if (obj.type !== 'ERROR') {
-    throw new Error(`Expected frame type 'ERROR', got '${String(obj.type)}'`);
-  }
-  if (typeof obj.error_code !== 'string' || !obj.error_code) {
-    throw new Error("Missing required field 'error_code'");
-  }
-  if (typeof obj.message !== 'string' || !obj.message) {
-    throw new Error("Missing required field 'message'");
-  }
-  if (obj.timestamp_ns === undefined || obj.timestamp_ns === null) {
-    throw new Error("Missing required field 'timestamp_ns'");
-  }
-
-  return {
-    type: 'ERROR',
-    error_code: obj.error_code,
-    message: obj.message,
-    timestamp_ns: obj.timestamp_ns as string | number | bigint,
-  };
 }
 
 function validateRobotId(robotId: string): void {
@@ -219,7 +265,7 @@ export function parseRobotTopic(
   }
   return {
     robotId: parts[1],
-    channel: parts[2],
+    channel: parts[2] as 'command' | 'telemetry',
   };
 }
 
@@ -227,31 +273,4 @@ export function serializeCommand(cmd: RobotCommand): string {
   return JSON.stringify(cmd, (_, v) =>
     typeof v === 'bigint' ? Number(v) : v
   );
-}
-
-export function isRobotTelemetryEvent(input: unknown): input is RobotTelemetryEvent {
-  try {
-    parseRobotTelemetryEvent(input);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export function isErrorFrame(input: unknown): input is ErrorFrame {
-  try {
-    parseErrorFrame(input);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export function isRobotCommand(input: unknown): input is RobotCommand {
-  try {
-    parseRobotCommand(input);
-    return true;
-  } catch {
-    return false;
-  }
 }
