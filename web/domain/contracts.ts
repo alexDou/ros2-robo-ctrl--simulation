@@ -2,7 +2,43 @@
 /**
  * Domain schemas and DataFabric topic contracts for Web Visualizer & TeleopClient.
  */
+import { z } from 'zod';
 
+export const jsonInput = z.unknown().transform((val, ctx) => {
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val);
+    } catch {
+      ctx.addIssue({ code: 'custom', message: 'Payload must be valid JSON' });
+      return z.NEVER;
+    }
+  }
+  return val;
+});
+
+export const timestampNsSchema = z
+  .union([z.bigint(), z.number(), z.string()], {
+    message: "Missing required field 'timestamp_ns'",
+  })
+  .refine(
+    (val) => {
+      try {
+        if (typeof val === 'number' && !Number.isFinite(val)) {
+          return false;
+        }
+        const ts =
+          typeof val === 'bigint'
+            ? val
+            : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));
+        return ts >= 0n;
+      } catch {
+        return false;
+      }
+    },
+    { message: "Field 'timestamp_ns' must be a non-negative integer" }
+  );
+
+/** Operational command type */
 export const CommandType = {
   PING: 'PING',
   TELEOP_JOINT_TARGET: 'TELEOP_JOINT_TARGET',
@@ -11,8 +47,19 @@ export const CommandType = {
   RESET_FAULT: 'RESET_FAULT',
 } as const;
 
-export type CommandType = (typeof CommandType)[keyof typeof CommandType];
+export const CommandTypeSchema = z.enum([
+  'PING',
+  'TELEOP_JOINT_TARGET',
+  'TRAJECTORY_EXECUTE',
+  'EMERGENCY_STOP',
+  'RESET_FAULT',
+], { message: 'Invalid command type' });
 
+export const commandTypeSchema = CommandTypeSchema;
+
+export type CommandType = z.infer<typeof CommandTypeSchema>;
+
+/** Current lifecycle state of the robotic manipulator */
 export const RobotState = {
   BOOTING: 'BOOTING',
   IDLE: 'IDLE',
@@ -21,8 +68,19 @@ export const RobotState = {
   FAULT: 'FAULT',
 } as const;
 
-export type RobotState = (typeof RobotState)[keyof typeof RobotState];
+export const RobotStateSchema = z.enum([
+  'BOOTING',
+  'IDLE',
+  'PROCESSING',
+  'EXECUTING',
+  'FAULT',
+], { message: 'Invalid robot state' });
 
+export const robotStateSchema = RobotStateSchema;
+
+export type RobotState = z.infer<typeof RobotStateSchema>;
+
+/** Canonical UR5e 6-DoF joint names in kinematic sequence */
 export const UR5E_JOINTS = [
   'shoulder_pan_joint',
   'shoulder_lift_joint',
@@ -34,35 +92,179 @@ export const UR5E_JOINTS = [
 
 export const CANONICAL_UR5E_JOINTS = UR5E_JOINTS;
 
-export type UR5eJoint = (typeof UR5E_JOINTS)[number];
+export const UR5eJointSchema = z.enum(UR5E_JOINTS);
+export const ur5eJointSchema = UR5eJointSchema;
 
+export type UR5eJoint = z.infer<typeof UR5eJointSchema>;
+
+/** UR5e 6-DoF kinematic chain angles in radians in canonical sequence */
 export type ArmJointPositions = [number, number, number, number, number, number];
 
-export interface InferenceMetrics {
-  latency_ms: number;
-  confidence: number;
-  detected_object: string;
+export const ArmJointPositionsSchema = z
+  .array(
+    z.unknown().refine(
+      (val): val is number => typeof val === 'number' && Number.isFinite(val),
+      { message: 'Joint position is not a valid finite number' }
+    )
+  )
+  .refine((arr): arr is ArmJointPositions => arr.length === 6, {
+    message: 'ArmJointPositions must contain exactly 6 joint positions',
+  });
+
+export const armJointPositionsSchema = ArmJointPositionsSchema;
+export const jointPositionsSchema = ArmJointPositionsSchema;
+
+/** Edge AI inference latency and object classification metrics */
+export const rawInferenceMetricsSchema = z.object(
+  {
+    latency_ms: z.number({ message: "Field 'latency_ms' must be a number" }).min(0.0, { message: "Field 'latency_ms' must be non-negative" }),
+    confidence: z.number({ message: "Field 'confidence' must be a number" }).min(0.0, { message: "Field 'confidence' must be between 0.0 and 1.0" }).max(1.0, { message: "Field 'confidence' must be between 0.0 and 1.0" }),
+    detected_object: z.string({ message: "Missing required field 'detected_object'" }).min(1, { message: "Field 'detected_object' must be non-empty" }),
+  },
+  { message: 'InferenceMetrics payload must be an object' }
+).strict();
+
+export const InferenceMetricsSchema = rawInferenceMetricsSchema;
+export const inferenceMetricsSchema = InferenceMetricsSchema;
+
+export type InferenceMetrics = z.infer<typeof rawInferenceMetricsSchema>;
+
+/** Canonical schema for structured error frames returned by Gateway over WebSocket */
+export const rawErrorFrameSchema = z.object(
+  {
+    type: z.literal('ERROR', { message: "Expected frame type 'ERROR'" }),
+    error_code: z.string({ message: "Missing required field 'error_code'" }).min(1, { message: "Missing required field 'error_code'" }),
+    message: z.string({ message: "Missing required field 'message'" }).min(1, { message: "Missing required field 'message'" }),
+    timestamp_ns: timestampNsSchema,
+  },
+  { message: 'ErrorFrame payload must be an object' }
+).strict();
+
+export const ErrorFrameSchema = jsonInput.pipe(rawErrorFrameSchema);
+export const errorFrameSchema = ErrorFrameSchema;
+
+export type ErrorFrame = z.infer<typeof rawErrorFrameSchema>;
+
+/** Canonical schema for inbound commands sent to EdgeNode over WebSocket or DataFabric */
+export const rawRobotCommandSchema = z.object(
+  {
+    command_id: z.string({ message: "Missing required field 'command_id'" }),
+    sender_id: z.string({ message: "Missing required field 'sender_id'" }).min(1, { message: "Missing required field 'sender_id'" }),
+    timestamp_ns: timestampNsSchema,
+    type: CommandTypeSchema,
+    payload: z.record(z.string(), z.unknown(), { message: "Missing or invalid 'payload' object" }),
+  },
+  { message: 'RobotCommand payload must be an object' }
+).strict();
+
+export const RobotCommandSchema = jsonInput.pipe(rawRobotCommandSchema);
+export const robotCommandSchema = RobotCommandSchema;
+
+export type RobotCommand = z.infer<typeof rawRobotCommandSchema>;
+
+/** Canonical schema for outbound telemetry events emitted by EdgeNode over DataFabric and WebSocket */
+export const rawRobotTelemetryEventSchema = z.object(
+  {
+    timestamp_ns: timestampNsSchema,
+    robot_state: RobotStateSchema,
+    joint_positions: ArmJointPositionsSchema,
+    inference_metrics: rawInferenceMetricsSchema.optional(),
+    command_id: z.string().optional(),
+  },
+  { message: 'RobotTelemetryEvent payload must be an object' }
+).strict();
+
+export const RobotTelemetryEventSchema = jsonInput.pipe(rawRobotTelemetryEventSchema);
+export const robotTelemetryEventSchema = RobotTelemetryEventSchema;
+
+export type RobotTelemetryEvent = z.infer<typeof rawRobotTelemetryEventSchema>;
+
+function unwrapZod<T>(result: {
+  success: true;
+  data: unknown;
+} | {
+  success: false;
+  error: { issues: Array<{ message: string }> };
+}): T {
+  if (!result.success) {
+    throw new Error(result.error.issues[0]?.message ?? 'Validation failed');
+  }
+  return result.data as T;
 }
 
-export interface ErrorFrame {
-  type: 'ERROR';
-  error_code: string;
-  message: string;
-  timestamp_ns: string | number | bigint;
+export function parseInferenceMetrics(input: unknown): InferenceMetrics {
+  return unwrapZod<InferenceMetrics>(inferenceMetricsSchema.safeParse(input));
 }
 
-export interface RobotCommand {
-  command_id: string;
-  sender_id: string;
-  timestamp_ns: string | number | bigint;
-  type: CommandType;
-  payload: Record<string, unknown>;
+export function isInferenceMetrics(input: unknown): input is InferenceMetrics {
+  return inferenceMetricsSchema.safeParse(input).success;
 }
 
-export interface RobotTelemetryEvent {
-  timestamp_ns: string | number | bigint;
-  robot_state: RobotState;
-  joint_positions: ArmJointPositions;
-  inference_metrics?: InferenceMetrics;
-  command_id?: string;
+export function parseErrorFrame(input: unknown): ErrorFrame {
+  return unwrapZod<ErrorFrame>(errorFrameSchema.safeParse(input));
+}
+
+export function isErrorFrame(input: unknown): input is ErrorFrame {
+  return errorFrameSchema.safeParse(input).success;
+}
+
+export function parseRobotCommand(input: unknown): RobotCommand {
+  return unwrapZod<RobotCommand>(robotCommandSchema.safeParse(input));
+}
+
+export function isRobotCommand(input: unknown): input is RobotCommand {
+  return robotCommandSchema.safeParse(input).success;
+}
+
+export function parseRobotTelemetryEvent(input: unknown): RobotTelemetryEvent {
+  return unwrapZod<RobotTelemetryEvent>(robotTelemetryEventSchema.safeParse(input));
+}
+
+export function isRobotTelemetryEvent(input: unknown): input is RobotTelemetryEvent {
+  return robotTelemetryEventSchema.safeParse(input).success;
+}
+
+export const robotIdSchema = z
+  .string({
+    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",
+  })
+  .min(1, {
+    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",
+  })
+  .regex(/^[^/\\\s]+$/, {
+    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",
+  });
+
+export const robotTopicSchema = z
+  .string()
+  .regex(/^robot\/([^/\\\s]+)\/(command|telemetry)$/)
+  .transform((topic) => {
+    const parts = topic.split('/');
+    return {
+      robotId: parts[1],
+      channel: parts[2] as 'command' | 'telemetry',
+    };
+  });
+
+export function robotCommandTopic(robotId: string): string {
+  const validId = robotIdSchema.parse(robotId);
+  return `robot/${validId}/command`;
+}
+
+export function robotTelemetryTopic(robotId: string): string {
+  const validId = robotIdSchema.parse(robotId);
+  return `robot/${validId}/telemetry`;
+}
+
+export function parseRobotTopic(
+  topic: string
+): { robotId: string; channel: 'command' | 'telemetry' } | null {
+  const result = robotTopicSchema.safeParse(topic);
+  return result.success ? result.data : null;
+}
+
+export function serializeCommand(cmd: RobotCommand): string {
+  return JSON.stringify(cmd, (_, v) =>
+    typeof v === 'bigint' ? Number(v) : v
+  );
 }

@@ -17,7 +17,8 @@ def to_pascal_case(s: str) -> str:
 
 
 def to_camel_case(s: str) -> str:
-    parts = s.replace("-", "_").split("_")
+    s = to_snake_case(s)
+    parts = s.split("_")
     return parts[0] + "".join(word.capitalize() for word in parts[1:])
 
 
@@ -60,6 +61,8 @@ class FieldDef:
     minimum: float | int | None = None
     maximum: float | int | None = None
     min_length: int | None = None
+    max_length: int | None = None
+    pattern: str | None = None
     format: str | None = None
 
 
@@ -70,6 +73,7 @@ class ModelDef:
     fields: list[FieldDef] = field(default_factory=list)
     channel: str | None = None
     is_submodel: bool = False
+    additional_properties: bool = True
 
 
 @dataclass
@@ -125,6 +129,8 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                 required=is_required,
                 description=desc,
                 min_length=prop_schema.get("minLength"),
+                max_length=prop_schema.get("maxLength"),
+                pattern=prop_schema.get("pattern"),
                 format=prop_schema.get("format"),
             )
 
@@ -225,6 +231,7 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
             description=schema.get("description", ""),
             channel=channel,
             is_submodel=is_submodel,
+            additional_properties=schema.get("additionalProperties", True),
         )
         required_set = set(schema.get("required", []))
         for p_name, p_schema in schema.get("properties", {}).items():
@@ -612,25 +619,157 @@ def emit_python(ir: DomainIR) -> str:
     return "\n".join(lines)
 
 
+def _ts_field_to_zod(f: FieldDef) -> str:
+    if f.kind == "literal":
+        base = f"z.literal('{f.ref}', {{ message: \"Expected frame type '{f.ref}'\" }})"
+        return base if f.required else f"{base}.optional()"
+
+    if f.kind == "string":
+        parts = []
+        if f.required:
+            parts.append(f"z.string({{ message: \"Missing required field '{f.name}'\" }})")
+        else:
+            parts.append("z.string()")
+
+        if f.min_length is not None:
+            if f.required and f.min_length >= 1:
+                desc = f"Field '{f.name}' must be non-empty" if f.name == "detected_object" else f"Missing required field '{f.name}'"
+                parts.append(f".min({f.min_length}, {{ message: \"{desc}\" }})")
+            else:
+                parts.append(f".min({f.min_length})")
+
+        if f.max_length is not None:
+            parts.append(f".max({f.max_length})")
+
+        if f.pattern is not None:
+            parts.append(f".regex(new RegExp({json.dumps(f.pattern)}))")
+
+        res = "".join(parts)
+        return res if f.required else f"{res}.optional()"
+
+    if f.kind == "int":
+        if f.name == "timestamp_ns":
+            return "timestampNsSchema" if f.required else "timestampNsSchema.optional()"
+        parts = [f"z.union([z.bigint(), z.number(), z.string()], {{ message: \"Missing required field '{f.name}'\" }})"]
+        if f.minimum is not None:
+            parts.append(f""".refine(
+      (val) => {{
+        try {{
+          if (typeof val === 'number' && !Number.isFinite(val)) return false;
+          const num = typeof val === 'bigint' ? val : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));
+          return num >= BigInt({f.minimum});
+        }} catch {{
+          return false;
+        }}
+      }},
+      {{ message: "Field '{f.name}' must be a non-negative integer" }}
+    )""")
+        res = "".join(parts)
+        return res if f.required else f"{res}.optional()"
+
+    if f.kind == "float":
+        parts = [f"z.number({{ message: \"Field '{f.name}' must be a number\" }})"]
+        if f.minimum is not None and f.maximum is not None:
+            parts.append(f".min({f.minimum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})")
+            parts.append(f".max({f.maximum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})")
+        elif f.minimum is not None:
+            parts.append(f".min({f.minimum}, {{ message: \"Field '{f.name}' must be non-negative\" }})")
+        elif f.maximum is not None:
+            parts.append(f".max({f.maximum})")
+        res = "".join(parts)
+        return res if f.required else f"{res}.optional()"
+
+    if f.kind == "bool":
+        return "z.boolean()" if f.required else "z.boolean().optional()"
+
+    if f.kind == "enum":
+        base = f"{f.ref}Schema"
+        return base if f.required else f"{base}.optional()"
+
+    if f.kind == "fixed_array":
+        base = f"{f.ref}Schema"
+        return base if f.required else f"{base}.optional()"
+
+    if f.kind == "model":
+        base = f"raw{f.ref}Schema"
+        return base if f.required else f"{base}.optional()"
+
+    if f.kind == "generic_map":
+        base = f"z.record(z.string(), z.unknown(), {{ message: \"Missing or invalid '{f.name}' object\" }})"
+        return base if f.required else f"{base}.optional()"
+
+    raise ValueError(f"Unknown field kind: {f.kind}")
+
+
 def emit_typescript(ir: DomainIR) -> str:
     lines = [
         "// Auto-generated by scripts/generate_domain.py. DO NOT EDIT DIRECTLY.",
         "/**",
         " * Domain schemas and DataFabric topic contracts for Web Visualizer & TeleopClient.",
         " */",
+        "import { z } from 'zod';",
+        "",
+        "export const jsonInput = z.unknown().transform((val, ctx) => {",
+        "  if (typeof val === 'string') {",
+        "    try {",
+        "      return JSON.parse(val);",
+        "    } catch {",
+        "      ctx.addIssue({ code: 'custom', message: 'Payload must be valid JSON' });",
+        "      return z.NEVER;",
+        "    }",
+        "  }",
+        "  return val;",
+        "});",
     ]
 
-    for e in ir.enums:
+    has_int = any(f.kind == "int" for m in ir.models for f in m.fields)
+    if has_int:
         lines.append("")
+        lines.append("export const timestampNsSchema = z")
+        lines.append("  .union([z.bigint(), z.number(), z.string()], {")
+        lines.append("    message: \"Missing required field 'timestamp_ns'\",")
+        lines.append("  })")
+        lines.append("  .refine(")
+        lines.append("    (val) => {")
+        lines.append("      try {")
+        lines.append("        if (typeof val === 'number' && !Number.isFinite(val)) {")
+        lines.append("          return false;")
+        lines.append("        }")
+        lines.append("        const ts =")
+        lines.append("          typeof val === 'bigint'")
+        lines.append("            ? val")
+        lines.append("            : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));")
+        lines.append("        return ts >= 0n;")
+        lines.append("      } catch {")
+        lines.append("        return false;")
+        lines.append("      }")
+        lines.append("    },")
+        lines.append('    { message: "Field \'timestamp_ns\' must be a non-negative integer" }')
+        lines.append("  );")
+
+    for e in ir.enums:
+        desc_label = to_snake_case(e.name).replace("_", " ")
+        lines.append("")
+        if e.description:
+            lines.append(f"/** {e.description} */")
         lines.append(f"export const {e.name} = {{")
         for v in e.variants:
             lines.append(f"  {v}: '{v}',")
         lines.append("} as const;")
         lines.append("")
-        lines.append(f"export type {e.name} = (typeof {e.name})[keyof typeof {e.name}];")
+        lines.append(f"export const {e.name}Schema = z.enum([")
+        for v in e.variants:
+            lines.append(f"  '{v}',")
+        lines.append(f"], {{ message: 'Invalid {desc_label}' }});")
+        lines.append("")
+        lines.append(f"export const {to_camel_case(e.name)}Schema = {e.name}Schema;")
+        lines.append("")
+        lines.append(f"export type {e.name} = z.infer<typeof {e.name}Schema>;")
 
     for c in ir.constants:
         lines.append("")
+        if c.description:
+            lines.append(f"/** {c.description} */")
         lines.append(f"export const {c.name} = [")
         for item in c.items:
             lines.append(f"  '{item}',")
@@ -638,32 +777,129 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append("")
         lines.append(f"export const {c.alias} = {c.name};")
         lines.append("")
-        lines.append(f"export type {c.item_type} = (typeof {c.name})[number];")
+        lines.append(f"export const {c.item_type}Schema = z.enum({c.name});")
+        lines.append(f"export const {to_camel_case(c.item_type)}Schema = {c.item_type}Schema;")
+        lines.append("")
+        lines.append(f"export type {c.item_type} = z.infer<typeof {c.item_type}Schema>;")
 
     for fa in ir.fixed_arrays:
         types_str = ", ".join(["number"] * fa.count)
         lines.append("")
+        if fa.description:
+            lines.append(f"/** {fa.description} */")
         lines.append(f"export type {fa.name} = [{types_str}];")
+        lines.append("")
+        lines.append(f"export const {fa.name}Schema = z")
+        lines.append("  .array(")
+        lines.append("    z.unknown().refine(")
+        lines.append("      (val): val is number => typeof val === 'number' && Number.isFinite(val),")
+        lines.append("      { message: 'Joint position is not a valid finite number' }")
+        lines.append("    )")
+        lines.append("  )")
+        lines.append(f"  .refine((arr): arr is {fa.name} => arr.length === {fa.count}, {{")
+        lines.append(f"    message: '{fa.name} must contain exactly {fa.count} joint positions',")
+        lines.append("  });")
+        lines.append("")
+        lines.append(f"export const {to_camel_case(fa.name)}Schema = {fa.name}Schema;")
+        if fa.name == "ArmJointPositions":
+            lines.append(f"export const jointPositionsSchema = {fa.name}Schema;")
 
     for m in ir.models:
         lines.append("")
-        lines.append(f"export interface {m.name} {{")
+        if m.description:
+            lines.append(f"/** {m.description} */")
+
+        lines.append(f"export const raw{m.name}Schema = z.object(")
+        lines.append("  {")
         for f in m.fields:
-            opt = "" if f.required else "?"
-            if f.kind == "literal":
-                lines.append(f"  {f.name}: '{f.ref}';")
-            elif f.kind == "string":
-                lines.append(f"  {f.name}{opt}: string;")
-            elif f.kind == "int":
-                lines.append(f"  {f.name}{opt}: string | number | bigint;")
-            elif f.kind == "float":
-                lines.append(f"  {f.name}{opt}: number;")
-            elif f.kind == "bool":
-                lines.append(f"  {f.name}{opt}: boolean;")
-            elif f.kind in ("enum", "model", "fixed_array"):
-                lines.append(f"  {f.name}{opt}: {f.ref};")
-            elif f.kind == "generic_map":
-                lines.append(f"  {f.name}{opt}: Record<string, unknown>;")
+            field_schema = _ts_field_to_zod(f)
+            lines.append(f"    {f.name}: {field_schema},")
+        strict_str = ".strict()" if not m.additional_properties else ""
+        lines.append("  },")
+        lines.append(f"  {{ message: '{m.name} payload must be an object' }}")
+        lines.append(f"){strict_str};")
+        lines.append("")
+        if m.is_submodel:
+            lines.append(f"export const {m.name}Schema = raw{m.name}Schema;")
+        else:
+            lines.append(f"export const {m.name}Schema = jsonInput.pipe(raw{m.name}Schema);")
+        lines.append(f"export const {to_camel_case(m.name)}Schema = {m.name}Schema;")
+        lines.append("")
+        lines.append(f"export type {m.name} = z.infer<typeof raw{m.name}Schema>;")
+
+    lines.append("")
+    lines.append("function unwrapZod<T>(result: {")
+    lines.append("  success: true;")
+    lines.append("  data: unknown;")
+    lines.append("} | {")
+    lines.append("  success: false;")
+    lines.append("  error: { issues: Array<{ message: string }> };")
+    lines.append("}): T {")
+    lines.append("  if (!result.success) {")
+    lines.append("    throw new Error(result.error.issues[0]?.message ?? 'Validation failed');")
+    lines.append("  }")
+    lines.append("  return result.data as T;")
+    lines.append("}")
+
+    for m in ir.models:
+        lines.append("")
+        lines.append(f"export function parse{m.name}(input: unknown): {m.name} {{")
+        lines.append(f"  return unwrapZod<{m.name}>({to_camel_case(m.name)}Schema.safeParse(input));")
+        lines.append("}")
+        lines.append("")
+        lines.append(f"export function is{m.name}(input: unknown): input is {m.name} {{")
+        lines.append(f"  return {to_camel_case(m.name)}Schema.safeParse(input).success;")
+        lines.append("}")
+
+    if ir.channels:
+        channels_regex = "|".join(ir.channels)
+        channels_union = " | ".join(f"'{c}'" for c in ir.channels)
+        lines.append("")
+        lines.append("export const robotIdSchema = z")
+        lines.append("  .string({")
+        lines.append('    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",')
+        lines.append("  })")
+        lines.append("  .min(1, {")
+        lines.append('    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",')
+        lines.append("  })")
+        lines.append("  .regex(/^[^/\\\\\\s]+$/, {")
+        lines.append('    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",')
+        lines.append("  });")
+        lines.append("")
+        lines.append("export const robotTopicSchema = z")
+        lines.append("  .string()")
+        lines.append(f"  .regex(/^robot\\/([^/\\\\\\s]+)\\/({channels_regex})$/)")
+        lines.append("  .transform((topic) => {")
+        lines.append("    const parts = topic.split('/');")
+        lines.append("    return {")
+        lines.append("      robotId: parts[1],")
+        lines.append(f"      channel: parts[2] as {channels_union},")
+        lines.append("    };")
+        lines.append("  });")
+
+        for ch in ir.channels:
+            fn_name = f"robot{to_pascal_case(ch)}Topic"
+            lines.append("")
+            lines.append(f"export function {fn_name}(robotId: string): string {{")
+            lines.append("  const validId = robotIdSchema.parse(robotId);")
+            lines.append(f"  return `robot/${{validId}}/{ch}`;")
+            lines.append("}")
+
+        lines.append("")
+        lines.append("export function parseRobotTopic(")
+        lines.append("  topic: string")
+        lines.append(f"): {{ robotId: string; channel: {channels_union} }} | null {{")
+        lines.append("  const result = robotTopicSchema.safeParse(topic);")
+        lines.append("  return result.success ? result.data : null;")
+        lines.append("}")
+
+    has_command = any(m.name == "RobotCommand" for m in ir.models)
+    if has_command:
+        lines.append("")
+        lines.append("export function serializeCommand(cmd: RobotCommand): string {")
+        lines.append("  return JSON.stringify(cmd, (_, v) =>")
+        lines.append("    typeof v === 'bigint' ? Number(v) : v")
+        lines.append("  );")
         lines.append("}")
 
     lines.append("")

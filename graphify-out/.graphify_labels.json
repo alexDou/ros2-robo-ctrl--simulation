@@ -83,7 +83,7 @@
   "81": "EdgeNode",
   "82": "error_frame.schema.json",
   "83": "TeleopPage",
-  "84": "contracts.test.ts",
+  "84": "contracts.ts",
   "85": "structure.md",
   "86": "scripts",
   "87": "hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md",
@@ -94,6 +94,5 @@
   "92": "hand-sim-6vku--unit-23-teleopclient-telemetrymonitor-showcase-dir.md",
   "93": "hand-sim-awta--unit-20-domain-schemas-canonical-joint-constants-s.md",
   "94": "hand-sim-iy13--unit-22-gateway-high-throughput-30-hz-telemetry-mu.md",
-  "95": "hand-sim-n9ch--unit-24-multi-service-30-hz-end-to-end-playwright.md",
-  "100": "MockWebSocket"
+  "95": "hand-sim-n9ch--unit-24-multi-service-30-hz-end-to-end-playwright.md"
 }
