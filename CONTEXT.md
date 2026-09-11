@@ -1,4 +1,4 @@
-# HandSim
+# arm-UR5e controller simulation
 
 Robotics simulation, real-time telemetry streaming, and teleoperation control platform bridging web visualizers with Gazebo and ROS2.
 
@@ -35,4 +35,9 @@ _Avoid_: Message broker, network bus, rosbridge
 **EdgeNode**:
 The Python and ROS2 Jazzy process executing robot control, sensor ingestion, and telemetry serialization.
 _Avoid_: Worker, python script, listener
+
+**TeleopClient**:
+The browser-based Preact application managing WebSocket connections to Gateway, real-time telemetry observation, and operator controls.
+_Avoid_: Web visualizer, frontend, dashboard, web client, UI
+
 

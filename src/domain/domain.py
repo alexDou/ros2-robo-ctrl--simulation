@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class CommandType(str, Enum):
-    """Permitted operational command types for the EdgeNode."""
+    """Operational command type"""
 
     PING = "PING"
     TELEOP_JOINT_TARGET = "TELEOP_JOINT_TARGET"
@@ -17,7 +17,7 @@ class CommandType(str, Enum):
 
 
 class RobotState(str, Enum):
-    """Operational lifecycle state of the robotic manipulator."""
+    """Current lifecycle state of the robotic manipulator"""
 
     BOOTING = "BOOTING"
     IDLE = "IDLE"
@@ -26,49 +26,74 @@ class RobotState(str, Enum):
     FAULT = "FAULT"
 
 
+UR5E_JOINTS: list[str] = [
+    "shoulder_pan_joint",
+    "shoulder_lift_joint",
+    "elbow_joint",
+    "wrist_1_joint",
+    "wrist_2_joint",
+    "wrist_3_joint",
+]
+
+CANONICAL_UR5E_JOINTS: list[str] = UR5E_JOINTS
+
+UR5eJoint = Literal[
+    "shoulder_pan_joint",
+    "shoulder_lift_joint",
+    "elbow_joint",
+    "wrist_1_joint",
+    "wrist_2_joint",
+    "wrist_3_joint",
+]
+
+
+FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]
+ArmJointPositions = Annotated[list[FiniteFloat], Field(min_length=6, max_length=6, description="UR5e 6-DoF kinematic chain angles in radians in canonical sequence")]
+
+
 class InferenceMetrics(BaseModel):
-    """Inference performance and classification metrics from Edge AI models."""
+    """Edge AI inference latency and object classification metrics"""
 
     model_config = ConfigDict(extra="forbid")
 
     latency_ms: float = Field(..., ge=0.0, description="Inference compute latency in milliseconds")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Detection confidence score")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Classification detection confidence score")
     detected_object: str = Field(..., min_length=1, description="Detected object class label")
 
 
-class RobotCommand(BaseModel):
-    """Structured inbound instruction sent to EdgeNode."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    command_id: str = Field(..., min_length=1, description="Command UUID v4")
-    sender_id: str = Field(..., min_length=1, description="Sender component identifier")
-    timestamp_ns: int = Field(..., ge=0, description="Timestamp in nanoseconds since epoch")
-    type: CommandType = Field(..., description="Operational command enum")
-    payload: dict[str, Any] = Field(default_factory=dict, description="Command-specific payload object")
-
-
-class RobotTelemetryEvent(BaseModel):
-    """Structured domain event emitted by EdgeNode."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    timestamp_ns: int = Field(..., ge=0, description="Timestamp in nanoseconds since epoch")
-    robot_state: RobotState = Field(..., description="Operational lifecycle state")
-    joint_positions: Annotated[list[float], Field(..., min_length=6, max_length=6, description="UR5e 6-DoF joint angles in radians")]
-    inference_metrics: Optional[InferenceMetrics] = Field(default=None, description="Optional Edge AI detection metrics")
-    command_id: Optional[str] = Field(default=None, description="Optional command acknowledgment ID")
-
-
 class ErrorFrame(BaseModel):
-    """Structured error message sent by Gateway on schema or validation errors."""
+    """Canonical schema for structured error frames returned by Gateway over WebSocket"""
 
     model_config = ConfigDict(extra="forbid")
 
     type: Literal["ERROR"] = "ERROR"
-    error_code: str = Field(..., min_length=1, description="Diagnostic error code")
-    message: str = Field(..., min_length=1, description="Diagnostic error message")
-    timestamp_ns: int = Field(..., ge=0, description="Timestamp in nanoseconds since epoch")
+    error_code: str = Field(..., min_length=1, description="Structured diagnostic error code")
+    message: str = Field(..., min_length=1, description="Human-readable diagnostic error description")
+    timestamp_ns: int = Field(..., ge=0, description="Nanoseconds since Unix epoch when error was generated")
+
+
+class RobotCommand(BaseModel):
+    """Canonical schema for inbound commands sent to EdgeNode over WebSocket or DataFabric"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    command_id: str = Field(..., description="Unique UUID v4 identifying the command")
+    sender_id: str = Field(..., min_length=1, description="Identifier of the originating sender")
+    timestamp_ns: int = Field(..., ge=0, description="Nanoseconds since Unix epoch when command was dispatched")
+    type: CommandType = Field(..., description="Operational command type")
+    payload: dict[str, Any] = Field(default_factory=dict, description="Command-specific payload arguments")
+
+
+class RobotTelemetryEvent(BaseModel):
+    """Canonical schema for outbound telemetry events emitted by EdgeNode over DataFabric and WebSocket"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    timestamp_ns: int = Field(..., ge=0, description="Nanoseconds since Unix epoch when telemetry state was sampled")
+    robot_state: RobotState = Field(..., description="Current lifecycle state of the robotic manipulator")
+    joint_positions: ArmJointPositions
+    inference_metrics: Optional[InferenceMetrics] = Field(default=None, description="Edge AI inference latency and object classification metrics")
+    command_id: Optional[str] = Field(default=None, description="Optional command identifier acknowledged by this telemetry event")
 
 
 def _validate_robot_id(robot_id: str) -> None:

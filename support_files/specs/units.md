@@ -1,4 +1,4 @@
-# Phase 1: Sub-Phase Units (Vertical Walking Skeletons)
+# Project Architecture Units (Vertical Walking Skeletons)
 
 Each unit represents a complete, test-verified end-to-end slice traversing all three architectural tiers: Preact Frontend, Rust Actix-Web Gateway, and Python/ROS2 Jazzy EdgeNode over Zenoh.
 
@@ -32,11 +32,21 @@ Each unit represents a complete, test-verified end-to-end slice traversing all t
 
 ## Unit 2: Continuous 6-DoF UR5e Telemetry Stream
 
-* **Objective**: High-frequency telemetry streaming of the 6-DoF UR5e kinematic chain.
-* **EdgeNode**: Periodically streams typed `RobotTelemetryEvent` containing `ArmJointPositions` (6 floats in radians) and inference metrics over `robot/0/telemetry`.
-* **Gateway**: Stream multiplexing over WebSocket to active session.
-* **Frontend**: Decoupled ingestion loop storing joint positions in a non-reactive ref buffer to prevent UI re-render lag.
-* **Definition of Done**: Automated tests verify serialization, rate limiting, and non-reactive buffer updates at target frequency without memory leaks.
+* **Objective**: High-frequency, low-latency 30 Hz telemetry streaming of the 6-DoF UR5e kinematic chain from ROS2 to TeleopClient without browser lag.
+* **Architecture**: Contract-first parallel development. Unit 2.0 locks down schemas and generated cross-language types. Units 2.1 (EdgeNode), 2.2 (Gateway), and 2.3 (TeleopClient) execute concurrently against mocked interface ports. Unit 2.4 provides end-to-end integration verification.
+
+### Sub-Unit Breakdown
+- **Unit 2.0: Domain Schemas & Canonical Joint Constants Sync**:
+  - Validates `schemas/robot_telemetry_event.schema.json`, introduces canonical UR5e 6-DoF joint name constants, and regenerates domain models across Python, Rust, and TypeScript via `scripts/generate_domain.py`.
+- **Unit 2.1: EdgeNode Robust JointState Extraction & Hybrid Mock Publisher**:
+  - Ingests `/joint_states`, extracts canonical UR5e 6-DoF joints with zero-order hold, ignores extraneous/gripper joints, and streams 30 Hz `RobotTelemetryEvent` frames over DataFabric. Includes standalone `mock_publisher.py` and offline `pytest` fixtures.
+- **Unit 2.2: Gateway High-Throughput 30 Hz Telemetry Multiplexing**:
+  - Asynchronously forwards 30 Hz DataFabric telemetry to ActiveSession WebSocket connections with zero frame drops under standard load. Verified with `cargo nextest`.
+- **Unit 2.3: TeleopClient TelemetryMonitor Showcase & Direct DOM Ingestion**:
+  - Ingests into non-reactive buffer, paints 6 joint values via `requestAnimationFrame` (zero VDOM diffing overhead), displays ~30 Hz counter and latency, and removes "Verify connection" / Ping controls from DOM during streaming. Verified with `vitest`.
+- **Unit 2.4: Multi-Service 30 Hz End-to-End Playwright Suite**:
+  - Full-stack multi-service E2E integration test asserting live 30 Hz telemetry, latency < 50ms, DOM paint accuracy, and absence of verify connection controls during streaming.
+
 
 ---
 

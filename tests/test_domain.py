@@ -2,6 +2,9 @@ import pytest
 from pydantic import ValidationError
 
 from domain import (
+    CANONICAL_UR5E_JOINTS,
+    UR5E_JOINTS,
+    ArmJointPositions,
     CommandType,
     ErrorFrame,
     InferenceMetrics,
@@ -60,11 +63,60 @@ def test_robot_telemetry_event_serialization_round_trip():
     assert len(restored.joint_positions) == 6
 
 
+def test_canonical_joint_constants():
+    assert UR5E_JOINTS == [
+        "shoulder_pan_joint",
+        "shoulder_lift_joint",
+        "elbow_joint",
+        "wrist_1_joint",
+        "wrist_2_joint",
+        "wrist_3_joint",
+    ]
+    assert CANONICAL_UR5E_JOINTS == UR5E_JOINTS
+    assert len(UR5E_JOINTS) == 6
+
+
 def test_robot_telemetry_event_malformed_fails():
     # Only 2 joint positions instead of 6
     with pytest.raises(ValidationError):
         RobotTelemetryEvent.model_validate_json(
             '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 1.0]}'
+        )
+
+    # 5 joint positions instead of 6
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent.model_validate_json(
+            '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 1.0, 2.0, 3.0, 4.0]}'
+        )
+
+    # 7 joint positions instead of 6
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent.model_validate_json(
+            '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0]}'
+        )
+
+    # Non-finite values: NaN
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent(
+            timestamp_ns=1,
+            robot_state=RobotState.IDLE,
+            joint_positions=[float("nan"), 0.0, 0.0, 0.0, 0.0, 0.0],
+        )
+
+    # Non-finite values: Infinity
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent(
+            timestamp_ns=1,
+            robot_state=RobotState.IDLE,
+            joint_positions=[float("inf"), 0.0, 0.0, 0.0, 0.0, 0.0],
+        )
+
+    # Non-finite values: -Infinity
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent(
+            timestamp_ns=1,
+            robot_state=RobotState.IDLE,
+            joint_positions=[float("-inf"), 0.0, 0.0, 0.0, 0.0, 0.0],
         )
 
     # Invalid robot_state
@@ -127,4 +179,10 @@ def test_canonical_json_schemas():
         assert "title" in data
         assert "properties" in data
         assert "required" in data
+
+    telem_data = json.loads((schema_dir / "robot_telemetry_event.schema.json").read_text())
+    assert telem_data["$defs"]["canonical_joints"]["enum"] == UR5E_JOINTS
+    assert telem_data["properties"]["joint_positions"]["minItems"] == 6
+    assert telem_data["properties"]["joint_positions"]["maxItems"] == 6
+    assert telem_data["properties"]["timestamp_ns"]["minimum"] == 0
 
