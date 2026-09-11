@@ -168,8 +168,8 @@ export const rawRobotTelemetryEventSchema = z.object(
     timestamp_ns: timestampNsSchema,
     robot_state: RobotStateSchema,
     joint_positions: ArmJointPositionsSchema,
-    inference_metrics: rawInferenceMetricsSchema.optional(),
-    command_id: z.string().optional(),
+    inference_metrics: rawInferenceMetricsSchema.nullish(),
+    command_id: z.string().nullish(),
   },
   { message: 'RobotTelemetryEvent payload must be an object' }
 ).strict();

@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-11)
 
 ## Corpus Check
-- 152 files · ~64,109 words
+- 152 files · ~64,579 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1118 nodes · 1331 edges · 115 communities (73 shown, 22 thin omitted)
+- 1122 nodes · 1340 edges · 115 communities (73 shown, 22 thin omitted)
 - Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 45 edges (avg confidence: 0.91)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e6c2e781`
+- Built from commit: `e3bb70e7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -114,13 +114,13 @@
 ## God Nodes (most connected - your core abstractions)
 1. `EdgeNode` - 22 edges
 2. `TelemetrySubscription` - 18 edges
-3. `compilerOptions` - 18 edges
-4. `TeleopPage` - 14 edges
+3. `TeleopPage` - 18 edges
+4. `compilerOptions` - 18 edges
 5. `DataFabricPort` - 13 edges
 6. `MemoryFabric` - 12 edges
-7. `ZenohFabric` - 12 edges
-8. `ServiceHarness` - 12 edges
-9. `template.sh script` - 11 edges
+7. `ServiceHarness` - 12 edges
+8. `template.sh script` - 11 edges
+9. `ZenohFabric` - 11 edges
 10. `teleop_ws()` - 11 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -345,7 +345,7 @@ Cohesion: 0.07
 Nodes (28): error_code, message, additionalProperties, description, description, minLength, type, $id (+20 more)
 
 ### Community 83 - "TeleopPage"
-Cohesion: 0.12
+Cohesion: 0.10
 Nodes (9): TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR, CustomWorld (+1 more)
 
 ### Community 84 - "contracts.ts"
@@ -434,16 +434,16 @@ Nodes (5): description, maximum, minimum, type, confidence
 
 ## Knowledge Gaps
 - **544 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+539 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 686 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 689 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `properties` connect `properties` to `enum`, `robot_telemetry_event.schema.json`, `inference_metrics`, `joint_positions`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
 - **Why does `inference_metrics` connect `inference_metrics` to `properties`, `properties`?**
-  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**

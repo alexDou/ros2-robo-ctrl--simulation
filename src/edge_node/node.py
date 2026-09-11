@@ -187,7 +187,7 @@ class EdgeNode:
 
     def _publish_telemetry(self, event: RobotTelemetryEvent) -> None:
         if self._zenoh_pub is not None:
-            self._zenoh_pub.put(event.model_dump_json())
+            self._zenoh_pub.put(event.model_dump_json(exclude_none=True))
             self.logger.debug(
                 f"Emitted RobotTelemetryEvent to {self.telemetry_topic} (state={event.robot_state.value})"
             )

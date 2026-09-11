@@ -66,8 +66,6 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
     ws.onmessage = (event: MessageEvent) => {
       try {
         const parsed = JSON.parse(event.data);
-        const logId = `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-        const timeStr = new Date().toLocaleTimeString();
 
         const handled = handleIncomingFrame(parsed);
         if (handled) {
@@ -78,9 +76,9 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
             const stateChanged = !lastTelem || lastTelem.robot_state !== telem.robot_state;
             if (telem.command_id || isFirst || stateChanged) {
               const entry: LogEntry = {
-                id: logId,
+                id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
                 type: 'telemetry',
-                timestamp: timeStr,
+                timestamp: new Date().toLocaleTimeString(),
                 data: telem,
               };
               return [entry, ...prev].slice(0, 100);
@@ -89,9 +87,9 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
           });
         } else if (isErrorFrame(parsed)) {
           const entry: LogEntry = {
-            id: logId,
+            id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
             type: 'error',
-            timestamp: timeStr,
+            timestamp: new Date().toLocaleTimeString(),
             data: parsed,
           };
           setLogs((prev) => [entry, ...prev].slice(0, 100));
@@ -219,6 +217,7 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
       {!isStreaming && (
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
           <button
+            data-testid="verify-connection-button"
             onClick={handlePing}
             disabled={connectionState !== 'CONNECTED'}
             style={{
@@ -231,7 +230,7 @@ export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClient
               cursor: connectionState === 'CONNECTED' ? 'pointer' : 'not-allowed',
             }}
           >
-            Ping Robot
+            Verify Connection (Ping)
           </button>
         </div>
       )}

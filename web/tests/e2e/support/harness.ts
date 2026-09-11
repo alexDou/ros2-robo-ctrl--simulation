@@ -22,6 +22,7 @@ export class ServiceHarness {
 
   private gatewayProcess: ChildProcess | null = null;
   private edgeNodeProcess: ChildProcess | null = null;
+  private mockPublisherProcess: ChildProcess | null = null;
   private webProcess: ChildProcess | null = null;
 
   public readonly edgeNodeLogs: string[] = [];
@@ -107,6 +108,21 @@ export class ServiceHarness {
     this.edgeNodeProcess.stdout?.on('data', recordEdgeLog);
     this.edgeNodeProcess.stderr?.on('data', recordEdgeLog);
 
+    // 3b. Start Mock JointState Publisher at 30 Hz
+    this.mockPublisherProcess = spawn('uv', ['run', 'python', 'src/edge_node/mock_publisher.py'], {
+      cwd: ROOT_DIR,
+      env: {
+        ...process.env,
+        PUBLISH_RATE_HZ: '30.0',
+        JOINT_STATES_TOPIC: '/joint_states',
+      },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    this.mockPublisherProcess.stderr?.on('data', (d: Buffer) => {
+      if (process.env.DEBUG_E2E) process.stderr.write(`[MOCK] ${d.toString()}`);
+    });
+
     // 4. Start Vite web server
     this.webProcess = spawn('npm', ['run', 'dev', '--', '--port', String(this.webPort), '--strictPort'], {
       cwd: WEB_DIR,
@@ -147,6 +163,7 @@ export class ServiceHarness {
     };
 
     await Promise.all([
+      killProc(this.mockPublisherProcess),
       killProc(this.edgeNodeProcess),
       killProc(this.gatewayProcess),
       killProc(this.webProcess),

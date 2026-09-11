@@ -14,6 +14,12 @@ export function TelemetryMonitor({ bufferRef, isStreaming }: TelemetryMonitorPro
 
   useEffect(() => {
     if (!isStreaming) {
+      if (freqRef.current) freqRef.current.textContent = '0 Hz';
+      if (latencyRef.current) latencyRef.current.textContent = '0 ms';
+      for (const name of CANONICAL_UR5E_JOINTS) {
+        const span = jointValRefs.current[name];
+        if (span) span.textContent = '0.000 rad (0.0°)';
+      }
       return;
     }
 

@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1789136589.2929132,
-    "seen": 1789136674.750067,
-    "ast_hash": "9a7cdbe9b8e67444a03120a3a2703cc8",
+    "mtime": 1789163889.7168188,
+    "seen": 1789164210.9089692,
+    "ast_hash": "d77370e242108e9dd266bac81fa30eb6",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -810,15 +810,15 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789163005.086915,
-    "seen": 1789163131.808299,
-    "ast_hash": "c95820a8d760d65fb940f46d76d704d7",
+    "mtime": 1789163910.1538167,
+    "seen": 1789164210.9093473,
+    "ast_hash": "c467f92d3371f99ee084c2d96be8995d",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
-    "mtime": 1789163084.2239065,
-    "seen": 1789163131.8083339,
-    "ast_hash": "30a76d0adc69aff68e7130d0f609aaa1",
+    "mtime": 1789163925.740815,
+    "seen": 1789164210.90938,
+    "ast_hash": "e5702e644129ec83401bc60fcd8511c9",
     "semantic_hash": ""
   },
   "src/gateway/src/session.rs": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789163097.954905,
-    "seen": 1789163131.8088055,
-    "ast_hash": "d4a47f92deecc3b8175cc0b178686f98",
+    "mtime": 1789164083.2597978,
+    "seen": 1789164210.9098825,
+    "ast_hash": "955f14916d4c1b967db36c7e48b8f4ec",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
-    "mtime": 1789161041.095474,
-    "seen": 1789161070.0866308,
-    "ast_hash": "e23037ce094d3aad852419ffa9ccfb52",
+    "mtime": 1789163877.2038202,
+    "seen": 1789164210.9101884,
+    "ast_hash": "a11e42d8a57fe2d18acb5d62d8aafe9d",
     "semantic_hash": ""
   },
   "web/tests/unit/env.test.ts": {
@@ -900,21 +900,21 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1788983623.6499953,
-    "seen": 1788983762.2719586,
-    "ast_hash": "042677989c51887d67372e2d568907c2",
+    "mtime": 1789164140.6937914,
+    "seen": 1789164210.9100373,
+    "ast_hash": "4228bc2c5e6da11d1eb9c51b726afde6",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
-    "mtime": 1788983670.9415941,
-    "seen": 1788983762.2719595,
-    "ast_hash": "30f12c790146fc3374e1b9bda626ba46",
+    "mtime": 1789164156.5217898,
+    "seen": 1789164210.910038,
+    "ast_hash": "58e2894c29bb584a02b7f6c8c74304cf",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1788983634.118906,
-    "seen": 1788983762.2719607,
-    "ast_hash": "824f610390bb17a2ea03de819add8257",
+    "mtime": 1789164113.0367944,
+    "seen": 1789164210.9100392,
+    "ast_hash": "4c5d6789d46f8e549d8b227ad2923fef",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
@@ -930,9 +930,9 @@
     "semantic_hash": ""
   },
   "scripts/generate_domain.py": {
-    "mtime": 1789160945.5976293,
-    "seen": 1789161070.085491,
-    "ast_hash": "6ae7c8cc252886242956faa1fcd294d5",
+    "mtime": 1789163846.8888235,
+    "seen": 1789164210.9091043,
+    "ast_hash": "22bdb848c4a5d8732a048da2f6befee1",
     "semantic_hash": ""
   },
   "src/domain/__init__.py": {
@@ -942,21 +942,21 @@
     "semantic_hash": ""
   },
   "src/domain/domain.py": {
-    "mtime": 1789160949.784515,
-    "seen": 1789161070.085574,
+    "mtime": 1789163860.6037788,
+    "seen": 1789164210.9091825,
     "ast_hash": "0700452ca937247f5a51baba90990c00",
     "semantic_hash": ""
   },
   "src/domain/domain.rs": {
-    "mtime": 1789160949.7841356,
-    "seen": 1789161070.085575,
+    "mtime": 1789163860.603356,
+    "seen": 1789164210.9091835,
     "ast_hash": "9e3f815a87fcc21082e95baef0b1b5ea",
     "semantic_hash": ""
   },
   "web/domain/contracts.ts": {
-    "mtime": 1789160949.784727,
-    "seen": 1789161070.0861397,
-    "ast_hash": "2e465c595bf35dbfa45a38483eb873b8",
+    "mtime": 1789163860.6039536,
+    "seen": 1789164210.9097717,
+    "ast_hash": "dc625c03ee7559acfc5d8dc6a4f76392",
     "semantic_hash": ""
   },
   "support_files/specs/units.md": {
@@ -1038,9 +1038,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TelemetryMonitor.tsx": {
-    "mtime": 1789162974.8109183,
-    "seen": 1789163131.8088043,
-    "ast_hash": "d6b2624fb094b3192254f9c739f52e6e",
+    "mtime": 1789163989.7568078,
+    "seen": 1789164210.90988,
+    "ast_hash": "77e24246a5b785ac6f87320c8932488c",
     "semantic_hash": ""
   },
   "web/src/hooks/useTelemetryStream.ts": {
