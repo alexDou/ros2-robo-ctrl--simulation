@@ -1080,9 +1080,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-2ved--unit-34-dynamic-motion-multi-service-integration-l.md": {
-    "mtime": 1789219624.5519233,
-    "seen": 1789220544.2086253,
-    "ast_hash": "0ac75fde2e5083504c047d83dbd5c72c",
+    "mtime": 1789230523.1217635,
+    "seen": 1789232921.8924928,
+    "ast_hash": "e11aba704be082eec9b7d4f376afceef",
     "semantic_hash": ""
   },
   ".beans/hand-sim-alr9--unit-33-60-fps-telemetry-kinematic-synchronization.md": {
@@ -1140,15 +1140,15 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789230138.0040364,
-    "seen": 1789230489.8793857,
-    "ast_hash": "de813f76a21d57914a29fab8716c3e9d",
+    "mtime": 1789232858.7879305,
+    "seen": 1789232921.888169,
+    "ast_hash": "06636aaf958f9dc2225c398e3d124d5f",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
-    "mtime": 1789226536.737624,
-    "seen": 1789226608.5830717,
-    "ast_hash": "7082fa2c621db38d04d74d3c41ff7a86",
+    "mtime": 1789232865.6639175,
+    "seen": 1789232921.8885968,
+    "ast_hash": "ccf59cc48b885e1640dc3c8d4d0410b6",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/dynamic_motion.steps.ts": {

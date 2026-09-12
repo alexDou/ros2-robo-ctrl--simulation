@@ -511,5 +511,51 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
       expect(mockRenderer.render).toHaveBeenCalledTimes(1);
     });
+
+    it('displays loading overlay while URDF model is loading', () => {
+      vi.spyOn(robotLoader, 'loadRobotModel').mockReturnValue(new Promise(() => {})); // Never resolves
+
+      render(
+        <RobotVisualizer
+          rendererFactory={() => undefined as any}
+          controlsFactory={() => mockControls}
+        />
+      );
+
+      const loadingOverlay = screen.queryByTestId('visualizer-loading-overlay');
+      expect(loadingOverlay).not.toBeNull();
+    });
+
+    it('displays error overlay when WebGL context creation throws', () => {
+      render(
+        <RobotVisualizer
+          rendererFactory={() => {
+            throw new Error('WebGL blocklisted');
+          }}
+          controlsFactory={() => mockControls}
+        />
+      );
+
+      const errorOverlay = screen.queryByTestId('visualizer-error-overlay');
+      expect(errorOverlay).not.toBeNull();
+      expect(errorOverlay?.textContent).toContain('WebGL Context Unavailable');
+    });
+
+    it('displays error overlay when loadRobotModel rejects', async () => {
+      vi.spyOn(robotLoader, 'loadRobotModel').mockRejectedValue(new Error('Network timeout'));
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+          />
+        );
+      });
+
+      const errorOverlay = await screen.findByTestId('visualizer-error-overlay');
+      expect(errorOverlay).not.toBeNull();
+      expect(errorOverlay?.textContent).toContain('Failed to Load Robot URDF');
+    });
   });
 });
