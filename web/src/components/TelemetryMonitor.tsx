@@ -5,9 +5,16 @@ import type { TelemetryBuffer } from '@/hooks/useTelemetryStream';
 export interface TelemetryMonitorProps {
   bufferRef: { current: TelemetryBuffer };
   isStreaming: boolean;
+  robotState?: string | null;
+  layout?: 'vertical' | 'grid';
 }
 
-export function TelemetryMonitor({ bufferRef, isStreaming }: TelemetryMonitorProps) {
+export function TelemetryMonitor({
+  bufferRef,
+  isStreaming,
+  robotState,
+  layout = 'grid',
+}: TelemetryMonitorProps) {
   const jointValRefs = useRef<Record<string, HTMLSpanElement | null>>({});
   const freqRef = useRef<HTMLSpanElement | null>(null);
   const latencyRef = useRef<HTMLSpanElement | null>(null);
@@ -61,6 +68,8 @@ export function TelemetryMonitor({ bufferRef, isStreaming }: TelemetryMonitorPro
     };
   }, [bufferRef, isStreaming]);
 
+  const isVertical = layout === 'vertical';
+
   return (
     <section
       data-testid="telemetry-monitor"
@@ -71,20 +80,42 @@ export function TelemetryMonitor({ bufferRef, isStreaming }: TelemetryMonitorPro
         marginBottom: '1.5rem',
         color: '#f9fafb',
         border: '1px solid #374151',
+        height: isVertical ? '100%' : 'auto',
+        boxSizing: 'border-box',
       }}
     >
       <div
         style={{
           display: 'flex',
+          flexDirection: isVertical ? 'column' : 'row',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: isVertical ? 'flex-start' : 'center',
+          gap: isVertical ? '0.75rem' : '1rem',
           marginBottom: '1rem',
           borderBottom: '1px solid #374151',
           paddingBottom: '0.75rem',
         }}
       >
-        <h2 style={{ margin: 0, fontSize: '1.125rem' }}>UR5e Telemetry Monitor</h2>
-        <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.875rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <h2 style={{ margin: 0, fontSize: '1.125rem' }}>UR5e Telemetry</h2>
+          {robotState && (
+            <span
+              data-testid="telemetry-robot-state-badge"
+              style={{
+                fontSize: '0.75rem',
+                padding: '0.125rem 0.5rem',
+                borderRadius: '9999px',
+                backgroundColor: isStreaming ? '#10b98120' : '#4b556320',
+                color: isStreaming ? '#10b981' : '#9ca3af',
+                border: `1px solid ${isStreaming ? '#10b981' : '#4b5563'}`,
+                fontWeight: 600,
+              }}
+            >
+              {robotState}
+            </span>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.875rem' }}>
           <div>
             <span style={{ color: '#9ca3af', marginRight: '0.5rem' }}>Rate:</span>
             <span
@@ -109,11 +140,19 @@ export function TelemetryMonitor({ bufferRef, isStreaming }: TelemetryMonitorPro
       </div>
 
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '0.75rem',
-        }}
+        style={
+          isVertical
+            ? {
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }
+            : {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '0.75rem',
+              }
+        }
       >
         {CANONICAL_UR5E_JOINTS.map((jointName) => (
           <div
@@ -146,3 +185,4 @@ export function TelemetryMonitor({ bufferRef, isStreaming }: TelemetryMonitorPro
     </section>
   );
 }
+

@@ -9,6 +9,7 @@ import {
 import { createPingCommand, serializeCommand } from '@domain/parsers';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { TelemetryMonitor } from '@components/TelemetryMonitor';
+import { RobotVisualizer } from '@components/RobotVisualizer';
 
 export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
 
@@ -22,21 +23,77 @@ export interface LogEntry {
 export interface TeleopClientProps {
   robotId?: string;
   gatewayWsUrl?: string;
+  urdfUrl?: string;
+  assetBaseUrl?: string;
+  rendererFactory?: (canvas: HTMLCanvasElement) => any;
+  controlsFactory?: (camera: any, domElement: any) => any;
 }
 
-export function TeleopClient({ robotId = DEFAULT_ROBOT_ID, gatewayWsUrl }: TeleopClientProps) {
+export function TeleopClient({
+  robotId = DEFAULT_ROBOT_ID,
+  gatewayWsUrl,
+  urdfUrl,
+  assetBaseUrl,
+  rendererFactory,
+  controlsFactory,
+}: TeleopClientProps) {
   const defaultProto =
     isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const defaultHost =
     isBrowser() && window.location.hostname ? window.location.hostname : 'localhost';
+  const queryPort =
+    isBrowser() && window.location.search
+      ? new URLSearchParams(window.location.search).get('gateway_port')
+      : null;
+  const defaultPort = queryPort || '8080';
   const wsUrl =
-    gatewayWsUrl || `${defaultProto}//${defaultHost}:8080/ws/teleop/robot/${robotId}`;
+    gatewayWsUrl || `${defaultProto}//${defaultHost}:${defaultPort}/ws/teleop/robot/${robotId}`;
 
   const [connectionState, setConnectionState] = useState<ConnectionState>('CONNECTING');
   const [conflictReason, setConflictReason] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if (typeof window.matchMedia === 'function') {
+        return window.matchMedia('(min-width: 1024px)').matches;
+      }
+      if (typeof window.innerWidth === 'number') {
+        return window.innerWidth >= 1024;
+      }
+    }
+    return true;
+  });
   const wsRef = useRef<WebSocket | null>(null);
   const isCleaningUp = useRef(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    if (typeof window.matchMedia === 'function') {
+      const mql = window.matchMedia('(min-width: 1024px)');
+      setIsDesktop(mql.matches);
+      const handleChange = (e: MediaQueryListEvent) => {
+        setIsDesktop(e.matches);
+      };
+      if (typeof mql.addEventListener === 'function') {
+        mql.addEventListener('change', handleChange);
+      }
+      window.addEventListener('resize', handleResize);
+      return () => {
+        if (typeof mql.removeEventListener === 'function') {
+          mql.removeEventListener('change', handleChange);
+        }
+        window.removeEventListener('resize', handleResize);
+      };
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const {
     bufferRef,
@@ -162,7 +219,40 @@ export function TeleopClient({ robotId = DEFAULT_ROBOT_ID, gatewayWsUrl }: Teleo
   };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '1.5rem', fontFamily: 'sans-serif' }}>
+    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '1.5rem', fontFamily: 'sans-serif' }}>
+      <style>{`
+        .teleop-split-layout {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          width: 100%;
+          margin-bottom: 1.5rem;
+        }
+        .teleop-visualizer-pane {
+          width: 100%;
+          min-width: 0;
+          min-height: 480px;
+        }
+        .teleop-sidebar-pane {
+          width: 100%;
+          min-width: 0;
+        }
+        @media (min-width: 1024px) {
+          .teleop-split-layout {
+            flex-direction: row;
+            align-items: stretch;
+          }
+          .teleop-visualizer-pane {
+            flex: 0 0 75%;
+            max-width: 75%;
+            min-height: 560px;
+          }
+          .teleop-sidebar-pane {
+            flex: 0 0 25%;
+            max-width: 25%;
+          }
+        }
+      `}</style>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div>
           <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>Teleop Control — {robotId}</h1>
@@ -213,7 +303,57 @@ export function TeleopClient({ robotId = DEFAULT_ROBOT_ID, gatewayWsUrl }: Teleo
         </div>
       )}
 
-      <TelemetryMonitor bufferRef={bufferRef} isStreaming={isStreaming} />
+      <div
+        data-testid="teleop-split-layout"
+        className="teleop-split-layout"
+        style={{
+          display: 'flex',
+          flexDirection: isDesktop ? 'row' : 'column',
+          gap: '1.5rem',
+          width: '100%',
+          marginBottom: '1.5rem',
+          alignItems: 'stretch',
+        }}
+      >
+        <div
+          data-testid="visualizer-pane"
+          className="teleop-visualizer-pane"
+          style={{
+            flex: isDesktop ? '0 0 75%' : '1 1 100%',
+            maxWidth: isDesktop ? '75%' : '100%',
+            width: isDesktop ? '75%' : '100%',
+            minWidth: 0,
+            minHeight: '480px',
+            boxSizing: 'border-box',
+          }}
+        >
+          <RobotVisualizer
+            urdfUrl={urdfUrl}
+            assetBaseUrl={assetBaseUrl}
+            rendererFactory={rendererFactory}
+            controlsFactory={controlsFactory}
+            style={{ height: '100%', minHeight: '480px' }}
+          />
+        </div>
+        <div
+          data-testid="sidebar-pane"
+          className="teleop-sidebar-pane"
+          style={{
+            flex: isDesktop ? '0 0 25%' : '1 1 100%',
+            maxWidth: isDesktop ? '25%' : '100%',
+            width: isDesktop ? '25%' : '100%',
+            minWidth: 0,
+            boxSizing: 'border-box',
+          }}
+        >
+          <TelemetryMonitor
+            bufferRef={bufferRef}
+            isStreaming={isStreaming}
+            robotState={robotState}
+            layout={isDesktop ? 'vertical' : 'grid'}
+          />
+        </div>
+      </div>
 
       {!isStreaming && (
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>

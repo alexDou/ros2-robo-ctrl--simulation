@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789213671.120039,
-    "seen": 1789213720.41238,
-    "ast_hash": "5761b7fd00efd21600cefd471d9469a7",
+    "mtime": 1789223863.627643,
+    "seen": 1789223970.9246278,
+    "ast_hash": "3bf2fdcdd946fe32c38b1983d21734df",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -864,9 +864,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/TeleopClient.test.tsx": {
-    "mtime": 1789162219.1079037,
-    "seen": 1789162309.191575,
-    "ast_hash": "144564ec978efec67995116dfef0ba3e",
+    "mtime": 1789222997.0908895,
+    "seen": 1789223970.925174,
+    "ast_hash": "3682383648931cb1b9bd97b4725b81a3",
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
@@ -906,15 +906,15 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
-    "mtime": 1789164156.5217898,
-    "seen": 1789164210.910038,
-    "ast_hash": "58e2894c29bb584a02b7f6c8c74304cf",
+    "mtime": 1789223889.4085183,
+    "seen": 1789223970.9249618,
+    "ast_hash": "35aa99147c42286a347b50f627d6a8ca",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789213394.1974185,
-    "seen": 1789213720.412545,
-    "ast_hash": "662e17fe8547c3fa025f3bcd5c3ef827",
+    "mtime": 1789223873.0145974,
+    "seen": 1789223970.9249647,
+    "ast_hash": "bf2d900f14d90f3fc4ec7d848ea74d39",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
@@ -1038,9 +1038,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TelemetryMonitor.tsx": {
-    "mtime": 1789163989.7568078,
-    "seen": 1789164210.90988,
-    "ast_hash": "77e24246a5b785ac6f87320c8932488c",
+    "mtime": 1789223152.050508,
+    "seen": 1789223970.9246254,
+    "ast_hash": "f7d1bab7ed1803446c8cc6f785872fc2",
     "semantic_hash": ""
   },
   "web/src/hooks/useTelemetryStream.ts": {
@@ -1104,15 +1104,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-w74s--unit-30-urdf-model-extraction-static-mesh-asset-di.md": {
-    "mtime": 1789219614.3348494,
-    "seen": 1789220544.208965,
-    "ast_hash": "e9cb5d1ca8ff3e88746bfe632810dbd8",
-    "semantic_hash": ""
-  },
-  ".vite/vitest/results.json": {
-    "mtime": 1789221086.3793678,
-    "seen": 1789221162.8261352,
-    "ast_hash": "5625d5193c458ad6899e46c849d7a5f4",
+    "mtime": 1789221185.5216424,
+    "seen": 1789221751.6079922,
+    "ast_hash": "dfff9ef1bccf594cac8f829f52125b66",
     "semantic_hash": ""
   },
   "scripts/extract_urdf_assets.py": {
@@ -1122,15 +1116,39 @@
     "semantic_hash": ""
   },
   "web/src/utils/robotLoader.ts": {
-    "mtime": 1789221104.1488335,
-    "seen": 1789221162.827458,
-    "ast_hash": "62a321c87e6690aab9aa0bb3e005bbba",
+    "mtime": 1789221730.0746176,
+    "seen": 1789221751.5984707,
+    "ast_hash": "daea172d222f65d6756403b888b6be9d",
     "semantic_hash": ""
   },
   "web/tests/unit/robotLoader.test.ts": {
-    "mtime": 1789221133.3727655,
-    "seen": 1789221162.828057,
-    "ast_hash": "3dd84509443bfc7dc8fc6543008da46e",
+    "mtime": 1789221693.9446704,
+    "seen": 1789221751.5992744,
+    "ast_hash": "49ff3e833ba8f440aefbc0b734ec4342",
+    "semantic_hash": ""
+  },
+  "src/edge_node/mock_motion_publisher.py": {
+    "mtime": 1789222890.3531501,
+    "seen": 1789223970.9237113,
+    "ast_hash": "97f8fe22759cacba7502be65c72e40fd",
+    "semantic_hash": ""
+  },
+  "tests/test_mock_motion_publisher.py": {
+    "mtime": 1789222900.625125,
+    "seen": 1789223970.924384,
+    "ast_hash": "2b933af2bb005031380f6414d8ed071f",
+    "semantic_hash": ""
+  },
+  "web/src/components/RobotVisualizer.tsx": {
+    "mtime": 1789223132.9415553,
+    "seen": 1789223970.924623,
+    "ast_hash": "915a3bdb0777b2ab582411e039f03f50",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/RobotVisualizer.test.tsx": {
+    "mtime": 1789223161.1154854,
+    "seen": 1789223970.9251149,
+    "ast_hash": "079468f8a5097f8c2038403dbbd4fa88",
     "semantic_hash": ""
   }
 }

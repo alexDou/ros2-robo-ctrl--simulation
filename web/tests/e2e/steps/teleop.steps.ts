@@ -4,13 +4,13 @@ import { CustomWorld } from '../support/world';
 import { TeleopPage } from '../pages/TeleopPage';
 
 Given('an operator is actively connected to robot {string}', async function (this: CustomWorld, robotId: string) {
-  const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}`;
+  const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
   await this.teleopPage!.goto(url);
   await this.teleopPage!.expectConnectionStatus(/CONNECTED/);
 });
 
 When('the operator opens the teleoperation visualizer for robot {string}', async function (this: CustomWorld, robotId: string) {
-  const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}`;
+  const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
   await this.teleopPage!.goto(url);
 });
 
@@ -42,7 +42,7 @@ When('another operator attempts to connect to robot {string} in a second browser
   this.secondPage = await this.secondContext.newPage();
   this.secondTeleopPage = new TeleopPage(this.secondPage);
 
-  const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}`;
+  const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
   await this.secondTeleopPage.goto(url);
 });
 
