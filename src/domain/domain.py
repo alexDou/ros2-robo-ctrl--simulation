@@ -46,6 +46,8 @@ UR5eJoint = Literal[
     "wrist_3_joint",
 ]
 
+DEFAULT_ROBOT_ID: str = "arm-ur5"
+
 
 FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]
 ArmJointPositions = Annotated[list[FiniteFloat], Field(min_length=6, max_length=6, description="UR5e 6-DoF kinematic chain angles in radians in canonical sequence")]

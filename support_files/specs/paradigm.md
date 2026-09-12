@@ -12,6 +12,8 @@ agent_rules:
   1_specs_first: Never write implementation code until explicit structural, domain, and data schemas are locked down in a markdown specification.  
   2_tdd_loop: For every phase component, write the automated unit/integration tests FIRST. Implementation is complete ONLY when tests pass.  
   3_decoupling: The Web Gateway (Rust) and AI Node (Python) must communicate via explicit serialization contracts (Serde JSON/Protobuf schemas). No raw ROS2 types may leak past the Python boundary.  
+  4_contract_staged_lifecycle: Specifications and tickets MUST follow the 3-stage progression: (Stage 0) Domains, Interfaces & Schemas First -> (Stage 1..N) Subsystem Modules in Isolation against Mock Port Seams -> (Stage Final) Multi-Service System Integration connecting all services.  
+
 
 ------------------------------
 ## Domain Definitions & Serialization Contracts (DDD Baseline)

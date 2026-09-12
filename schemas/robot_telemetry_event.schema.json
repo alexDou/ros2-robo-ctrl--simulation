@@ -10,7 +10,20 @@
     "robot_state",
     "joint_positions"
   ],
+  "consts": {
+    "DEFAULT_ROBOT_ID": {
+      "type": "string",
+      "value": "arm-ur5",
+      "description": "Canonical default robot identifier across all services"
+    }
+  },
   "$defs": {
+    "default_robot_id": {
+      "type": "string",
+      "const": "arm-ur5",
+      "x-constant-name": "DEFAULT_ROBOT_ID",
+      "description": "Canonical default robot identifier across all services"
+    },
     "canonical_joints": {
       "type": "string",
       "title": "UR5eJoint",

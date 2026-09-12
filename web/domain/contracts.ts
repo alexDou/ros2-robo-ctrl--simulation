@@ -97,6 +97,9 @@ export const ur5eJointSchema = UR5eJointSchema;
 
 export type UR5eJoint = z.infer<typeof UR5eJointSchema>;
 
+/** Canonical default robot identifier across all services */
+export const DEFAULT_ROBOT_ID = 'arm-ur5';
+
 /** UR5e 6-DoF kinematic chain angles in radians in canonical sequence */
 export type ArmJointPositions = [number, number, number, number, number, number];
 

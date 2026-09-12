@@ -26,6 +26,7 @@ dist/
 
 # Node / Vite / Preact
 node_modules/
+.vite/
 dist/
 coverage/
 .npm/

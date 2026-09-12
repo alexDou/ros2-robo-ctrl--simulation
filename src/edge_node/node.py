@@ -6,6 +6,7 @@ from typing import Any, Optional
 from pydantic import ValidationError
 
 from domain import (
+    DEFAULT_ROBOT_ID,
     CommandType,
     RobotCommand,
     RobotState,
@@ -24,7 +25,7 @@ class EdgeNode:
 
     def __init__(
         self,
-        robot_id: str = "arm-ur5",
+        robot_id: str = DEFAULT_ROBOT_ID,
         ros2_node: Optional[Any] = None,
         zenoh_session: Optional[Any] = None,
         auto_connect: bool = True,

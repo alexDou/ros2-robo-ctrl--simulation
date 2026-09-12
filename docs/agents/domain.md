@@ -50,3 +50,11 @@ If your output contradicts an existing ADR, surface it explicitly rather than si
 
 > _Contradicts ADR-0007 (event-sourced orders), but worth reopening because…_
 
+## Contract-First Staged Workflow
+
+When designing specs or breaking work into tickets:
+1. **Stage 0: Domain Contracts First (`Unit X.0`)**: Lock schemas in `schemas/`, regenerate cross-language types via `scripts/generate_domain.py`, and verify serialization tests.
+2. **Stage 1..N: Subsystems in Isolation (`Unit X.1..N-1`)**: Implement modules (`EdgeNode`, `Gateway`, `TeleopClient`) against mock boundary ports and generated types. Modules run and test independently.
+3. **Stage Final: Connect Everything Together (`Unit X.N`)**: Multi-service integration suite verifies live end-to-end flow, real-time timing, and latency budgets.
+
+
