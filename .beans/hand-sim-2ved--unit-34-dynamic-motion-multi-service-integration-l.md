@@ -1,13 +1,13 @@
 ---
 # hand-sim-2ved
 title: 'Unit 3.4: Dynamic Motion Multi-Service Integration & Latency Suite'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-12T13:20:33Z
-updated_at: 2026-09-12T13:27:04Z
+updated_at: 2026-09-12T16:28:19Z
 parent: hand-sim-liyi
 blocked_by:
     - hand-sim-ihmn
@@ -24,12 +24,12 @@ Implement a comprehensive multi-service automated end-to-end integration test su
 
 ## Acceptance criteria
 
-- [ ] E2E test harness manages concurrent lifecycle of mock motion publisher, EdgeNode, Gateway, and TeleopClient.
-- [ ] Gherkin feature scenarios verify dynamic 30 Hz sinusoidal motion flows from publisher to 3D canvas and sidebar monitor.
-- [ ] Test asserts end-to-end telemetry delivery latency remains < 50ms without frame queuing or UI sluggishness.
-- [ ] Test verifies dynamic link coordinate changes in Three.js visualizer scene matching incoming `ArmJointPositions`.
-- [ ] Test asserts numerical joint angle readouts in `TelemetryMonitor` sidebar update continuously in sync with 3D canvas.
-- [ ] Clean process teardown and WebGL context disposal upon test completion or unexpected failure.
+- [x] E2E test harness manages concurrent lifecycle of mock motion publisher, EdgeNode, Gateway, and TeleopClient.
+- [x] Gherkin feature scenarios verify dynamic 30 Hz sinusoidal motion flows from publisher to 3D canvas and sidebar monitor.
+- [x] Test asserts end-to-end telemetry delivery latency remains < 50ms without frame queuing or UI sluggishness.
+- [x] Test verifies dynamic link coordinate changes in Three.js visualizer scene matching incoming `ArmJointPositions`.
+- [x] Test asserts numerical joint angle readouts in `TelemetryMonitor` sidebar update continuously in sync with 3D canvas.
+- [x] Clean process teardown and WebGL context disposal upon test completion or unexpected failure.
 
 ## Blocked by
 

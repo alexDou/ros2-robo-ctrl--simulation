@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789224437.225272,
-    "seen": 1789224489.0797932,
-    "ast_hash": "c4c61f11b80320e495ce5657138e87bf",
+    "mtime": 1789226018.8152032,
+    "seen": 1789226608.582685,
+    "ast_hash": "960fe809ce8ce2e3240a13d83187a29e",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -864,9 +864,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/TeleopClient.test.tsx": {
-    "mtime": 1789222997.0908895,
-    "seen": 1789223970.925174,
-    "ast_hash": "3682383648931cb1b9bd97b4725b81a3",
+    "mtime": 1789226036.7591481,
+    "seen": 1789226608.5831294,
+    "ast_hash": "1b4cb819bc27967d9e8fff1ba3d13d9c",
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
@@ -1086,9 +1086,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-alr9--unit-33-60-fps-telemetry-kinematic-synchronization.md": {
-    "mtime": 1789219622.1080148,
-    "seen": 1789220544.20868,
-    "ast_hash": "104ff92bbffafec76502e2493adf06b8",
+    "mtime": 1789226568.8495264,
+    "seen": 1789226608.5884736,
+    "ast_hash": "45c337f162a6bd415200f6be05df5d28",
     "semantic_hash": ""
   },
   ".beans/hand-sim-ihmn--unit-31-edgenode-30-hz-continuous-sinusoidal-mock.md": {
@@ -1140,15 +1140,15 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789224364.0065398,
-    "seen": 1789224489.0796826,
-    "ast_hash": "9311de8cc31904f80c18549e0e7e19e9",
+    "mtime": 1789226434.636934,
+    "seen": 1789226608.5826447,
+    "ast_hash": "e796b2d0f5aefb7fd56dd55bf1fdc663",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
-    "mtime": 1789224431.0332942,
-    "seen": 1789224489.0808778,
-    "ast_hash": "29753a6b36638b99e705a2acf5d94c66",
+    "mtime": 1789226536.737624,
+    "seen": 1789226608.5830717,
+    "ast_hash": "7082fa2c621db38d04d74d3c41ff7a86",
     "semantic_hash": ""
   }
 }

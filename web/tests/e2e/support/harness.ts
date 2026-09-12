@@ -13,6 +13,8 @@ export interface HarnessConfig {
   gatewayPort?: number;
   webPort?: number;
   robotId?: string;
+  publisherScript?: string;
+  publishRateHz?: number;
 }
 
 export class ServiceHarness {
@@ -20,6 +22,8 @@ export class ServiceHarness {
   public readonly webPort: number;
   public readonly robotId: string;
   public readonly baseUrl: string;
+  public readonly publisherScript: string;
+  public readonly publishRateHz: number;
 
   private gatewayProcess: ChildProcess | null = null;
   private edgeNodeProcess: ChildProcess | null = null;
@@ -32,6 +36,11 @@ export class ServiceHarness {
     this.gatewayPort = config.gatewayPort ?? Number(process.env.E2E_GATEWAY_PORT || 8085);
     this.webPort = config.webPort ?? Number(process.env.E2E_WEB_PORT || 3005);
     this.robotId = config.robotId ?? DEFAULT_ROBOT_ID;
+    this.publisherScript =
+      config.publisherScript ??
+      process.env.E2E_PUBLISHER_SCRIPT ??
+      'src/edge_node/mock_motion_publisher.py';
+    this.publishRateHz = config.publishRateHz ?? 30.0;
     this.baseUrl = `http://127.0.0.1:${this.webPort}/?robot_id=${this.robotId}&gateway_port=${this.gatewayPort}`;
   }
 
@@ -109,20 +118,49 @@ export class ServiceHarness {
     this.edgeNodeProcess.stdout?.on('data', recordEdgeLog);
     this.edgeNodeProcess.stderr?.on('data', recordEdgeLog);
 
-    // 3b. Start Mock JointState Publisher at 30 Hz
-    this.mockPublisherProcess = spawn('uv', ['run', 'python', 'src/edge_node/mock_publisher.py'], {
+    // 3b. Start Mock Motion Publisher at 30 Hz
+    const isMockMotion = this.publisherScript.includes('mock_motion_publisher');
+    const publisherArgs = isMockMotion
+      ? [
+          'run',
+          'python',
+          this.publisherScript,
+          '--rate',
+          String(this.publishRateHz),
+          '--topic',
+          '/joint_states',
+          '--robot-id',
+          this.robotId,
+          '--no-zenoh',
+        ]
+      : [
+          'run',
+          'python',
+          this.publisherScript,
+          '--rate',
+          String(this.publishRateHz),
+          '--topic',
+          '/joint_states',
+        ];
+
+    this.mockPublisherProcess = spawn('uv', publisherArgs, {
       cwd: ROOT_DIR,
       env: {
         ...process.env,
-        PUBLISH_RATE_HZ: '30.0',
+        PUBLISH_RATE_HZ: String(this.publishRateHz),
         JOINT_STATES_TOPIC: '/joint_states',
+        ROBOT_ID: this.robotId,
+        ENABLE_ZENOH: '0',
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     });
 
-    this.mockPublisherProcess.stderr?.on('data', (d: Buffer) => {
-      if (process.env.DEBUG_E2E) process.stderr.write(`[MOCK] ${d.toString()}`);
-    });
+    const recordMockLog = (d: Buffer) => {
+      const msg = d.toString();
+      if (process.env.DEBUG_E2E) process.stderr.write(`[MOCK] ${msg}`);
+    };
+    this.mockPublisherProcess.stdout?.on('data', recordMockLog);
+    this.mockPublisherProcess.stderr?.on('data', recordMockLog);
 
     // 4. Start Vite web server
     this.webProcess = spawn('npm', ['run', 'dev', '--', '--port', String(this.webPort), '--strictPort'], {
