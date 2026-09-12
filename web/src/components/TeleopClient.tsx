@@ -27,6 +27,7 @@ export interface TeleopClientProps {
   assetBaseUrl?: string;
   rendererFactory?: (canvas: HTMLCanvasElement) => any;
   controlsFactory?: (camera: any, domElement: any) => any;
+  jointPositionsRef?: { current: readonly number[] };
 }
 
 export function TeleopClient({
@@ -36,6 +37,7 @@ export function TeleopClient({
   assetBaseUrl,
   rendererFactory,
   controlsFactory,
+  jointPositionsRef,
 }: TeleopClientProps) {
   const defaultProto =
     isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -330,6 +332,8 @@ export function TeleopClient({
           <RobotVisualizer
             urdfUrl={urdfUrl}
             assetBaseUrl={assetBaseUrl}
+            telemetryBufferRef={bufferRef}
+            jointPositionsRef={jointPositionsRef}
             rendererFactory={rendererFactory}
             controlsFactory={controlsFactory}
             style={{ height: '100%', minHeight: '480px' }}

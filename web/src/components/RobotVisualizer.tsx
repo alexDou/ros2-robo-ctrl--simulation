@@ -2,15 +2,14 @@ import { useEffect, useRef } from 'preact/hooks';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { URDFRobot } from 'urdf-loader';
-import {
-  DEFAULT_UR5E_URDF_PATH,
-  createRobotLoader,
-  loadRobotModel,
-} from '@utils/robotLoader';
+import { UR5E_JOINTS } from '@contracts';
+import * as robotLoader from '@utils/robotLoader';
 
 export interface RobotVisualizerProps {
   urdfUrl?: string;
   assetBaseUrl?: string;
+  jointPositionsRef?: { current: readonly number[] };
+  telemetryBufferRef?: { current: { jointPositions: readonly number[] } };
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,
@@ -22,6 +21,22 @@ export interface RobotVisualizerProps {
   controlsFactory?: (camera: THREE.PerspectiveCamera, domElement: HTMLElement) => OrbitControls;
   className?: string;
   style?: Record<string, string | number>;
+}
+
+function getLatestPositions(
+  jointPositionsRef?: { current?: readonly number[] | null } | null,
+  telemetryBufferRef?: { current?: { jointPositions?: readonly number[] } | null } | null
+): readonly number[] | null {
+  if (jointPositionsRef?.current && Array.isArray(jointPositionsRef.current)) {
+    return jointPositionsRef.current;
+  }
+  if (
+    telemetryBufferRef?.current?.jointPositions &&
+    Array.isArray(telemetryBufferRef.current.jointPositions)
+  ) {
+    return telemetryBufferRef.current.jointPositions;
+  }
+  return null;
 }
 
 function disposeMaterial(mat: THREE.Material) {
@@ -36,8 +51,10 @@ function disposeMaterial(mat: THREE.Material) {
 }
 
 export function RobotVisualizer({
-  urdfUrl = DEFAULT_UR5E_URDF_PATH,
+  urdfUrl = robotLoader.DEFAULT_UR5E_URDF_PATH,
   assetBaseUrl,
+  jointPositionsRef,
+  telemetryBufferRef,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -47,6 +64,12 @@ export function RobotVisualizer({
 }: RobotVisualizerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  const jointPositionsRefProp = useRef(jointPositionsRef);
+  jointPositionsRefProp.current = jointPositionsRef;
+
+  const telemetryBufferRefProp = useRef(telemetryBufferRef);
+  telemetryBufferRefProp.current = telemetryBufferRef;
 
   const onRobotLoadedRef = useRef(onRobotLoaded);
   onRobotLoadedRef.current = onRobotLoaded;
@@ -67,6 +90,9 @@ export function RobotVisualizer({
 
     let isDisposed = false;
     let animId: number;
+    let loadedRobot: URDFRobot | null = null;
+    let needsRender = true;
+    const lastRenderedPositions = new Float64Array(6).fill(NaN);
 
     // 1. Scene setup
     const scene = new THREE.Scene();
@@ -127,6 +153,13 @@ export function RobotVisualizer({
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
+    const onControlsChange = () => {
+      needsRender = true;
+    };
+    if (controls && typeof controls.addEventListener === 'function') {
+      controls.addEventListener('change', onControlsChange);
+    }
+
     // 5. Calibrated 1m ground grid with 10cm subdivisions (1m size, 10 divisions)
     const gridHelper = new THREE.GridHelper(1.0, 10, 0x4b5563, 0x374151);
     gridHelper.position.y = 0;
@@ -151,8 +184,8 @@ export function RobotVisualizer({
     scene.add(robotGroup);
 
     // 8. Load UR5e robot model
-    const loader = createRobotLoader({ assetBaseUrl });
-    loadRobotModel(urdfUrl, loader)
+    const loader = robotLoader.createRobotLoader({ assetBaseUrl });
+    robotLoader.loadRobotModel(urdfUrl, loader)
       .then((robot) => {
         if (isDisposed) {
           robot.traverse((obj) => {
@@ -168,7 +201,9 @@ export function RobotVisualizer({
           });
           return;
         }
+        loadedRobot = robot;
         robotGroup.add(robot);
+        needsRender = true;
         if (onRobotLoadedRef.current) {
           onRobotLoadedRef.current(robot);
         }
@@ -198,17 +233,66 @@ export function RobotVisualizer({
             camera.aspect = width / height;
             camera.updateProjectionMatrix();
             renderer.setSize(width, height, false);
+            needsRender = true;
           }
         }
       });
       resizeObserver.observe(container);
     }
 
-    // 10. Animation render loop
+    // 10. Animation render loop with dirty-checking
     const renderLoop = () => {
       if (isDisposed) return;
-      controls.update();
-      renderer.render(scene, camera);
+
+      // Check OrbitControls camera activity
+      if (controls && typeof controls.update === 'function') {
+        if (controls.update()) {
+          needsRender = true;
+        }
+      }
+
+      // Synchronize 6 canonical revolute joints with dirty checking
+      const positions = getLatestPositions(
+        jointPositionsRefProp.current,
+        telemetryBufferRefProp.current
+      );
+
+      if (loadedRobot && positions) {
+        let jointsChanged = false;
+        const count = Math.min(UR5E_JOINTS.length, positions.length);
+        for (let i = 0; i < count; i++) {
+          const jointName = UR5E_JOINTS[i];
+          const pos = positions[i];
+          if (
+            typeof pos === 'number' &&
+            Number.isFinite(pos) &&
+            (Number.isNaN(lastRenderedPositions[i]) || lastRenderedPositions[i] !== pos)
+          ) {
+            if (typeof loadedRobot.setJointValue === 'function') {
+              loadedRobot.setJointValue(jointName, pos);
+            } else if (
+              loadedRobot.joints &&
+              loadedRobot.joints[jointName] &&
+              typeof loadedRobot.joints[jointName].setJointValue === 'function'
+            ) {
+              loadedRobot.joints[jointName].setJointValue(pos);
+            }
+            lastRenderedPositions[i] = pos;
+            jointsChanged = true;
+          }
+        }
+        if (jointsChanged) {
+          loadedRobot.updateMatrixWorld(true);
+          needsRender = true;
+        }
+      }
+
+      // Render only when dirty, skipping static frames
+      if (needsRender) {
+        renderer.render(scene, camera);
+        needsRender = false;
+      }
+
       animId = requestAnimationFrame(renderLoop);
     };
     animId = requestAnimationFrame(renderLoop);
@@ -222,8 +306,13 @@ export function RobotVisualizer({
         resizeObserver.disconnect();
       }
 
-      if (controls && typeof controls.dispose === 'function') {
-        controls.dispose();
+      if (controls) {
+        if (typeof controls.removeEventListener === 'function') {
+          controls.removeEventListener('change', onControlsChange);
+        }
+        if (typeof controls.dispose === 'function') {
+          controls.dispose();
+        }
       }
 
       // Dispose all geometries and materials across scene
@@ -253,7 +342,6 @@ export function RobotVisualizer({
       }
     };
   }, [urdfUrl, assetBaseUrl]);
-
   return (
     <div
       ref={containerRef}
