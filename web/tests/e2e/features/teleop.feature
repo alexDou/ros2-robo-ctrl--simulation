@@ -5,7 +5,7 @@ Feature: Distributed Robot Teleoperation
 
   @smoke @telemetry @30hz
   Scenario: Continuous 30 Hz telemetry streaming from mock ROS2 publisher to browser DOM
-    When the operator opens the teleoperation visualizer for robot "0"
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the telemetry streaming frequency should be approximately 30 Hz
     And the telemetry latency should remain below 50 ms
@@ -14,7 +14,7 @@ Feature: Distributed Robot Teleoperation
 
   @command @ping
   Scenario: Operator dispatches Ping command and receives telemetry confirmation
-    When the operator opens the teleoperation visualizer for robot "0"
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     When the operator dispatches a PING command
     Then the event log should contain a "[TELEMETRY]" event with state "IDLE"
@@ -22,14 +22,14 @@ Feature: Distributed Robot Teleoperation
 
   @concurrency @security
   Scenario: Second browser session to the same robot is rejected with conflict
-    Given an operator is actively connected to robot "0"
-    When another operator attempts to connect to robot "0" in a second browser session
+    Given an operator is actively connected to robot "arm-ur5"
+    When another operator attempts to connect to robot "arm-ur5" in a second browser session
     Then the second session connection status should indicate "CONFLICT"
     And a conflict banner should state "Active session already exists"
 
   @resilience @diagnostics
   Scenario: Raw malformed frame returns structured error diagnostics without dropping connection
-    When the operator opens the teleoperation visualizer for robot "0"
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     When the operator dispatches a malformed raw payload "INVALID_RAW_NON_JSON_PAYLOAD"
     Then the event log should contain an error diagnostic "SCHEMA_VALIDATION_ERROR" with message "Malformed RobotCommand payload"

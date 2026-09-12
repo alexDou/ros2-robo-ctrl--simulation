@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { isBrowser } from '@utils/env';
 import {
+  DEFAULT_ROBOT_ID,
   isErrorFrame,
   type RobotTelemetryEvent,
   type ErrorFrame,
@@ -23,7 +24,7 @@ export interface TeleopClientProps {
   gatewayWsUrl?: string;
 }
 
-export function TeleopClient({ robotId = 'arm-ur5', gatewayWsUrl }: TeleopClientProps) {
+export function TeleopClient({ robotId = DEFAULT_ROBOT_ID, gatewayWsUrl }: TeleopClientProps) {
   const defaultProto =
     isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const defaultHost =

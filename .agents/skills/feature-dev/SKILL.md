@@ -44,17 +44,17 @@ Produce a compact RFC markdown block covering:
 ---
 
 ## Phase 4: Test-First Task Matrix
-Break implementation into small, atomic commits. Each task must specify its test gate:
+Break implementation into small, atomic tasks adhering to the 3-stage contract-first lifecycle:
 
-* [ ] **Task 1: Interfaces & Stubs**
-  - Define message types, Rust traits, or TypeScript models.
-  - *Gate:* `cargo check --workspace`
-* [ ] **Task 2: Failing Test Harness (TDD)**
-  - Write unit tests demonstrating the desired behavior or coordinate conversion.
-  - *Gate:* `cargo nextest run -p <pkg>` fails with expected error.
-* [ ] **Task 3: Implementation**
-  - Implement business logic and wire up callbacks/subscribers.
-  - *Gate:* Tests pass, `cargo clippy` and `npm run typecheck` pass.
-* [ ] **Task 4: Simulation Smoke Test**
-  - Verify message flow or rendering behavior with the simulation running.
+* [ ] **Stage 0: Domain Schemas & Wire Contracts First**
+  - Lock JSON schemas, coordinate standards, and canonical constants.
+  - Regenerate multi-language bindings via `scripts/generate_domain.py`.
+  - *Gate:* Cross-language contract serialization tests pass (`pytest`, `cargo nextest`, `vitest`).
+* [ ] **Stage 1..N: Subsystem Modules in Isolation**
+  - Develop each module (`EdgeNode`, `Gateway`, `TeleopClient`, asset loaders) in isolation against mock boundary ports.
+  - *Gate:* Offline unit/component tests pass hermetically for that module.
+* [ ] **Stage Final: Connect Everything Together (System Integration)**
+  - Multi-service automated E2E test suite (Playwright / Cucumber) orchestrating real processes.
+  - *Gate:* End-to-end dataflow verified, real-time timing & latency budget (<50ms) satisfied.
+
 

@@ -200,3 +200,22 @@ def test_mock_joint_state_publisher(mock_ros_node):
         pub_node.destroy_node()
 
 
+def test_mock_joint_state_publisher_dynamic(mock_ros_node):
+    import rclpy
+    from edge_node.mock_publisher import MockJointStatePublisher
+
+    if not rclpy.ok():
+        rclpy.init()
+
+    pub_node = MockJointStatePublisher(rate_hz=30.0, dynamic=True)
+    try:
+        msg = pub_node.create_joint_state_msg()
+        assert len(msg.position) == 6
+        # Dynamic positions should not all be zero
+        assert any(pos != 0.0 for pos in msg.position)
+        assert len(msg.velocity) == 6
+    finally:
+        pub_node.destroy_node()
+
+
+

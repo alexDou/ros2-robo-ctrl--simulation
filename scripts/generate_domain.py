@@ -44,6 +44,13 @@ class ConstantDef:
 
 
 @dataclass
+class ScalarConstantDef:
+    name: str
+    value: str
+    description: str = ""
+
+
+@dataclass
 class FixedArrayDef:
     name: str
     item_type: str
@@ -80,6 +87,7 @@ class ModelDef:
 class DomainIR:
     enums: list[EnumDef] = field(default_factory=list)
     constants: list[ConstantDef] = field(default_factory=list)
+    scalar_constants: list[ScalarConstantDef] = field(default_factory=list)
     fixed_arrays: list[FixedArrayDef] = field(default_factory=list)
     models: list[ModelDef] = field(default_factory=list)
     channels: list[str] = field(default_factory=list)
@@ -241,11 +249,36 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
         seen_models[name] = model
         return model
 
-    # First pass: parse $defs
+    # First pass: parse consts and $defs
     for schema in raw_schemas:
+        consts = schema.get("consts", {})
+        for c_name, c_info in consts.items():
+            if isinstance(c_info, dict):
+                val = c_info.get("value")
+                desc = c_info.get("description", "")
+            else:
+                val = c_info
+                desc = ""
+            if val is not None and not any(sc.name == c_name for sc in ir.scalar_constants):
+                ir.scalar_constants.append(ScalarConstantDef(
+                    name=c_name,
+                    value=str(val),
+                    description=desc,
+                ))
+
         defs = schema.get("$defs", {})
         for d_name, d_schema in defs.items():
-            if d_schema.get("type") == "string" and "enum" in d_schema:
+            if "const" in d_schema:
+                const_name = d_schema.get("x-constant-name") or d_name.upper()
+                const_val = str(d_schema["const"])
+                desc = d_schema.get("description", "")
+                if not any(sc.name == const_name for sc in ir.scalar_constants):
+                    ir.scalar_constants.append(ScalarConstantDef(
+                        name=const_name,
+                        value=const_val,
+                        description=desc,
+                    ))
+            elif d_schema.get("type") == "string" and "enum" in d_schema:
                 enum_name = d_schema.get("title") or to_pascal_case(d_name)
                 const_name = d_schema.get("x-constant-name")
                 const_alias = d_schema.get("x-constant-alias")
@@ -320,6 +353,12 @@ def emit_rust(ir: DomainIR) -> str:
         lines.append("")
         lines.append(f"/// Alias for canonical joint names.")
         lines.append(f"pub const {c.alias}: [&str; {len(c.items)}] = {c.name};")
+
+    for sc in ir.scalar_constants:
+        lines.append("")
+        if sc.description:
+            lines.append(f"/// {sc.description}")
+        lines.append(f'pub const {sc.name}: &str = "{sc.value}";')
 
     for fa in ir.fixed_arrays:
         lines.append("")
@@ -518,6 +557,10 @@ def emit_python(ir: DomainIR) -> str:
         for item in c.items:
             lines.append(f'    "{item}",')
         lines.append("]")
+
+    for sc in ir.scalar_constants:
+        lines.append("")
+        lines.append(f'{sc.name}: str = "{sc.value}"')
 
     if ir.fixed_arrays:
         lines.append("")
@@ -781,6 +824,12 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append(f"export const {to_camel_case(c.item_type)}Schema = {c.item_type}Schema;")
         lines.append("")
         lines.append(f"export type {c.item_type} = z.infer<typeof {c.item_type}Schema>;")
+
+    for sc in ir.scalar_constants:
+        lines.append("")
+        if sc.description:
+            lines.append(f"/** {sc.description} */")
+        lines.append(f"export const {sc.name} = '{sc.value}';")
 
     for fa in ir.fixed_arrays:
         types_str = ", ".join(["number"] * fa.count)

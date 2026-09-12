@@ -46,6 +46,9 @@ pub const UR5E_JOINTS: [&str; 6] = [
 /// Alias for canonical joint names.
 pub const CANONICAL_UR5E_JOINTS: [&str; 6] = UR5E_JOINTS;
 
+/// Canonical default robot identifier across all services
+pub const DEFAULT_ROBOT_ID: &str = "arm-ur5";
+
 /// Array of exactly 6 joint positions in radians.
 pub type ArmJointPositions = [f64; 6];
 

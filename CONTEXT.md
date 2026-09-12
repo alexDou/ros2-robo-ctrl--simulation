@@ -40,4 +40,8 @@ _Avoid_: Worker, python script, listener
 The browser-based Preact application managing WebSocket connections to Gateway, real-time telemetry observation, and operator controls.
 _Avoid_: Web visualizer, frontend, dashboard, web client, UI
 
+**RobotVisualizer**:
+The Three.js WebGL component within TeleopClient rendering the kinematic manipulator model synchronized with live telemetry.
+_Avoid_: 3D canvas, model viewer, simulation view
+
 

@@ -2,6 +2,7 @@ import { spawn, execSync, ChildProcess } from 'node:child_process';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { DEFAULT_ROBOT_ID } from '../../../domain/contracts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,7 +31,7 @@ export class ServiceHarness {
   constructor(config: HarnessConfig = {}) {
     this.gatewayPort = config.gatewayPort ?? 8080;
     this.webPort = config.webPort ?? 3000;
-    this.robotId = config.robotId ?? '0';
+    this.robotId = config.robotId ?? DEFAULT_ROBOT_ID;
     this.baseUrl = `http://127.0.0.1:${this.webPort}/?robot_id=${this.robotId}`;
   }
 
