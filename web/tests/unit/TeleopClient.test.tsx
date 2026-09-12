@@ -233,5 +233,42 @@ describe('TeleopClient Component', () => {
     expect(screen.getByTestId('connection-badge').textContent).toBe('DISCONNECTED');
     expect(screen.queryByRole('button', { name: /reconnect/i })).not.toBeNull();
   });
+
+  it('renders responsive 75/25 split layout on desktop and collapses on narrow viewports (<1024px)', () => {
+    // Desktop width: 1280px
+    window.innerWidth = 1280;
+
+    const { unmount } = render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+
+    const splitLayout = screen.getByTestId('teleop-split-layout');
+    const visualizerPane = screen.getByTestId('visualizer-pane');
+    const sidebarPane = screen.getByTestId('sidebar-pane');
+
+    expect(splitLayout).toBeDefined();
+    expect(visualizerPane).toBeDefined();
+    expect(sidebarPane).toBeDefined();
+
+    // Verify 75/25 flex basis on desktop
+    expect(visualizerPane.style.flex).toContain('75%');
+    expect(sidebarPane.style.flex).toContain('25%');
+
+    // Visualizer canvas is mounted inside left pane
+    expect(visualizerPane.querySelector('[data-testid="robot-visualizer"]')).not.toBeNull();
+    // TelemetryMonitor is inside right pane
+    expect(sidebarPane.querySelector('[data-testid="telemetry-monitor"]')).not.toBeNull();
+
+    // Simulate window resize to narrow mobile/tablet viewport (<1024px)
+    act(() => {
+      window.innerWidth = 800;
+      window.dispatchEvent(new Event('resize'));
+    });
+
+    // Both panes collapse to 100% width single-column stack
+    expect(visualizerPane.style.flex).toContain('100%');
+    expect(sidebarPane.style.flex).toContain('100%');
+
+    unmount();
+  });
 });
+
 

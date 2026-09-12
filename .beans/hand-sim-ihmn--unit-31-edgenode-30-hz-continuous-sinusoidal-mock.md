@@ -1,13 +1,13 @@
 ---
 # hand-sim-ihmn
 title: 'Unit 3.1: EdgeNode 30 Hz Continuous Sinusoidal Mock Motion Publisher'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-12T13:20:33Z
-updated_at: 2026-09-12T13:26:56Z
+updated_at: 2026-09-12T14:40:00Z
 parent: hand-sim-liyi
 ---
 
@@ -21,11 +21,11 @@ Implement a standalone ROS2/EdgeNode executable `mock_motion_publisher.py` in `s
 
 ## Acceptance criteria
 
-- [ ] Standalone `mock_motion_publisher.py` generates smooth multi-axis sinusoidal trajectories across all 6 canonical UR5e joints.
-- [ ] Each joint oscillates with distinct frequency, amplitude, and phase offset to create rich spatial motion.
-- [ ] Joint angles are strictly clamped within physical limits ($[-\pi, \pi]$) to prevent self-colliding or unphysical postures.
-- [ ] Publisher emits both native ROS2 `sensor_msgs/msg/JointState` at 30 Hz and serialized `RobotTelemetryEvent` frames over DataFabric `robot/{id}/telemetry`.
-- [ ] Offline Pytest unit tests assert continuous 30 Hz publication cadence, zero-order hold behavior, and strict schema compliance.
+- [x] Standalone `mock_motion_publisher.py` generates smooth multi-axis sinusoidal trajectories across all 6 canonical UR5e joints.
+- [x] Each joint oscillates with distinct frequency, amplitude, and phase offset to create rich spatial motion.
+- [x] Joint angles are strictly clamped within physical limits ($[-\pi, \pi]$) to prevent self-colliding or unphysical postures.
+- [x] Publisher emits both native ROS2 `sensor_msgs/msg/JointState` at 30 Hz and serialized `RobotTelemetryEvent` frames over DataFabric `robot/{id}/telemetry`.
+- [x] Offline Pytest unit tests assert continuous 30 Hz publication cadence, zero-order hold behavior, and strict schema compliance.
 
 ## Blocked by
 

@@ -1,13 +1,13 @@
 ---
 # hand-sim-2lcq
 title: 'Unit 3.2: TeleopClient Three.js RobotVisualizer Canvas & 75/25 Layout'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-12T13:20:33Z
-updated_at: 2026-09-12T13:26:59Z
+updated_at: 2026-09-12T14:40:00Z
 parent: hand-sim-liyi
 blocked_by:
     - hand-sim-w74s
@@ -23,13 +23,13 @@ Build the high-performance Preact `RobotVisualizer` Three.js component and integ
 
 ## Acceptance criteria
 
-- [ ] `RobotVisualizer` renders Three.js WebGL canvas displaying the UR5e model loaded via `robotLoader`.
-- [ ] 3D scene includes calibrated 1m ground grid helper, ambient diffuse lighting, and directional key lighting.
-- [ ] OrbitControls centered on robot shoulder with zoom clamping and polar limits preventing underground camera traversal.
-- [ ] `TeleopClient` implements 75/25 split desktop layout with 3D visualizer on left and `TelemetryMonitor` sidebar on right.
-- [ ] Responsive layout collapses into single-column stack on screens narrower than 1024px.
-- [ ] Component unmount cleanly disposes WebGL context, buffer geometries, materials, textures, controls, and cancels animation frame requests.
-- [ ] Vitest component tests assert 75/25 layout styling, canvas mount, and cleanup execution.
+- [x] `RobotVisualizer` renders Three.js WebGL canvas displaying the UR5e model loaded via `robotLoader`.
+- [x] 3D scene includes calibrated 1m ground grid helper, ambient diffuse lighting, and directional key lighting.
+- [x] OrbitControls centered on robot shoulder with zoom clamping and polar limits preventing underground camera traversal.
+- [x] `TeleopClient` implements 75/25 split desktop layout with 3D visualizer on left and `TelemetryMonitor` sidebar on right.
+- [x] Responsive layout collapses into single-column stack on screens narrower than 1024px.
+- [x] Component unmount cleanly disposes WebGL context, buffer geometries, materials, textures, controls, and cancels animation frame requests.
+- [x] Vitest component tests assert 75/25 layout styling, canvas mount, and cleanup execution.
 
 ## Blocked by
 

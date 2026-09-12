@@ -29,10 +29,10 @@ export class ServiceHarness {
   public readonly edgeNodeLogs: string[] = [];
 
   constructor(config: HarnessConfig = {}) {
-    this.gatewayPort = config.gatewayPort ?? 8080;
-    this.webPort = config.webPort ?? 3000;
+    this.gatewayPort = config.gatewayPort ?? Number(process.env.E2E_GATEWAY_PORT || 8085);
+    this.webPort = config.webPort ?? Number(process.env.E2E_WEB_PORT || 3005);
     this.robotId = config.robotId ?? DEFAULT_ROBOT_ID;
-    this.baseUrl = `http://127.0.0.1:${this.webPort}/?robot_id=${this.robotId}`;
+    this.baseUrl = `http://127.0.0.1:${this.webPort}/?robot_id=${this.robotId}&gateway_port=${this.gatewayPort}`;
   }
 
   private cleanStalePorts(): void {
