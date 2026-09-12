@@ -223,6 +223,63 @@ export function RobotVisualizer({
       onSceneReadyRef.current(scene, camera, controls, renderer);
     }
 
+    // Expose debug handle on window for testing and diagnostics
+    const visualizerHandle = {
+      isLoaded: () => loadedRobot !== null,
+      isDisposed: () => isDisposed,
+      getJointValue: (jointName: string): number | null => {
+        if (!loadedRobot) return null;
+        if (loadedRobot.joints && loadedRobot.joints[jointName]) {
+          const j = loadedRobot.joints[jointName];
+          return typeof j.angle === 'number' ? j.angle : (j.jointValue?.[0] ?? null);
+        }
+        return null;
+      },
+      getJointValues: (): Record<string, number> => {
+        const result: Record<string, number> = {};
+        if (!loadedRobot) return result;
+        for (const j of UR5E_JOINTS) {
+          if (loadedRobot.joints && loadedRobot.joints[j]) {
+            const joint = loadedRobot.joints[j];
+            result[j] = typeof joint.angle === 'number' ? joint.angle : (joint.jointValue?.[0] ?? 0);
+          }
+        }
+        return result;
+      },
+      getLinkWorldPosition: (linkName: string): { x: number; y: number; z: number } | null => {
+        if (!loadedRobot) return null;
+        const link =
+          (loadedRobot.links && loadedRobot.links[linkName]) ||
+          loadedRobot.getObjectByName(linkName);
+        if (!link) return null;
+        const target = new THREE.Vector3();
+        link.getWorldPosition(target);
+        return { x: target.x, y: target.y, z: target.z };
+      },
+      getLastRenderedPositions: (): number[] => Array.from(lastRenderedPositions),
+      getRendererInfo: () => {
+        if (!renderer || !renderer.info) return null;
+        return {
+          memory: {
+            geometries: renderer.info.memory?.geometries ?? 0,
+            textures: renderer.info.memory?.textures ?? 0,
+          },
+          render: {
+            calls: renderer.info.render?.calls ?? 0,
+            triangles: renderer.info.render?.triangles ?? 0,
+            frame: renderer.info.render?.frame ?? 0,
+          },
+        };
+      },
+      getScene: () => scene,
+      getRenderer: () => renderer,
+      getRobot: () => loadedRobot,
+    };
+
+    if (typeof window !== 'undefined') {
+      (window as unknown as { __robot_visualizer?: unknown }).__robot_visualizer = visualizerHandle;
+    }
+
     // 9. ResizeObserver
     let resizeObserver: ResizeObserver | null = null;
     if (typeof ResizeObserver !== 'undefined') {
@@ -301,6 +358,14 @@ export function RobotVisualizer({
     return () => {
       isDisposed = true;
       cancelAnimationFrame(animId);
+
+      if (typeof window !== 'undefined') {
+        (window as unknown as { __robot_visualizer?: unknown }).__robot_visualizer = {
+          ...visualizerHandle,
+          isLoaded: () => false,
+          isDisposed: () => true,
+        };
+      }
 
       if (resizeObserver) {
         resizeObserver.disconnect();

@@ -900,9 +900,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1789164140.6937914,
-    "seen": 1789164210.9100373,
-    "ast_hash": "4228bc2c5e6da11d1eb9c51b726afde6",
+    "mtime": 1789230284.3331428,
+    "seen": 1789230489.8796446,
+    "ast_hash": "d585c4ca1ab216b39fb90cabf7408c37",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789223873.0145974,
-    "seen": 1789223970.9249647,
-    "ast_hash": "bf2d900f14d90f3fc4ec7d848ea74d39",
+    "mtime": 1789230157.313916,
+    "seen": 1789230489.8796916,
+    "ast_hash": "ee91cf642411a0c568d92c6cbfaf78f1",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
@@ -1140,15 +1140,21 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789226434.636934,
-    "seen": 1789226608.5826447,
-    "ast_hash": "e796b2d0f5aefb7fd56dd55bf1fdc663",
+    "mtime": 1789230138.0040364,
+    "seen": 1789230489.8793857,
+    "ast_hash": "de813f76a21d57914a29fab8716c3e9d",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
     "mtime": 1789226536.737624,
     "seen": 1789226608.5830717,
     "ast_hash": "7082fa2c621db38d04d74d3c41ff7a86",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/steps/dynamic_motion.steps.ts": {
+    "mtime": 1789230220.8215253,
+    "seen": 1789230489.8796465,
+    "ast_hash": "42f4e76f4c85307d449ad5af54a969ee",
     "semantic_hash": ""
   }
 }
