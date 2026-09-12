@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789223863.627643,
-    "seen": 1789223970.9246278,
-    "ast_hash": "3bf2fdcdd946fe32c38b1983d21734df",
+    "mtime": 1789224437.225272,
+    "seen": 1789224489.0797932,
+    "ast_hash": "c4c61f11b80320e495ce5657138e87bf",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -1074,9 +1074,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-2lcq--unit-32-teleopclient-threejs-robotvisualizer-canva.md": {
-    "mtime": 1789219619.403886,
-    "seen": 1789220544.2086203,
-    "ast_hash": "38520976068a29dccc053502dc187195",
+    "mtime": 1789223998.1220164,
+    "seen": 1789224489.0947683,
+    "ast_hash": "1e7cfa5e74893de5a06137d36746db99",
     "semantic_hash": ""
   },
   ".beans/hand-sim-2ved--unit-34-dynamic-motion-multi-service-integration-l.md": {
@@ -1092,9 +1092,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-ihmn--unit-31-edgenode-30-hz-continuous-sinusoidal-mock.md": {
-    "mtime": 1789219616.9868686,
-    "seen": 1789220544.2088177,
-    "ast_hash": "03aec97f7f102a2e7e7beda182363f71",
+    "mtime": 1789223982.2720873,
+    "seen": 1789224489.0956156,
+    "ast_hash": "ca6ddc3f8c4951ea7a20c9fe503b4c28",
     "semantic_hash": ""
   },
   ".beans/hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/mock_motion_publisher.py": {
-    "mtime": 1789222890.3531501,
-    "seen": 1789223970.9237113,
-    "ast_hash": "97f8fe22759cacba7502be65c72e40fd",
+    "mtime": 1789224292.3598094,
+    "seen": 1789224489.078285,
+    "ast_hash": "299855a43c1bd69eaaf83bf0b3ffb4f3",
     "semantic_hash": ""
   },
   "tests/test_mock_motion_publisher.py": {
@@ -1140,15 +1140,15 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789223132.9415553,
-    "seen": 1789223970.924623,
-    "ast_hash": "915a3bdb0777b2ab582411e039f03f50",
+    "mtime": 1789224364.0065398,
+    "seen": 1789224489.0796826,
+    "ast_hash": "9311de8cc31904f80c18549e0e7e19e9",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
-    "mtime": 1789223161.1154854,
-    "seen": 1789223970.9251149,
-    "ast_hash": "079468f8a5097f8c2038403dbbd4fa88",
+    "mtime": 1789224431.0332942,
+    "seen": 1789224489.0808778,
+    "ast_hash": "29753a6b36638b99e705a2acf5d94c66",
     "semantic_hash": ""
   }
 }

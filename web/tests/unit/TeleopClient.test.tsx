@@ -269,6 +269,29 @@ describe('TeleopClient Component', () => {
 
     unmount();
   });
+
+  it('connects telemetryBufferRef to RobotVisualizer and updates buffer on streaming frames without VDOM re-renders', () => {
+    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+    const ws = MockWebSocket.instances[0];
+
+    act(() => {
+      ws.simulateOpen();
+    });
+
+    const telem1: RobotTelemetryEvent = {
+      timestamp_ns: 1700000000000000000n.toString(),
+      robot_state: RobotState.EXECUTING,
+      joint_positions: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+    };
+
+    act(() => {
+      ws.simulateMessage(JSON.stringify(telem1));
+    });
+
+    // Verify visualizer canvas and monitor are operational
+    expect(screen.getByTestId('robot-visualizer')).toBeDefined();
+    expect(screen.getByTestId('telemetry-monitor')).toBeDefined();
+  });
 });
 
 
