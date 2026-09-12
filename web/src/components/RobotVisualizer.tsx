@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { URDFRobot } from 'urdf-loader';
@@ -65,6 +65,13 @@ export function RobotVisualizer({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+  const [errorInfo, setErrorInfo] = useState<{
+    title: string;
+    message: string;
+    hint?: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const jointPositionsRefProp = useRef(jointPositionsRef);
   jointPositionsRefProp.current = jointPositionsRef;
 
@@ -111,28 +118,45 @@ export function RobotVisualizer({
 
     // 3. Renderer instantiation
     let renderer: THREE.WebGLRenderer;
-    if (rendererFactoryRef.current) {
-      renderer = rendererFactoryRef.current(canvas);
-    } else {
-      try {
+    try {
+      if (rendererFactoryRef.current) {
+        renderer = rendererFactoryRef.current(canvas);
+      } else {
         renderer = new THREE.WebGLRenderer({
           canvas,
           antialias: true,
           alpha: true,
-          powerPreference: 'high-performance',
+          powerPreference: 'default',
+          failIfMajorPerformanceCaveat: false,
         });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setSize(initialWidth, initialHeight, false);
-      } catch {
-        renderer = {
-          domElement: canvas,
-          setSize: () => {},
-          setPixelRatio: () => {},
-          render: () => {},
-          dispose: () => {},
-          forceContextLoss: () => {},
-        } as unknown as THREE.WebGLRenderer;
       }
+    } catch (err: unknown) {
+      const error = err as Error;
+      const isTest =
+        (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') ||
+        (typeof import.meta !== 'undefined' &&
+          (import.meta as { env?: { MODE?: string } }).env?.MODE === 'test');
+      if (!isTest) {
+        console.error('RobotVisualizer: WebGL context creation failed:', error);
+      }
+      setErrorInfo({
+        title: 'WebGL Context Unavailable',
+        message:
+          error?.message ||
+          'Failed to initialize 3D WebGL context. Your browser or GPU driver has blocklisted WebGL.',
+        hint: 'To enable WebGL in Chrome: visit chrome://flags, search for "Override software rendering list" (#ignore-gpu-blocklist), set to Enabled, and Relaunch. Alternatively launch Chrome from terminal with: google-chrome --ignore-gpu-blocklist',
+      });
+      setIsLoading(false);
+      renderer = {
+        domElement: canvas,
+        setSize: () => {},
+        setPixelRatio: () => {},
+        render: () => {},
+        dispose: () => {},
+        forceContextLoss: () => {},
+      } as unknown as THREE.WebGLRenderer;
     }
 
     // 4. OrbitControls
@@ -204,6 +228,7 @@ export function RobotVisualizer({
         loadedRobot = robot;
         robotGroup.add(robot);
         needsRender = true;
+        setIsLoading(false);
         if (onRobotLoadedRef.current) {
           onRobotLoadedRef.current(robot);
         }
@@ -213,8 +238,16 @@ export function RobotVisualizer({
           (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') ||
           (typeof import.meta !== 'undefined' &&
             (import.meta as { env?: { MODE?: string } }).env?.MODE === 'test');
-        if (!isDisposed && !isTest) {
-          console.warn('RobotVisualizer failed to load URDF:', err);
+        if (!isDisposed) {
+          if (!isTest) {
+            console.warn('RobotVisualizer failed to load URDF:', err);
+          }
+          setErrorInfo({
+            title: 'Failed to Load Robot URDF',
+            message: err instanceof Error ? err.message : String(err),
+            hint: 'Ensure that static models under /models/ are accessible.',
+          });
+          setIsLoading(false);
         }
       });
 
@@ -432,6 +465,85 @@ export function RobotVisualizer({
           height: '100%',
         }}
       />
+      {errorInfo && (
+        <div
+          data-testid="visualizer-error-overlay"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(17, 24, 39, 0.94)',
+            color: '#ef4444',
+            padding: '1.5rem',
+            textAlign: 'center',
+            zIndex: 10,
+          }}
+        >
+          <div style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            ⚠ {errorInfo.title}
+          </div>
+          <div style={{ color: '#e5e7eb', fontSize: '0.875rem', maxWidth: '480px', marginBottom: '0.75rem' }}>
+            {errorInfo.message}
+          </div>
+          {errorInfo.hint && (
+            <div
+              style={{
+                backgroundColor: 'rgba(31, 41, 55, 0.85)',
+                border: '1px solid #374151',
+                borderRadius: '0.375rem',
+                padding: '0.75rem',
+                color: '#93c5fd',
+                fontSize: '0.75rem',
+                maxWidth: '500px',
+                textAlign: 'left',
+                lineHeight: 1.4,
+              }}
+            >
+              <span style={{ fontWeight: 600, color: '#60a5fa' }}>Action: </span>
+              {errorInfo.hint}
+            </div>
+          )}
+        </div>
+      )}
+      {isLoading && !errorInfo && (
+        <div
+          data-testid="visualizer-loading-overlay"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(17, 24, 39, 0.75)',
+            color: '#9ca3af',
+            fontSize: '0.875rem',
+            pointerEvents: 'none',
+            zIndex: 5,
+          }}
+        >
+          <div
+            style={{
+              width: '28px',
+              height: '28px',
+              border: '3px solid #374151',
+              borderTopColor: '#3b82f6',
+              borderRadius: '50%',
+              marginBottom: '0.5rem',
+            }}
+          />
+          <span>Loading UR5e 3D Model...</span>
+        </div>
+      )}
     </div>
   );
 }

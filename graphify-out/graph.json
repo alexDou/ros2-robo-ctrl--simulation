@@ -5251,11 +5251,11 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 3.4: Dynamic Motion Multi-Service Integration &amp; Latency Suite",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
         "priority": "normal",
         "created_at": "2026-09-12T13:20:33Z",
-        "updated_at": "2026-09-12T13:27:04Z",
+        "updated_at": "2026-09-12T16:28:19Z",
         "parent": "hand-sim-liyi"
       },
       "node_kind": "page",
@@ -16261,7 +16261,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L187",
+      "source_location": "L211",
       "weight": 1.0
     },
     {
@@ -16273,7 +16273,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L188",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -16285,7 +16285,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L312",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
@@ -31993,7 +31993,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L196",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -32689,5 +32689,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "e056fe150d94aa6d643623bb3f8662fd8087ba84"
+  "built_at_commit": "c9659899e154a7a1230beb9bddb578bf72847047"
 }
