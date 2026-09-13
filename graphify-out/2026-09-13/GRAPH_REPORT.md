@@ -1,16 +1,16 @@
-# Graph Report - ros2-robo-ctrl--simulation  (2026-09-13)
+# Graph Report - ros2-robo-ctrl--simulation  (2026-09-12)
 
 ## Corpus Check
-- 170 files · ~82,905 words
+- 169 files · ~79,772 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1297 nodes · 1579 edges · 127 communities (83 shown, 24 thin omitted)
+- 1265 nodes · 1548 edges · 125 communities (81 shown, 24 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 62 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `66b75a6f`
+- Built from commit: `c9659899`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -42,7 +42,7 @@
 - Agent Skill Generation Standard
 - Process
 - technologies.md
-- ROS2 Robot Controller Simulation Project Instructions
+- HandSim Project Instructions
 - Feature Development Protocol
 - Pull Request Toolkit Playbook
 - Domain Docs
@@ -63,8 +63,7 @@
 - Specification-Driven Development (SDD) blueprint.
 - code-reviewer.md
 - trim_logs.sh
-- ROS2 Robot Controller Simulation
-- ROS2 Robot Controller Simulation
+- arm-UR5e controller simulation
 - robot_telemetry_event.schema.json
 - sim-auditor.md
 - rust_feedback.sh
@@ -74,7 +73,7 @@
 - README.md
 - overview.md
 - gateway
-- ActiveSessionRegistry
+- hand-sim-ai
 - robot_command.schema.json
 - enum
 - MockMotionPublisher
@@ -120,7 +119,6 @@
 - hand-sim-ihmn--unit-31-edgenode-30-hz-continuous-sinusoidal-mock.md
 - hand-sim-w74s--unit-30-urdf-model-extraction-static-mesh-asset-di.md
 - main
-- ros2-robot-controller-simulation
 - MockWebSocket
 
 ## God Nodes (most connected - your core abstractions)
@@ -150,7 +148,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (127 total, 24 thin omitted)
+## Communities (125 total, 24 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -260,9 +258,9 @@ Nodes (6): 1. Scope the procedure, 2. Map each stage's journey, 3. Author the wi
 Cohesion: 0.29
 Nodes (6): 🦀 Cloud & Edge Gateway (Backend Server Layer), 🐍 Edge AI Engine (Data Automation Layer), ⚙️ Infrastructure & Testing (DevOps Layer), 📡 Inter-Process Communication (IPC Data Fabric), 📊 Observability Interface (Frontend Web Dashboard), 🛠️ Simulation Layer (Virtual Machine Host)
 
-### Community 27 - "ROS2 Robot Controller Simulation Project Instructions"
+### Community 27 - "HandSim Project Instructions"
 Cohesion: 0.29
-Nodes (6): Agent Skills & Tracking, Code Organization & Directory Invariants, Development Methodology, Domain Invariants, ROS2 Robot Controller Simulation Project Instructions, System Architecture
+Nodes (6): Agent Skills & Tracking, Code Organization & Directory Invariants, Development Methodology, Domain Invariants, HandSim Project Instructions, System Architecture
 
 ### Community 28 - "Feature Development Protocol"
 Cohesion: 0.33
@@ -332,17 +330,9 @@ Nodes (3): 1. URDF Loading & Mesh Path Resolution, Architecture Overview, URDF &
 Cohesion: 0.50
 Nodes (3): AI Agent Execution Directive & Constraints, Domain Definitions & Serialization Contracts (DDD Baseline), Specification-Driven Development (SDD) blueprint.
 
-### Community 49 - "ROS2 Robot Controller Simulation"
-Cohesion: 0.06
-Nodes (31): 1. Executive Summary & System Overview, 1. Inbound Command: `RobotCommand` (`schemas/robot_command.schema.json`), 2.1 The Manipulator: Universal Robots UR5e (URe5), 2.2 End-Effector: Dexterous Palm & Hand Integration, 2.3 Coordinate Frame Conventions & Alignment, 2. Outbound Telemetry Event: `RobotTelemetryEvent` (`schemas/robot_telemetry_event.schema.json`), 2. Simulated Hardware & Kinematics, 3. Diagnostic Error Frame: `ErrorFrame` (`schemas/error_frame.schema.json`) (+23 more)
-
 ### Community 50 - "robot_telemetry_event.schema.json"
 Cohesion: 0.06
 Nodes (33): elbow_joint, joint_positions, robot_state, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint, wrist_3_joint (+25 more)
-
-### Community 77 - "ActiveSessionRegistry"
-Cohesion: 0.17
-Nodes (13): HashSet, Responder, health_check(), main(), Result, ActiveSessionGuard, ActiveSessionRegistry, Arc (+5 more)
 
 ### Community 79 - "robot_command.schema.json"
 Cohesion: 0.05
@@ -362,11 +352,11 @@ Nodes (28): error_code, message, additionalProperties, description, description,
 
 ### Community 83 - "TeleopPage"
 Cohesion: 0.07
-Nodes (10): DEFAULT_ROBOT_ID, TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR (+2 more)
+Nodes (9): TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR, CustomWorld (+1 more)
 
 ### Community 84 - "contracts.ts"
 Cohesion: 0.06
-Nodes (54): ArmJointPositions, armJointPositionsSchema, CANONICAL_UR5E_JOINTS, CommandType, commandTypeSchema, ErrorFrame, errorFrameSchema, InferenceMetrics (+46 more)
+Nodes (55): ArmJointPositions, armJointPositionsSchema, CANONICAL_UR5E_JOINTS, CommandType, commandTypeSchema, DEFAULT_ROBOT_ID, ErrorFrame, errorFrameSchema (+47 more)
 
 ### Community 86 - "scripts"
 Cohesion: 0.15
@@ -377,8 +367,8 @@ Cohesion: 0.25
 Nodes (7): Further Notes, Implementation Decisions, Out of Scope, Problem Statement, Solution, Testing Decisions, User Stories
 
 ### Community 88 - "domain.rs"
-Cohesion: 0.11
-Nodes (22): D, Into, deserialize_finite_joints(), DomainError, Error, Option, Result, Self (+14 more)
+Cohesion: 0.07
+Nodes (35): D, HashSet, Into, Responder, deserialize_finite_joints(), DomainError, Error, Option (+27 more)
 
 ### Community 89 - "phase1/implementation_wireframe.md"
 Cohesion: 0.25
@@ -485,21 +475,21 @@ Cohesion: 0.67
 Nodes (5): find_ros_package_share(), generate_raw_urdf(), main(), Path, strip_physics_and_clean_urdf()
 
 ## Knowledge Gaps
-- **614 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+609 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 783 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **595 isolated node(s):** `rust_feedback.sh script`, `hand-sim-ai`, `$schema`, `$id`, `title` (+590 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 763 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **24 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `properties` connect `properties` to `enum`, `robot_telemetry_event.schema.json`, `inference_metrics`, `joint_positions`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Are the 9 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `RobotCommand`) actually correct?**
   _`EdgeNode` has 9 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 8 inferred relationships involving `MockMotionPublisher` (e.g. with `RobotState` and `RobotTelemetryEvent`) actually correct?**
   _`MockMotionPublisher` has 8 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema` to the rest of the system?**
-  _614 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects `rust_feedback.sh script`, `hand-sim-ai`, `$schema` to the rest of the system?**
+  _595 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**

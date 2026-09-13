@@ -446,43 +446,6 @@ wheels = [
 ]
 
 [[package]]
-name = "hand-sim-ai"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "eclipse-zenoh" },
-    { name = "onnxruntime" },
-    { name = "pydantic" },
-    { name = "pyyaml" },
-]
-
-[package.optional-dependencies]
-ai = [
-    { name = "ultralytics" },
-]
-dev = [
-    { name = "lark" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "eclipse-zenoh", specifier = ">=1.1.0" },
-    { name = "lark", marker = "extra == 'dev'", specifier = ">=1.1.0" },
-    { name = "onnxruntime", specifier = ">=1.18.0" },
-    { name = "pydantic", specifier = ">=2.7.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0,<8.0.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
-    { name = "ultralytics", marker = "extra == 'ai'", specifier = ">=8.2.0" },
-]
-provides-extras = ["ai", "dev"]
-
-[package.metadata.requires-dev]
-dev = []
-
-[[package]]
 name = "httpcore"
 version = "1.0.9"
 source = { registry = "https://pypi.org/simple" }
@@ -1437,6 +1400,43 @@ sdist = { url = "https://files.pythonhosted.org/packages/ac/c3/e2a2b89f2d3e2179a
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl", hash = "sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0", size = 73075, upload-time = "2026-05-14T19:25:26.443Z" },
 ]
+
+[[package]]
+name = "ros2-robot-controller-simulation"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "eclipse-zenoh" },
+    { name = "onnxruntime" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
+]
+
+[package.optional-dependencies]
+ai = [
+    { name = "ultralytics" },
+]
+dev = [
+    { name = "lark" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "eclipse-zenoh", specifier = ">=1.1.0" },
+    { name = "lark", marker = "extra == 'dev'", specifier = ">=1.1.0" },
+    { name = "onnxruntime", specifier = ">=1.18.0" },
+    { name = "pydantic", specifier = ">=2.7.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0,<8.0.0" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
+    { name = "ultralytics", marker = "extra == 'ai'", specifier = ">=8.2.0" },
+]
+provides-extras = ["ai", "dev"]
+
+[package.metadata.requires-dev]
+dev = []
 
 [[package]]
 name = "setuptools"

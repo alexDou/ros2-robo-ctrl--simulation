@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1789337910.059199,
-    "seen": 1789338005.1091082,
-    "ast_hash": "826b15b7c6a342a9ad66b3c8edf54bbb",
+    "mtime": 1789163889.7168188,
+    "seen": 1789164210.9089692,
+    "ast_hash": "d77370e242108e9dd266bac81fa30eb6",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -678,21 +678,21 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789337895.9086611,
-    "seen": 1789338005.1141682,
-    "ast_hash": "7e410a47040c9be65b1798a764919424",
+    "mtime": 1789220499.9321215,
+    "seen": 1789220544.2089663,
+    "ast_hash": "34629e5b4620b51faebd8ebe8da6ea6d",
     "semantic_hash": ""
   },
   "CONTEXT.md": {
-    "mtime": 1789337899.591978,
-    "seen": 1789338005.1141691,
-    "ast_hash": "7ea2d2f1fd8fcd45d6c0441794b3f70e",
+    "mtime": 1789216481.5129356,
+    "seen": 1789216486.7894816,
+    "ast_hash": "30b71883cc78f9e38ae3032b71497694",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789337903.1442485,
-    "seen": 1789338005.1141703,
-    "ast_hash": "b144323b2e05d39a3e44baa63872c65a",
+    "mtime": 1788966076.5707276,
+    "seen": 1788970426.1734736,
+    "ast_hash": "a73a45179a532c768cd6ef5681a5b94c",
     "semantic_hash": ""
   },
   "docs/agents/domain.md": {
@@ -750,9 +750,9 @@
     "semantic_hash": ""
   },
   "web/index.html": {
-    "mtime": 1789337915.4184365,
-    "seen": 1789338005.1146176,
-    "ast_hash": "81dfe3a21255644ebe97bb8c5a6907d1",
+    "mtime": 1788966076.5735185,
+    "seen": 1788970426.1734798,
+    "ast_hash": "e2d35225df570450ceb214477d711715",
     "semantic_hash": ""
   },
   "support_files/Antigravity CLI Setup for ROS2.pdf": {
@@ -768,21 +768,21 @@
     "semantic_hash": ""
   },
   "schemas/error_frame.schema.json": {
-    "mtime": 1789337920.8646615,
-    "seen": 1789338005.1091115,
-    "ast_hash": "db6e50aa6cc2c96613be652d8de9891b",
+    "mtime": 1788975147.0111353,
+    "seen": 1788975283.3156183,
+    "ast_hash": "310353f2aa2885da59c8c7b8cd355c53",
     "semantic_hash": ""
   },
   "schemas/robot_command.schema.json": {
-    "mtime": 1789337937.10735,
-    "seen": 1789338005.109113,
-    "ast_hash": "9b02726ade1708a995ee14c1f9c48d19",
+    "mtime": 1789157468.1161501,
+    "seen": 1789157851.8852253,
+    "ast_hash": "21cb32fad7e83a172e512cfe45a8543c",
     "semantic_hash": ""
   },
   "schemas/robot_telemetry_event.schema.json": {
-    "mtime": 1789337947.8278244,
-    "seen": 1789338005.109115,
-    "ast_hash": "a4119c3c9fdadd298d478a41e4476ba0",
+    "mtime": 1789213267.3659434,
+    "seen": 1789213720.4118211,
+    "ast_hash": "52de48299abcd0b05a46256a3555053a",
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
@@ -942,20 +942,20 @@
     "semantic_hash": ""
   },
   "src/domain/domain.py": {
-    "mtime": 1789337951.8437352,
-    "seen": 1789338005.1092598,
+    "mtime": 1789213330.8635411,
+    "seen": 1789213720.4118834,
     "ast_hash": "f5c07855a3becea55076e826fde883e4",
     "semantic_hash": ""
   },
   "src/domain/domain.rs": {
-    "mtime": 1789337951.8434167,
-    "seen": 1789338005.1092627,
+    "mtime": 1789213330.862798,
+    "seen": 1789213720.4118843,
     "ast_hash": "78edf04c75f9dcd0d6e88555cabf2123",
     "semantic_hash": ""
   },
   "web/domain/contracts.ts": {
-    "mtime": 1789337951.8441486,
-    "seen": 1789338005.1098247,
+    "mtime": 1789213330.863757,
+    "seen": 1789213720.4122608,
     "ast_hash": "c42ac87e93f266a80350b5d5c5949a8e",
     "semantic_hash": ""
   },
@@ -1098,9 +1098,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md": {
-    "mtime": 1789233182.6601932,
-    "seen": 1789338005.1140635,
-    "ast_hash": "d31cc0e78a347c6c863884c81210b85e",
+    "mtime": 1789219223.5329027,
+    "seen": 1789219240.8399756,
+    "ast_hash": "94c9f986d7659b4da21b9e5f235769b5",
     "semantic_hash": ""
   },
   ".beans/hand-sim-w74s--unit-30-urdf-model-extraction-static-mesh-asset-di.md": {
@@ -1155,12 +1155,6 @@
     "mtime": 1789230220.8215253,
     "seen": 1789230489.8796465,
     "ast_hash": "42f4e76f4c85307d449ad5af54a969ee",
-    "semantic_hash": ""
-  },
-  "support_files/system_architecture_overview.md": {
-    "mtime": 1789337975.7868457,
-    "seen": 1789338005.1146169,
-    "ast_hash": "0bc5aee7f006864fef541786ecd17cd2",
     "semantic_hash": ""
   }
 }

@@ -1,4 +1,4 @@
-# HandSim Project Instructions
+# ROS2 Robot Controller Simulation Project Instructions
 
 ## System Architecture
 

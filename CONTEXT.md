@@ -1,4 +1,4 @@
-# arm-UR5e controller simulation
+# ROS2 Robot Controller Simulation
 
 Robotics simulation, real-time telemetry streaming, and teleoperation control platform bridging web visualizers with Gazebo and ROS2.
 

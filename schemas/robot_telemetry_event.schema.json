@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://handsim.io/schemas/robot_telemetry_event.schema.json",
+  "$id": "https://ros2-robot-controller-simulation.io/schemas/robot_telemetry_event.schema.json",
   "title": "RobotTelemetryEvent",
   "x-datafabric-channel": "telemetry",
   "description": "Canonical schema for outbound telemetry events emitted by EdgeNode over DataFabric and WebSocket",

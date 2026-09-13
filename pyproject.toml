@@ -1,7 +1,7 @@
 [project]
-name = "hand-sim-ai"
+name = "ros2-robot-controller-simulation"
 version = "0.1.0"
-description = "Edge AI & ROS2 Ingestion Automation Service"
+description = "ROS2 robot controller simulation - Edge AI & Ingestion Service"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

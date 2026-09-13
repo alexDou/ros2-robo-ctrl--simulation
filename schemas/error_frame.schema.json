@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://handsim.io/schemas/error_frame.schema.json",
+  "$id": "https://ros2-robot-controller-simulation.io/schemas/error_frame.schema.json",
   "title": "ErrorFrame",
   "description": "Canonical schema for structured error frames returned by Gateway over WebSocket",
   "type": "object",
