@@ -1,0 +1,110 @@
+================================================================================
+ITERATION 2 SPECIFICATION: DUAL-FLOW INTERACTIVE GEAR SORTING & QC SHOWCASE
+================================================================================
+Project: ROS2 Robot Controller Simulation
+Target Phase: Post-Phase-5 Interactive Showcase Feature
+Status: DRAFT / ON-HOLD (Pick up after core Phase 1-5 units complete)
+
+--------------------------------------------------------------------------------
+1. OBJECTIVE & EXPERIENCE OVERVIEW
+--------------------------------------------------------------------------------
+Provide an engaging, deterministic, interactive 3D robotics showcase for web 
+visitors of the deployed simulation. 
+
+The workspace starts EMPTY with the UR5e in a static IDLE home pose. 
+The operator can choose between TWO mutually exclusive operational flows:
+  Flow A: Click-to-Place (Raycast Dispatch) + Defect QC Inspection
+  Flow B: Conveyor Belt Feed (Dynamic Tracking) + Defect QC Inspection
+
+Each flow sorts gearwheels across 4 physical destinations:
+  1. Red Spindle Tower   (Good Red Gears)
+  2. Green Spindle Tower (Good Green Gears)
+  3. Blue Spindle Tower  (Good Blue Gears)
+  4. Scrap Chute / Bin   (Defective / Cracked Gears of any color)
+
+--------------------------------------------------------------------------------
+2. SYSTEM CONSTRAINTS & PERFORMANCE GUARANTEES
+--------------------------------------------------------------------------------
+- Mutual Exclusion: Exactly ONE flow can run at any given moment. Selecting a flow
+  locks the other until the current queue finishes or is stopped.
+- Bounded Capacity: Strictly limit total active gears in the scene to N_max = 9 
+  (maximum 3 gears per spindle tower) to guarantee:
+    * Zero frame drops or WebGL draw-call saturation on low-end hardware.
+    * Deterministic physics simulation without heap memory leaks or pile-ups.
+- Busy-State Gating (Resource Saver): UI disables "Add Gear" / raycast placement 
+  whenever robot_state != IDLE (PROCESSING or EXECUTING). Prevents queue congestion, 
+  race conditions, and unneeded physics objects while robot is active.
+- Grasping Seam: Use threshold link attachment (parenting to `tool0`) when the 
+  end-effector reaches within 15mm of gear center, avoiding unstable contact-friction 
+  jitter in browser/VM.
+
+--------------------------------------------------------------------------------
+3. DETAILED FLOW SPECIFICATIONS
+--------------------------------------------------------------------------------
+
+[FLOW A: CLICK-TO-PLACE + DEFECT QC]
+1. User clicks the "Mode: Click-to-Place" toggle in the TeleopClient UI.
+2. User hovers and clicks on the 3D table plane inside the Three.js viewport:
+   - Three.js Raycaster computes intersection coordinates (x, y) on table mesh.
+   - Boundary Check: If (x, y) is within UR5e reach radius (0.35m <= R <= 0.75m), 
+     a valid landing target indicator renders green; if out of reach, renders red.
+3. On valid click, UI sends `RobotCommand`:
+   {
+     "type": "SPAWN_OBJECT",
+     "payload": {
+       "mode": "RAYCAST",
+       "x": x_table,
+       "y": y_table,
+       "color": "random(RED, GREEN, BLUE)",
+       "defective": "boolean (20% probability)"
+     }
+   }
+4. Mesh drops onto table at (x, y). If defective, mesh includes visible crack notch.
+5. UR5e executes vision inspection (camera above table), classifies color and defect:
+   - If DEFECTIVE: MoveIt2 routes arm to pick and discard gear into the Scrap Bin.
+   - If GOOD: MoveIt2 routes arm to pick and stack gear onto matching color spindle.
+6. Arm returns to Home/IDLE pose awaiting next click.
+
+[FLOW B: CONVEYOR BELT FEED + DEFECT QC]
+1. User clicks the "Mode: Conveyor Belt" toggle in the TeleopClient UI.
+2. An animated linear conveyor belt enters the workspace along the robot's flank:
+   - Velocity: Constant linear feed v_belt = 0.05 m/s (slow, predictable).
+3. System automatically feeds gears at fixed intervals (every 6 seconds, up to N_max):
+   - 80% Normal (Red, Green, Blue), 20% Defective (Cracked).
+4. EdgeNode intercepts moving gear:
+   - Camera detects entry pose (x_0, y_0, t_0).
+   - Planner calculates intercept trajectory at target pick point:
+     x_pick = x_0 + v_belt * delta_t.
+5. Sorting execution:
+   - If DEFECTIVE: Intercepted and routed straight to Scrap Bin.
+   - If GOOD: Intercepted and stacked onto designated color spindle tower.
+6. Conveyor Overflow Catch: Any missed gear drops into a return chute at the end 
+   of the belt and despawns gracefully (no physics clutter).
+
+--------------------------------------------------------------------------------
+4. TELEMETRY & OBSERVABILITY INTEGRATION
+--------------------------------------------------------------------------------
+The TelemetryMonitor sidebar updates in real-time during both flows:
+- `robot_state`: IDLE -> PROCESSING -> EXECUTING (TRACKING/PICKING/PLACING).
+- `inference_metrics`:
+    {
+      "latency_ms": 12.4,
+      "confidence": 0.98,
+      "detected_object": "gear_green_good" | "gear_red_defective"
+    }
+- Tower Counters:
+    [ Red: 2/3 ] [ Green: 1/3 ] [ Blue: 3/3 (FULL) ] [ Scrap: 2 ]
+
+--------------------------------------------------------------------------------
+5. POTENTIAL GAPS & DESIGN DECISIONS TO RESOLVE BEFORE IMPLEMENTATION
+--------------------------------------------------------------------------------
+1. Workspace Reset / Clear:
+   - Need a "Reset Workspace" / "Empty Bins" button in UI to reset towers back 
+     to 0 when all 9 gears are sorted.
+2. Reachability Clamping:
+   - In Click-to-Place, clamp or reject clicks too close to base singularity 
+     (R < 0.25m) or outside joint reach (R > 0.80m).
+3. End-Effector Graphic:
+   - Mount a clean pneumatic suction cup or two-finger gripper model to `tool0` 
+     to make the pick animation visually legible.
+================================================================================

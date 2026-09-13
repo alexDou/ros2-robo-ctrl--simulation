@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://handsim.io/schemas/robot_command.schema.json",
+  "$id": "https://ros2-robot-controller-simulation.io/schemas/robot_command.schema.json",
   "title": "RobotCommand",
   "x-datafabric-channel": "command",
   "description": "Canonical schema for inbound commands sent to EdgeNode over WebSocket or DataFabric",
