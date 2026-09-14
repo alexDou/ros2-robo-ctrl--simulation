@@ -180,3 +180,35 @@ def test_mock_motion_publisher_zenoh_and_ros_publication(mock_ros_node):
     finally:
         pub.close()
         client_session.close()
+
+
+def test_mock_motion_publisher_cli_defaults_and_flags(monkeypatch):
+    from edge_node.mock_motion_publisher import build_arg_parser
+
+    # Clean environment
+    monkeypatch.delenv("ENABLE_ZENOH", raising=False)
+
+    # 1. Default should disable Zenoh (prevent split-brain with EdgeNode)
+    parser = build_arg_parser()
+    args = parser.parse_args([])
+    assert args.enable_zenoh is False
+
+    # 2. Explicit --zenoh enables standalone Zenoh streaming
+    args = parser.parse_args(["--zenoh"])
+    assert args.enable_zenoh is True
+
+    # 3. Explicit --no-zenoh flag
+    args = parser.parse_args(["--no-zenoh"])
+    assert args.enable_zenoh is False
+
+    # 4. Environment variable ENABLE_ZENOH="1"
+    monkeypatch.setenv("ENABLE_ZENOH", "1")
+    parser = build_arg_parser()
+    args = parser.parse_args([])
+    assert args.enable_zenoh is True
+
+    # 5. Environment variable ENABLE_ZENOH="0"
+    monkeypatch.setenv("ENABLE_ZENOH", "0")
+    parser = build_arg_parser()
+    args = parser.parse_args([])
+    assert args.enable_zenoh is False

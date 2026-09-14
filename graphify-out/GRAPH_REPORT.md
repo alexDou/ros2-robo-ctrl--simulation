@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-14)
 
 ## Corpus Check
-- 181 files · ~98,651 words
+- 181 files · ~98,792 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1552 nodes · 1956 edges · 152 communities (105 shown, 27 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 99 edges (avg confidence: 0.93)
+- 1555 nodes · 1961 edges · 151 communities (104 shown, 27 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 100 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `62c6afe3`
+- Built from commit: `78b3ea6d`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -143,7 +143,6 @@
 - properties
 - confidence
 - is_grasped
-- PoseName
 - world.ts
 - ServiceHarness
 - harness.ts
@@ -175,7 +174,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (152 total, 27 thin omitted)
+## Communities (151 total, 27 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -387,7 +386,7 @@ Nodes (10): BOOTING, EXECUTING, FAULT, IDLE, PROCESSING, robot_state, descriptio
 
 ### Community 81 - "MockMotionPublisher"
 Cohesion: 0.08
-Nodes (26): Node, JointSinusoidConfig, main(), MockMotionPublisher, Any, RobotTelemetryEvent, Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.…, Calculates deterministic joint angles clamped to physical limits [-pi, pi]. (+18 more)
+Nodes (29): ArgumentParser, Node, build_arg_parser(), JointSinusoidConfig, main(), MockMotionPublisher, Any, RobotTelemetryEvent (+21 more)
 
 ### Community 82 - "error_frame.schema.json"
 Cohesion: 0.07
@@ -466,8 +465,8 @@ Cohesion: 0.11
 Nodes (24): ADR-0001, UR5E_JOINTS, UR5eJoint, createDexterousPalm(), disposeMaterial(), getLatestPositions(), PalmProceduralAssets, RobotVisualizer() (+16 more)
 
 ### Community 103 - "TelemetryMonitor.test.tsx"
-Cohesion: 0.27
-Nodes (9): ArmJointPositions, CANONICAL_UR5E_JOINTS, isRobotTelemetryEvent(), RobotState, TelemetryMonitor(), TelemetryMonitorProps, TelemetryBuffer, useTelemetryStream() (+1 more)
+Cohesion: 0.20
+Nodes (12): ArmJointPositions, CANONICAL_UR5E_JOINTS, isRobotTelemetryEvent(), PoseName, RobotState, OperatorToolbar(), OperatorToolbarProps, TelemetryMonitor() (+4 more)
 
 ### Community 104 - "palm_state"
 Cohesion: 0.22
@@ -585,10 +584,6 @@ Nodes (5): description, maximum, minimum, type, confidence
 Cohesion: 0.40
 Nodes (5): default, description, type, properties, is_grasped
 
-### Community 154 - "PoseName"
-Cohesion: 0.67
-Nodes (3): PoseName, OperatorToolbar(), OperatorToolbarProps
-
 ### Community 155 - "world.ts"
 Cohesion: 0.36
 Nodes (3): CANONICAL_POSES, CustomWorld, ICustomWorld
@@ -599,18 +594,18 @@ Nodes (5): __dirname, __filename, HarnessConfig, ROOT_DIR, WEB_DIR
 
 ## Knowledge Gaps
 - **735 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+730 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 936 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 937 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `properties` connect `properties` to `palm_state`, `enum`, `robot_telemetry_event.schema.json`, `joint_positions`, `inference_metrics`?**
-  _High betweenness centrality (0.024) - this node is a cross-community bridge._
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
 - **Why does `EdgeNode` connect `EdgeNode` to `domain.py`, `test_edge_node.py`, `JointStateMapper`, `PalmAction`, `RobotState`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `$defs` connect `robot_command.schema.json` to `items`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.022) - this node is a cross-community bridge._
+- **Why does `TeleopPage` connect `TeleopPage` to `world.ts`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **Are the 19 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `ErrorFrame`) actually correct?**
   _`EdgeNode` has 19 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 8 inferred relationships involving `MockMotionPublisher` (e.g. with `RobotState` and `RobotTelemetryEvent`) actually correct?**

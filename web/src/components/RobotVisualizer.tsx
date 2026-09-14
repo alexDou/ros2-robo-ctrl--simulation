@@ -65,45 +65,45 @@ function createDexterousPalm(): PalmProceduralAssets {
   const group = new THREE.Group();
   group.name = 'dexterous-palm';
 
-  // 1. Aluminum mounting plate (cylinder: radius 0.04m, height 0.015m, metallic finish)
-  const plateGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.015, 32);
+  // 1. Aluminum mounting plate (cylinder: radius 0.045m, height 0.018m, bright polished metallic finish)
+  const plateGeom = new THREE.CylinderGeometry(0.045, 0.045, 0.018, 32);
   plateGeom.rotateX(Math.PI / 2);
   const plateMat = new THREE.MeshStandardMaterial({
-    color: 0x9ca3af,
-    metalness: 0.8,
-    roughness: 0.2,
+    color: 0xe2e8f0,
+    metalness: 0.85,
+    roughness: 0.15,
   });
   const plateMesh = new THREE.Mesh(plateGeom, plateMat);
   plateMesh.name = 'palm-baseplate';
-  plateMesh.position.set(0, 0, 0.015 / 2);
+  plateMesh.position.set(0, 0, 0.018 / 2);
   group.add(plateMesh);
 
-  // 2. Pneumatic extension rod (cylinder: radius 0.01m, height 0.04m, dark metal finish)
-  const rodGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.04, 16);
+  // 2. Pneumatic extension rod (cylinder: radius 0.014m, height 0.055m, brushed chrome steel finish)
+  const rodGeom = new THREE.CylinderGeometry(0.014, 0.014, 0.055, 24);
   rodGeom.rotateX(Math.PI / 2);
   const rodMat = new THREE.MeshStandardMaterial({
-    color: 0x374151,
-    metalness: 0.6,
-    roughness: 0.4,
+    color: 0x94a3b8,
+    metalness: 0.7,
+    roughness: 0.25,
   });
   const rodMesh = new THREE.Mesh(rodGeom, rodMat);
   rodMesh.name = 'palm-extension-rod';
-  rodMesh.position.set(0, 0, 0.015 + 0.04 / 2);
+  rodMesh.position.set(0, 0, 0.018 + 0.055 / 2);
   group.add(rodMesh);
 
-  // 3. Industrial suction cup bellows nozzle (cylinder: radius 0.025m, height 0.02m, rubber finish)
-  const nozzleGeom = new THREE.CylinderGeometry(0.015, 0.025, 0.02, 32);
+  // 3. Industrial suction cup bellows nozzle (cylinder: radius 0.020m to 0.035m, height 0.035m, distinct industrial suction cup)
+  const nozzleGeom = new THREE.CylinderGeometry(0.020, 0.035, 0.035, 32);
   nozzleGeom.rotateX(Math.PI / 2);
   const nozzleMat = new THREE.MeshStandardMaterial({
-    color: 0x1f2937,
-    roughness: 0.9,
-    metalness: 0.1,
+    color: 0x3b82f6,
+    roughness: 0.5,
+    metalness: 0.2,
     emissive: new THREE.Color(0x000000),
     emissiveIntensity: 0.0,
   });
   const nozzleMesh = new THREE.Mesh(nozzleGeom, nozzleMat);
   nozzleMesh.name = 'palm-suction-nozzle';
-  nozzleMesh.position.set(0, 0, 0.015 + 0.04 + 0.02 / 2);
+  nozzleMesh.position.set(0, 0, 0.018 + 0.055 + 0.035 / 2);
   group.add(nozzleMesh);
 
   const dispose = () => {
@@ -298,13 +298,15 @@ export function RobotVisualizer({
         loadedRobot = robot;
         robotGroup.add(robot);
 
-        // Mount Dexterous Palm to tool0 flange link
-        const tool0 =
-          (robot.links && robot.links['tool0']) ||
-          robot.getObjectByName('tool0');
-        if (tool0) {
+        // Mount Dexterous Palm to tool0 flange link with fallback chain
+        const mountLink =
+          (robot.links && (robot.links['tool0'] || robot.links['flange'] || robot.links['wrist_3_link'])) ||
+          robot.getObjectByName('tool0') ||
+          robot.getObjectByName('flange') ||
+          robot.getObjectByName('wrist_3_link');
+        if (mountLink) {
           palmAssets = createDexterousPalm();
-          tool0.add(palmAssets.group);
+          mountLink.add(palmAssets.group);
         }
 
         needsRender = true;
