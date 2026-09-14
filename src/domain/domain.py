@@ -6,11 +6,27 @@ from typing import Annotated, Any, Literal, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class PalmAction(str, Enum):
+    """Actuation action to execute on dexterous palm"""
+
+    GRASP = "GRASP"
+    RELEASE = "RELEASE"
+
+
+class PoseName(str, Enum):
+    """Pre-defined canonical UR5e posture"""
+
+    HOME = "HOME"
+    READY = "READY"
+    INSPECT_POSE = "INSPECT_POSE"
+
+
 class CommandType(str, Enum):
     """Operational command type"""
 
     PING = "PING"
     TELEOP_JOINT_TARGET = "TELEOP_JOINT_TARGET"
+    PALM_ACTUATE = "PALM_ACTUATE"
     TRAJECTORY_EXECUTE = "TRAJECTORY_EXECUTE"
     EMERGENCY_STOP = "EMERGENCY_STOP"
     RESET_FAULT = "RESET_FAULT"
@@ -50,7 +66,47 @@ DEFAULT_ROBOT_ID: str = "arm-ur5"
 
 
 FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]
-ArmJointPositions = Annotated[list[FiniteFloat], Field(min_length=6, max_length=6, description="UR5e 6-DoF kinematic chain angles in radians in canonical sequence")]
+ArmJointPositions = Annotated[list[FiniteFloat], Field(min_length=6, max_length=6, description="UR5e 6-DoF joint angles in radians")]
+
+
+class PalmActuatePayload(BaseModel):
+    """Typed payload for PALM_ACTUATE command to toggle suction or grasp status"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    action: PalmAction = Field(..., description="Actuation action to execute on dexterous palm")
+
+
+class TrajectoryExecutePayload(BaseModel):
+    """Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom trajectories"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    pose_name: Optional[PoseName] = Field(default=None, description="Pre-defined canonical UR5e posture")
+    waypoints: Optional[list[ArmJointPositions]] = Field(default=None, description="Optional sequence of waypoints for custom trajectory execution")
+
+
+class EmergencyStopPayload(BaseModel):
+    """Typed payload for EMERGENCY_STOP command"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    reason: Optional[str] = Field(default=None, description="Optional human-readable reason for emergency stop")
+
+
+class ResetFaultPayload(BaseModel):
+    """Typed payload for RESET_FAULT command"""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+
+class PalmState(BaseModel):
+    """End-effector dexterous palm pneumatic actuation and grasp status"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    is_grasped: bool = Field(default=False, description="True if suction or grasp is actively engaged, false otherwise")
 
 
 class InferenceMetrics(BaseModel):
@@ -94,6 +150,7 @@ class RobotTelemetryEvent(BaseModel):
     timestamp_ns: int = Field(..., ge=0, description="Nanoseconds since Unix epoch when telemetry state was sampled")
     robot_state: RobotState = Field(..., description="Current lifecycle state of the robotic manipulator")
     joint_positions: ArmJointPositions
+    palm_state: PalmState = Field(default_factory=PalmState, description="End-effector dexterous palm pneumatic actuation and grasp status")
     inference_metrics: Optional[InferenceMetrics] = Field(default=None, description="Edge AI inference latency and object classification metrics")
     command_id: Optional[str] = Field(default=None, description="Optional command identifier acknowledged by this telemetry event")
 

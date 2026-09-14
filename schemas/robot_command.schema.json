@@ -12,6 +12,80 @@
     "type",
     "payload"
   ],
+  "$defs": {
+    "palm_actuate_payload": {
+      "type": "object",
+      "title": "PalmActuatePayload",
+      "description": "Typed payload for PALM_ACTUATE command to toggle suction or grasp status",
+      "required": [
+        "action"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "title": "PalmAction",
+          "enum": [
+            "GRASP",
+            "RELEASE"
+          ],
+          "description": "Actuation action to execute on dexterous palm"
+        }
+      },
+      "additionalProperties": false
+    },
+    "trajectory_execute_payload": {
+      "type": "object",
+      "title": "TrajectoryExecutePayload",
+      "description": "Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom trajectories",
+      "properties": {
+        "pose_name": {
+          "type": "string",
+          "title": "PoseName",
+          "enum": [
+            "HOME",
+            "READY",
+            "INSPECT_POSE"
+          ],
+          "description": "Pre-defined canonical UR5e posture"
+        },
+        "waypoints": {
+          "type": "array",
+          "title": "TrajectoryWaypoints",
+          "description": "Optional sequence of waypoints for custom trajectory execution",
+          "items": {
+            "type": "array",
+            "title": "ArmJointPositions",
+            "description": "UR5e 6-DoF joint angles in radians",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 6,
+            "maxItems": 6
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "emergency_stop_payload": {
+      "type": "object",
+      "title": "EmergencyStopPayload",
+      "description": "Typed payload for EMERGENCY_STOP command",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "description": "Optional human-readable reason for emergency stop"
+        }
+      },
+      "additionalProperties": false
+    },
+    "reset_fault_payload": {
+      "type": "object",
+      "title": "ResetFaultPayload",
+      "description": "Typed payload for RESET_FAULT command",
+      "properties": {},
+      "additionalProperties": false
+    }
+  },
   "properties": {
     "command_id": {
       "type": "string",
@@ -34,6 +108,7 @@
       "enum": [
         "PING",
         "TELEOP_JOINT_TARGET",
+        "PALM_ACTUATE",
         "TRAJECTORY_EXECUTE",
         "EMERGENCY_STOP",
         "RESET_FAULT"

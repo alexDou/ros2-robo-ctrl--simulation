@@ -1,11 +1,11 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-14)
 
 ## Corpus Check
-- 179 files · ~93,187 words
+- 179 files · ~93,089 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1500 nodes · 1821 edges · 149 communities (104 shown, 25 thin omitted)
+- 1499 nodes · 1820 edges · 150 communities (105 shown, 25 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 73 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
@@ -72,7 +72,7 @@
 - workflows/graphify.md
 - agents/triage-labels.md
 - README.md
-- RobotState
+- test_domain.py
 - gateway
 - ActiveSessionRegistry
 - robot_command.schema.json
@@ -100,7 +100,7 @@
 - dependencies
 - robotLoader.ts
 - TelemetryMonitor.test.tsx
-- .publish_tick
+- test_edge_node.py
 - unit3/implementation_wireframe.md
 - @cucumber/cucumber
 - @playwright/test
@@ -111,7 +111,7 @@
 - typescript
 - vite
 - 0001. Defer Gazebo Physics to Phase 4 in Favor of Dynamic Mock Telemetry for Phase 3 3D Spatial Mapping
-- robot_telemetry_topic
+- RobotState
 - hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md
 - main.tsx
 - hand-sim-2lcq--unit-32-teleopclient-threejs-robotvisualizer-canva.md
@@ -141,6 +141,7 @@
 - palm_actuate_payload
 - items
 - MockWebSocket
+- Enum
 - reset_fault_payload
 - trajectory_execute_payload
 - waypoints
@@ -164,15 +165,15 @@
   tests/test_edge_node.py → src/edge_node/mock_publisher.py
 - `test_edge_node_command_handling_malformed_payload()` --uses--> `EdgeNode`  [INFERRED]
   tests/test_edge_node.py → src/edge_node/node.py
-- `test_robot_command_ping_serialization_round_trip()` --uses--> `CommandType`  [INFERRED]
+- `test_palm_actuate_payload_serialization()` --uses--> `PalmAction`  [INFERRED]
   tests/test_domain.py → src/domain/domain.py
-- `test_edge_node_command_handling_valid_ping()` --uses--> `CommandType`  [INFERRED]
-  tests/test_edge_node.py → src/domain/domain.py
+- `test_trajectory_execute_payload_serialization()` --uses--> `PoseName`  [INFERRED]
+  tests/test_domain.py → src/domain/domain.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (149 total, 25 thin omitted)
+## Communities (150 total, 25 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -366,9 +367,9 @@ Nodes (31): 1. Executive Summary & System Overview, 1. Inbound Command: `RobotCo
 Cohesion: 0.06
 Nodes (34): elbow_joint, joint_positions, palm_state, robot_state, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint (+26 more)
 
-### Community 57 - "RobotState"
-Cohesion: 0.12
-Nodes (20): RobotCommand, RobotState, RobotTelemetryEvent, Canonical schema for inbound commands sent to EdgeNode over WebSocket or…, Canonical schema for outbound telemetry events emitted by EdgeNode over…, Current lifecycle state of the robotic manipulator, test_error_frame_serialization_round_trip(), test_robot_command_malformed_fails_validation() (+12 more)
+### Community 57 - "test_domain.py"
+Cohesion: 0.24
+Nodes (7): RobotCommand, Canonical schema for inbound commands sent to EdgeNode over WebSocket or…, test_error_frame_serialization_round_trip(), test_palm_actuate_payload_serialization(), test_robot_command_malformed_fails_validation(), test_robot_command_ping_serialization_round_trip(), test_robot_telemetry_event_malformed_fails()
 
 ### Community 77 - "ActiveSessionRegistry"
 Cohesion: 0.17
@@ -383,8 +384,8 @@ Cohesion: 0.05
 Nodes (41): BOOTING, EXECUTING, FAULT, IDLE, is_grasped, PROCESSING, description, type (+33 more)
 
 ### Community 81 - "MockMotionPublisher"
-Cohesion: 0.11
-Nodes (18): Node, JointSinusoidConfig, main(), MockMotionPublisher, Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.…, Returns the most recent calculated joint positions (zero-order hold)., Disposes resources cleanly., Configuration for a single joint's continuous sinusoidal oscillation. (+10 more)
+Cohesion: 0.09
+Nodes (25): Node, JointSinusoidConfig, main(), MockMotionPublisher, Any, RobotTelemetryEvent, Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.…, Calculates deterministic joint angles clamped to physical limits [-pi, pi]. (+17 more)
 
 ### Community 82 - "error_frame.schema.json"
 Cohesion: 0.07
@@ -439,12 +440,12 @@ Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ### Community 96 - "EdgeNode"
-Cohesion: 0.19
-Nodes (8): EdgeNode, Any, RobotTelemetryEvent, Ingests a JointState ROS2 message and updates canonical joint positions. Args:…, Emits a periodic 30 Hz RobotTelemetryEvent with current joint positions., Ingests, validates, and processes an inbound RobotCommand payload string or…, Cleans up Zenoh subscriptions/sessions and ROS2 nodes., EdgeNode combining ROS2 node capabilities with Eclipse Zenoh DataFabric pub/sub.
+Cohesion: 0.18
+Nodes (9): main(), EdgeNode, Any, RobotTelemetryEvent, Ingests a JointState ROS2 message and updates canonical joint positions. Args:…, Emits a periodic 30 Hz RobotTelemetryEvent with current joint positions., Ingests, validates, and processes an inbound RobotCommand payload string or…, Cleans up Zenoh subscriptions/sessions and ROS2 nodes. (+1 more)
 
 ### Community 97 - "domain.py"
-Cohesion: 0.12
-Nodes (26): BaseModel, Enum, CommandType, EmergencyStopPayload, ErrorFrame, InferenceMetrics, PalmAction, PalmActuatePayload (+18 more)
+Cohesion: 0.13
+Nodes (21): BaseModel, EmergencyStopPayload, ErrorFrame, PalmActuatePayload, parse_robot_topic(), ResetFaultPayload, robot_command_topic(), robot_telemetry_topic() (+13 more)
 
 ### Community 98 - "unit2/implementation_wireframe.md"
 Cohesion: 0.22
@@ -455,8 +456,8 @@ Cohesion: 0.19
 Nodes (9): JointState, main(), MockJointStatePublisher, Standalone synthetic ROS2 JointState publisher at 30 Hz., ROS2 node publishing synthetic JointState messages at 30 Hz., Creates a synthetic JointState message with canonical joint names., Publishes a single JointState message and returns it., test_edge_node_joint_state_subscription_and_streaming() (+1 more)
 
 ### Community 100 - "domain/__init__.py"
-Cohesion: 0.15
-Nodes (9): main(), CLI Entrypoint for EdgeNode process., JointStateMapper, Any, JointState extraction and mapping for canonical 6-DoF UR5e arm., Extracts canonical 6-DoF UR5e joint angles from ROS2 JointState messages.…, Returns the canonical 6-DoF joint positions in radians., Updates internal joint state from a sensor_msgs/msg/JointState or compatible… (+1 more)
+Cohesion: 0.17
+Nodes (8): CLI Entrypoint for EdgeNode process., JointStateMapper, Any, JointState extraction and mapping for canonical 6-DoF UR5e arm., Extracts canonical 6-DoF UR5e joint angles from ROS2 JointState messages.…, Returns the canonical 6-DoF joint positions in radians., Updates internal joint state from a sensor_msgs/msg/JointState or compatible…, EdgeNode ROS2 node and Zenoh DataFabric command ingestion service.
 
 ### Community 101 - "dependencies"
 Cohesion: 0.22
@@ -470,9 +471,9 @@ Nodes (22): ADR-0001, UR5E_JOINTS, UR5eJoint, disposeMaterial(), getLatestPositi
 Cohesion: 0.27
 Nodes (9): ArmJointPositions, CANONICAL_UR5E_JOINTS, isRobotTelemetryEvent(), RobotState, TelemetryMonitor(), TelemetryMonitorProps, TelemetryBuffer, useTelemetryStream() (+1 more)
 
-### Community 104 - ".publish_tick"
-Cohesion: 0.23
-Nodes (8): Any, RobotTelemetryEvent, Calculates deterministic joint angles clamped to physical limits [-pi, pi]., Calculates instantaneous joint velocities from analytical derivatives., Retrieves clock nanoseconds and ROS2 stamp struct in a single clock snapshot., Constructs a standard sensor_msgs/msg/JointState message., Constructs a typed RobotTelemetryEvent conforming to the wire contract., Publishes one synchronized 30 Hz step to both ROS2 and Zenoh.
+### Community 104 - "test_edge_node.py"
+Cohesion: 0.20
+Nodes (10): CommandType, Operational command type, mock_ros_node(), fixture, Tests for EdgeNode ROS2 and DataFabric command ingestion., test_edge_node_command_handling_malformed_payload(), test_edge_node_command_handling_valid_ping(), test_edge_node_zenoh_pub_sub_round_trip() (+2 more)
 
 ### Community 105 - "unit3/implementation_wireframe.md"
 Cohesion: 0.22
@@ -482,9 +483,9 @@ Nodes (8): Contract-First Parallel Execution Model, Ready to Begin Implementatio
 Cohesion: 0.33
 Nodes (5): 0001. Defer Gazebo Physics to Phase 4 in Favor of Dynamic Mock Telemetry for Phase 3 3D Spatial Mapping, Consequences, Context, Decision, Status
 
-### Community 116 - "robot_telemetry_topic"
-Cohesion: 0.29
-Nodes (8): parse_robot_topic(), robot_command_topic(), robot_telemetry_topic(), _validate_robot_id(), Returns the locked DataFabric command key expression for a robot., Returns the locked DataFabric telemetry key expression for a robot., Parses a DataFabric key expression into (robot_id, channel) or returns None if…, test_datafabric_key_expressions()
+### Community 116 - "RobotState"
+Cohesion: 0.22
+Nodes (11): InferenceMetrics, PalmState, RobotState, RobotTelemetryEvent, End-effector dexterous palm pneumatic actuation and grasp status, Edge AI inference latency and object classification metrics, Canonical schema for outbound telemetry events emitted by EdgeNode over…, Current lifecycle state of the robotic manipulator (+3 more)
 
 ### Community 117 - "hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md"
 Cohesion: 0.25
@@ -551,8 +552,8 @@ Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ### Community 134 - "hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md"
-Cohesion: 0.33
-Nodes (5): Acceptance criteria, Blocked by, Parent, Summary of Changes, What to build
+Cohesion: 0.40
+Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ### Community 135 - "hand-sim-osnb--unit-41-dexterous-palm-3d-model-kinematic-flange-m.md"
 Cohesion: 0.40
@@ -578,6 +579,10 @@ Nodes (7): action, palm_actuate_payload, additionalProperties, description, requ
 Cohesion: 0.33
 Nodes (7): description, items, maxItems, minItems, title, type, items
 
+### Community 146 - "Enum"
+Cohesion: 0.40
+Nodes (6): Enum, PalmAction, PoseName, Actuation action to execute on dexterous palm, Pre-defined canonical UR5e posture, str
+
 ### Community 147 - "reset_fault_payload"
 Cohesion: 0.33
 Nodes (6): reset_fault_payload, additionalProperties, description, properties, title, type
@@ -591,8 +596,8 @@ Cohesion: 0.50
 Nodes (4): waypoints, description, title, type
 
 ## Knowledge Gaps
-- **729 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+724 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 916 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **728 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+723 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 915 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
@@ -607,7 +612,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 8 inferred relationships involving `MockMotionPublisher` (e.g. with `RobotState` and `RobotTelemetryEvent`) actually correct?**
   _`MockMotionPublisher` has 8 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema` to the rest of the system?**
-  _729 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _728 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Triage` be split into smaller, more focused modules?**
   _Cohesion score 0.0625 - nodes in this community are weakly interconnected._
 - **Should `Issue tracker: GitHub` be split into smaller, more focused modules?**

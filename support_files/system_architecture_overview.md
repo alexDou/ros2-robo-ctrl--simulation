@@ -1,15 +1,11 @@
 # ROS2 Robot Controller Simulation
 ## Comprehensive System Architecture, Hardware Models & End-to-End Data Flow
 
-> **Project Identity**: Renamed to **ROS2 Robot Controller Simulation** (formerly referenced during initial prototyping as HandSim / arm-UR5e controller simulation).
-
 ---
 
 ## 1. Executive Summary & System Overview
 
 The **ROS2 Robot Controller Simulation** project is an industrial-grade, distributed cloud-robotics teleoperation, real-time telemetry streaming, and simulation platform. It connects browser-based 3D visualizers and teleoperators with robotic manipulators and dexterous end-effectors running in ROS2 Jazzy Jalisco and Gazebo Harmonic.
-
-The architecture strictly adheres to **Clean Architecture**, **Domain-Driven Design (DDD)**, and John Ousterhout’s **Deep Modules** philosophy. It decouples high-frequency robotics middleware from browser-based rendering loops through a resilient, low-latency edge gateway.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -25,7 +21,7 @@ The architecture strictly adheres to **Clean Architecture**, **Domain-Driven Des
  │  └─────────────────────┘  │                         │  └─────────────▲─────────────┘  │
  │  ┌─────────────────────┐  │                         │                │ ROS2 DDS       │
  │  │  TelemetryMonitor   │  │                         │                │ /joint_states  │
- │  │  (Zero-VDOM Readout)│  │                         │  ┌─────────────▼─────────────┐  │
+ │  │  (Preact)           │  │                         │  ┌─────────────▼─────────────┐  │
  │  └─────────────────────┘  │                         │  │ Node 1: Motion Source     │  │
  └─────────────▲─────────────┘                         │  │ (Gazebo / Mock Publisher) │  │
                │                                       │  └───────────────────────────┘  │
@@ -352,7 +348,7 @@ sequenceDiagram
 
     loop Every 33.3 ms (30 Hz)
         Sim->>Edge: ROS2 publish(/joint_states, JointState)
-        Note over Edge: JointStateMapper filters joints,<br/>applies Zero-Order Hold (ZOH)
+        Note over Edge: JointStateMapper filters joints, applies Zero-Order Hold (ZOH)
         Edge->>Zenoh: put("robot/0/telemetry", RobotTelemetryEvent)
         Zenoh->>GW: sample delivered to subscriber worker
         GW->>Hook: WebSocket text frame (JSON)

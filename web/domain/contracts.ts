@@ -38,10 +38,43 @@ export const timestampNsSchema = z
     { message: "Field 'timestamp_ns' must be a non-negative integer" }
   );
 
+/** Actuation action to execute on dexterous palm */
+export const PalmAction = {
+  GRASP: 'GRASP',
+  RELEASE: 'RELEASE',
+} as const;
+
+export const PalmActionSchema = z.enum([
+  'GRASP',
+  'RELEASE',
+], { message: 'Invalid palm action' });
+
+export const palmActionSchema = PalmActionSchema;
+
+export type PalmAction = z.infer<typeof PalmActionSchema>;
+
+/** Pre-defined canonical UR5e posture */
+export const PoseName = {
+  HOME: 'HOME',
+  READY: 'READY',
+  INSPECT_POSE: 'INSPECT_POSE',
+} as const;
+
+export const PoseNameSchema = z.enum([
+  'HOME',
+  'READY',
+  'INSPECT_POSE',
+], { message: 'Invalid pose name' });
+
+export const poseNameSchema = PoseNameSchema;
+
+export type PoseName = z.infer<typeof PoseNameSchema>;
+
 /** Operational command type */
 export const CommandType = {
   PING: 'PING',
   TELEOP_JOINT_TARGET: 'TELEOP_JOINT_TARGET',
+  PALM_ACTUATE: 'PALM_ACTUATE',
   TRAJECTORY_EXECUTE: 'TRAJECTORY_EXECUTE',
   EMERGENCY_STOP: 'EMERGENCY_STOP',
   RESET_FAULT: 'RESET_FAULT',
@@ -50,6 +83,7 @@ export const CommandType = {
 export const CommandTypeSchema = z.enum([
   'PING',
   'TELEOP_JOINT_TARGET',
+  'PALM_ACTUATE',
   'TRAJECTORY_EXECUTE',
   'EMERGENCY_STOP',
   'RESET_FAULT',
@@ -100,7 +134,7 @@ export type UR5eJoint = z.infer<typeof UR5eJointSchema>;
 /** Canonical default robot identifier across all services */
 export const DEFAULT_ROBOT_ID = 'arm-ur5';
 
-/** UR5e 6-DoF kinematic chain angles in radians in canonical sequence */
+/** UR5e 6-DoF joint angles in radians */
 export type ArmJointPositions = [number, number, number, number, number, number];
 
 export const ArmJointPositionsSchema = z
@@ -117,6 +151,71 @@ export const ArmJointPositionsSchema = z
 export const armJointPositionsSchema = ArmJointPositionsSchema;
 export const jointPositionsSchema = ArmJointPositionsSchema;
 
+/** Typed payload for PALM_ACTUATE command to toggle suction or grasp status */
+export const rawPalmActuatePayloadSchema = z.object(
+  {
+    action: PalmActionSchema,
+  },
+  { message: 'PalmActuatePayload payload must be an object' }
+).strict();
+
+export const PalmActuatePayloadSchema = jsonInput.pipe(rawPalmActuatePayloadSchema);
+export const palmActuatePayloadSchema = PalmActuatePayloadSchema;
+
+export type PalmActuatePayload = z.infer<typeof rawPalmActuatePayloadSchema>;
+
+/** Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom trajectories */
+export const rawTrajectoryExecutePayloadSchema = z.object(
+  {
+    pose_name: PoseNameSchema.nullish(),
+    waypoints: z.array(armJointPositionsSchema).nullish(),
+  },
+  { message: 'TrajectoryExecutePayload payload must be an object' }
+).strict();
+
+export const TrajectoryExecutePayloadSchema = jsonInput.pipe(rawTrajectoryExecutePayloadSchema);
+export const trajectoryExecutePayloadSchema = TrajectoryExecutePayloadSchema;
+
+export type TrajectoryExecutePayload = z.infer<typeof rawTrajectoryExecutePayloadSchema>;
+
+/** Typed payload for EMERGENCY_STOP command */
+export const rawEmergencyStopPayloadSchema = z.object(
+  {
+    reason: z.string().nullish(),
+  },
+  { message: 'EmergencyStopPayload payload must be an object' }
+).strict();
+
+export const EmergencyStopPayloadSchema = jsonInput.pipe(rawEmergencyStopPayloadSchema);
+export const emergencyStopPayloadSchema = EmergencyStopPayloadSchema;
+
+export type EmergencyStopPayload = z.infer<typeof rawEmergencyStopPayloadSchema>;
+
+/** Typed payload for RESET_FAULT command */
+export const rawResetFaultPayloadSchema = z.object(
+  {
+  },
+  { message: 'ResetFaultPayload payload must be an object' }
+).strict();
+
+export const ResetFaultPayloadSchema = jsonInput.pipe(rawResetFaultPayloadSchema);
+export const resetFaultPayloadSchema = ResetFaultPayloadSchema;
+
+export type ResetFaultPayload = z.infer<typeof rawResetFaultPayloadSchema>;
+
+/** End-effector dexterous palm pneumatic actuation and grasp status */
+export const rawPalmStateSchema = z.object(
+  {
+    is_grasped: z.boolean().default(false),
+  },
+  { message: 'PalmState payload must be an object' }
+).strict();
+
+export const PalmStateSchema = jsonInput.pipe(rawPalmStateSchema);
+export const palmStateSchema = PalmStateSchema;
+
+export type PalmState = z.infer<typeof rawPalmStateSchema>;
+
 /** Edge AI inference latency and object classification metrics */
 export const rawInferenceMetricsSchema = z.object(
   {
@@ -127,7 +226,7 @@ export const rawInferenceMetricsSchema = z.object(
   { message: 'InferenceMetrics payload must be an object' }
 ).strict();
 
-export const InferenceMetricsSchema = rawInferenceMetricsSchema;
+export const InferenceMetricsSchema = jsonInput.pipe(rawInferenceMetricsSchema);
 export const inferenceMetricsSchema = InferenceMetricsSchema;
 
 export type InferenceMetrics = z.infer<typeof rawInferenceMetricsSchema>;
@@ -171,6 +270,7 @@ export const rawRobotTelemetryEventSchema = z.object(
     timestamp_ns: timestampNsSchema,
     robot_state: RobotStateSchema,
     joint_positions: ArmJointPositionsSchema,
+    palm_state: rawPalmStateSchema.default({"is_grasped": false}),
     inference_metrics: rawInferenceMetricsSchema.nullish(),
     command_id: z.string().nullish(),
   },
@@ -193,6 +293,46 @@ function unwrapZod<T>(result: {
     throw new Error(result.error.issues[0]?.message ?? 'Validation failed');
   }
   return result.data as T;
+}
+
+export function parsePalmActuatePayload(input: unknown): PalmActuatePayload {
+  return unwrapZod<PalmActuatePayload>(palmActuatePayloadSchema.safeParse(input));
+}
+
+export function isPalmActuatePayload(input: unknown): input is PalmActuatePayload {
+  return palmActuatePayloadSchema.safeParse(input).success;
+}
+
+export function parseTrajectoryExecutePayload(input: unknown): TrajectoryExecutePayload {
+  return unwrapZod<TrajectoryExecutePayload>(trajectoryExecutePayloadSchema.safeParse(input));
+}
+
+export function isTrajectoryExecutePayload(input: unknown): input is TrajectoryExecutePayload {
+  return trajectoryExecutePayloadSchema.safeParse(input).success;
+}
+
+export function parseEmergencyStopPayload(input: unknown): EmergencyStopPayload {
+  return unwrapZod<EmergencyStopPayload>(emergencyStopPayloadSchema.safeParse(input));
+}
+
+export function isEmergencyStopPayload(input: unknown): input is EmergencyStopPayload {
+  return emergencyStopPayloadSchema.safeParse(input).success;
+}
+
+export function parseResetFaultPayload(input: unknown): ResetFaultPayload {
+  return unwrapZod<ResetFaultPayload>(resetFaultPayloadSchema.safeParse(input));
+}
+
+export function isResetFaultPayload(input: unknown): input is ResetFaultPayload {
+  return resetFaultPayloadSchema.safeParse(input).success;
+}
+
+export function parsePalmState(input: unknown): PalmState {
+  return unwrapZod<PalmState>(palmStateSchema.safeParse(input));
+}
+
+export function isPalmState(input: unknown): input is PalmState {
+  return palmStateSchema.safeParse(input).success;
 }
 
 export function parseInferenceMetrics(input: unknown): InferenceMetrics {

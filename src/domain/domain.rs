@@ -11,12 +11,30 @@ pub enum DomainError {
     InvalidJointPositions,
 }
 
+/// Actuation action to execute on dexterous palm
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum PalmAction {
+    Grasp,
+    Release,
+}
+
+/// Pre-defined canonical UR5e posture
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum PoseName {
+    Home,
+    Ready,
+    InspectPose,
+}
+
 /// Operational command type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum CommandType {
     Ping,
     TeleopJointTarget,
+    PalmActuate,
     TrajectoryExecute,
     EmergencyStop,
     ResetFault,
@@ -78,6 +96,40 @@ pub fn validate_joint_positions(joint_positions: &ArmJointPositions) -> Result<(
     Ok(())
 }
 
+/// Typed payload for PALM_ACTUATE command to toggle suction or grasp status
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct PalmActuatePayload {
+    pub action: PalmAction,
+}
+
+/// Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom trajectories
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+pub struct TrajectoryExecutePayload {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pose_name: Option<PoseName>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub waypoints: Option<Vec<ArmJointPositions>>,
+}
+
+/// Typed payload for EMERGENCY_STOP command
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub struct EmergencyStopPayload {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+}
+
+/// Typed payload for RESET_FAULT command
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub struct ResetFaultPayload {
+}
+
+/// End-effector dexterous palm pneumatic actuation and grasp status
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+pub struct PalmState {
+    #[serde(default)]
+    pub is_grasped: bool,
+}
+
 /// Edge AI inference latency and object classification metrics
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct InferenceMetrics {
@@ -124,6 +176,8 @@ pub struct RobotTelemetryEvent {
     pub robot_state: RobotState,
     #[serde(deserialize_with = "deserialize_finite_joints")]
     pub joint_positions: ArmJointPositions,
+    #[serde(default)]
+    pub palm_state: PalmState,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub inference_metrics: Option<InferenceMetrics>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

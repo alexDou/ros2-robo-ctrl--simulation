@@ -61,10 +61,11 @@ class FixedArrayDef:
 @dataclass
 class FieldDef:
     name: str
-    kind: str  # "literal", "string", "int", "float", "bool", "enum", "model", "fixed_array", "generic_map"
+    kind: str  # "literal", "string", "int", "float", "bool", "enum", "model", "fixed_array", "generic_map", "array"
     ref: str = ""  # target enum/model/fixed_array name or literal value
     required: bool = True
     description: str = ""
+    default: Any = None
     minimum: float | int | None = None
     maximum: float | int | None = None
     min_length: int | None = None
@@ -162,12 +163,15 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                 maximum=prop_schema.get("maximum"),
             )
 
+        default_val = prop_schema.get("default")
+
         if prop_schema.get("type") == "boolean":
             return FieldDef(
                 name=prop_name,
                 kind="bool",
                 required=is_required,
                 description=desc,
+                default=default_val,
             )
 
         if prop_schema.get("type") == "array":
@@ -191,13 +195,38 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                     description=desc,
                     minimum=min_items,
                     maximum=max_items,
+                    default=default_val,
                 )
+            items_schema = prop_schema.get("items", {})
+            if items_schema.get("type") == "array":
+                item_min = items_schema.get("minItems")
+                item_max = items_schema.get("maxItems")
+                if item_min is not None and item_min == item_max:
+                    array_title = items_schema.get("title") or "ArmJointPositions"
+                    if array_title not in seen_fixed_arrays:
+                        ir.fixed_arrays.append(FixedArrayDef(
+                            name=array_title,
+                            item_type="float",
+                            count=item_min,
+                            description=items_schema.get("description", ""),
+                        ))
+                        seen_fixed_arrays.add(array_title)
+                    return FieldDef(
+                        name=prop_name,
+                        kind="array",
+                        ref=array_title,
+                        required=is_required,
+                        description=desc,
+                        default=default_val,
+                    )
+            item_ref = items_schema.get("title") or items_schema.get("type", "string")
             return FieldDef(
                 name=prop_name,
                 kind="array",
-                ref=prop_schema.get("items", {}).get("type", "string"),
+                ref=item_ref,
                 required=is_required,
                 description=desc,
+                default=default_val,
             )
 
         if prop_schema.get("type") == "object":
@@ -210,12 +239,14 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                     ref=sub_model_name,
                     required=is_required,
                     description=desc,
+                    default=default_val,
                 )
             return FieldDef(
                 name=prop_name,
                 kind="generic_map",
                 required=is_required,
                 description=desc,
+                default=default_val,
             )
 
         if "$ref" in prop_schema:
@@ -226,6 +257,7 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                 ref=target,
                 required=is_required,
                 description=desc,
+                default=default_val,
             )
 
         raise ValueError(f"Unknown property schema for {prop_name}: {prop_schema}")
@@ -398,9 +430,12 @@ def emit_rust(ir: DomainIR) -> str:
         if m.description:
             lines.append(f"/// {m.description}")
 
-        has_float = any(f.kind in ("float", "fixed_array") for f in m.fields)
+        has_float = any(f.kind in ("float", "fixed_array") for f in m.fields) or any(
+            f.kind == "array" and any(fa.name == f.ref for fa in ir.fixed_arrays) for f in m.fields
+        )
         eq_derive = "" if has_float else ", Eq"
-        lines.append(f"#[derive(Debug, Clone, PartialEq{eq_derive}, Serialize, Deserialize)]")
+        default_derive = ", Default" if m.name in ("PalmState", "ResetFaultPayload", "EmergencyStopPayload", "TrajectoryExecutePayload") else ""
+        lines.append(f"#[derive(Debug, Clone, PartialEq{eq_derive}, Serialize, Deserialize{default_derive})]")
         lines.append(f"pub struct {m.name} {{")
         for f in m.fields:
             fname = f"r#{f.name}" if f.name == "type" else f.name
@@ -420,16 +455,26 @@ def emit_rust(ir: DomainIR) -> str:
                 attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
                 lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "bool":
-                t = "Option<bool>" if not f.required else "bool"
-                attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
-                lines.append(f"    {attr}pub {fname}: {t},")
+                if f.default is not None:
+                    lines.append(f"    #[serde(default)]\n    pub {fname}: bool,")
+                else:
+                    t = "Option<bool>" if not f.required else "bool"
+                    attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                    lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind in ("enum", "model"):
-                t = f"Option<{f.ref}>" if not f.required else f.ref
-                attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
-                lines.append(f"    {attr}pub {fname}: {t},")
+                if f.name == "palm_state" or f.default is not None:
+                    lines.append(f"    #[serde(default)]\n    pub {fname}: {f.ref},")
+                else:
+                    t = f"Option<{f.ref}>" if not f.required else f.ref
+                    attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                    lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "fixed_array":
                 lines.append('    #[serde(deserialize_with = "deserialize_finite_joints")]')
                 lines.append(f"    pub {fname}: {f.ref},")
+            elif f.kind == "array":
+                t = f"Option<Vec<{f.ref}>>" if not f.required else f"Vec<{f.ref}>"
+                attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "generic_map":
                 lines.append(f"    pub {fname}: serde_json::Value,")
         lines.append("}")
@@ -612,19 +657,33 @@ def emit_python(ir: DomainIR) -> str:
                 type_str = "Optional[float]" if not f.required else "float"
                 lines.append(f"    {f.name}: {type_str} = Field({', '.join(args)})")
             elif f.kind == "bool":
-                type_str = "Optional[bool]" if not f.required else "bool"
-                lines.append(f"    {f.name}: {type_str} = Field(...)")
+                if f.default is not None:
+                    desc_part = f', description="{f.description}"' if f.description else ""
+                    lines.append(f"    {f.name}: bool = Field(default={f.default}{desc_part})")
+                else:
+                    type_str = "Optional[bool]" if not f.required else "bool"
+                    lines.append(f"    {f.name}: {type_str} = Field(...)")
             elif f.kind in ("enum", "model"):
-                args = ["default=None"] if not f.required else ["..."]
-                if f.description:
-                    args.append(f'description="{f.description}"')
-                type_str = f"Optional[{f.ref}]" if not f.required else f.ref
-                lines.append(f"    {f.name}: {type_str} = Field({', '.join(args)})")
+                if f.name == "palm_state" or f.default is not None:
+                    desc_part = f', description="{f.description}"' if f.description else ""
+                    lines.append(f"    {f.name}: {f.ref} = Field(default_factory={f.ref}{desc_part})")
+                else:
+                    args = ["default=None"] if not f.required else ["..."]
+                    if f.description:
+                        args.append(f'description="{f.description}"')
+                    type_str = f"Optional[{f.ref}]" if not f.required else f.ref
+                    lines.append(f"    {f.name}: {type_str} = Field({', '.join(args)})")
             elif f.kind == "fixed_array":
                 if not f.required:
                     lines.append(f"    {f.name}: Optional[{f.ref}] = Field(default=None)")
                 else:
                     lines.append(f"    {f.name}: {f.ref}")
+            elif f.kind == "array":
+                type_str = f"Optional[list[{f.ref}]]" if not f.required else f"list[{f.ref}]"
+                args = ["default=None"] if not f.required else ["..."]
+                if f.description:
+                    args.append(f'description="{f.description}"')
+                lines.append(f"    {f.name}: {type_str} = Field({', '.join(args)})")
             elif f.kind == "generic_map":
                 args = ["default_factory=dict"]
                 if f.description:
@@ -723,6 +782,8 @@ def _ts_field_to_zod(f: FieldDef) -> str:
         return res if f.required else f"{res}.nullish()"
 
     if f.kind == "bool":
+        if f.default is not None:
+            return f"z.boolean().default({str(f.default).lower()})"
         return "z.boolean()" if f.required else "z.boolean().nullish()"
 
     if f.kind == "enum":
@@ -734,7 +795,14 @@ def _ts_field_to_zod(f: FieldDef) -> str:
         return base if f.required else f"{base}.nullish()"
 
     if f.kind == "model":
+        if f.name == "palm_state" or f.default is not None:
+            default_json = json.dumps(f.default if f.default is not None else {"is_grasped": False})
+            return f"raw{f.ref}Schema.default({default_json})"
         base = f"raw{f.ref}Schema"
+        return base if f.required else f"{base}.nullish()"
+
+    if f.kind == "array":
+        base = f"z.array({to_camel_case(f.ref)}Schema)"
         return base if f.required else f"{base}.nullish()"
 
     if f.kind == "generic_map":
@@ -868,10 +936,7 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append(f"  {{ message: '{m.name} payload must be an object' }}")
         lines.append(f"){strict_str};")
         lines.append("")
-        if m.is_submodel:
-            lines.append(f"export const {m.name}Schema = raw{m.name}Schema;")
-        else:
-            lines.append(f"export const {m.name}Schema = jsonInput.pipe(raw{m.name}Schema);")
+        lines.append(f"export const {m.name}Schema = jsonInput.pipe(raw{m.name}Schema);")
         lines.append(f"export const {to_camel_case(m.name)}Schema = {m.name}Schema;")
         lines.append("")
         lines.append(f"export type {m.name} = z.infer<typeof raw{m.name}Schema>;")

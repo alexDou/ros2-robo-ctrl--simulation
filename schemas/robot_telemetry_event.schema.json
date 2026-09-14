@@ -8,7 +8,8 @@
   "required": [
     "timestamp_ns",
     "robot_state",
-    "joint_positions"
+    "joint_positions",
+    "palm_state"
   ],
   "consts": {
     "DEFAULT_ROBOT_ID": {
@@ -75,6 +76,25 @@
       },
       "minItems": 6,
       "maxItems": 6
+    },
+    "palm_state": {
+      "type": "object",
+      "title": "PalmState",
+      "description": "End-effector dexterous palm pneumatic actuation and grasp status",
+      "required": [
+        "is_grasped"
+      ],
+      "properties": {
+        "is_grasped": {
+          "type": "boolean",
+          "default": false,
+          "description": "True if suction or grasp is actively engaged, false otherwise"
+        }
+      },
+      "default": {
+        "is_grasped": false
+      },
+      "additionalProperties": false
     },
     "inference_metrics": {
       "type": "object",

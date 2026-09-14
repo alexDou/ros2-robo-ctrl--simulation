@@ -88,11 +88,118 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
 
 ---
 
-## Unit 4: Bidirectional Teleoperation & State Machine
+## Unit 4: Dexterous Palm Integration & Actuation Foundation
 
-* **Objective**: Full closed-loop joint teleoperation and lifecycle state management.
-* **Frontend**: Visualizer controls (joint sliders, emergency stop, trajectory trigger).
-* **EdgeNode**: State machine validation (`BOOTING`, `IDLE`, `PROCESSING`, `EXECUTING`, `FAULT`). Dispatches joint trajectory commands to ROS2 controllers.
-* **Gateway**: Command validation and safety gating.
-* **Definition of Done**: End-to-end integration test asserting state transitions and trajectory execution from UI to Gazebo.
+* **Objective**: Mount Dexterous Palm (pneumatic suction tool) to UR5e flange (`tool0`), establish end-effector domain contracts, implement EdgeNode lifecycle state machine (`BOOTING`, `IDLE`, `PROCESSING`, `EXECUTING`, `FAULT`) with bounded command FIFO queue ($N=5$) and E-Stop purge, Gateway safety gating at 20 Hz, canned trajectory triggers, and palm grasp/release controls in TeleopClient.
+* **Architecture**: Contract-first parallel development. Unit 4.0 locks down schemas and generated cross-language types. Units 4.1 (3D Palm mounting), 4.2 (EdgeNode state machine & queue), 4.3 (Gateway safety gating), and 4.4 (TeleopClient operator controls) execute concurrently against mocked interface seams. Unit 4.5 provides full multi-service E2E verification.
+
+### Sub-Unit Breakdown
+- **Unit 4.0: Domain Schemas & Palm Actuation Contracts**:
+  - Extends `schemas/robot_command.schema.json` with typed payloads for `PALM_ACTUATE` (`{ "action": "GRASP" | "RELEASE" }`), `TRAJECTORY_EXECUTE` (canned names `"HOME"`, `"READY"`, `"INSPECT_POSE"` + waypoint arrays), `EMERGENCY_STOP`, and `RESET_FAULT`.
+  - Extends `schemas/robot_telemetry_event.schema.json` with end-effector state (`palm_state: { "is_grasped": boolean }`).
+  - Regenerates domain models across Python, Rust, and TypeScript via `scripts/generate_domain.py`.
+- **Unit 4.1: Dexterous Palm 3D Model & Kinematic Flange Mounting**:
+  - Builds procedural pneumatic suction tool geometry parented directly to UR5e `tool0` flange in Three.js scene (`RobotVisualizer`).
+  - Implements visual grasp indicator state (highlight/color shift when `palm_state.is_grasped` changes).
+- **Unit 4.2: EdgeNode Lifecycle State Machine & ROS2 Controller Dispatch**:
+  - Implements authoritative state machine (`BOOTING`, `IDLE`, `PROCESSING`, `EXECUTING`, `FAULT`).
+  - Implements bounded FIFO command queue ($N=5$) for valid commands arriving during `EXECUTING`.
+  - Implements full FIFO queue purge and immediate motion abort on `EMERGENCY_STOP`.
+  - Dispatches trajectories to ROS2 `joint_trajectory_controller` action server `/joint_trajectory_controller/follow_joint_trajectory` (with lightweight cubic spline interpolation fallback in mock controller).
+- **Unit 4.3: Gateway Safety Gating & 20 Hz Command Throttling**:
+  - Enforces stateless syntactic validation, 6-DoF joint limits $[-\pi, \pi]$, and 20 Hz command rate throttling per ActiveSession.
+  - Emits structured `ErrorFrame` on schema violations or queue limits without dropping WebSocket connection.
+- **Unit 4.4: TeleopClient Operator Toolbar & Lifecycle Controls**:
+  - Implements sleek horizontal toolbar under Three.js canvas containing Canned Pose triggers (`"Home"`, `"Ready"`, `"Inspect"`), Palm toggle (`"Grasp" / "Release"`), and `"Reset Fault"`.
+  - Mounts persistent, high-visibility Emergency Stop button and `RobotState` indicator.
+  - Enforces UI interlocks: action controls disabled when `robot_state !== 'IDLE'`.
+- **Unit 4.5: Closed-Loop Multi-Service Integration Suite**:
+  - Multi-service automated integration test asserting live state transitions (`IDLE` $\to$ `PROCESSING` $\to$ `EXECUTING` $\to$ `IDLE`), canned trajectory execution, palm actuation, and emergency stop halt across TeleopClient, Gateway, and EdgeNode within < 50ms latency budget.
+
+---
+
+## Unit 5: Interactive 3D Workcell & Click-to-Place Gear Ingestion
+
+* **Objective**: Build the interactive 3D table workcell in TeleopClient, implement raycast surface placement of gearwheels adhering to UR5e reachability limits, and enforce single-gear click lockout.
+* **Architecture**: Contract-first development. Unit 5.0 locks down `SPAWN_OBJECT` / `TARGET_POSE` wire schemas. Unit 5.1 creates the Three.js table workcell, reachability boundary, and procedural gearwheel mesh. Unit 5.2 provides component verification.
+
+### Sub-Unit Breakdown
+- **Unit 5.0: Object Spawning Wire Contract**:
+  - Defines `SPAWN_OBJECT` schema in `schemas/robot_command.schema.json` with Cartesian coordinates `(x, y, z)` in native REP-103 robot base frame.
+  - Regenerates domain bindings across all three tiers.
+- **Unit 5.1: 3D Workcell Table, Raycaster & Reachability Boundary**:
+  - Mounts interactive table surface inside `robotGroup` in Three.js (preserving REP-103 coordinates).
+  - Implements Three.js raycasting on table click: extracts $(x, y, z)$ in robot base coordinates.
+  - Enforces reachability check: $0.35\text{m} \le R \le 0.75\text{m}$. Renders green cursor if reachable, red if out of reach.
+  - Spawns visual gearwheel mesh on valid click.
+  - Enforces click lockout: once clicked, disables all further clicks until the gear has been processed and cleared.
+  - Adds "Clear Workspace" button in UI to remove spawned gear manually if needed.
+- **Unit 5.2: TeleopClient Component & Raycast Test Suite**:
+  - Vitest component tests asserting raycast coordinate accuracy, reachability boundary clamping, click lockout state, and "Clear Workspace" lifecycle.
+
+---
+
+## Unit 6: Autonomous Pick-and-Place to Common Destination
+
+* **Objective**: Achieve complete closed-loop autonomous pick-and-place: clicking table dispatches target coordinates through Gateway to EdgeNode, which computes analytical IK waypoints, moves UR5e, grasps gear with Kinematic Link Attachment, moves to a common drop stack, releases gear, and returns to IDLE.
+* **Architecture**: Contract-first development. Unit 6.0 defines pick-and-place goal schemas. Units 6.1 (EdgeNode analytical IK & trajectory generator), 6.2 (Three.js Kinematic Link Attachment), and 6.3 (End-to-End closed-loop test) execute against defined seams.
+
+### Sub-Unit Breakdown
+- **Unit 6.0: Pick-and-Place Target Schemas**:
+  - Defines `PICK_AND_PLACE_TARGET` command payload with gear position `(x, y, z)` and common drop stack target.
+- **Unit 6.1: EdgeNode Analytical IK & Waypoint Generation**:
+  - Implements closed-form analytical UR5e IK solver inside EdgeNode for Cartesian waypoints:
+    $P_{\text{approach}} \to P_{\text{pick}} \to P_{\text{lift}} \to P_{\text{drop\_approach}} \to P_{\text{drop}} \to P_{\text{home}}$.
+  - Generates smooth joint trajectories with bounded velocity and acceleration, dispatches to ROS2 controller / mock.
+  - Drives state machine: transitions `IDLE` $\to$ `PROCESSING` (during IK calculation) $\to$ `EXECUTING` (during arm motion) $\to$ `IDLE` (on return home).
+- **Unit 6.2: Three.js Kinematic Link Attachment Seam**:
+  - Implements deterministic link attachment in Three.js: when Palm state is `GRASP` and `tool0` is $\le 15\text{mm}$ from gear, gear mesh is parented to `tool0`.
+  - When Palm state is `RELEASE`, gear mesh unparents and rests stably at drop stack height $z$.
+  - Resets click lockout in TeleopClient upon returning to `IDLE`.
+- **Unit 6.3: Closed-Loop Pick-and-Place Integration Suite**:
+  - Multi-service automated integration test: click on table $\to$ gear spawns $\to$ EdgeNode plans trajectory $\to$ arm picks gear $\to$ drops onto common stack $\to$ arm returns to IDLE $\to$ click re-enabled.
+
+---
+
+## Unit 7: Multi-Color Gear Sorting & Defect QC Inspection
+
+* **Objective**: Extend pick-and-place with vision classification and automated sorting: gears spawn with randomized colors (Red, Green, Blue) and 20% defect probability (crack notch); EdgeNode routes good gears to matching color spindle towers and cracked gears to the Scrap Bin.
+* **Architecture**: Contract-first development. Unit 7.0 locks down QC inspection schemas and tower counter telemetry. Unit 7.1 models 4 physical destinations in Three.js. Unit 7.2 implements EdgeNode vision classification pipeline. Unit 7.3 implements multi-service sorting integration.
+
+### Sub-Unit Breakdown
+- **Unit 7.0: QC Classification & Spindle Telemetry Contracts**:
+  - Extends `RobotTelemetryEvent.inference_metrics` (`confidence`, `latency_ms`, `detected_object`) and adds spindle tower counters: `[Red: X/3] [Green: Y/3] [Blue: Z/3] [Scrap: W]`.
+- **Unit 7.1: 3D Spindle Towers, Scrap Chute & Defect Mesh**:
+  - Adds 3 colored spindle towers (Red, Green, Blue) and Scrap Chute / Bin in Three.js workcell.
+  - Implements procedural cracked gear mesh with visible notch for defective items (20% probability).
+  - Enforces tower capacity limit: max 3 gears per spindle tower ($N_{\max} = 9$ total).
+- **Unit 7.2: EdgeNode Vision Classification & Sorting Trajectory Planner**:
+  - Implements lightweight ONNX / rule-based classifier evaluating color and defect flag, outputting typed `inference_metrics`.
+  - Routes trajectory destination: defective gears $\to$ Scrap Bin; good gears $\to$ matching color spindle tower.
+  - Updates tower counters in periodic 30 Hz telemetry stream.
+- **Unit 7.3: Multi-Destination Sorting Multi-Service Suite**:
+  - Automated integration test verifying: defective gear routed to scrap, red gear routed to red spindle, green to green spindle, blue to blue spindle, and UI counters increment accurately.
+
+---
+
+## Unit 8: Indexing Conveyor Belt & Dual-Flow Interaction Showcase
+
+* **Objective**: Implement the step-and-wait indexing conveyor belt as a second operational flow, provide mutually exclusive mode switching ("Click-to-Place" vs "Conveyor Belt"), and deliver the complete final interactive showcase from `support_files/iterations/iter-2.txt`.
+* **Architecture**: Contract-first development. Unit 8.0 defines conveyor operational mode schemas. Unit 8.1 implements 3D conveyor model and indexing step-and-wait animation. Unit 8.2 implements EdgeNode conveyor feed orchestration. Unit 8.3 integrates dual-flow UI mode toggle and full showcase E2E suite.
+
+### Sub-Unit Breakdown
+- **Unit 8.0: Dual-Flow Mode Wire Contract**:
+  - Defines `SET_OPERATION_MODE` command (`"CLICK_TO_PLACE"` | `"CONVEYOR_FEED"`).
+  - Enforces mutual exclusion: selecting one mode locks the other until the current flow finishes or is stopped.
+- **Unit 8.1: 3D Indexing Conveyor & Step-and-Wait Animation**:
+  - Models linear conveyor belt entering the workcell from the left flank.
+  - Implements deterministic step-and-wait indexing: conveyor advances gear to fixed pickup position and stops.
+  - Arm picks up gear from pickup stop $\to$ conveyor waits until arm returns to `IDLE` $\to$ conveyor indexes next gear into pickup position.
+  - Conveyor overflow return chute despawns unhandled items gracefully.
+- **Unit 8.2: EdgeNode Conveyor Orchestration & Feed Sequencing**:
+  - EdgeNode controls conveyor step timer and pickup state coordination.
+  - Feeds gears at controlled intervals up to capacity limit $N_{\max} = 9$.
+- **Unit 8.3: Showcase Integration & Multi-Service Playwright Suite**:
+  - UI mode toggle: "Mode: Click-to-Place" vs "Mode: Conveyor Belt" with busy-state gating.
+  - Comprehensive automated E2E test verifying both operational flows, emergency stop interrupts, capacity bounds, and reset workspace actions.
 

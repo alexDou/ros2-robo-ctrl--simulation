@@ -132,6 +132,7 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
       timestamp_ns: nowNs.toString(),
       robot_state: RobotState.IDLE,
       joint_positions: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+      palm_state: { is_grasped: false },
     };
 
     act(() => {

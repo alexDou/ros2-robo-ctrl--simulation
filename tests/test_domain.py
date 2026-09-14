@@ -6,11 +6,18 @@ from domain import (
     UR5E_JOINTS,
     ArmJointPositions,
     CommandType,
+    EmergencyStopPayload,
     ErrorFrame,
     InferenceMetrics,
+    PalmAction,
+    PalmActuatePayload,
+    PalmState,
+    PoseName,
+    ResetFaultPayload,
     RobotCommand,
     RobotState,
     RobotTelemetryEvent,
+    TrajectoryExecutePayload,
     parse_robot_topic,
     robot_command_topic,
     robot_telemetry_topic,
@@ -185,4 +192,125 @@ def test_canonical_json_schemas():
     assert telem_data["properties"]["joint_positions"]["minItems"] == 6
     assert telem_data["properties"]["joint_positions"]["maxItems"] == 6
     assert telem_data["properties"]["timestamp_ns"]["minimum"] == 0
+    assert "palm_state" in telem_data["required"]
+    assert "palm_state" in telem_data["properties"]
+    assert telem_data["properties"]["palm_state"]["properties"]["is_grasped"]["type"] == "boolean"
+
+    cmd_data = json.loads((schema_dir / "robot_command.schema.json").read_text())
+    assert "PALM_ACTUATE" in cmd_data["properties"]["type"]["enum"]
+    assert "TRAJECTORY_EXECUTE" in cmd_data["properties"]["type"]["enum"]
+    assert "EMERGENCY_STOP" in cmd_data["properties"]["type"]["enum"]
+    assert "RESET_FAULT" in cmd_data["properties"]["type"]["enum"]
+    assert "palm_actuate_payload" in cmd_data["$defs"]
+    assert "trajectory_execute_payload" in cmd_data["$defs"]
+    assert "emergency_stop_payload" in cmd_data["$defs"]
+    assert "reset_fault_payload" in cmd_data["$defs"]
+
+
+def test_palm_actuate_payload_serialization():
+    payload_grasp = PalmActuatePayload(action=PalmAction.GRASP)
+    assert payload_grasp.action == PalmAction.GRASP
+    assert payload_grasp.model_dump() == {"action": "GRASP"}
+
+    restored = PalmActuatePayload.model_validate_json('{"action": "RELEASE"}')
+    assert restored.action == PalmAction.RELEASE
+
+    cmd = RobotCommand(
+        command_id="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        sender_id="ui-client",
+        timestamp_ns=1_725_894_942_000_000_000,
+        type=CommandType.PALM_ACTUATE,
+        payload=payload_grasp.model_dump(),
+    )
+    restored_cmd = RobotCommand.model_validate_json(cmd.model_dump_json())
+    assert restored_cmd.type == CommandType.PALM_ACTUATE
+    assert restored_cmd.payload["action"] == "GRASP"
+
+    with pytest.raises(ValidationError):
+        PalmActuatePayload.model_validate_json('{"action": "INVALID_ACTION"}')
+
+    with pytest.raises(ValidationError):
+        PalmActuatePayload.model_validate_json('{}')
+
+
+def test_trajectory_execute_payload_serialization():
+    payload_canned = TrajectoryExecutePayload(pose_name=PoseName.HOME)
+    assert payload_canned.pose_name == PoseName.HOME
+    assert payload_canned.waypoints is None
+    assert payload_canned.model_dump(exclude_none=True) == {"pose_name": "HOME"}
+
+    ready_payload = TrajectoryExecutePayload.model_validate_json('{"pose_name": "READY"}')
+    assert ready_payload.pose_name == PoseName.READY
+
+    inspect_payload = TrajectoryExecutePayload.model_validate_json('{"pose_name": "INSPECT_POSE"}')
+    assert inspect_payload.pose_name == PoseName.INSPECT_POSE
+
+    waypoints = [
+        [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        [0.1, -1.50, 1.60, 0.0, 0.0, 0.0],
+    ]
+    payload_waypoints = TrajectoryExecutePayload(waypoints=waypoints)
+    assert payload_waypoints.waypoints == waypoints
+
+    restored = TrajectoryExecutePayload.model_validate_json(payload_waypoints.model_dump_json())
+    assert restored.waypoints == waypoints
+
+    with pytest.raises(ValidationError):
+        TrajectoryExecutePayload.model_validate_json('{"pose_name": "DANCE"}')
+
+    # Waypoint with 5 elements instead of 6
+    with pytest.raises(ValidationError):
+        TrajectoryExecutePayload(waypoints=[[0.0, 0.0, 0.0, 0.0, 0.0]])
+
+
+def test_emergency_stop_and_reset_fault_payload_serialization():
+    estop_with_reason = EmergencyStopPayload(reason="Obstacle detected")
+    assert estop_with_reason.reason == "Obstacle detected"
+    restored_estop = EmergencyStopPayload.model_validate_json(estop_with_reason.model_dump_json())
+    assert restored_estop.reason == "Obstacle detected"
+
+    estop_empty = EmergencyStopPayload()
+    assert estop_empty.reason is None
+    assert EmergencyStopPayload.model_validate_json("{}").reason is None
+
+    reset_payload = ResetFaultPayload()
+    assert ResetFaultPayload.model_validate_json("{}") == reset_payload
+
+    with pytest.raises(ValidationError):
+        ResetFaultPayload.model_validate_json('{"unexpected": "field"}')
+
+
+def test_robot_telemetry_event_palm_state():
+    event_grasped = RobotTelemetryEvent(
+        timestamp_ns=1_725_894_942_000_000_000,
+        robot_state=RobotState.IDLE,
+        joint_positions=[0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        palm_state=PalmState(is_grasped=True),
+    )
+    assert event_grasped.palm_state.is_grasped is True
+    json_data = event_grasped.model_dump_json()
+    assert '"palm_state":{"is_grasped":true}' in json_data or '"palm_state": {"is_grasped": true}' in json_data
+
+    restored = RobotTelemetryEvent.model_validate_json(json_data)
+    assert restored.palm_state.is_grasped is True
+
+    # Safe default: when omitted or defaulted, is_grasped is False
+    event_default = RobotTelemetryEvent(
+        timestamp_ns=1_725_894_942_000_000_000,
+        robot_state=RobotState.IDLE,
+        joint_positions=[0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+    )
+    assert event_default.palm_state.is_grasped is False
+
+    # Deserializing without palm_state uses safe default
+    raw_no_palm = '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}'
+    restored_default = RobotTelemetryEvent.model_validate_json(raw_no_palm)
+    assert restored_default.palm_state.is_grasped is False
+
+    # Invalid palm_state type
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent.model_validate_json(
+            '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "palm_state": {"is_grasped": "not_a_bool"}}'
+        )
+
 
