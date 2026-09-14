@@ -218,4 +218,139 @@ def test_mock_joint_state_publisher_dynamic(mock_ros_node):
         pub_node.destroy_node()
 
 
+def test_edge_node_lifecycle_initial_state(mock_ros_node):
+    node = EdgeNode(robot_id="robot-init", ros2_node=mock_ros_node, auto_connect=False)
+    assert node.robot_state == RobotState.IDLE
+    assert node.palm_state.is_grasped is False
 
+
+def test_edge_node_single_command_gating_busy_rejection(mock_ros_node):
+    from domain import ErrorFrame
+
+    node = EdgeNode(robot_id="robot-busy", ros2_node=mock_ros_node, auto_connect=False)
+    node.robot_state = RobotState.EXECUTING
+
+    cmd = RobotCommand(
+        command_id="cmd-busy-001",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.TRAJECTORY_EXECUTE,
+        payload={"pose_name": "READY"},
+    )
+    res = node.handle_command_payload(cmd.model_dump_json())
+
+    assert isinstance(res, ErrorFrame)
+    assert res.error_code == "ROBOT_BUSY"
+    assert node.robot_state == RobotState.EXECUTING
+    mock_ros_node.get_logger().warning.assert_called()
+
+
+def test_edge_node_canned_trajectory_execution(mock_ros_node):
+    from domain import CANONICAL_POSES, PoseName
+
+    node = EdgeNode(robot_id="robot-traj", ros2_node=mock_ros_node, auto_connect=False)
+    assert node.mapper.get_positions() == [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    cmd = RobotCommand(
+        command_id="cmd-traj-ready",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.TRAJECTORY_EXECUTE,
+        payload={"pose_name": "READY"},
+    )
+
+    # Execute synchronously or wait
+    res = node.handle_command_payload(cmd.model_dump_json(), synchronous=True)
+    assert res is not None
+    assert node.robot_state == RobotState.IDLE
+    assert pytest.approx(node.mapper.get_positions(), abs=1e-4) == CANONICAL_POSES[PoseName.READY]
+
+
+def test_edge_node_palm_actuate_pneumatic_delay(mock_ros_node):
+    node = EdgeNode(robot_id="robot-palm", ros2_node=mock_ros_node, auto_connect=False)
+    assert node.palm_state.is_grasped is False
+
+    # Grasp
+    cmd_grasp = RobotCommand(
+        command_id="cmd-palm-grasp",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.PALM_ACTUATE,
+        payload={"action": "GRASP"},
+    )
+    t0 = time.monotonic()
+    res = node.handle_command_payload(cmd_grasp.model_dump_json(), synchronous=True)
+    elapsed = time.monotonic() - t0
+
+    assert res is not None
+    assert node.palm_state.is_grasped is True
+    assert node.robot_state == RobotState.IDLE
+    assert elapsed >= 0.19  # ~200ms pneumatic delay
+
+    # Release
+    cmd_release = RobotCommand(
+        command_id="cmd-palm-release",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.PALM_ACTUATE,
+        payload={"action": "RELEASE"},
+    )
+    res2 = node.handle_command_payload(cmd_release.model_dump_json(), synchronous=True)
+    assert res2 is not None
+    assert node.palm_state.is_grasped is False
+    assert node.robot_state == RobotState.IDLE
+
+
+def test_edge_node_emergency_stop_and_reset_fault(mock_ros_node):
+    node = EdgeNode(robot_id="robot-estop", ros2_node=mock_ros_node, auto_connect=False)
+
+    # Start motion asynchronously
+    cmd_traj = RobotCommand(
+        command_id="cmd-traj-home",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.TRAJECTORY_EXECUTE,
+        payload={"pose_name": "HOME"},
+    )
+    node.handle_command_payload(cmd_traj.model_dump_json(), synchronous=False)
+    time.sleep(0.08)  # let it enter EXECUTING
+    assert node.robot_state in (RobotState.PROCESSING, RobotState.EXECUTING)
+
+    # Trigger EMERGENCY_STOP
+    cmd_estop = RobotCommand(
+        command_id="cmd-estop-now",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.EMERGENCY_STOP,
+        payload={"reason": "Safety line trip"},
+    )
+    estop_res = node.handle_command_payload(cmd_estop.model_dump_json())
+    assert node.robot_state == RobotState.FAULT
+    assert estop_res.robot_state == RobotState.FAULT
+
+    # Verify subsequent commands are rejected while in FAULT
+    cmd_blocked = RobotCommand(
+        command_id="cmd-blocked",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.TRAJECTORY_EXECUTE,
+        payload={"pose_name": "READY"},
+    )
+    blocked_res = node.handle_command_payload(cmd_blocked.model_dump_json())
+    assert blocked_res.error_code == "ROBOT_BUSY"
+    assert node.robot_state == RobotState.FAULT
+
+    # Reset fault
+    pos_before_reset = list(node.mapper.get_positions())
+    cmd_reset = RobotCommand(
+        command_id="cmd-reset-fault",
+        sender_id="ui-client",
+        timestamp_ns=time.time_ns(),
+        type=CommandType.RESET_FAULT,
+        payload={},
+    )
+    reset_res = node.handle_command_payload(cmd_reset.model_dump_json())
+    assert node.robot_state == RobotState.IDLE
+    assert reset_res.robot_state == RobotState.IDLE
+    # Joint positions remain at current position without moving
+    assert node.mapper.get_positions() == pos_before_reset

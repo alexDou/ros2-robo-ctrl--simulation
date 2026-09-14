@@ -149,6 +149,12 @@ export const ArmJointPositionsSchema = z
   });
 
 export const armJointPositionsSchema = ArmJointPositionsSchema;
+
+export const CANONICAL_POSES: Record<PoseName, ArmJointPositions> = {
+  HOME: [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0],
+  READY: [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0],
+  INSPECT_POSE: [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0],
+} as const;
 export const jointPositionsSchema = ArmJointPositionsSchema;
 
 /** Typed payload for PALM_ACTUATE command to toggle suction or grasp status */

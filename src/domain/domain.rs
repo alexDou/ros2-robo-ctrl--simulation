@@ -234,3 +234,21 @@ pub fn parse_robot_topic(topic: &str) -> Option<(String, &'static str)> {
         _ => None,
     }
 }
+
+/// Canonical UR5e joint postures in radians
+#[allow(clippy::approx_constant)]
+pub const CANONICAL_POSE_HOME: ArmJointPositions = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];
+#[allow(clippy::approx_constant)]
+pub const CANONICAL_POSE_READY: ArmJointPositions = [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0];
+#[allow(clippy::approx_constant)]
+pub const CANONICAL_POSE_INSPECT_POSE: ArmJointPositions = [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0];
+
+/// Returns the canonical joint positions for a pre-defined posture.
+#[must_use]
+pub const fn canonical_pose(pose: PoseName) -> ArmJointPositions {
+    match pose {
+        PoseName::Home => CANONICAL_POSE_HOME,
+        PoseName::Ready => CANONICAL_POSE_READY,
+        PoseName::InspectPose => CANONICAL_POSE_INSPECT_POSE,
+    }
+}

@@ -9,6 +9,7 @@ export interface TelemetryBuffer {
   jointPositions: ArmJointPositions;
   timestampNs: string | bigint | number;
   robotState: RobotState;
+  palmState?: { is_grasped: boolean };
   frequencyHz: number;
   latencyMs: number;
   lastPacketTime: number;
@@ -20,6 +21,7 @@ export function useTelemetryStream() {
     jointPositions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
     timestampNs: 0n.toString(),
     robotState: 'IDLE' as RobotState,
+    palmState: { is_grasped: false },
     frequencyHz: 0,
     latencyMs: 0,
     lastPacketTime: 0,
@@ -28,7 +30,11 @@ export function useTelemetryStream() {
 
   const [isStreaming, setIsStreaming] = useState(false);
   const [robotState, setRobotState] = useState<RobotState | null>(null);
+  const [palmState, setPalmState] = useState<{ is_grasped: boolean }>({ is_grasped: false });
   const frameTimestampsRef = useRef<number[]>([]);
+  const lastStreamingRef = useRef(false);
+  const lastRobotStateRef = useRef<RobotState | null>(null);
+  const lastPalmGraspedRef = useRef<boolean | null>(null);
 
   const handleIncomingFrame = useCallback((data: unknown): boolean => {
     if (!isRobotTelemetryEvent(data)) {
@@ -39,9 +45,15 @@ export function useTelemetryStream() {
     const buf = bufferRef.current;
     buf.jointPositions = data.joint_positions;
     buf.robotState = data.robot_state;
+    buf.palmState = data.palm_state;
     buf.timestampNs = data.timestamp_ns;
     buf.lastPacketTime = now;
     buf.frameCount++;
+
+    if (data.palm_state && lastPalmGraspedRef.current !== data.palm_state.is_grasped) {
+      lastPalmGraspedRef.current = data.palm_state.is_grasped;
+      setPalmState(data.palm_state);
+    }
 
     // Calculate latency from timestamp_ns if available
     try {
@@ -66,29 +78,32 @@ export function useTelemetryStream() {
     buf.frequencyHz = timestamps.length;
 
     // Transition reactive state on initial stream detection or state changes
-    setIsStreaming((prev) => {
-      if (!prev) return true;
-      return prev;
-    });
+    if (!lastStreamingRef.current) {
+      lastStreamingRef.current = true;
+      setIsStreaming(true);
+    }
 
-    setRobotState((prev) => {
-      if (prev !== data.robot_state) {
-        return data.robot_state;
-      }
-      return prev;
-    });
+    if (lastRobotStateRef.current !== data.robot_state) {
+      lastRobotStateRef.current = data.robot_state;
+      setRobotState(data.robot_state);
+    }
 
     return true;
   }, []);
 
   const resetStream = useCallback(() => {
+    lastStreamingRef.current = false;
+    lastRobotStateRef.current = null;
+    lastPalmGraspedRef.current = null;
     setIsStreaming(false);
     setRobotState(null);
+    setPalmState({ is_grasped: false });
     frameTimestampsRef.current = [];
     bufferRef.current = {
       jointPositions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       timestampNs: 0n.toString(),
       robotState: 'IDLE' as RobotState,
+      palmState: { is_grasped: false },
       frequencyHz: 0,
       latencyMs: 0,
       lastPacketTime: 0,
@@ -100,7 +115,9 @@ export function useTelemetryStream() {
     bufferRef,
     isStreaming,
     robotState,
+    palmState,
     handleIncomingFrame,
     resetStream,
   };
 }
+

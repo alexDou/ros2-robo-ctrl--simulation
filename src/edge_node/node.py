@@ -1,16 +1,24 @@
 """EdgeNode ROS2 node and Zenoh DataFabric command ingestion service."""
 
 import logging
+import threading
 import time
 from typing import Any, Optional
 from pydantic import ValidationError
 
 from domain import (
+    CANONICAL_POSES,
     DEFAULT_ROBOT_ID,
     CommandType,
+    ErrorFrame,
+    PalmAction,
+    PalmActuatePayload,
+    PalmState,
+    PoseName,
     RobotCommand,
     RobotState,
     RobotTelemetryEvent,
+    TrajectoryExecutePayload,
     robot_command_topic,
     robot_telemetry_topic,
 )
@@ -36,7 +44,10 @@ class EdgeNode:
         self.telemetry_topic = robot_telemetry_topic(robot_id)
         self.joint_states_topic = joint_states_topic
         self.mapper = JointStateMapper()
-        self.robot_state = RobotState.IDLE
+        self.robot_state = RobotState.BOOTING
+        self.palm_state = PalmState(is_grasped=False)
+        self._abort_event = threading.Event()
+        self.active_motion_thread: Optional[threading.Thread] = None
 
         # ROS2 Node setup
         self._owns_ros_node = False
@@ -97,6 +108,9 @@ class EdgeNode:
         if auto_connect:
             self._init_zenoh()
 
+        # Lifecycle state initialized
+        self.robot_state = RobotState.IDLE
+
     def _init_zenoh(self) -> None:
         if self.zenoh_session is None:
             import zenoh
@@ -131,8 +145,7 @@ class EdgeNode:
         """
         return self.mapper.update_from_joint_state(msg)
 
-    def publish_telemetry_tick(self) -> RobotTelemetryEvent:
-        """Emits a periodic 30 Hz RobotTelemetryEvent with current joint positions."""
+    def _create_telemetry_event(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
         now_ns = time.time_ns()
         if hasattr(self.ros2_node, "get_clock"):
             try:
@@ -140,17 +153,83 @@ class EdgeNode:
             except Exception:
                 pass
 
-        event = RobotTelemetryEvent(
+        return RobotTelemetryEvent(
             timestamp_ns=now_ns,
             robot_state=self.robot_state,
             joint_positions=self.mapper.get_positions(),
+            palm_state=self.palm_state,
             inference_metrics=None,
-            command_id=None,
+            command_id=command_id,
         )
+
+    def publish_telemetry_tick(self) -> RobotTelemetryEvent:
+        """Emits a periodic 30 Hz RobotTelemetryEvent with current joint positions."""
+        event = self._create_telemetry_event(command_id=None)
         self._publish_telemetry(event)
         return event
 
-    def handle_command_payload(self, payload: str | bytes) -> Optional[RobotTelemetryEvent]:
+    def _execute_palm_actuation(
+        self, action: PalmAction, command_id: Optional[str] = None
+    ) -> Optional[RobotTelemetryEvent]:
+        self.robot_state = RobotState.PROCESSING
+        # 200ms simulated pneumatic delay
+        time.sleep(0.2)
+        if self._abort_event.is_set():
+            return None
+
+        self.palm_state.is_grasped = (action == PalmAction.GRASP)
+        self.robot_state = RobotState.IDLE
+        event = self._create_telemetry_event(command_id=command_id)
+        self._publish_telemetry(event)
+        return event
+
+    def _execute_trajectory(
+        self,
+        target_positions: list[float],
+        command_id: Optional[str] = None,
+        duration: float = 2.0,
+        planning_delay: float = 0.05,
+    ) -> Optional[RobotTelemetryEvent]:
+        self.robot_state = RobotState.PROCESSING
+        if planning_delay > 0:
+            time.sleep(planning_delay)
+
+        if self._abort_event.is_set():
+            return None
+
+        self.robot_state = RobotState.EXECUTING
+        start_positions = list(self.mapper.get_positions())
+        rate_hz = 30.0
+        dt = 1.0 / rate_hz
+        total_steps = 1 if duration <= 0 else max(1, int(round(duration * rate_hz)))
+
+        for step in range(1, total_steps + 1):
+            if self._abort_event.is_set():
+                break
+            u = min(1.0, step / total_steps)
+            # Cubic smooth-step interpolation: s(u) = 3u^2 - 2u^3
+            s = 3.0 * (u ** 2) - 2.0 * (u ** 3)
+            current = [
+                start_positions[i] + s * (target_positions[i] - start_positions[i])
+                for i in range(6)
+            ]
+            self.mapper.set_positions(current)
+            if duration > 0:
+                time.sleep(dt)
+
+        if self._abort_event.is_set():
+            return None
+
+        self.mapper.set_positions(target_positions)
+        self.robot_state = RobotState.IDLE
+
+        event = self._create_telemetry_event(command_id=command_id)
+        self._publish_telemetry(event)
+        return event
+
+    def handle_command_payload(
+        self, payload: str | bytes, synchronous: bool = False
+    ) -> Optional[RobotTelemetryEvent | ErrorFrame]:
         """Ingests, validates, and processes an inbound RobotCommand payload string or bytes."""
         if isinstance(payload, bytes):
             try:
@@ -165,25 +244,119 @@ class EdgeNode:
             self.logger.error(f"Malformed RobotCommand payload on {self.command_topic}: {err}")
             return None
 
+        now_ns = time.time_ns()
+        if hasattr(self.ros2_node, "get_clock"):
+            try:
+                now_ns = self.ros2_node.get_clock().now().nanoseconds
+            except Exception:
+                pass
+
         if command.type == CommandType.PING:
             self.logger.info(
                 f"Received PING command '{command.command_id}' from '{command.sender_id}'"
             )
-            now_ns = time.time_ns()
-            if hasattr(self.ros2_node, "get_clock"):
-                try:
-                    now_ns = self.ros2_node.get_clock().now().nanoseconds
-                except Exception:
-                    pass
-            event = RobotTelemetryEvent(
-                timestamp_ns=now_ns,
-                robot_state=self.robot_state,
-                joint_positions=self.mapper.get_positions(),
-                inference_metrics=None,
-                command_id=command.command_id,
-            )
+            event = self._create_telemetry_event(command_id=command.command_id)
             self._publish_telemetry(event)
             return event
+
+        if command.type == CommandType.EMERGENCY_STOP:
+            self.logger.warning(
+                f"EMERGENCY_STOP received '{command.command_id}' from '{command.sender_id}'"
+            )
+            self._abort_event.set()
+            self.robot_state = RobotState.FAULT
+            event = self._create_telemetry_event(command_id=command.command_id)
+            self._publish_telemetry(event)
+            return event
+
+        if command.type == CommandType.RESET_FAULT:
+            self.logger.info(
+                f"RESET_FAULT received '{command.command_id}' from '{command.sender_id}'"
+            )
+            if self.robot_state == RobotState.FAULT:
+                if self.active_motion_thread and self.active_motion_thread.is_alive():
+                    self.active_motion_thread.join(timeout=0.2)
+                self._abort_event.clear()
+                self.robot_state = RobotState.IDLE
+            event = self._create_telemetry_event(command_id=command.command_id)
+            self._publish_telemetry(event)
+            return event
+
+        # SingleCommandGating: only admit motion/actuation commands when IDLE
+        if self.robot_state != RobotState.IDLE:
+            err_frame = ErrorFrame(
+                error_code="ROBOT_BUSY",
+                message=f"Robot is currently {self.robot_state.value}; rejecting command {command.command_id}",
+                timestamp_ns=now_ns,
+            )
+            self.logger.warning(
+                f"Command {command.command_id} ({command.type.value}) rejected: robot is {self.robot_state.value}"
+            )
+            if self._zenoh_pub is not None:
+                self._zenoh_pub.put(err_frame.model_dump_json())
+            return err_frame
+
+        if command.type == CommandType.PALM_ACTUATE:
+            try:
+                palm_payload = PalmActuatePayload.model_validate(command.payload)
+            except ValidationError as err:
+                self.logger.error(f"Invalid PalmActuatePayload: {err}")
+                return None
+            self._abort_event.clear()
+            if synchronous:
+                return self._execute_palm_actuation(palm_payload.action, command.command_id)
+            else:
+                self.robot_state = RobotState.PROCESSING
+                t = threading.Thread(
+                    target=self._execute_palm_actuation,
+                    args=(palm_payload.action, command.command_id),
+                    daemon=True,
+                )
+                self.active_motion_thread = t
+                t.start()
+                return None
+
+        if command.type == CommandType.TRAJECTORY_EXECUTE:
+            try:
+                traj_payload = TrajectoryExecutePayload.model_validate(command.payload)
+            except ValidationError as err:
+                self.logger.error(f"Invalid TrajectoryExecutePayload: {err}")
+                return None
+
+            target: Optional[list[float]] = None
+            if traj_payload.pose_name is not None:
+                target = CANONICAL_POSES.get(traj_payload.pose_name)
+            elif traj_payload.waypoints:
+                target = traj_payload.waypoints[-1]
+
+            if target is None:
+                self.logger.error(f"Invalid trajectory target in command {command.command_id}")
+                err_frame = ErrorFrame(
+                    error_code="INVALID_COMMAND_PAYLOAD",
+                    message="Trajectory command requires pose_name or waypoints",
+                    timestamp_ns=now_ns,
+                )
+                self._publish_error(err_frame)
+                return err_frame
+
+            self._abort_event.clear()
+            if synchronous:
+                return self._execute_trajectory(
+                    target,
+                    command_id=command.command_id,
+                    duration=0.0,
+                    planning_delay=0.0,
+                )
+            else:
+                self.robot_state = RobotState.PROCESSING
+                t = threading.Thread(
+                    target=self._execute_trajectory,
+                    args=(target, command.command_id, 2.0, 0.05),
+                    daemon=True,
+                )
+                self.active_motion_thread = t
+                t.start()
+                return None
 
         self.logger.info(
             f"Received {command.type.value} command '{command.command_id}' from '{command.sender_id}'"

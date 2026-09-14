@@ -1,12 +1,13 @@
 ---
 # hand-sim-gvq7
 title: 'Unit 4.2: EdgeNode Lifecycle State Machine & SingleCommandGating'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-14T15:17:22Z
-updated_at: 2026-09-14T15:17:22Z
+updated_at: 2026-09-14T16:06:47Z
 parent: hand-sim-lm3u
 blocked_by:
     - hand-sim-kiai
@@ -34,3 +35,13 @@ Implement the authoritative lifecycle state machine (`BOOTING`, `IDLE`, `PROCESS
 ## Blocked by
 
 - hand-sim-kiai (Unit 4.0: Domain Schemas & Palm Actuation Contracts)
+
+## Summary of Changes
+
+- Implemented authoritative lifecycle state machine (`BOOTING`, `IDLE`, `PROCESSING`, `EXECUTING`, `FAULT`) and `SingleCommandGating` in `src/edge_node/node.py`.
+- Inbound motion and actuation commands received while busy are rejected with structured `ErrorFrame` (`ROBOT_BUSY`) without mutating state or entering queues.
+- Canned pose trajectories (`HOME`, `READY`, `INSPECT_POSE`) interpolate smoothly with cubic smooth-step interpolation ((u) = 3u^2 - 2u^3$) at 30 Hz.
+- Palm actuation commands simulate pneumatic pressurization delay (~200ms) before updating `palm_state.is_grasped`.
+- `EMERGENCY_STOP` commands immediately halt motion threads and transition state to `FAULT`.
+- `RESET_FAULT` clears faults safely back to `IDLE` at the current pose without uncommanded arm movement.
+- Hermetic unit test coverage added to `tests/test_edge_node.py` verifying all state transitions, single-command gating, pneumatic delay, and emergency stop halt.

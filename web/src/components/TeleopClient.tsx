@@ -3,13 +3,23 @@ import { isBrowser } from '@utils/env';
 import {
   DEFAULT_ROBOT_ID,
   isErrorFrame,
+  PalmAction,
+  PoseName,
   type RobotTelemetryEvent,
   type ErrorFrame,
 } from '@contracts';
-import { createPingCommand, serializeCommand } from '@domain/parsers';
+import {
+  createPingCommand,
+  createTrajectoryExecuteCommand,
+  createPalmActuateCommand,
+  createEmergencyStopCommand,
+  createResetFaultCommand,
+  serializeCommand,
+} from '@domain/parsers';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { TelemetryMonitor } from '@components/TelemetryMonitor';
 import { RobotVisualizer } from '@components/RobotVisualizer';
+import { OperatorToolbar } from '@components/OperatorToolbar';
 
 export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
 
@@ -67,6 +77,7 @@ export function TeleopClient({
   });
   const wsRef = useRef<WebSocket | null>(null);
   const isCleaningUp = useRef(false);
+  const lastLoggedStateRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -97,16 +108,21 @@ export function TeleopClient({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const [errorBanner, setErrorBanner] = useState<{ errorCode: string; message: string } | null>(null);
+  const errorBannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const {
     bufferRef,
     isStreaming,
     robotState,
+    palmState,
     handleIncomingFrame,
     resetStream,
   } = useTelemetryStream();
 
   const connect = useCallback(() => {
     isCleaningUp.current = false;
+    lastLoggedStateRef.current = null;
     setConnectionState('CONNECTING');
     setConflictReason(null);
     resetStream();
@@ -130,22 +146,28 @@ export function TeleopClient({
         const handled = handleIncomingFrame(parsed);
         if (handled) {
           const telem = parsed as RobotTelemetryEvent;
-          setLogs((prev) => {
-            const isFirst = prev.length === 0;
-            const lastTelem = prev.find((p) => p.type === 'telemetry')?.data as RobotTelemetryEvent | undefined;
-            const stateChanged = !lastTelem || lastTelem.robot_state !== telem.robot_state;
-            if (telem.command_id || isFirst || stateChanged) {
-              const entry: LogEntry = {
-                id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-                type: 'telemetry',
-                timestamp: new Date().toLocaleTimeString(),
-                data: telem,
-              };
-              return [entry, ...prev].slice(0, 100);
-            }
-            return prev;
-          });
+          const isFirst = lastLoggedStateRef.current === null;
+          const stateChanged = lastLoggedStateRef.current !== telem.robot_state;
+          if (telem.command_id || isFirst || stateChanged) {
+            lastLoggedStateRef.current = telem.robot_state;
+            const entry: LogEntry = {
+              id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+              type: 'telemetry',
+              timestamp: new Date().toLocaleTimeString(),
+              data: telem,
+            };
+            setLogs((prev) => [entry, ...prev].slice(0, 100));
+          }
         } else if (isErrorFrame(parsed)) {
+          if (errorBannerTimerRef.current) {
+            clearTimeout(errorBannerTimerRef.current);
+          }
+          setErrorBanner({ errorCode: parsed.error_code, message: parsed.message });
+          errorBannerTimerRef.current = setTimeout(() => {
+            setErrorBanner(null);
+            errorBannerTimerRef.current = null;
+          }, 2000);
+
           const entry: LogEntry = {
             id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
             type: 'error',
@@ -191,6 +213,9 @@ export function TeleopClient({
     connect();
     return () => {
       isCleaningUp.current = true;
+      if (errorBannerTimerRef.current) {
+        clearTimeout(errorBannerTimerRef.current);
+      }
       if (isBrowser()) {
         delete (window as unknown as { __teleop_ws?: WebSocket }).__teleop_ws;
       }
@@ -199,6 +224,34 @@ export function TeleopClient({
       }
     };
   }, [connect]);
+
+  const handleExecutePose = useCallback((poseName: PoseName) => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    const cmd = createTrajectoryExecuteCommand(poseName, { senderId: 'ui-client' });
+    wsRef.current.send(serializeCommand(cmd));
+  }, []);
+
+  const handleTogglePalm = useCallback(() => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    const action = palmState?.is_grasped ? PalmAction.RELEASE : PalmAction.GRASP;
+    const cmd = createPalmActuateCommand(action, { senderId: 'ui-client' });
+    wsRef.current.send(serializeCommand(cmd));
+  }, [palmState?.is_grasped]);
+
+  const handleEmergencyStop = useCallback(() => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    const cmd = createEmergencyStopCommand({
+      reason: 'Operator toolbar emergency stop triggered',
+      senderId: 'ui-client',
+    });
+    wsRef.current.send(serializeCommand(cmd));
+  }, []);
+
+  const handleResetFault = useCallback(() => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    const cmd = createResetFaultCommand({ senderId: 'ui-client' });
+    wsRef.current.send(serializeCommand(cmd));
+  }, []);
 
   const handlePing = () => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
@@ -327,6 +380,8 @@ export function TeleopClient({
             minWidth: 0,
             minHeight: '480px',
             boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           <RobotVisualizer
@@ -336,7 +391,17 @@ export function TeleopClient({
             jointPositionsRef={jointPositionsRef}
             rendererFactory={rendererFactory}
             controlsFactory={controlsFactory}
-            style={{ height: '100%', minHeight: '480px' }}
+            style={{ flex: 1, width: '100%', minHeight: '480px' }}
+          />
+          <OperatorToolbar
+            robotState={robotState || 'IDLE'}
+            isGrasped={!!palmState?.is_grasped}
+            onExecutePose={handleExecutePose}
+            onTogglePalm={handleTogglePalm}
+            onEmergencyStop={handleEmergencyStop}
+            onResetFault={handleResetFault}
+            errorBanner={errorBanner}
+            disabled={connectionState !== 'CONNECTED'}
           />
         </div>
         <div

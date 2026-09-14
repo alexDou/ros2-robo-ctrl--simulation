@@ -1,12 +1,13 @@
 ---
 # hand-sim-osnb
 title: 'Unit 4.1: Dexterous Palm 3D Model & Kinematic Flange Mounting'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-14T15:17:12Z
-updated_at: 2026-09-14T15:17:12Z
+updated_at: 2026-09-14T16:24:16Z
 parent: hand-sim-lm3u
 blocked_by:
     - hand-sim-kiai
@@ -31,3 +32,11 @@ Mount the Dexterous Palm pneumatic suction tool procedurally to the UR5e kinemat
 ## Blocked by
 
 - hand-sim-kiai (Unit 4.0: Domain Schemas & Palm Actuation Contracts)
+
+## Summary of Changes
+
+- Implemented procedural Dexterous Palm pneumatic suction tool (mounting baseplate, pneumatic extension rod, industrial bellows nozzle) attached to UR5e link `tool0` in `web/src/components/RobotVisualizer.tsx`.
+- Synchronized grasp state transitions via mutable non-reactive `telemetryBufferRef` dirty-checking in 60 FPS animation loop with zero VDOM re-renders.
+- Active grasp highlights the suction nozzle material emissive glow (`0x10b981`, intensity `0.8`), reverting to idle (`0x000000`) when ungrasped.
+- Properly disposes all procedural geometries and materials on component unmount to prevent GPU resource leaks.
+- Added comprehensive Vitest unit test suite in `web/tests/unit/RobotVisualizer.test.tsx`.
