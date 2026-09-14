@@ -1,11 +1,11 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-14)
 
 ## Corpus Check
-- 181 files · ~98,435 words
+- 181 files · ~98,651 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1550 nodes · 1951 edges · 158 communities (111 shown, 27 thin omitted)
+- 1552 nodes · 1956 edges · 152 communities (105 shown, 27 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 99 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
@@ -75,7 +75,7 @@
 - RobotState
 - gateway
 - ActiveSessionRegistry
-- robot_command.schema.json
+- enum
 - enum
 - MockMotionPublisher
 - error_frame.schema.json
@@ -131,20 +131,14 @@
 - hand-sim-gvq7--unit-42-edgenode-lifecycle-state-machine-singlecom.md
 - hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md
 - hand-sim-osnb--unit-41-dexterous-palm-3d-model-kinematic-flange-m.md
-- emergency_stop_payload
+- robot_command.schema.json
 - unit1/overview.md
 - unit2/overview.md
 - unit3/overview.md
 - unit4/overview.md
-- pose_name
-- action
-- palm_actuate_payload
 - items
 - MockWebSocket
 - properties
-- reset_fault_payload
-- trajectory_execute_payload
-- waypoints
 - joint_positions
 - properties
 - confidence
@@ -161,7 +155,7 @@
 4. `RobotState` - 18 edges
 5. `TelemetrySubscription` - 18 edges
 6. `compilerOptions` - 18 edges
-7. `ServiceHarness` - 15 edges
+7. `ServiceHarness` - 16 edges
 8. `CommandType` - 13 edges
 9. `RobotCommand` - 13 edges
 10. `DataFabricPort` - 13 edges
@@ -181,7 +175,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (158 total, 27 thin omitted)
+## Communities (152 total, 27 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -383,9 +377,9 @@ Nodes (20): CommandType, RobotCommand, RobotState, RobotTelemetryEvent, Canonica
 Cohesion: 0.17
 Nodes (13): HashSet, Responder, health_check(), main(), Result, ActiveSessionGuard, ActiveSessionRegistry, Arc (+5 more)
 
-### Community 79 - "robot_command.schema.json"
-Cohesion: 0.05
-Nodes (40): command_id, EMERGENCY_STOP, PALM_ACTUATE, payload, PING, RESET_FAULT, sender_id, TELEOP_JOINT_TARGET (+32 more)
+### Community 79 - "enum"
+Cohesion: 0.07
+Nodes (27): EMERGENCY_STOP, PALM_ACTUATE, PING, RESET_FAULT, TELEOP_JOINT_TARGET, TRAJECTORY_EXECUTE, description, format (+19 more)
 
 ### Community 80 - "enum"
 Cohesion: 0.20
@@ -544,8 +538,8 @@ Cohesion: 0.33
 Nodes (5): Acceptance criteria, Blocked by, Parent, Summary of Changes, What to build
 
 ### Community 131 - "hand-sim-cujn--unit-45-closed-loop-multi-service-integration-suit.md"
-Cohesion: 0.40
-Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
+Cohesion: 0.33
+Nodes (5): Acceptance criteria, Blocked by, Parent, Summary of Changes, What to build
 
 ### Community 132 - "hand-sim-cxnx--unit-44-teleopclient-operator-toolbar-lifecycle-co.md"
 Cohesion: 0.33
@@ -563,41 +557,17 @@ Nodes (5): Acceptance criteria, Blocked by, Parent, Summary of Changes, What to 
 Cohesion: 0.33
 Nodes (5): Acceptance criteria, Blocked by, Parent, Summary of Changes, What to build
 
-### Community 136 - "emergency_stop_payload"
-Cohesion: 0.20
-Nodes (10): $defs, emergency_stop_payload, additionalProperties, description, properties, title, type, reason (+2 more)
+### Community 136 - "robot_command.schema.json"
+Cohesion: 0.04
+Nodes (44): action, command_id, GRASP, payload, RELEASE, sender_id, description, enum (+36 more)
 
-### Community 141 - "pose_name"
-Cohesion: 0.22
-Nodes (9): HOME, INSPECT_POSE, READY, description, enum, title, type, pose_name (+1 more)
-
-### Community 142 - "action"
-Cohesion: 0.25
-Nodes (8): GRASP, RELEASE, description, enum, title, type, properties, action
-
-### Community 143 - "palm_actuate_payload"
-Cohesion: 0.29
-Nodes (7): action, palm_actuate_payload, additionalProperties, description, required, title, type
-
-### Community 144 - "items"
-Cohesion: 0.33
-Nodes (7): description, items, maxItems, minItems, title, type, items
+### Community 141 - "items"
+Cohesion: 0.08
+Nodes (25): HOME, INSPECT_POSE, READY, trajectory_execute_payload, description, items, maxItems, minItems (+17 more)
 
 ### Community 146 - "properties"
 Cohesion: 0.22
 Nodes (9): description, minLength, type, properties, description, minimum, type, detected_object (+1 more)
-
-### Community 147 - "reset_fault_payload"
-Cohesion: 0.33
-Nodes (6): reset_fault_payload, additionalProperties, description, properties, title, type
-
-### Community 148 - "trajectory_execute_payload"
-Cohesion: 0.40
-Nodes (5): trajectory_execute_payload, additionalProperties, description, title, type
-
-### Community 149 - "waypoints"
-Cohesion: 0.50
-Nodes (4): waypoints, description, title, type
 
 ### Community 150 - "joint_positions"
 Cohesion: 0.22
@@ -628,7 +598,7 @@ Cohesion: 0.33
 Nodes (5): __dirname, __filename, HarnessConfig, ROOT_DIR, WEB_DIR
 
 ## Knowledge Gaps
-- **734 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+729 more)
+- **735 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+730 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 936 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -639,7 +609,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.024) - this node is a cross-community bridge._
 - **Why does `EdgeNode` connect `EdgeNode` to `domain.py`, `test_edge_node.py`, `JointStateMapper`, `PalmAction`, `RobotState`?**
   _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `$defs` connect `emergency_stop_payload` to `palm_actuate_payload`, `reset_fault_payload`, `trajectory_execute_payload`, `robot_command.schema.json`?**
+- **Why does `$defs` connect `robot_command.schema.json` to `items`?**
   _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **Are the 19 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `ErrorFrame`) actually correct?**
   _`EdgeNode` has 19 INFERRED edges - model-reasoned connections that need verification._
@@ -648,4 +618,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 14 inferred relationships involving `RobotState` (e.g. with `MockMotionPublisher` and `EdgeNode`) actually correct?**
   _`RobotState` has 14 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema` to the rest of the system?**
-  _734 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _735 weakly-connected nodes found - possible documentation gaps or missing edges._

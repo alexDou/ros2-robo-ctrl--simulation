@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789411972.4184208,
-    "seen": 1789412825.140124,
-    "ast_hash": "ce5f7b93e5c562e65eba41c9f1eda927",
+    "mtime": 1789414143.28757,
+    "seen": 1789414441.6159956,
+    "ast_hash": "04fee7aedd2dd1219bd15fd0f9510197",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
@@ -894,15 +894,15 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789412250.44676,
-    "seen": 1789412825.1411703,
-    "ast_hash": "191334c8519292ab5d16bc0c2446f674",
+    "mtime": 1789414222.6325634,
+    "seen": 1789414441.6169293,
+    "ast_hash": "7141798758f5777dffcd7ed748d4d500",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
-    "mtime": 1789412289.4182327,
-    "seen": 1789412825.1411712,
-    "ast_hash": "671f8328b8bd7f97ad0cecc47dbf0bef",
+    "mtime": 1789414354.5202887,
+    "seen": 1789414441.6169314,
+    "ast_hash": "8844b258eed1f7bab0f17fbd56876565",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/world.ts": {
@@ -1098,9 +1098,9 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789412145.3439,
-    "seen": 1789412825.1407547,
-    "ast_hash": "a49732165657f24dcf31c933367a2df1",
+    "mtime": 1789414177.147567,
+    "seen": 1789414441.6165326,
+    "ast_hash": "d6cf7fac21c7b00ce59b533caee9b9c5",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-cujn--unit-45-closed-loop-multi-service-integration-suit.md": {
-    "mtime": 1789399076.3842502,
-    "seen": 1789399104.2659333,
-    "ast_hash": "c1dfc0f34e08d68a501b8e0e5ca0ff07",
+    "mtime": 1789412871.9039466,
+    "seen": 1789414441.6217842,
+    "ast_hash": "d6977f181287296e310724604fb37967",
     "semantic_hash": ""
   },
   ".beans/hand-sim-cxnx--unit-44-teleopclient-operator-toolbar-lifecycle-co.md": {
@@ -1230,9 +1230,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/closed_loop.steps.ts": {
-    "mtime": 1789412621.796968,
-    "seen": 1789412825.1410818,
-    "ast_hash": "361e6eb99bbf7648befa1a93aa1c16c4",
+    "mtime": 1789414285.3235579,
+    "seen": 1789414441.61683,
+    "ast_hash": "581417b7d6cc30f88393e8e370fcf35b",
     "semantic_hash": ""
   }
 }

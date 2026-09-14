@@ -82,6 +82,19 @@
       "source_location": "L138"
     },
     {
+      "id": "web_domain_contracts_posename",
+      "label": "PoseName",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "posename",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L57"
+    },
+    {
       "id": "web_domain_contracts_robotstate",
       "label": "RobotState",
       "_callable": true,
@@ -93,6 +106,19 @@
       "norm_label": "robotstate",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L97"
+    },
+    {
+      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
+      "label": "OperatorToolbarProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "operatortoolbarprops",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L3"
     },
     {
       "id": "web_src_components_telemetrymonitor_telemetrymonitorprops",
@@ -171,32 +197,6 @@
       "norm_label": "mockwebsocket",
       "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L7"
-    },
-    {
-      "id": "web_domain_contracts_posename",
-      "label": "PoseName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 154,
-      "community_name": "PoseName",
-      "file_type": "code",
-      "norm_label": "posename",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L57"
-    },
-    {
-      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
-      "label": "OperatorToolbarProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 154,
-      "community_name": "PoseName",
-      "file_type": "code",
-      "norm_label": "operatortoolbarprops",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L3"
     },
     {
       "id": "web_tests_e2e_support_world_customworld",
@@ -959,6 +959,18 @@
       "source_location": "L372"
     },
     {
+      "id": "web_src_components_operatortoolbar_operatortoolbar",
+      "label": "OperatorToolbar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "operatortoolbar()",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L14"
+    },
+    {
       "id": "web_src_components_telemetrymonitor_telemetrymonitor",
       "label": "TelemetryMonitor()",
       "_callable": true,
@@ -1209,18 +1221,6 @@
       "norm_label": ".simulateopen()",
       "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L36"
-    },
-    {
-      "id": "web_src_components_operatortoolbar_operatortoolbar",
-      "label": "OperatorToolbar()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 154,
-      "community_name": "PoseName",
-      "file_type": "code",
-      "norm_label": "operatortoolbar()",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L14"
     },
     {
       "id": "web_tests_e2e_support_world_customworld_constructor",
@@ -1631,6 +1631,18 @@
       "source_location": "L61"
     },
     {
+      "id": "src_edge_node_mock_motion_publisher_build_arg_parser",
+      "label": "build_arg_parser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "build_arg_parser()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L350"
+    },
+    {
       "id": "src_edge_node_mock_motion_publisher_main",
       "label": "main()",
       "_callable": true,
@@ -1640,7 +1652,7 @@
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L350"
+      "source_location": "L391"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_positions",
@@ -1785,6 +1797,18 @@
       "norm_label": "test_mock_motion_publisher_cadence_and_zero_order_hold()",
       "source_file": "tests/test_mock_motion_publisher.py",
       "source_location": "L119"
+    },
+    {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_cli_defaults_and_flags",
+      "label": "test_mock_motion_publisher_cli_defaults_and_flags()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_cli_defaults_and_flags()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L185"
     },
     {
       "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_joint_state_message",
@@ -4396,6 +4420,17 @@
       "norm_label": "canonical_ur5e_joints",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L127"
+    },
+    {
+      "id": "web_src_components_operatortoolbar",
+      "label": "OperatorToolbar.tsx",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "operatortoolbar.tsx",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L1"
     },
     {
       "id": "web_src_components_telemetrymonitor",
@@ -8999,17 +9034,6 @@
       "norm_label": "is_grasped",
       "source_file": "schemas/robot_telemetry_event.schema.json",
       "source_location": "L88"
-    },
-    {
-      "id": "web_src_components_operatortoolbar",
-      "label": "OperatorToolbar.tsx",
-      "_origin": "ast",
-      "community": 154,
-      "community_name": "PoseName",
-      "file_type": "code",
-      "norm_label": "operatortoolbar.tsx",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L1"
     },
     {
       "id": "web_domain_contracts_canonical_poses",
@@ -15829,6 +15853,17 @@
       "source_location": "L53"
     },
     {
+      "id": "argumentparser",
+      "label": "ArgumentParser",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "argumentparser",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "node",
       "label": "Node",
       "_origin": "ast",
@@ -19230,6 +19265,18 @@
     },
     {
       "source": "src_edge_node_mock_motion_publisher_main",
+      "target": "src_edge_node_mock_motion_publisher_build_arg_parser",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L392",
+      "weight": 1.0
+    },
+    {
+      "source": "src_edge_node_mock_motion_publisher_main",
       "target": "src_edge_node_mock_motion_publisher_mockmotionpublisher",
       "relation": "calls",
       "_origin": "ast",
@@ -19237,7 +19284,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L383",
+      "source_location": "L398",
       "weight": 1.0
     },
     {
@@ -20005,7 +20052,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L306",
+      "source_location": "L308",
       "weight": 1.0
     },
     {
@@ -20017,7 +20064,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L437",
+      "source_location": "L439",
       "weight": 1.0
     },
     {
@@ -24999,6 +25046,18 @@
       "context": "return_type",
       "source_file": "src/domain/domain.rs",
       "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "src_edge_node_mock_motion_publisher_build_arg_parser",
+      "target": "argumentparser",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "return_type",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -33210,13 +33269,24 @@
     },
     {
       "source": "src_edge_node_mock_motion_publisher",
-      "target": "src_edge_node_mock_motion_publisher_main",
+      "target": "src_edge_node_mock_motion_publisher_build_arg_parser",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L350",
+      "weight": 1.0
+    },
+    {
+      "source": "src_edge_node_mock_motion_publisher",
+      "target": "src_edge_node_mock_motion_publisher_main",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L391",
       "weight": 1.0
     },
     {
@@ -35032,6 +35102,17 @@
       "confidence_score": 1.0,
       "source_file": "tests/test_mock_motion_publisher.py",
       "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_mock_motion_publisher",
+      "target": "tests_test_mock_motion_publisher_test_mock_motion_publisher_cli_defaults_and_flags",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -39824,6 +39905,18 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_mock_motion_publisher_test_mock_motion_publisher_cli_defaults_and_flags",
+      "target": "src_edge_node_mock_motion_publisher_build_arg_parser",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "context": "call",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L192",
+      "weight": 1.0
+    },
+    {
       "source": "tests_test_mock_motion_publisher_test_mock_motion_publisher_zenoh_and_ros_publication",
       "target": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
       "relation": "calls",
@@ -40684,5 +40777,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "62c6afe3c2a0026d30459151ab1a3a2426c492c7"
+  "built_at_commit": "78b3ea6d67930d03d2150f7d4c518e22c8adf324"
 }

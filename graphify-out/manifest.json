@@ -1080,27 +1080,27 @@
     "semantic_hash": ""
   },
   "web/tests/unit/robotLoader.test.ts": {
-    "mtime": 1789221693.9446704,
-    "seen": 1789221751.5992744,
+    "mtime": 1789416688.6102893,
+    "seen": 1789417122.1285937,
     "ast_hash": "49ff3e833ba8f440aefbc0b734ec4342",
     "semantic_hash": ""
   },
   "src/edge_node/mock_motion_publisher.py": {
-    "mtime": 1789224292.3598094,
-    "seen": 1789224489.078285,
-    "ast_hash": "299855a43c1bd69eaaf83bf0b3ffb4f3",
+    "mtime": 1789416986.8922615,
+    "seen": 1789417122.125644,
+    "ast_hash": "6101ed94f5bad5718af7c3d135568a5b",
     "semantic_hash": ""
   },
   "tests/test_mock_motion_publisher.py": {
-    "mtime": 1789222900.625125,
-    "seen": 1789223970.924384,
-    "ast_hash": "2b933af2bb005031380f6414d8ed071f",
+    "mtime": 1789417021.3673663,
+    "seen": 1789417122.1265967,
+    "ast_hash": "f66fd531b68362fd0e3d33e948aee3b3",
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789414177.147567,
-    "seen": 1789414441.6165326,
-    "ast_hash": "d6cf7fac21c7b00ce59b533caee9b9c5",
+    "mtime": 1789416937.0741873,
+    "seen": 1789417122.127188,
+    "ast_hash": "82ea40bdfd31d58d4949d5f941e1237b",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {

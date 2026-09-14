@@ -101,7 +101,7 @@ class MockMotionPublisher:
         joint_configs: tuple[JointSinusoidConfig, ...] = DEFAULT_UR5E_MOTION_CONFIGS,
         ros2_node: Optional[Any] = None,
         zenoh_session: Optional[Any] = None,
-        enable_zenoh: bool = True,
+        enable_zenoh: bool = False,
     ) -> None:
         self.robot_id = robot_id
         self.topic = topic
@@ -347,7 +347,7 @@ class MockMotionPublisher:
             self.ros2_node = None
 
 
-def main(args: Optional[list[str]] = None) -> None:
+def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Continuous 30 Hz Sinusoidal Mock Motion Publisher for UR5e"
     )
@@ -369,12 +369,27 @@ def main(args: Optional[list[str]] = None) -> None:
         default=os.environ.get("ROBOT_ID", DEFAULT_ROBOT_ID),
         help="Robot identifier for Zenoh DataFabric scoping",
     )
-    parser.add_argument(
-        "--no-zenoh",
+    zenoh_group = parser.add_mutually_exclusive_group()
+    zenoh_group.add_argument(
+        "--zenoh",
+        dest="enable_zenoh",
         action="store_true",
-        default=os.environ.get("ENABLE_ZENOH", "1") == "0",
-        help="Disable Zenoh DataFabric publisher",
+        help="Enable direct Zenoh DataFabric publisher (standalone mode)",
     )
+    zenoh_group.add_argument(
+        "--no-zenoh",
+        dest="enable_zenoh",
+        action="store_false",
+        help="Disable Zenoh DataFabric publisher (default when running alongside EdgeNode)",
+    )
+    zenoh_group.set_defaults(
+        enable_zenoh=os.environ.get("ENABLE_ZENOH", "0") == "1"
+    )
+    return parser
+
+
+def main(args: Optional[list[str]] = None) -> None:
+    parser = build_arg_parser()
     parsed, ros_args = parser.parse_known_args(args if args is not None else sys.argv[1:])
 
     import rclpy
@@ -384,7 +399,7 @@ def main(args: Optional[list[str]] = None) -> None:
         robot_id=parsed.robot_id,
         topic=parsed.topic,
         rate_hz=parsed.rate,
-        enable_zenoh=not parsed.no_zenoh,
+        enable_zenoh=parsed.enable_zenoh,
     )
 
     try:
