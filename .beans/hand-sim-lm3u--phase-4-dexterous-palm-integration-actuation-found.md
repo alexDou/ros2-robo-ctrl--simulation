@@ -1,12 +1,13 @@
 ---
 # hand-sim-lm3u
 title: 'Phase 4: Dexterous Palm Integration & Actuation Foundation'
-status: todo
+status: completed
 type: feature
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-14T15:13:02Z
-updated_at: 2026-09-14T15:13:02Z
+updated_at: 2026-09-14T20:27:37Z
 ---
 
 ## Problem Statement
@@ -161,3 +162,14 @@ Tests must verify externally observable behavior and contract boundaries rather 
 
 - Aligns with single-command interaction model agreed during Unit 4 grilling session.
 - Deprecates speculative FIFO `CommandQueue` in favor of deterministic `SingleCommandGating`, keeping architecture minimal, robust, and aligned with Phase 1–3 design patterns.
+
+## Completion Summary
+
+Phase 4 (Units 4.0 to 4.5) fully implemented, verified, and integrated:
+- Unit 4.0: Contract-first domain schemas for palm actuation, canned trajectories, and palm_state telemetry.
+- Unit 4.1: Dexterous Palm procedural 3D model with real-time visual grasp feedback in RobotVisualizer.
+- Unit 4.2: Authoritative EdgeNode lifecycle state machine with SingleCommandGating and cubic Hermite trajectory interpolation.
+- Unit 4.3: Gateway 20 Hz rate limiting, emergency stop bypass, and structured error emission.
+- Unit 4.4: TeleopClient OperatorToolbar with canned poses, palm toggling, safety cluster, and transient error banners.
+- Unit 4.5: Closed-loop multi-service integration suite (Playwright + Cucumber) verifying end-to-end telemetry and command workflows.
+- Fix: Resolved split-brain telemetry conflict between mock_motion_publisher and EdgeNode, and enhanced palm 3D visibility.
