@@ -27,10 +27,21 @@ AfterAll(async function () {
   }
 });
 
-Before(async function (this: CustomWorld) {
+Before(async function (this: CustomWorld, scenario) {
   this.harness = sharedHarness;
   this.baseUrl = sharedHarness.baseUrl;
   this.browser = sharedBrowser;
+
+  const isClosedLoop = scenario.pickle.tags.some((t) => t.name === '@closed-loop');
+  if (isClosedLoop) {
+    if (this.harness.isMockPublisherRunning()) {
+      await this.harness.stopMockPublisher();
+    }
+  } else {
+    if (!this.harness.isMockPublisherRunning()) {
+      await this.harness.startMockPublisher();
+    }
+  }
 
   this.context = await sharedBrowser.newContext();
   this.page = await this.context.newPage();
@@ -44,6 +55,19 @@ After(async function (this: CustomWorld, scenario) {
       this.attach(screenshot, 'image/png');
     } catch {
       // Ignore screenshot errors on failed teardown
+    }
+  }
+
+  // Restore IDLE state if robot was left in FAULT
+  if (this.teleopPage && this.page && !this.page.isClosed()) {
+    try {
+      const badge = await this.teleopPage.connectionBadge.innerText({ timeout: 500 }).catch(() => '');
+      if (badge.includes('FAULT')) {
+        await this.teleopPage.clickResetFault().catch(() => {});
+        await this.teleopPage.expectConnectionStatus(/IDLE/, 1000).catch(() => {});
+      }
+    } catch {
+      // Ignore cleanup error on teardown
     }
   }
 

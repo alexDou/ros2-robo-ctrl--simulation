@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789408310.1191847,
-    "seen": 1789408860.91822,
-    "ast_hash": "90b4c8b2acca038f1eed03bf52767af0",
+    "mtime": 1789414143.28757,
+    "seen": 1789414441.6159956,
+    "ast_hash": "04fee7aedd2dd1219bd15fd0f9510197",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
@@ -882,9 +882,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1789230284.3331428,
-    "seen": 1789230489.8796446,
-    "ast_hash": "d585c4ca1ab216b39fb90cabf7408c37",
+    "mtime": 1789412386.4467144,
+    "seen": 1789412825.14108,
+    "ast_hash": "d482d1a17c9851d1c84e8969b4731678",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
@@ -894,15 +894,15 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789230157.313916,
-    "seen": 1789230489.8796916,
-    "ast_hash": "ee91cf642411a0c568d92c6cbfaf78f1",
+    "mtime": 1789414222.6325634,
+    "seen": 1789414441.6169293,
+    "ast_hash": "7141798758f5777dffcd7ed748d4d500",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
-    "mtime": 1789213691.1066084,
-    "seen": 1789213720.4125457,
-    "ast_hash": "964e0688696ccc67ee85e384ef01315c",
+    "mtime": 1789414354.5202887,
+    "seen": 1789414441.6169314,
+    "ast_hash": "8844b258eed1f7bab0f17fbd56876565",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/world.ts": {
@@ -1098,9 +1098,9 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789408527.3079677,
-    "seen": 1789408860.9186842,
-    "ast_hash": "f77df47d69b92c8d92ed02fd22e11597",
+    "mtime": 1789414177.147567,
+    "seen": 1789414441.6165326,
+    "ast_hash": "d6cf7fac21c7b00ce59b533caee9b9c5",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-cujn--unit-45-closed-loop-multi-service-integration-suit.md": {
-    "mtime": 1789399076.3842502,
-    "seen": 1789399104.2659333,
-    "ast_hash": "c1dfc0f34e08d68a501b8e0e5ca0ff07",
+    "mtime": 1789412871.9039466,
+    "seen": 1789414441.6217842,
+    "ast_hash": "d6977f181287296e310724604fb37967",
     "semantic_hash": ""
   },
   ".beans/hand-sim-cxnx--unit-44-teleopclient-operator-toolbar-lifecycle-co.md": {
@@ -1227,6 +1227,12 @@
     "mtime": 1789403389.1600795,
     "seen": 1789405389.6310117,
     "ast_hash": "6dcaa6828bcb891fdff655dd35a159dd",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/steps/closed_loop.steps.ts": {
+    "mtime": 1789414285.3235579,
+    "seen": 1789414441.61683,
+    "ast_hash": "581417b7d6cc30f88393e8e370fcf35b",
     "semantic_hash": ""
   }
 }

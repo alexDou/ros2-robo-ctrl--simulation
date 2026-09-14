@@ -17,6 +17,19 @@
       "source_location": "L9"
     },
     {
+      "id": "web_domain_contracts_ur5ejoint",
+      "label": "UR5eJoint",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "robotLoader.ts",
+      "file_type": "code",
+      "norm_label": "ur5ejoint",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L132"
+    },
+    {
       "id": "web_src_components_robotvisualizer_palmproceduralassets",
       "label": "PalmProceduralAssets",
       "_callable": true,
@@ -114,24 +127,37 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "domain.py",
+      "community_name": "PalmAction",
       "file_type": "code",
       "norm_label": "palmaction",
       "source_file": "src/domain/domain.py",
       "source_location": "L9"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_palmactuatepayload",
-      "label": "PalmActuatePayload",
+      "id": "src_domain_domain_py_src_domain_domain_posename",
+      "label": "PoseName",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "domain.py",
+      "community_name": "PalmAction",
       "file_type": "code",
-      "norm_label": "palmactuatepayload",
+      "norm_label": "posename",
       "source_file": "src/domain/domain.py",
-      "source_location": "L79"
+      "source_location": "L16"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_trajectoryexecutepayload",
+      "label": "TrajectoryExecutePayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "PalmAction",
+      "file_type": "code",
+      "norm_label": "trajectoryexecutepayload",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L87"
     },
     {
       "id": "web_tests_unit_teleopclient_test_mockwebsocket",
@@ -171,6 +197,58 @@
       "norm_label": "operatortoolbarprops",
       "source_file": "web/src/components/OperatorToolbar.tsx",
       "source_location": "L3"
+    },
+    {
+      "id": "web_tests_e2e_support_world_customworld",
+      "label": "CustomWorld",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "customworld",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "web_tests_e2e_support_world_icustomworld",
+      "label": "ICustomWorld",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "icustomworld",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness",
+      "label": "ServiceHarness",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": "serviceharness",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_harnessconfig",
+      "label": "HarnessConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 157,
+      "community_name": "harness.ts",
+      "file_type": "code",
+      "norm_label": "harnessconfig",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L12"
     },
     {
       "id": "scripts_generate_domain_constantdef",
@@ -277,19 +355,6 @@
       "source_location": "L24"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_posename",
-      "label": "PoseName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "posename",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L16"
-    },
-    {
       "id": "src_domain_domain_py_src_domain_domain_robotcommand",
       "label": "RobotCommand",
       "_callable": true,
@@ -314,6 +379,19 @@
       "norm_label": "robotstate",
       "source_file": "src/domain/domain.py",
       "source_location": "L35"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
+      "label": "RobotTelemetryEvent",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "robottelemetryevent",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L152"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_jointsinusoidconfig",
@@ -353,58 +431,6 @@
       "norm_label": "teleoppage",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
       "source_location": "L4"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_harnessconfig",
-      "label": "HarnessConfig",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "harnessconfig",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L12"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_serviceharness",
-      "label": "ServiceHarness",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "serviceharness",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L20"
-    },
-    {
-      "id": "web_tests_e2e_support_world_customworld",
-      "label": "CustomWorld",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "customworld",
-      "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L18"
-    },
-    {
-      "id": "web_tests_e2e_support_world_icustomworld",
-      "label": "ICustomWorld",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "icustomworld",
-      "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L6"
     },
     {
       "id": "web_domain_contracts_emergencystoppayload",
@@ -483,19 +509,6 @@
       "norm_label": "trajectoryexecutepayload",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L185"
-    },
-    {
-      "id": "web_domain_contracts_ur5ejoint",
-      "label": "UR5eJoint",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "ur5ejoint",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L132"
     },
     {
       "id": "web_domain_contracts_commandtype",
@@ -621,7 +634,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "emergencystoppayload",
       "source_file": "src/domain/domain.py",
@@ -634,7 +647,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "errorframe",
       "source_file": "src/domain/domain.py",
@@ -647,11 +660,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "inferencemetrics",
       "source_file": "src/domain/domain.py",
       "source_location": "L119"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_palmactuatepayload",
+      "label": "PalmActuatePayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "palmactuatepayload",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L79"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_palmstate",
@@ -660,7 +686,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "palmstate",
       "source_file": "src/domain/domain.py",
@@ -673,37 +699,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "resetfaultpayload",
       "source_file": "src/domain/domain.py",
       "source_location": "L104"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
-      "label": "RobotTelemetryEvent",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "robottelemetryevent",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L152"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_trajectoryexecutepayload",
-      "label": "TrajectoryExecutePayload",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "trajectoryexecutepayload",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L87"
     },
     {
       "id": "src_edge_node_mock_publisher_mockjointstatepublisher",
@@ -712,7 +712,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "mockjointstatepublisher",
       "source_file": "src/edge_node/mock_publisher.py",
@@ -1019,88 +1019,16 @@
       "source_location": "L83"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
-      "label": "parse_robot_topic()",
+      "id": "tests_test_domain_test_trajectory_execute_payload_serialization",
+      "label": "test_trajectory_execute_payload_serialization()",
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "domain.py",
+      "community_name": "PalmAction",
       "file_type": "code",
-      "norm_label": "parse_robot_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L182"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robot_command_topic",
-      "label": "robot_command_topic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "robot_command_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L170"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
-      "label": "robot_telemetry_topic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "robot_telemetry_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L176"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_validate_robot_id",
-      "label": "_validate_robot_id()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "_validate_robot_id()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L165"
-    },
-    {
-      "id": "tests_test_domain_test_datafabric_key_expressions",
-      "label": "test_datafabric_key_expressions()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "test_datafabric_key_expressions()",
+      "norm_label": "test_trajectory_execute_payload_serialization()",
       "source_file": "tests/test_domain.py",
-      "source_location": "L154"
-    },
-    {
-      "id": "tests_test_domain_test_palm_actuate_payload_serialization",
-      "label": "test_palm_actuate_payload_serialization()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "test_palm_actuate_payload_serialization()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L210"
-    },
-    {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_zenoh_and_ros_publication",
-      "label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L144"
+      "source_location": "L236"
     },
     {
       "id": "web_src_main_app",
@@ -1295,6 +1223,126 @@
       "source_location": "L14"
     },
     {
+      "id": "web_tests_e2e_support_world_customworld_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L29"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
+      "label": ".cleanStalePorts()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".cleanstaleports()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L47"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_constructor",
+      "label": ".constructor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".constructor()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L35"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_getcapturedlogs",
+      "label": ".getCapturedLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".getcapturedlogs()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L144"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_ismockpublisherrunning",
+      "label": ".isMockPublisherRunning()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".ismockpublisherrunning()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L148"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_pollhttp",
+      "label": ".pollHttp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".pollhttp()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L55"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_start",
+      "label": ".start()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".start()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L80"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_startmockpublisher",
+      "label": ".startMockPublisher()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".startmockpublisher()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L156"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_stop",
+      "label": ".stop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".stop()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L228"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_stopmockpublisher",
+      "label": ".stopMockPublisher()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".stopmockpublisher()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L205"
+    },
+    {
       "id": "scripts_generate_domain_emit_python",
       "label": "emit_python()",
       "_callable": true,
@@ -1403,6 +1451,54 @@
       "source_location": "L755"
     },
     {
+      "id": "tests_test_domain_test_canonical_joint_constants",
+      "label": "test_canonical_joint_constants()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_canonical_joint_constants()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L73"
+    },
+    {
+      "id": "tests_test_domain_test_canonical_json_schemas",
+      "label": "test_canonical_json_schemas()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_canonical_json_schemas()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L170"
+    },
+    {
+      "id": "tests_test_domain_test_palm_actuate_payload_serialization",
+      "label": "test_palm_actuate_payload_serialization()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_palm_actuate_payload_serialization()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L210"
+    },
+    {
+      "id": "tests_test_domain_test_robot_command_malformed_fails_validation",
+      "label": "test_robot_command_malformed_fails_validation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_robot_command_malformed_fails_validation()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L42"
+    },
+    {
       "id": "tests_test_domain_test_robot_command_ping_serialization_round_trip",
       "label": "test_robot_command_ping_serialization_round_trip()",
       "_callable": true,
@@ -1415,16 +1511,40 @@
       "source_location": "L27"
     },
     {
-      "id": "tests_test_edge_node_mock_ros_node",
-      "label": "mock_ros_node()",
+      "id": "tests_test_domain_test_robot_telemetry_event_malformed_fails",
+      "label": "test_robot_telemetry_event_malformed_fails()",
       "_callable": true,
       "_origin": "ast",
       "community": 57,
       "community_name": "RobotState",
       "file_type": "code",
-      "norm_label": "mock_ros_node()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L12"
+      "norm_label": "test_robot_telemetry_event_malformed_fails()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L86"
+    },
+    {
+      "id": "tests_test_domain_test_robot_telemetry_event_palm_state",
+      "label": "test_robot_telemetry_event_palm_state()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_robot_telemetry_event_palm_state()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L283"
+    },
+    {
+      "id": "tests_test_domain_test_robot_telemetry_event_serialization_round_trip",
+      "label": "test_robot_telemetry_event_serialization_round_trip()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_robot_telemetry_event_serialization_round_trip()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L54"
     },
     {
       "id": "tests_test_edge_node_test_edge_node_canned_trajectory_execution",
@@ -1437,18 +1557,6 @@
       "norm_label": "test_edge_node_canned_trajectory_execution()",
       "source_file": "tests/test_edge_node.py",
       "source_location": "L248"
-    },
-    {
-      "id": "tests_test_edge_node_test_edge_node_command_handling_malformed_payload",
-      "label": "test_edge_node_command_handling_malformed_payload()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node_command_handling_malformed_payload()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L45"
     },
     {
       "id": "tests_test_edge_node_test_edge_node_command_handling_valid_ping",
@@ -1473,30 +1581,6 @@
       "norm_label": "test_edge_node_emergency_stop_and_reset_fault()",
       "source_file": "tests/test_edge_node.py",
       "source_location": "L304"
-    },
-    {
-      "id": "tests_test_edge_node_test_edge_node_joint_state_subscription_and_streaming",
-      "label": "test_edge_node_joint_state_subscription_and_streaming()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node_joint_state_subscription_and_streaming()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L150"
-    },
-    {
-      "id": "tests_test_edge_node_test_edge_node_lifecycle_initial_state",
-      "label": "test_edge_node_lifecycle_initial_state()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node_lifecycle_initial_state()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L221"
     },
     {
       "id": "tests_test_edge_node_test_edge_node_palm_actuate_pneumatic_delay",
@@ -1715,6 +1799,18 @@
       "source_location": "L59"
     },
     {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
+      "label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L99"
+    },
+    {
       "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_trajectory_generation",
       "label": "test_mock_motion_publisher_trajectory_generation()",
       "_callable": true,
@@ -1727,6 +1823,54 @@
       "source_location": "L31"
     },
     {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_zenoh_and_ros_publication",
+      "label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L144"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickcannedpose",
+      "label": ".clickCannedPose()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".clickcannedpose()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L292"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickemergencystop",
+      "label": ".clickEmergencyStop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".clickemergencystop()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L308"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickpalmtoggle",
+      "label": ".clickPalmToggle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".clickpalmtoggle()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L303"
+    },
+    {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickping",
       "label": ".clickPing()",
       "_callable": true,
@@ -1736,7 +1880,19 @@
       "file_type": "code",
       "norm_label": ".clickping()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L41"
+      "source_location": "L59"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickresetfault",
+      "label": ".clickResetFault()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".clickresetfault()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L313"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_constructor",
@@ -1748,7 +1904,31 @@
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L18"
+      "source_location": "L27"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsdisabled",
+      "label": ".expectActionButtonsDisabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectactionbuttonsdisabled()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L318"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsenabled",
+      "label": ".expectActionButtonsEnabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectactionbuttonsenabled()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L325"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectcanonicaljointsdisplayed",
@@ -1760,7 +1940,7 @@
       "file_type": "code",
       "norm_label": ".expectcanonicaljointsdisplayed()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L106"
+      "source_location": "L124"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectcleanvisualizerdisposal",
@@ -1772,7 +1952,7 @@
       "file_type": "code",
       "norm_label": ".expectcleanvisualizerdisposal()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L264"
+      "source_location": "L282"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectconflictbanner",
@@ -1784,7 +1964,7 @@
       "file_type": "code",
       "norm_label": ".expectconflictbanner()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L50"
+      "source_location": "L68"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectconnectionstatus",
@@ -1796,7 +1976,19 @@
       "file_type": "code",
       "norm_label": ".expectconnectionstatus()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L37"
+      "source_location": "L55"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectemergencystopbuttonenabled",
+      "label": ".expectEmergencyStopButtonEnabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectemergencystopbuttonenabled()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L340"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecterrordiagnostic",
@@ -1808,7 +2000,7 @@
       "file_type": "code",
       "norm_label": ".expecterrordiagnostic()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L63"
+      "source_location": "L81"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecteventlogcontains",
@@ -1820,7 +2012,7 @@
       "file_type": "code",
       "norm_label": ".expecteventlogcontains()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L46"
+      "source_location": "L64"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectjointsoscillating",
@@ -1832,7 +2024,7 @@
       "file_type": "code",
       "norm_label": ".expectjointsoscillating()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L172"
+      "source_location": "L190"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectlinkcoordinatesmoving",
@@ -1844,7 +2036,79 @@
       "file_type": "code",
       "norm_label": ".expectlinkcoordinatesmoving()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L194"
+      "source_location": "L212"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmbuttontext",
+      "label": ".expectPalmButtonText()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectpalmbuttontext()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L348"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmnozzlehighlighted",
+      "label": ".expectPalmNozzleHighlighted()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectpalmnozzlehighlighted()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L352"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmstatus",
+      "label": ".expectPalmStatus()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectpalmstatus()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L344"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttondisabled",
+      "label": ".expectResetFaultButtonDisabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectresetfaultbuttondisabled()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L332"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttonenabled",
+      "label": ".expectResetFaultButtonEnabled()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectresetfaultbuttonenabled()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L336"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectrobotatpose",
+      "label": ".expectRobotAtPose()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectrobotatpose()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L376"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectsidebarinsyncwithvisualizer",
@@ -1856,7 +2120,7 @@
       "file_type": "code",
       "norm_label": ".expectsidebarinsyncwithvisualizer()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L209"
+      "source_location": "L227"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecttelemetryfrequencyrange",
@@ -1868,7 +2132,7 @@
       "file_type": "code",
       "norm_label": ".expecttelemetryfrequencyrange()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L69"
+      "source_location": "L87"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecttelemetrylatencybelow",
@@ -1880,7 +2144,7 @@
       "file_type": "code",
       "norm_label": ".expecttelemetrylatencybelow()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L93"
+      "source_location": "L111"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectverifyconnectioncontrolsremoved",
@@ -1892,7 +2156,7 @@
       "file_type": "code",
       "norm_label": ".expectverifyconnectioncontrolsremoved()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L114"
+      "source_location": "L132"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getlinkworldposition",
@@ -1904,7 +2168,7 @@
       "file_type": "code",
       "norm_label": ".getlinkworldposition()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L147"
+      "source_location": "L165"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getrenderermemoryinfo",
@@ -1916,7 +2180,7 @@
       "file_type": "code",
       "norm_label": ".getrenderermemoryinfo()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L243"
+      "source_location": "L261"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getrobotjointvalues",
@@ -1928,7 +2192,7 @@
       "file_type": "code",
       "norm_label": ".getrobotjointvalues()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L138"
+      "source_location": "L156"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getsidebarjointvalues",
@@ -1940,7 +2204,7 @@
       "file_type": "code",
       "norm_label": ".getsidebarjointvalues()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L160"
+      "source_location": "L178"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_goto",
@@ -1952,7 +2216,7 @@
       "file_type": "code",
       "norm_label": ".goto()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L33"
+      "source_location": "L51"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_injectrawframe",
@@ -1964,7 +2228,7 @@
       "file_type": "code",
       "norm_label": ".injectrawframe()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L55"
+      "source_location": "L73"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_waitforrobotloaded",
@@ -1976,91 +2240,7 @@
       "file_type": "code",
       "norm_label": ".waitforrobotloaded()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L118"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
-      "label": ".cleanStalePorts()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": ".cleanstaleports()",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L47"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_serviceharness_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L35"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_serviceharness_getcapturedlogs",
-      "label": ".getCapturedLogs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": ".getcapturedlogs()",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L185"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_serviceharness_pollhttp",
-      "label": ".pollHttp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": ".pollhttp()",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L55"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_serviceharness_start",
-      "label": ".start()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": ".start()",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L80"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_serviceharness_stop",
-      "label": ".stop()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": ".stop()",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L189"
-    },
-    {
-      "id": "web_tests_e2e_support_world_customworld_constructor",
-      "label": ".constructor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": ".constructor()",
-      "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L29"
+      "source_location": "L136"
     },
     {
       "id": "web_domain_contracts_isemergencystoppayload",
@@ -2432,7 +2612,7 @@
       "file_type": "code",
       "norm_label": ".close()",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L363"
+      "source_location": "L379"
     },
     {
       "id": "src_edge_node_node_edgenode_create_telemetry_event",
@@ -2480,31 +2660,7 @@
       "file_type": "code",
       "norm_label": ".handle_command_payload()",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L228"
-    },
-    {
-      "id": "src_edge_node_node_edgenode_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 96,
-      "community_name": "EdgeNode",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L34"
-    },
-    {
-      "id": "src_edge_node_node_edgenode_init_zenoh",
-      "label": "._init_zenoh()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 96,
-      "community_name": "EdgeNode",
-      "file_type": "code",
-      "norm_label": "._init_zenoh()",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L114"
+      "source_location": "L230"
     },
     {
       "id": "src_edge_node_node_edgenode_on_joint_state",
@@ -2531,6 +2687,18 @@
       "source_location": "L130"
     },
     {
+      "id": "src_edge_node_node_edgenode_publish_error",
+      "label": "._publish_error()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "._publish_error()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L372"
+    },
+    {
       "id": "src_edge_node_node_edgenode_publish_telemetry",
       "label": "._publish_telemetry()",
       "_callable": true,
@@ -2540,7 +2708,7 @@
       "file_type": "code",
       "norm_label": "._publish_telemetry()",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L356"
+      "source_location": "L365"
     },
     {
       "id": "src_edge_node_node_edgenode_publish_telemetry_tick",
@@ -2555,28 +2723,88 @@
       "source_location": "L165"
     },
     {
-      "id": "tests_test_domain_test_canonical_joint_constants",
-      "label": "test_canonical_joint_constants()",
+      "id": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
+      "label": "parse_robot_topic()",
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
-      "norm_label": "test_canonical_joint_constants()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L73"
+      "norm_label": "parse_robot_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L182"
     },
     {
-      "id": "tests_test_domain_test_canonical_json_schemas",
-      "label": "test_canonical_json_schemas()",
+      "id": "src_domain_domain_py_src_domain_domain_robot_command_topic",
+      "label": "robot_command_topic()",
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
-      "norm_label": "test_canonical_json_schemas()",
-      "source_file": "tests/test_domain.py",
+      "norm_label": "robot_command_topic()",
+      "source_file": "src/domain/domain.py",
       "source_location": "L170"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
+      "label": "robot_telemetry_topic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "robot_telemetry_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L176"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_validate_robot_id",
+      "label": "_validate_robot_id()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "_validate_robot_id()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L165"
+    },
+    {
+      "id": "src_edge_node_node_edgenode_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L34"
+    },
+    {
+      "id": "src_edge_node_node_edgenode_init_zenoh",
+      "label": "._init_zenoh()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "._init_zenoh()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L114"
+    },
+    {
+      "id": "tests_test_domain_test_datafabric_key_expressions",
+      "label": "test_datafabric_key_expressions()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "test_datafabric_key_expressions()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L154"
     },
     {
       "id": "tests_test_domain_test_emergency_stop_and_reset_fault_payload_serialization",
@@ -2584,7 +2812,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_emergency_stop_and_reset_fault_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -2596,83 +2824,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_error_frame_serialization_round_trip()",
       "source_file": "tests/test_domain.py",
       "source_location": "L142"
-    },
-    {
-      "id": "tests_test_domain_test_robot_command_malformed_fails_validation",
-      "label": "test_robot_command_malformed_fails_validation()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_command_malformed_fails_validation()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L42"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_malformed_fails",
-      "label": "test_robot_telemetry_event_malformed_fails()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_malformed_fails()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L86"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_palm_state",
-      "label": "test_robot_telemetry_event_palm_state()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_palm_state()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L283"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_serialization_round_trip",
-      "label": "test_robot_telemetry_event_serialization_round_trip()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_serialization_round_trip()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L54"
-    },
-    {
-      "id": "tests_test_domain_test_trajectory_execute_payload_serialization",
-      "label": "test_trajectory_execute_payload_serialization()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_trajectory_execute_payload_serialization()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L236"
-    },
-    {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
-      "label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L99"
     },
     {
       "id": "src_edge_node_mock_publisher_main",
@@ -2680,7 +2836,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "main()",
       "source_file": "src/edge_node/mock_publisher.py",
@@ -2692,7 +2848,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": ".create_joint_state_msg()",
       "source_file": "src/edge_node/mock_publisher.py",
@@ -2704,7 +2860,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "src/edge_node/mock_publisher.py",
@@ -2716,11 +2872,59 @@
       "_callable": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": ".publish_joint_state()",
       "source_file": "src/edge_node/mock_publisher.py",
       "source_location": "L65"
+    },
+    {
+      "id": "tests_test_edge_node_mock_ros_node",
+      "label": "mock_ros_node()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "mock_ros_node()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L12"
+    },
+    {
+      "id": "tests_test_edge_node_test_edge_node_command_handling_malformed_payload",
+      "label": "test_edge_node_command_handling_malformed_payload()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "test_edge_node_command_handling_malformed_payload()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L45"
+    },
+    {
+      "id": "tests_test_edge_node_test_edge_node_joint_state_subscription_and_streaming",
+      "label": "test_edge_node_joint_state_subscription_and_streaming()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "test_edge_node_joint_state_subscription_and_streaming()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L150"
+    },
+    {
+      "id": "tests_test_edge_node_test_edge_node_lifecycle_initial_state",
+      "label": "test_edge_node_lifecycle_initial_state()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "test_edge_node_lifecycle_initial_state()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L221"
     },
     {
       "id": "tests_test_edge_node_test_joint_state_mapper_canonical_order_and_zero_order_hold",
@@ -2728,7 +2932,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_joint_state_mapper_canonical_order_and_zero_order_hold()",
       "source_file": "tests/test_edge_node.py",
@@ -2740,7 +2944,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_mock_joint_state_publisher()",
       "source_file": "tests/test_edge_node.py",
@@ -2752,7 +2956,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_mock_joint_state_publisher_dynamic()",
       "source_file": "tests/test_edge_node.py",
@@ -4028,6 +4232,17 @@
       "source_location": "L19"
     },
     {
+      "id": "web_domain_contracts_ur5e_joints",
+      "label": "UR5E_JOINTS",
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "robotLoader.ts",
+      "file_type": "code",
+      "norm_label": "ur5e_joints",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L118"
+    },
+    {
       "id": "web_src_components_robotvisualizer",
       "label": "RobotVisualizer.tsx",
       "_origin": "ast",
@@ -4594,17 +4809,6 @@
       "community_name": "TelemetrySubscription",
       "file_type": "code",
       "norm_label": "derefmut",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "errorframe",
-      "label": "ErrorFrame",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelemetrySubscription",
-      "file_type": "code",
-      "norm_label": "errorframe",
       "source_file": "",
       "source_location": ""
     },
@@ -5200,7 +5404,7 @@
       "file_type": "code",
       "norm_label": "teleop_ws()",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50"
+      "source_location": "L55"
     },
     {
       "id": "src_gateway_src_ws_validate_command_payload",
@@ -5407,70 +5611,59 @@
       "source_location": "L3"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain",
-      "label": "domain.py",
+      "id": "enum",
+      "label": "Enum",
       "_origin": "ast",
       "community": 116,
-      "community_name": "domain.py",
+      "community_name": "PalmAction",
       "file_type": "code",
-      "norm_label": "domain.py",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L1"
+      "norm_label": "enum",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "str",
+      "label": "str",
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "PalmAction",
+      "file_type": "code",
+      "norm_label": "str",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "src_domain_domain_rationale_10",
       "label": "Actuation action to execute on dexterous palm",
       "_origin": "ast",
       "community": 116,
-      "community_name": "domain.py",
+      "community_name": "PalmAction",
       "file_type": "rationale",
       "norm_label": "actuation action to execute on dexterous palm",
       "source_file": "src/domain/domain.py",
       "source_location": "L10"
     },
     {
-      "id": "src_domain_domain_rationale_171",
-      "label": "Returns the locked DataFabric command key expression for a robot.",
+      "id": "src_domain_domain_rationale_17",
+      "label": "Pre-defined canonical UR5e posture",
       "_origin": "ast",
       "community": 116,
-      "community_name": "domain.py",
+      "community_name": "PalmAction",
       "file_type": "rationale",
-      "norm_label": "returns the locked datafabric command key expression for a robot.",
+      "norm_label": "pre-defined canonical ur5e posture",
       "source_file": "src/domain/domain.py",
-      "source_location": "L171"
+      "source_location": "L17"
     },
     {
-      "id": "src_domain_domain_rationale_177",
-      "label": "Returns the locked DataFabric telemetry key expression for a robot.",
+      "id": "src_domain_domain_rationale_88",
+      "label": "Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom\u2026",
       "_origin": "ast",
       "community": 116,
-      "community_name": "domain.py",
+      "community_name": "PalmAction",
       "file_type": "rationale",
-      "norm_label": "returns the locked datafabric telemetry key expression for a robot.",
+      "norm_label": "typed payload for trajectory_execute command dispatching canned or custom...",
       "source_file": "src/domain/domain.py",
-      "source_location": "L177"
-    },
-    {
-      "id": "src_domain_domain_rationale_183",
-      "label": "Parses a DataFabric key expression into (robot_id, channel) or returns None if\u2026",
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "parses a datafabric key expression into (robot_id, channel) or returns none if...",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L183"
-    },
-    {
-      "id": "src_domain_domain_rationale_80",
-      "label": "Typed payload for PALM_ACTUATE command to toggle suction or grasp status",
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "typed payload for palm_actuate command to toggle suction or grasp status",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L80"
+      "source_location": "L88"
     },
     {
       "id": "beans_hand_sim_liyi_phase_3_3d_visualization_dynamic_kinematic_sync",
@@ -5575,6 +5768,17 @@
       "norm_label": "user stories",
       "source_file": ".beans/hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md",
       "source_location": "L28"
+    },
+    {
+      "id": "web_domain_contracts_default_robot_id",
+      "label": "DEFAULT_ROBOT_ID",
+      "_origin": "ast",
+      "community": 118,
+      "community_name": "main.tsx",
+      "file_type": "code",
+      "norm_label": "default_robot_id",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L135"
     },
     {
       "id": "web_src_main",
@@ -8627,6 +8831,138 @@
       "norm_label": "operatortoolbar.tsx",
       "source_file": "web/src/components/OperatorToolbar.tsx",
       "source_location": "L1"
+    },
+    {
+      "id": "web_domain_contracts_canonical_poses",
+      "label": "CANONICAL_POSES",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "canonical_poses",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L153"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage",
+      "label": "TeleopPage.ts",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "teleoppage.ts",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_steps_closed_loop_steps",
+      "label": "closed_loop.steps.ts",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "closed_loop.steps.ts",
+      "source_file": "web/tests/e2e/steps/closed_loop.steps.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_steps_dynamic_motion_steps",
+      "label": "dynamic_motion.steps.ts",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "dynamic_motion.steps.ts",
+      "source_file": "web/tests/e2e/steps/dynamic_motion.steps.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_steps_teleop_steps",
+      "label": "teleop.steps.ts",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "teleop.steps.ts",
+      "source_file": "web/tests/e2e/steps/teleop.steps.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_support_hooks",
+      "label": "hooks.ts",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "hooks.ts",
+      "source_file": "web/tests/e2e/support/hooks.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_support_world",
+      "label": "world.ts",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "world.ts",
+      "source_file": "web/tests/e2e/support/world.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_support_harness",
+      "label": "harness.ts",
+      "_origin": "ast",
+      "community": 157,
+      "community_name": "harness.ts",
+      "file_type": "code",
+      "norm_label": "harness.ts",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_dirname",
+      "label": "__dirname",
+      "_origin": "ast",
+      "community": 157,
+      "community_name": "harness.ts",
+      "file_type": "code",
+      "norm_label": "__dirname",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_filename",
+      "label": "__filename",
+      "_origin": "ast",
+      "community": 157,
+      "community_name": "harness.ts",
+      "file_type": "code",
+      "norm_label": "__filename",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_root_dir",
+      "label": "ROOT_DIR",
+      "_origin": "ast",
+      "community": 157,
+      "community_name": "harness.ts",
+      "file_type": "code",
+      "norm_label": "root_dir",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_web_dir",
+      "label": "WEB_DIR",
+      "_origin": "ast",
+      "community": 157,
+      "community_name": "harness.ts",
+      "file_type": "code",
+      "norm_label": "web_dir",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L10"
     },
     {
       "id": "agents_skills_wayfinder_skill",
@@ -13668,48 +14004,15 @@
       "source_location": "L1"
     },
     {
-      "id": "enum",
-      "label": "Enum",
+      "id": "tests_test_domain",
+      "label": "test_domain.py",
       "_origin": "ast",
       "community": 57,
       "community_name": "RobotState",
       "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "str",
-      "label": "str",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "str",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "tests_test_edge_node",
-      "label": "test_edge_node.py",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node.py",
-      "source_file": "tests/test_edge_node.py",
+      "norm_label": "test_domain.py",
+      "source_file": "tests/test_domain.py",
       "source_location": "L1"
-    },
-    {
-      "id": "tests_test_edge_node_py_fixture",
-      "label": "fixture",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "fixture",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "src_domain_domain_rationale_141",
@@ -13723,15 +14026,15 @@
       "source_location": "L141"
     },
     {
-      "id": "src_domain_domain_rationale_17",
-      "label": "Pre-defined canonical UR5e posture",
+      "id": "src_domain_domain_rationale_153",
+      "label": "Canonical schema for outbound telemetry events emitted by EdgeNode over\u2026",
       "_origin": "ast",
       "community": 57,
       "community_name": "RobotState",
       "file_type": "rationale",
-      "norm_label": "pre-defined canonical ur5e posture",
+      "norm_label": "canonical schema for outbound telemetry events emitted by edgenode over...",
       "source_file": "src/domain/domain.py",
-      "source_location": "L17"
+      "source_location": "L153"
     },
     {
       "id": "src_domain_domain_rationale_25",
@@ -13754,17 +14057,6 @@
       "norm_label": "current lifecycle state of the robotic manipulator",
       "source_file": "src/domain/domain.py",
       "source_location": "L36"
-    },
-    {
-      "id": "tests_test_edge_node_rationale_1",
-      "label": "Tests for EdgeNode ROS2 and DataFabric command ingestion.",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "rationale",
-      "norm_label": "tests for edgenode ros2 and datafabric command ingestion.",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L1"
     },
     {
       "id": "agents_commands_cargo_audit",
@@ -16029,127 +16321,6 @@
       "source_location": "L7"
     },
     {
-      "id": "web_domain_contracts_default_robot_id",
-      "label": "DEFAULT_ROBOT_ID",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "default_robot_id",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L135"
-    },
-    {
-      "id": "web_tests_e2e_pages_teleoppage",
-      "label": "TeleopPage.ts",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "teleoppage.ts",
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_tests_e2e_steps_dynamic_motion_steps",
-      "label": "dynamic_motion.steps.ts",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "dynamic_motion.steps.ts",
-      "source_file": "web/tests/e2e/steps/dynamic_motion.steps.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_tests_e2e_steps_teleop_steps",
-      "label": "teleop.steps.ts",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "teleop.steps.ts",
-      "source_file": "web/tests/e2e/steps/teleop.steps.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_tests_e2e_support_harness",
-      "label": "harness.ts",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "harness.ts",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_dirname",
-      "label": "__dirname",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "__dirname",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_filename",
-      "label": "__filename",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "__filename",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_root_dir",
-      "label": "ROOT_DIR",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "root_dir",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L9"
-    },
-    {
-      "id": "web_tests_e2e_support_harness_web_dir",
-      "label": "WEB_DIR",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "web_dir",
-      "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L10"
-    },
-    {
-      "id": "web_tests_e2e_support_hooks",
-      "label": "hooks.ts",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "hooks.ts",
-      "source_file": "web/tests/e2e/support/hooks.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_tests_e2e_support_world",
-      "label": "world.ts",
-      "_origin": "ast",
-      "community": 83,
-      "community_name": "TeleopPage",
-      "file_type": "code",
-      "norm_label": "world.ts",
-      "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "web_domain_contracts",
       "label": "contracts.ts",
       "_origin": "ast",
@@ -16170,17 +16341,6 @@
       "norm_label": "armjointpositionsschema",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L151"
-    },
-    {
-      "id": "web_domain_contracts_canonical_poses",
-      "label": "CANONICAL_POSES",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "canonical_poses",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L153"
     },
     {
       "id": "web_domain_contracts_commandtypeschema",
@@ -16478,17 +16638,6 @@
       "norm_label": "trajectoryexecutepayloadschema",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L183"
-    },
-    {
-      "id": "web_domain_contracts_ur5e_joints",
-      "label": "UR5E_JOINTS",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "ur5e_joints",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L118"
     },
     {
       "id": "web_domain_contracts_ur5ejointschema",
@@ -17990,6 +18139,17 @@
       "source_location": "L21"
     },
     {
+      "id": "errorframe",
+      "label": "ErrorFrame",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "errorframe",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "palmaction",
       "label": "PalmAction",
       "_origin": "ast",
@@ -18045,7 +18205,7 @@
       "source_location": "L166"
     },
     {
-      "id": "src_edge_node_node_rationale_231",
+      "id": "src_edge_node_node_rationale_233",
       "label": "Ingests, validates, and processes an inbound RobotCommand payload string or\u2026",
       "_origin": "ast",
       "community": 96,
@@ -18053,7 +18213,7 @@
       "file_type": "rationale",
       "norm_label": "ingests, validates, and processes an inbound robotcommand payload string or...",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L231"
+      "source_location": "L233"
     },
     {
       "id": "src_edge_node_node_rationale_32",
@@ -18067,7 +18227,7 @@
       "source_location": "L32"
     },
     {
-      "id": "src_edge_node_node_rationale_364",
+      "id": "src_edge_node_node_rationale_380",
       "label": "Cleans up Zenoh subscriptions/sessions and ROS2 nodes.",
       "_origin": "ast",
       "community": 96,
@@ -18075,28 +18235,28 @@
       "file_type": "rationale",
       "norm_label": "cleans up zenoh subscriptions/sessions and ros2 nodes.",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L364"
+      "source_location": "L380"
     },
     {
       "id": "basemodel",
       "label": "BaseModel",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "basemodel",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "tests_test_domain",
-      "label": "test_domain.py",
+      "id": "src_domain_domain_py_src_domain_domain",
+      "label": "domain.py",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
-      "norm_label": "test_domain.py",
-      "source_file": "tests/test_domain.py",
+      "norm_label": "domain.py",
+      "source_file": "src/domain/domain.py",
       "source_location": "L1"
     },
     {
@@ -18104,7 +18264,7 @@
       "label": "Typed payload for RESET_FAULT command",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for reset_fault command",
       "source_file": "src/domain/domain.py",
@@ -18115,7 +18275,7 @@
       "label": "End-effector dexterous palm pneumatic actuation and grasp status",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "end-effector dexterous palm pneumatic actuation and grasp status",
       "source_file": "src/domain/domain.py",
@@ -18126,7 +18286,7 @@
       "label": "Edge AI inference latency and object classification metrics",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "edge ai inference latency and object classification metrics",
       "source_file": "src/domain/domain.py",
@@ -18137,40 +18297,62 @@
       "label": "Canonical schema for structured error frames returned by Gateway over WebSocket",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "canonical schema for structured error frames returned by gateway over websocket",
       "source_file": "src/domain/domain.py",
       "source_location": "L130"
     },
     {
-      "id": "src_domain_domain_rationale_153",
-      "label": "Canonical schema for outbound telemetry events emitted by EdgeNode over\u2026",
+      "id": "src_domain_domain_rationale_171",
+      "label": "Returns the locked DataFabric command key expression for a robot.",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
-      "norm_label": "canonical schema for outbound telemetry events emitted by edgenode over...",
+      "norm_label": "returns the locked datafabric command key expression for a robot.",
       "source_file": "src/domain/domain.py",
-      "source_location": "L153"
+      "source_location": "L171"
     },
     {
-      "id": "src_domain_domain_rationale_88",
-      "label": "Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom\u2026",
+      "id": "src_domain_domain_rationale_177",
+      "label": "Returns the locked DataFabric telemetry key expression for a robot.",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
-      "norm_label": "typed payload for trajectory_execute command dispatching canned or custom...",
+      "norm_label": "returns the locked datafabric telemetry key expression for a robot.",
       "source_file": "src/domain/domain.py",
-      "source_location": "L88"
+      "source_location": "L177"
+    },
+    {
+      "id": "src_domain_domain_rationale_183",
+      "label": "Parses a DataFabric key expression into (robot_id, channel) or returns None if\u2026",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "parses a datafabric key expression into (robot_id, channel) or returns none if...",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L183"
+    },
+    {
+      "id": "src_domain_domain_rationale_80",
+      "label": "Typed payload for PALM_ACTUATE command to toggle suction or grasp status",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "typed payload for palm_actuate command to toggle suction or grasp status",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L80"
     },
     {
       "id": "src_domain_domain_rationale_97",
       "label": "Typed payload for EMERGENCY_STOP command",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for emergency_stop command",
       "source_file": "src/domain/domain.py",
@@ -18289,7 +18471,7 @@
       "label": "JointState",
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "jointstate",
       "source_file": "",
@@ -18300,18 +18482,40 @@
       "label": "mock_publisher.py",
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "mock_publisher.py",
       "source_file": "src/edge_node/mock_publisher.py",
       "source_location": "L1"
     },
     {
+      "id": "tests_test_edge_node",
+      "label": "test_edge_node.py",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "test_edge_node.py",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_test_edge_node_py_fixture",
+      "label": "fixture",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "fixture",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "src_edge_node_mock_publisher_rationale_1",
       "label": "Standalone synthetic ROS2 JointState publisher at 30 Hz.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "standalone synthetic ros2 jointstate publisher at 30 hz.",
       "source_file": "src/edge_node/mock_publisher.py",
@@ -18322,7 +18526,7 @@
       "label": "ROS2 node publishing synthetic JointState messages at 30 Hz.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "ros2 node publishing synthetic jointstate messages at 30 hz.",
       "source_file": "src/edge_node/mock_publisher.py",
@@ -18333,7 +18537,7 @@
       "label": "Creates a synthetic JointState message with canonical joint names.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "creates a synthetic jointstate message with canonical joint names.",
       "source_file": "src/edge_node/mock_publisher.py",
@@ -18344,11 +18548,22 @@
       "label": "Publishes a single JointState message and returns it.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "MockJointStatePublisher",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "publishes a single jointstate message and returns it.",
       "source_file": "src/edge_node/mock_publisher.py",
       "source_location": "L66"
+    },
+    {
+      "id": "tests_test_edge_node_rationale_1",
+      "label": "Tests for EdgeNode ROS2 and DataFabric command ingestion.",
+      "_origin": "ast",
+      "community": 99,
+      "community_name": "test_edge_node.py",
+      "file_type": "rationale",
+      "norm_label": "tests for edgenode ros2 and datafabric command ingestion.",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L1"
     }
   ],
   "links": [
@@ -19201,7 +19416,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L178",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
@@ -19225,7 +19440,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L198",
+      "source_location": "L226",
       "weight": 1.0
     },
     {
@@ -19237,7 +19452,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L225",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -19249,7 +19464,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L256",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -19261,7 +19476,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L257",
+      "source_location": "L259",
       "weight": 1.0
     },
     {
@@ -19273,7 +19488,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L283",
+      "source_location": "L287",
+      "weight": 1.0
+    },
+    {
+      "source": "src_edge_node_node_edgenode_handle_command_payload",
+      "target": "src_edge_node_node_edgenode_publish_error",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -19285,7 +19512,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L303",
+      "source_location": "L306",
       "weight": 1.0
     },
     {
@@ -19297,7 +19524,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L334",
+      "source_location": "L343",
       "weight": 1.0
     },
     {
@@ -19765,7 +19992,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L425",
+      "source_location": "L436",
       "weight": 1.0
     },
     {
@@ -19777,7 +20004,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L120",
+      "source_location": "L121",
       "weight": 1.0
     },
     {
@@ -19789,7 +20016,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L162",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -19801,7 +20028,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L231",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -19813,7 +20040,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L232",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -19825,7 +20052,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L238",
+      "source_location": "L237",
       "weight": 1.0
     },
     {
@@ -19837,7 +20064,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L244",
+      "source_location": "L243",
       "weight": 1.0
     },
     {
@@ -19849,7 +20076,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L253",
+      "source_location": "L252",
       "weight": 1.0
     },
     {
@@ -19861,7 +20088,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L259",
+      "source_location": "L258",
       "weight": 1.0
     },
     {
@@ -19885,7 +20112,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L37",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -19933,7 +20160,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L173",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -19945,7 +20172,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L199",
+      "source_location": "L217",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage_expectrobotatpose",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_getrobotjointvalues",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L384",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_harness_serviceharness_start",
+      "target": "web_tests_e2e_support_harness_serviceharness_startmockpublisher",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L122",
       "weight": 1.0
     },
     {
@@ -19957,7 +20208,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L177",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -19973,6 +20224,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_tests_e2e_support_harness_serviceharness_startmockpublisher",
+      "target": "web_tests_e2e_support_harness_serviceharness_ismockpublisherrunning",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
       "source": "web_tests_e2e_support_harness_serviceharness_stop",
       "target": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
       "relation": "calls",
@@ -19981,7 +20244,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L211",
+      "source_location": "L250",
       "weight": 1.0
     },
     {
@@ -20777,6 +21040,30 @@
       "weight": 1.0
     },
     {
+      "source": "src_edge_node_node_edgenode_execute_palm_actuation",
+      "target": "src_edge_node_node_py_robottelemetryevent",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "src_edge_node_node_edgenode_execute_trajectory",
+      "target": "src_edge_node_node_py_robottelemetryevent",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L186",
+      "weight": 1.0
+    },
+    {
       "source": "src_edge_node_node_edgenode_handle_command_payload",
       "target": "src_edge_node_node_py_robottelemetryevent",
       "relation": "references",
@@ -20785,7 +21072,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L228",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -21241,7 +21528,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21253,7 +21540,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21265,7 +21552,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21277,7 +21564,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -21289,7 +21576,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -22625,6 +22912,42 @@
       "weight": 1.0
     },
     {
+      "source": "web_tests_e2e_steps_closed_loop_steps",
+      "target": "web_domain_contracts_canonical_poses",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/closed_loop.steps.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_steps_closed_loop_steps",
+      "target": "web_domain_contracts_posename",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/closed_loop.steps.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_steps_closed_loop_steps",
+      "target": "web_tests_e2e_support_world_customworld",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/closed_loop.steps.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "web_tests_e2e_steps_dynamic_motion_steps",
       "target": "web_tests_e2e_support_world_customworld",
       "relation": "imports",
@@ -23946,6 +24269,30 @@
       "weight": 1.0
     },
     {
+      "source": "web_tests_e2e_steps_closed_loop_steps",
+      "target": "web_domain_contracts",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/closed_loop.steps.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_steps_closed_loop_steps",
+      "target": "web_tests_e2e_support_world",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/closed_loop.steps.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "web_tests_e2e_steps_dynamic_motion_steps",
       "target": "web_tests_e2e_support_world",
       "relation": "imports_from",
@@ -24366,6 +24713,18 @@
       "weight": 1.0
     },
     {
+      "source": "src_edge_node_node_edgenode_publish_error",
+      "target": "errorframe",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L372",
+      "weight": 1.0
+    },
+    {
       "source": "src_edge_node_node_edgenode_publish_telemetry",
       "target": "src_edge_node_node_py_robottelemetryevent",
       "relation": "references",
@@ -24374,7 +24733,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/edge_node/node.py",
-      "source_location": "L356",
+      "source_location": "L365",
       "weight": 1.0
     },
     {
@@ -24434,7 +24793,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -24446,7 +24805,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -24458,7 +24817,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -24470,7 +24829,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -24603,30 +24962,6 @@
       "context": "return_type",
       "source_file": "src/edge_node/mock_publisher.py",
       "source_location": "L65",
-      "weight": 1.0
-    },
-    {
-      "source": "src_edge_node_node_edgenode_execute_palm_actuation",
-      "target": "src_edge_node_node_py_robottelemetryevent",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "return_type",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L171",
-      "weight": 1.0
-    },
-    {
-      "source": "src_edge_node_node_edgenode_execute_trajectory",
-      "target": "src_edge_node_node_py_robottelemetryevent",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "return_type",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L186",
       "weight": 1.0
     },
     {
@@ -24854,7 +25189,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -33007,7 +33342,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/gateway/src/ws.rs",
-      "source_location": "L50",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -37533,7 +37868,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L228",
+      "source_location": "L230",
       "weight": 1.0
     },
     {
@@ -37555,7 +37890,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L356",
+      "source_location": "L365",
+      "weight": 1.0
+    },
+    {
+      "source": "src_edge_node_node_edgenode",
+      "target": "src_edge_node_node_edgenode_publish_error",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -37566,7 +37912,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L363",
+      "source_location": "L379",
       "weight": 1.0
     },
     {
@@ -37802,13 +38148,24 @@
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecttelemetrylatencybelow",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
       "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectcanonicaljointsdisplayed",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L106",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -37819,7 +38176,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L114",
+      "source_location": "L132",
       "weight": 1.0
     },
     {
@@ -37830,7 +38187,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L118",
+      "source_location": "L136",
       "weight": 1.0
     },
     {
@@ -37841,7 +38198,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L138",
+      "source_location": "L156",
       "weight": 1.0
     },
     {
@@ -37852,7 +38209,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L147",
+      "source_location": "L165",
       "weight": 1.0
     },
     {
@@ -37863,7 +38220,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L160",
+      "source_location": "L178",
       "weight": 1.0
     },
     {
@@ -37874,18 +38231,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L172",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_constructor",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L18",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -37896,7 +38242,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L194",
+      "source_location": "L212",
       "weight": 1.0
     },
     {
@@ -37907,7 +38253,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L209",
+      "source_location": "L227",
       "weight": 1.0
     },
     {
@@ -37918,7 +38264,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L243",
+      "source_location": "L261",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_constructor",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -37929,7 +38286,150 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L264",
+      "source_location": "L282",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickcannedpose",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L292",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickpalmtoggle",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L303",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickemergencystop",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L308",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickresetfault",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L313",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsdisabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L318",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsenabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L325",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttondisabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L332",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttonenabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectemergencystopbuttonenabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L340",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmstatus",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L344",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmbuttontext",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmnozzlehighlighted",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L352",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectrobotatpose",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L376",
       "weight": 1.0
     },
     {
@@ -37940,7 +38440,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L33",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -37951,7 +38451,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L37",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -37962,7 +38462,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L41",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -37973,7 +38473,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L46",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
@@ -37984,7 +38484,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L50",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -37995,7 +38495,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L55",
+      "source_location": "L73",
       "weight": 1.0
     },
     {
@@ -38006,7 +38506,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L63",
+      "source_location": "L81",
       "weight": 1.0
     },
     {
@@ -38017,18 +38517,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L69",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecttelemetrylatencybelow",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L93",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -38039,7 +38528,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L185",
+      "source_location": "L144",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_ismockpublisherrunning",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L148",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_startmockpublisher",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_stopmockpublisher",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L205",
       "weight": 1.0
     },
     {
@@ -38050,7 +38572,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L189",
+      "source_location": "L228",
       "weight": 1.0
     },
     {
@@ -38615,14 +39137,14 @@
       "weight": 1.0
     },
     {
-      "source": "src_edge_node_node_rationale_231",
+      "source": "src_edge_node_node_rationale_233",
       "target": "src_edge_node_node_edgenode_handle_command_payload",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L231",
+      "source_location": "L233",
       "weight": 1.0
     },
     {
@@ -38637,14 +39159,14 @@
       "weight": 1.0
     },
     {
-      "source": "src_edge_node_node_rationale_364",
+      "source": "src_edge_node_node_rationale_380",
       "target": "src_edge_node_node_edgenode_close",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L364",
+      "source_location": "L380",
       "weight": 1.0
     },
     {
@@ -39282,7 +39804,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L230",
+      "source_location": "L232",
       "weight": 0.8
     },
     {
@@ -39293,7 +39815,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L240",
+      "source_location": "L242",
       "weight": 0.8
     },
     {
@@ -39304,7 +39826,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L252",
+      "source_location": "L254",
       "weight": 0.8
     },
     {
@@ -39315,7 +39837,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L297",
+      "source_location": "L300",
       "weight": 0.8
     },
     {
@@ -39326,7 +39848,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "src/edge_node/node.py",
-      "source_location": "L317",
+      "source_location": "L320",
       "weight": 0.8
     },
     {
@@ -40079,5 +40601,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2015743b9ec3fe1abaaee8b00ce30e682affbd91"
+  "built_at_commit": "62c6afe3c2a0026d30459151ab1a3a2426c492c7"
 }

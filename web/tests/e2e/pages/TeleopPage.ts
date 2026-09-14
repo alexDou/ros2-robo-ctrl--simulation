@@ -14,6 +14,15 @@ export class TeleopPage {
   readonly latencyReadout: Locator;
   readonly visualizerContainer: Locator;
   readonly visualizerCanvas: Locator;
+  readonly operatorToolbar: Locator;
+  readonly poseHomeButton: Locator;
+  readonly poseReadyButton: Locator;
+  readonly poseInspectButton: Locator;
+  readonly palmToggleButton: Locator;
+  readonly palmStatusBadge: Locator;
+  readonly resetFaultButton: Locator;
+  readonly emergencyStopButton: Locator;
+  readonly toolbarErrorBanner: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -28,6 +37,15 @@ export class TeleopPage {
     this.latencyReadout = page.getByTestId('telemetry-latency');
     this.visualizerContainer = page.getByTestId('robot-visualizer');
     this.visualizerCanvas = page.getByTestId('robot-canvas');
+    this.operatorToolbar = page.getByTestId('operator-toolbar');
+    this.poseHomeButton = page.getByTestId('pose-home-button');
+    this.poseReadyButton = page.getByTestId('pose-ready-button');
+    this.poseInspectButton = page.getByTestId('pose-inspect-button');
+    this.palmToggleButton = page.getByTestId('palm-toggle-button');
+    this.palmStatusBadge = page.getByTestId('palm-status');
+    this.resetFaultButton = page.getByTestId('reset-fault-button');
+    this.emergencyStopButton = page.getByTestId('emergency-stop-button');
+    this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
   }
 
   async goto(url: string): Promise<void> {
@@ -269,5 +287,112 @@ export class TeleopPage {
       return handle ? handle.isDisposed() : true;
     });
     expect(isDisposed).toBe(true);
+  }
+
+  async clickCannedPose(name: 'Home' | 'Ready' | 'Inspect'): Promise<void> {
+    const btn =
+      name === 'Home'
+        ? this.poseHomeButton
+        : name === 'Ready'
+          ? this.poseReadyButton
+          : this.poseInspectButton;
+    await expect(btn).toBeEnabled();
+    await btn.click();
+  }
+
+  async clickPalmToggle(): Promise<void> {
+    await expect(this.palmToggleButton).toBeEnabled();
+    await this.palmToggleButton.click();
+  }
+
+  async clickEmergencyStop(): Promise<void> {
+    await expect(this.emergencyStopButton).toBeEnabled();
+    await this.emergencyStopButton.click();
+  }
+
+  async clickResetFault(): Promise<void> {
+    await expect(this.resetFaultButton).toBeEnabled();
+    await this.resetFaultButton.click();
+  }
+
+  async expectActionButtonsDisabled(): Promise<void> {
+    await expect(this.poseHomeButton).toBeDisabled();
+    await expect(this.poseReadyButton).toBeDisabled();
+    await expect(this.poseInspectButton).toBeDisabled();
+    await expect(this.palmToggleButton).toBeDisabled();
+  }
+
+  async expectActionButtonsEnabled(): Promise<void> {
+    await expect(this.poseHomeButton).toBeEnabled();
+    await expect(this.poseReadyButton).toBeEnabled();
+    await expect(this.poseInspectButton).toBeEnabled();
+    await expect(this.palmToggleButton).toBeEnabled();
+  }
+
+  async expectResetFaultButtonDisabled(): Promise<void> {
+    await expect(this.resetFaultButton).toBeDisabled();
+  }
+
+  async expectResetFaultButtonEnabled(): Promise<void> {
+    await expect(this.resetFaultButton).toBeEnabled();
+  }
+
+  async expectEmergencyStopButtonEnabled(): Promise<void> {
+    await expect(this.emergencyStopButton).toBeEnabled();
+  }
+
+  async expectPalmStatus(status: string, timeout = 5000): Promise<void> {
+    await expect(this.palmStatusBadge).toHaveText(status, { timeout });
+  }
+
+  async expectPalmButtonText(text: string, timeout = 5000): Promise<void> {
+    await expect(this.palmToggleButton).toHaveText(text, { timeout });
+  }
+
+  async expectPalmNozzleHighlighted(isGrasped: boolean, timeout = 5000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.page.evaluate(() => {
+            const handle = (window as unknown as {
+              __robot_visualizer?: {
+                getPalmNozzleState?: () => {
+                  isGrasped: boolean;
+                  emissiveHex: number;
+                  emissiveIntensity: number;
+                } | null;
+              };
+            }).__robot_visualizer;
+            const state = handle?.getPalmNozzleState?.();
+            if (!state) return null;
+            return state.isGrasped;
+          });
+        },
+        { timeout, message: `Expected palm nozzle highlight state to be ${isGrasped}` }
+      )
+      .toBe(isGrasped);
+  }
+
+  async expectRobotAtPose(
+    expectedPositions: number[],
+    toleranceRad = 0.05,
+    timeout = 10000
+  ): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          const vals = await this.getRobotJointValues();
+          const keys = CANONICAL_UR5E_JOINTS;
+          if (keys.some((k) => typeof vals[k] !== 'number')) return 999;
+          let maxDiff = 0;
+          for (let i = 0; i < keys.length; i++) {
+            const diff = Math.abs(vals[keys[i]] - expectedPositions[i]);
+            if (diff > maxDiff) maxDiff = diff;
+          }
+          return maxDiff;
+        },
+        { timeout, message: `Expected robot to reach pose within ${toleranceRad} rad` }
+      )
+      .toBeLessThanOrEqual(toleranceRad);
   }
 }
