@@ -1,12 +1,13 @@
 ---
 # hand-sim-8t28
 title: 'Unit 4.3: Gateway Safety Gating & 20 Hz Command Throttling'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-14T15:17:33Z
-updated_at: 2026-09-14T15:17:33Z
+updated_at: 2026-09-14T15:55:48Z
 parent: hand-sim-lm3u
 blocked_by:
     - hand-sim-kiai
@@ -31,3 +32,11 @@ Implement transport-level safety gating and command rate throttling inside the R
 ## Blocked by
 
 - hand-sim-kiai (Unit 4.0: Domain Schemas & Palm Actuation Contracts)
+
+## Summary of Changes
+
+- Implemented 20 Hz (50ms minimum interval) rate limiter per active teleop WebSocket session in `src/gateway/src/ws.rs`.
+- Rate-limited commands return structured `ErrorFrame` with error code `RATE_LIMIT_EXCEEDED` without dropping WebSocket connection.
+- `EMERGENCY_STOP` commands bypass rate limiter unconditionally and reset throttle interval clock.
+- Added payload schema validation rejecting malformed sub-payloads for `PalmActuate`, `TrajectoryExecute`, `EmergencyStop`, and `ResetFault` with structured `SCHEMA_VALIDATION_ERROR` `ErrorFrame`.
+- Added unit test `test_ws_command_rate_limiting_and_emergency_bypass` to `src/gateway/tests/ws_gateway_test.rs` verifying rate limiting, emergency stop bypass, error frame emission, and session durability.

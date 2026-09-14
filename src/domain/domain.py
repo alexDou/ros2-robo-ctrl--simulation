@@ -69,6 +69,13 @@ FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]
 ArmJointPositions = Annotated[list[FiniteFloat], Field(min_length=6, max_length=6, description="UR5e 6-DoF joint angles in radians")]
 
 
+CANONICAL_POSES: dict[PoseName, ArmJointPositions] = {
+    PoseName.HOME: [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0],
+    PoseName.READY: [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0],
+    PoseName.INSPECT_POSE: [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0],
+}
+
+
 class PalmActuatePayload(BaseModel):
     """Typed payload for PALM_ACTUATE command to toggle suction or grasp status"""
 

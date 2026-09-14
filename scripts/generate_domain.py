@@ -564,6 +564,27 @@ def emit_rust(ir: DomainIR) -> str:
         lines.append("    }")
         lines.append("}")
 
+    has_posename = any(e.name == "PoseName" for e in ir.enums)
+    if has_posename:
+        lines.append("")
+        lines.append("/// Canonical UR5e joint postures in radians")
+        lines.append("#[allow(clippy::approx_constant)]")
+        lines.append("pub const CANONICAL_POSE_HOME: ArmJointPositions = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];")
+        lines.append("#[allow(clippy::approx_constant)]")
+        lines.append("pub const CANONICAL_POSE_READY: ArmJointPositions = [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0];")
+        lines.append("#[allow(clippy::approx_constant)]")
+        lines.append("pub const CANONICAL_POSE_INSPECT_POSE: ArmJointPositions = [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0];")
+        lines.append("")
+        lines.append("/// Returns the canonical joint positions for a pre-defined posture.")
+        lines.append("#[must_use]")
+        lines.append("pub const fn canonical_pose(pose: PoseName) -> ArmJointPositions {")
+        lines.append("    match pose {")
+        lines.append("        PoseName::Home => CANONICAL_POSE_HOME,")
+        lines.append("        PoseName::Ready => CANONICAL_POSE_READY,")
+        lines.append("        PoseName::InspectPose => CANONICAL_POSE_INSPECT_POSE,")
+        lines.append("    }")
+        lines.append("}")
+
     lines.append("")
     return "\n".join(lines)
 
@@ -615,6 +636,16 @@ def emit_python(ir: DomainIR) -> str:
             lines.append(
                 f'{fa.name} = Annotated[list[FiniteFloat], Field(min_length={fa.count}, max_length={fa.count}, description="{fa.description}")]'
             )
+
+    has_posename = any(e.name == "PoseName" for e in ir.enums)
+    if has_posename:
+        lines.append("")
+        lines.append("")
+        lines.append("CANONICAL_POSES: dict[PoseName, ArmJointPositions] = {")
+        lines.append("    PoseName.HOME: [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0],")
+        lines.append("    PoseName.READY: [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0],")
+        lines.append("    PoseName.INSPECT_POSE: [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0],")
+        lines.append("}")
 
     for m in ir.models:
         lines.append("")
@@ -918,6 +949,15 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append("  });")
         lines.append("")
         lines.append(f"export const {to_camel_case(fa.name)}Schema = {fa.name}Schema;")
+
+    has_posename = any(e.name == "PoseName" for e in ir.enums)
+    if has_posename:
+        lines.append("")
+        lines.append("export const CANONICAL_POSES: Record<PoseName, ArmJointPositions> = {")
+        lines.append("  HOME: [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0],")
+        lines.append("  READY: [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0],")
+        lines.append("  INSPECT_POSE: [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0],")
+        lines.append("} as const;")
         if fa.name == "ArmJointPositions":
             lines.append(f"export const jointPositionsSchema = {fa.name}Schema;")
 

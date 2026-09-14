@@ -13,12 +13,45 @@ fn current_time_ns() -> u64 {
         .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX))
 }
 
+fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), String> {
+    use crate::domain::{
+        CommandType, EmergencyStopPayload, PalmActuatePayload, ResetFaultPayload,
+        TrajectoryExecutePayload,
+    };
+    use serde::Deserialize;
+    match cmd.r#type {
+        CommandType::PalmActuate => {
+            PalmActuatePayload::deserialize(&cmd.payload)
+                .map(|_| ())
+                .map_err(|e| e.to_string())
+        }
+        CommandType::TrajectoryExecute => {
+            TrajectoryExecutePayload::deserialize(&cmd.payload)
+                .map(|_| ())
+                .map_err(|e| e.to_string())
+        }
+        CommandType::EmergencyStop => {
+            EmergencyStopPayload::deserialize(&cmd.payload)
+                .map(|_| ())
+                .map_err(|e| e.to_string())
+        }
+        CommandType::ResetFault => {
+            ResetFaultPayload::deserialize(&cmd.payload)
+                .map(|_| ())
+                .map_err(|e| e.to_string())
+        }
+        CommandType::Ping | CommandType::TeleopJointTarget => Ok(()),
+    }
+}
+
+const MIN_COMMAND_INTERVAL: std::time::Duration = std::time::Duration::from_millis(50);
+
 /// WebSocket teleoperation endpoint handling handshake, ActiveSession exclusivity,
 /// command forwarding to DataFabric, and telemetry streaming back to client.
 ///
 /// # Errors
 /// Returns Actix Web Error if WebSocket upgrade negotiation fails.
-#[allow(clippy::unused_async, clippy::future_not_send)]
+#[allow(clippy::unused_async, clippy::future_not_send, clippy::too_many_lines)]
 pub async fn teleop_ws(
     req: HttpRequest,
     stream: web::Payload,
@@ -64,6 +97,7 @@ pub async fn teleop_ws(
     actix_web::rt::spawn(async move {
         // Hold guard for duration of connection; dropping guard on exit frees session
         let _active_guard: ActiveSessionGuard = guard;
+        let mut last_command_time: Option<std::time::Instant> = None;
 
         loop {
             tokio::select! {
@@ -73,8 +107,41 @@ pub async fn teleop_ws(
                         Some(Ok(Message::Text(text))) => {
                             match serde_json::from_str::<crate::domain::RobotCommand>(&text) {
                                 Ok(command) => {
-                                    if let Err(err) = fabric_for_task.publish_command(&robot_id_for_task, &command).await {
-                                        error!("Failed to forward command to DataFabric: {err}");
+                                    if let Err(val_err) = validate_command_payload(&command) {
+                                        warn!("Malformed command payload for robot {robot_id_for_task}: {val_err}");
+                                        let error_frame = ErrorFrame::new(
+                                            "SCHEMA_VALIDATION_ERROR",
+                                            format!("Malformed {:?} payload: {val_err}", command.r#type),
+                                            current_time_ns(),
+                                        );
+                                        if let Ok(err_json) = serde_json::to_string(&error_frame) {
+                                            if session.text(err_json).await.is_err() {
+                                                break;
+                                            }
+                                        }
+                                    } else if command.r#type != crate::domain::CommandType::EmergencyStop
+                                        && last_command_time.is_some_and(|prev| prev.elapsed() < MIN_COMMAND_INTERVAL)
+                                    {
+                                        warn!("Rate limit exceeded for robot {robot_id_for_task} (20 Hz / 50ms interval)");
+                                        let error_frame = ErrorFrame::new(
+                                            "RATE_LIMIT_EXCEEDED",
+                                            "Command rate limit exceeded (maximum 20 Hz / 50ms minimum interval)",
+                                            current_time_ns(),
+                                        );
+                                        if let Ok(err_json) = serde_json::to_string(&error_frame) {
+                                            if session.text(err_json).await.is_err() {
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        if command.r#type == crate::domain::CommandType::EmergencyStop {
+                                            last_command_time = None;
+                                        } else {
+                                            last_command_time = Some(std::time::Instant::now());
+                                        }
+                                        if let Err(err) = fabric_for_task.publish_command(&robot_id_for_task, &command).await {
+                                            error!("Failed to forward command to DataFabric: {err}");
+                                        }
                                     }
                                 }
                                 Err(err) => {

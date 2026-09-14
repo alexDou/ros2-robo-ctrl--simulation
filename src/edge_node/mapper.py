@@ -58,3 +58,12 @@ class JointStateMapper:
                         continue
 
             return [self._positions[name] for name in CANONICAL_UR5E_JOINTS]
+
+    def set_positions(self, positions: list[float]) -> list[float]:
+        """Directly sets canonical 6-DoF UR5e joint positions in radians."""
+        with self._lock:
+            for i, name in enumerate(CANONICAL_UR5E_JOINTS):
+                if i < len(positions) and math.isfinite(positions[i]):
+                    self._positions[name] = float(positions[i])
+            return [self._positions[name] for name in CANONICAL_UR5E_JOINTS]
+

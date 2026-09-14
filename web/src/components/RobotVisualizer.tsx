@@ -9,7 +9,12 @@ export interface RobotVisualizerProps {
   urdfUrl?: string;
   assetBaseUrl?: string;
   jointPositionsRef?: { current: readonly number[] };
-  telemetryBufferRef?: { current: { jointPositions: readonly number[] } };
+  telemetryBufferRef?: {
+    current: {
+      jointPositions?: readonly number[];
+      palmState?: { is_grasped: boolean };
+    };
+  };
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,
@@ -48,6 +53,69 @@ function disposeMaterial(mat: THREE.Material) {
       (prop as { dispose: () => void }).dispose();
     }
   }
+}
+
+interface PalmProceduralAssets {
+  group: THREE.Group;
+  nozzleMesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial>;
+  dispose: () => void;
+}
+
+function createDexterousPalm(): PalmProceduralAssets {
+  const group = new THREE.Group();
+  group.name = 'dexterous-palm';
+
+  // 1. Aluminum mounting plate (cylinder: radius 0.04m, height 0.015m, metallic finish)
+  const plateGeom = new THREE.CylinderGeometry(0.04, 0.04, 0.015, 32);
+  plateGeom.rotateX(Math.PI / 2);
+  const plateMat = new THREE.MeshStandardMaterial({
+    color: 0x9ca3af,
+    metalness: 0.8,
+    roughness: 0.2,
+  });
+  const plateMesh = new THREE.Mesh(plateGeom, plateMat);
+  plateMesh.name = 'palm-baseplate';
+  plateMesh.position.set(0, 0, 0.015 / 2);
+  group.add(plateMesh);
+
+  // 2. Pneumatic extension rod (cylinder: radius 0.01m, height 0.04m, dark metal finish)
+  const rodGeom = new THREE.CylinderGeometry(0.01, 0.01, 0.04, 16);
+  rodGeom.rotateX(Math.PI / 2);
+  const rodMat = new THREE.MeshStandardMaterial({
+    color: 0x374151,
+    metalness: 0.6,
+    roughness: 0.4,
+  });
+  const rodMesh = new THREE.Mesh(rodGeom, rodMat);
+  rodMesh.name = 'palm-extension-rod';
+  rodMesh.position.set(0, 0, 0.015 + 0.04 / 2);
+  group.add(rodMesh);
+
+  // 3. Industrial suction cup bellows nozzle (cylinder: radius 0.025m, height 0.02m, rubber finish)
+  const nozzleGeom = new THREE.CylinderGeometry(0.015, 0.025, 0.02, 32);
+  nozzleGeom.rotateX(Math.PI / 2);
+  const nozzleMat = new THREE.MeshStandardMaterial({
+    color: 0x1f2937,
+    roughness: 0.9,
+    metalness: 0.1,
+    emissive: new THREE.Color(0x000000),
+    emissiveIntensity: 0.0,
+  });
+  const nozzleMesh = new THREE.Mesh(nozzleGeom, nozzleMat);
+  nozzleMesh.name = 'palm-suction-nozzle';
+  nozzleMesh.position.set(0, 0, 0.015 + 0.04 + 0.02 / 2);
+  group.add(nozzleMesh);
+
+  const dispose = () => {
+    plateGeom.dispose();
+    disposeMaterial(plateMat);
+    rodGeom.dispose();
+    disposeMaterial(rodMat);
+    nozzleGeom.dispose();
+    disposeMaterial(nozzleMat);
+  };
+
+  return { group, nozzleMesh, dispose };
 }
 
 export function RobotVisualizer({
@@ -98,6 +166,8 @@ export function RobotVisualizer({
     let isDisposed = false;
     let animId: number;
     let loadedRobot: URDFRobot | null = null;
+    let palmAssets: PalmProceduralAssets | null = null;
+    let wasGrasped = false;
     let needsRender = true;
     const lastRenderedPositions = new Float64Array(6).fill(NaN);
 
@@ -227,6 +297,16 @@ export function RobotVisualizer({
         }
         loadedRobot = robot;
         robotGroup.add(robot);
+
+        // Mount Dexterous Palm to tool0 flange link
+        const tool0 =
+          (robot.links && robot.links['tool0']) ||
+          robot.getObjectByName('tool0');
+        if (tool0) {
+          palmAssets = createDexterousPalm();
+          tool0.add(palmAssets.group);
+        }
+
         needsRender = true;
         setIsLoading(false);
         if (onRobotLoadedRef.current) {
@@ -377,6 +457,22 @@ export function RobotVisualizer({
         }
       }
 
+      // Synchronize Dexterous Palm grasp state with dirty-checking
+      const currentGrasped = Boolean(
+        telemetryBufferRefProp.current?.current?.palmState?.is_grasped
+      );
+      if (palmAssets && currentGrasped !== wasGrasped) {
+        wasGrasped = currentGrasped;
+        if (currentGrasped) {
+          palmAssets.nozzleMesh.material.emissive.setHex(0x10b981);
+          palmAssets.nozzleMesh.material.emissiveIntensity = 0.8;
+        } else {
+          palmAssets.nozzleMesh.material.emissive.setHex(0x000000);
+          palmAssets.nozzleMesh.material.emissiveIntensity = 0.0;
+        }
+        needsRender = true;
+      }
+
       // Render only when dirty, skipping static frames
       if (needsRender) {
         renderer.render(scene, camera);
@@ -411,6 +507,15 @@ export function RobotVisualizer({
         if (typeof controls.dispose === 'function') {
           controls.dispose();
         }
+      }
+
+      // Dispose procedural palm assets
+      if (palmAssets) {
+        if (palmAssets.group.parent) {
+          palmAssets.group.parent.remove(palmAssets.group);
+        }
+        palmAssets.dispose();
+        palmAssets = null;
       }
 
       // Dispose all geometries and materials across scene

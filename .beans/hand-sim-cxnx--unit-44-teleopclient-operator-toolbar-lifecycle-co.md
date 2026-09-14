@@ -1,12 +1,13 @@
 ---
 # hand-sim-cxnx
 title: 'Unit 4.4: TeleopClient Operator Toolbar & Lifecycle Controls'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-14T15:17:43Z
-updated_at: 2026-09-14T15:17:43Z
+updated_at: 2026-09-14T17:01:54Z
 parent: hand-sim-lm3u
 blocked_by:
     - hand-sim-kiai
@@ -33,3 +34,13 @@ Implement a sleek, modern operator toolbar docked directly beneath the 3D viewpo
 ## Blocked by
 
 - hand-sim-kiai (Unit 4.0: Domain Schemas & Palm Actuation Contracts)
+
+
+## Summary of Changes
+
+- Implemented `OperatorToolbar` in `web/src/components/OperatorToolbar.tsx` with 3 clusters: Canned Poses (`Home`, `Ready`, `Inspect`), Palm Toggle (`Grasp` / `Release` with status badge), and Safety Cluster (`Reset Fault` and high-visibility red `EMERGENCY STOP`).
+- Wired UI interlocks: action buttons disabled when `robot_state !== 'IDLE'`, `Reset Fault` enabled only on `FAULT`, `EMERGENCY STOP` unconditionally enabled.
+- Added command generator helpers in `web/domain/parsers.ts` for `createTrajectoryExecuteCommand`, `createPalmActuateCommand`, `createEmergencyStopCommand`, and `createResetFaultCommand`.
+- Added transient 2-second error banner on inbound `ErrorFrame` with auto-clearing timer.
+- Integrated toolbar into `TeleopClient.tsx` directly beneath `RobotVisualizer`.
+- Added 6 unit tests to `web/tests/unit/TeleopClient.test.tsx` covering all toolbar interactions, dispatching, interlocks, and error banner timing. All 15 tests pass.
