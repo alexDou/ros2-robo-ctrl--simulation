@@ -44,4 +44,38 @@ _Avoid_: Web visualizer, frontend, dashboard, web client, UI
 The Three.js WebGL component within TeleopClient rendering the kinematic manipulator model synchronized with live telemetry.
 _Avoid_: 3D canvas, model viewer, simulation view
 
+**DexterousPalm**:
+The end-effector mounted to the UR5e kinematic flange (`tool0`) responsible for object grasping and releasing.
+_Avoid_: Gripper hand, claw, tool attachment
+
+**SingleCommandGating**:
+Strict lifecycle precondition in EdgeNode rejecting any inbound motion or actuation command when RobotState is not IDLE.
+_Avoid_: Command queue, command buffering, FIFO buffer
+
+**EmergencyStop**:
+High-priority safety command immediately aborting all active joint motion or actuation and transitioning RobotState to FAULT.
+_Avoid_: Kill switch, halt packet, cancel signal
+
+**CannedTrajectory**:
+Pre-validated canonical arm waypoint sequence (`HOME`, `READY`, `INSPECT_POSE`) executed with bounded velocity and acceleration.
+_Avoid_: Preset, recorded path, macro
+
+**KinematicLinkAttachment**:
+Deterministic grasping mechanism in simulation parenting an object mesh to the DexterousPalm on `tool0` upon proximity threshold ($15\text{mm}$) and grasp command.
+_Avoid_: Physics grip, collision grab, magnetic lock
+
+**StepIndexingConveyor**:
+Linear feed mechanism advancing gearwheels one by one to a fixed pickup station and stopping until manipulator execution completes.
+_Avoid_: Moving belt, continuous feeder, conveyor line
+
+**SpindleTower**:
+Physical sorting destination vertical post receiving inspected non-defective gearwheels by color.
+_Avoid_: Peg, stacker, pole
+
+**ScrapBin**:
+Physical disposal destination chute receiving cracked or defective gearwheels regardless of color.
+_Avoid_: Trash, reject pile, discard box
+
+
+
 

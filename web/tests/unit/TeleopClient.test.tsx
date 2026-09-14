@@ -125,6 +125,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.IDLE,
       joint_positions: [0.0, 0.1, -0.2, 0.3, -0.4, 0.5],
+      palm_state: { is_grasped: false },
       command_id: 'cmd-test-123',
     };
 
@@ -151,6 +152,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.IDLE,
       joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      palm_state: { is_grasped: false },
     };
     act(() => {
       ws.simulateMessage(JSON.stringify(telemetry));
@@ -213,6 +215,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.IDLE,
       joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      palm_state: { is_grasped: false },
     };
 
     act(() => {
@@ -282,6 +285,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.EXECUTING,
       joint_positions: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+      palm_state: { is_grasped: false },
     };
 
     act(() => {

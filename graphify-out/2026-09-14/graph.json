@@ -108,6 +108,71 @@
       "source_location": "L8"
     },
     {
+      "id": "src_domain_domain_py_src_domain_domain_commandtype",
+      "label": "CommandType",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "commandtype",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_inferencemetrics",
+      "label": "InferenceMetrics",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "inferencemetrics",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L112"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_palmstate",
+      "label": "PalmState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "palmstate",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L104"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robotstate",
+      "label": "RobotState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "robotstate",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L35"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
+      "label": "RobotTelemetryEvent",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "robottelemetryevent",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L145"
+    },
+    {
       "id": "web_tests_unit_teleopclient_test_mockwebsocket",
       "label": "MockWebSocket",
       "_callable": true,
@@ -119,6 +184,32 @@
       "norm_label": "mockwebsocket",
       "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L7"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_palmaction",
+      "label": "PalmAction",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "Enum",
+      "file_type": "code",
+      "norm_label": "palmaction",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_posename",
+      "label": "PoseName",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "Enum",
+      "file_type": "code",
+      "norm_label": "posename",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L16"
     },
     {
       "id": "scripts_generate_domain_constantdef",
@@ -218,37 +309,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "robotcommand",
       "source_file": "src/domain/domain.py",
       "source_location": "L133"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robotstate",
-      "label": "RobotState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "robotstate",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L35"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
-      "label": "RobotTelemetryEvent",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "robottelemetryevent",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L145"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_jointsinusoidconfig",
@@ -550,19 +615,6 @@
       "source_location": "L23"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_commandtype",
-      "label": "CommandType",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "commandtype",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L24"
-    },
-    {
       "id": "src_domain_domain_py_src_domain_domain_emergencystoppayload",
       "label": "EmergencyStopPayload",
       "_callable": true,
@@ -589,32 +641,6 @@
       "source_location": "L122"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_inferencemetrics",
-      "label": "InferenceMetrics",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "inferencemetrics",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L112"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_palmaction",
-      "label": "PalmAction",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "palmaction",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L9"
-    },
-    {
       "id": "src_domain_domain_py_src_domain_domain_palmactuatepayload",
       "label": "PalmActuatePayload",
       "_callable": true,
@@ -626,32 +652,6 @@
       "norm_label": "palmactuatepayload",
       "source_file": "src/domain/domain.py",
       "source_location": "L72"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_palmstate",
-      "label": "PalmState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "palmstate",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L104"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_posename",
-      "label": "PoseName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "posename",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L16"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_resetfaultpayload",
@@ -691,18 +691,6 @@
       "norm_label": "mockjointstatepublisher",
       "source_file": "src/edge_node/mock_publisher.py",
       "source_location": "L21"
-    },
-    {
-      "id": "src_edge_node_main_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 100,
-      "community_name": "domain/__init__.py",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "src/edge_node/main.py",
-      "source_location": "L18"
     },
     {
       "id": "src_edge_node_mapper_jointstatemapper_get_positions",
@@ -969,136 +957,112 @@
       "source_location": "L83"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_positions",
-      "label": ".calculate_joint_positions()",
+      "id": "tests_test_edge_node_mock_ros_node",
+      "label": "mock_ros_node()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": ".calculate_joint_positions()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L182"
+      "norm_label": "mock_ros_node()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L12"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_velocities",
-      "label": ".calculate_joint_velocities()",
+      "id": "tests_test_edge_node_test_edge_node_command_handling_malformed_payload",
+      "label": "test_edge_node_command_handling_malformed_payload()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": ".calculate_joint_velocities()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L193"
+      "norm_label": "test_edge_node_command_handling_malformed_payload()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L45"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_joint_state_msg",
-      "label": ".create_joint_state_msg()",
+      "id": "tests_test_edge_node_test_edge_node_command_handling_valid_ping",
+      "label": "test_edge_node_command_handling_valid_ping()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": ".create_joint_state_msg()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L236"
+      "norm_label": "test_edge_node_command_handling_valid_ping()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L18"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_telemetry_event",
-      "label": ".create_telemetry_event()",
+      "id": "tests_test_edge_node_test_edge_node_zenoh_pub_sub_round_trip",
+      "label": "test_edge_node_zenoh_pub_sub_round_trip()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": ".create_telemetry_event()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L269"
+      "norm_label": "test_edge_node_zenoh_pub_sub_round_trip()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L61"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_get_timestamp_ns_and_stamp",
-      "label": "._get_timestamp_ns_and_stamp()",
+      "id": "tests_test_edge_node_test_mock_joint_state_publisher",
+      "label": "test_mock_joint_state_publisher()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": "._get_timestamp_ns_and_stamp()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L214"
+      "norm_label": "test_mock_joint_state_publisher()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L180"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_publish_tick",
-      "label": ".publish_tick()",
+      "id": "tests_test_edge_node_test_mock_joint_state_publisher_dynamic",
+      "label": "test_mock_joint_state_publisher_dynamic()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": ".publish_tick()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L294"
+      "norm_label": "test_mock_joint_state_publisher_dynamic()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L203"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
-      "label": "parse_robot_topic()",
+      "id": "tests_test_domain_test_robot_telemetry_event_palm_state",
+      "label": "test_robot_telemetry_event_palm_state()",
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "robot_telemetry_topic",
+      "community_name": "RobotState",
       "file_type": "code",
-      "norm_label": "parse_robot_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L175"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robot_command_topic",
-      "label": "robot_command_topic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "robot_telemetry_topic",
-      "file_type": "code",
-      "norm_label": "robot_command_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L163"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
-      "label": "robot_telemetry_topic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "robot_telemetry_topic",
-      "file_type": "code",
-      "norm_label": "robot_telemetry_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L169"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_validate_robot_id",
-      "label": "_validate_robot_id()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "robot_telemetry_topic",
-      "file_type": "code",
-      "norm_label": "_validate_robot_id()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L158"
-    },
-    {
-      "id": "tests_test_domain_test_datafabric_key_expressions",
-      "label": "test_datafabric_key_expressions()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "robot_telemetry_topic",
-      "file_type": "code",
-      "norm_label": "test_datafabric_key_expressions()",
+      "norm_label": "test_robot_telemetry_event_palm_state()",
       "source_file": "tests/test_domain.py",
-      "source_location": "L154"
+      "source_location": "L283"
+    },
+    {
+      "id": "tests_test_domain_test_robot_telemetry_event_serialization_round_trip",
+      "label": "test_robot_telemetry_event_serialization_round_trip()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_robot_telemetry_event_serialization_round_trip()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L54"
+    },
+    {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
+      "label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L99"
     },
     {
       "id": "web_src_main_app",
@@ -1394,7 +1358,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_canonical_joint_constants()",
       "source_file": "tests/test_domain.py",
@@ -1406,7 +1370,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_canonical_json_schemas()",
       "source_file": "tests/test_domain.py",
@@ -1418,11 +1382,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_error_frame_serialization_round_trip()",
       "source_file": "tests/test_domain.py",
       "source_location": "L142"
+    },
+    {
+      "id": "tests_test_domain_test_palm_actuate_payload_serialization",
+      "label": "test_palm_actuate_payload_serialization()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "test_domain.py",
+      "file_type": "code",
+      "norm_label": "test_palm_actuate_payload_serialization()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L210"
     },
     {
       "id": "tests_test_domain_test_robot_command_malformed_fails_validation",
@@ -1430,7 +1406,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_command_malformed_fails_validation()",
       "source_file": "tests/test_domain.py",
@@ -1442,7 +1418,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_command_ping_serialization_round_trip()",
       "source_file": "tests/test_domain.py",
@@ -1454,107 +1430,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_telemetry_event_malformed_fails()",
       "source_file": "tests/test_domain.py",
       "source_location": "L86"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_palm_state",
-      "label": "test_robot_telemetry_event_palm_state()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_palm_state()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L283"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_serialization_round_trip",
-      "label": "test_robot_telemetry_event_serialization_round_trip()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_serialization_round_trip()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L54"
-    },
-    {
-      "id": "tests_test_edge_node_mock_ros_node",
-      "label": "mock_ros_node()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "mock_ros_node()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L12"
-    },
-    {
-      "id": "tests_test_edge_node_test_edge_node_command_handling_malformed_payload",
-      "label": "test_edge_node_command_handling_malformed_payload()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node_command_handling_malformed_payload()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L45"
-    },
-    {
-      "id": "tests_test_edge_node_test_edge_node_command_handling_valid_ping",
-      "label": "test_edge_node_command_handling_valid_ping()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node_command_handling_valid_ping()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L18"
-    },
-    {
-      "id": "tests_test_edge_node_test_edge_node_zenoh_pub_sub_round_trip",
-      "label": "test_edge_node_zenoh_pub_sub_round_trip()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node_zenoh_pub_sub_round_trip()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L61"
-    },
-    {
-      "id": "tests_test_edge_node_test_mock_joint_state_publisher",
-      "label": "test_mock_joint_state_publisher()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_mock_joint_state_publisher()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L180"
-    },
-    {
-      "id": "tests_test_edge_node_test_mock_joint_state_publisher_dynamic",
-      "label": "test_mock_joint_state_publisher_dynamic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_mock_joint_state_publisher_dynamic()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L203"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_main",
@@ -1569,6 +1449,30 @@
       "source_location": "L350"
     },
     {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_positions",
+      "label": ".calculate_joint_positions()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": ".calculate_joint_positions()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L182"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_velocities",
+      "label": ".calculate_joint_velocities()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": ".calculate_joint_velocities()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L193"
+    },
+    {
       "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_close",
       "label": ".close()",
       "_callable": true,
@@ -1581,6 +1485,30 @@
       "source_location": "L326"
     },
     {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_joint_state_msg",
+      "label": ".create_joint_state_msg()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": ".create_joint_state_msg()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L236"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_telemetry_event",
+      "label": ".create_telemetry_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": ".create_telemetry_event()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L269"
+    },
+    {
       "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_get_current_positions",
       "label": ".get_current_positions()",
       "_callable": true,
@@ -1591,6 +1519,18 @@
       "norm_label": ".get_current_positions()",
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L210"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_get_timestamp_ns_and_stamp",
+      "label": "._get_timestamp_ns_and_stamp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "._get_timestamp_ns_and_stamp()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L214"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_init",
@@ -1615,6 +1555,18 @@
       "norm_label": "._init_zenoh()",
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L170"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_publish_tick",
+      "label": ".publish_tick()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": ".publish_tick()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L294"
     },
     {
       "id": "tests_test_mock_motion_publisher_mock_ros_node",
@@ -1663,18 +1615,6 @@
       "norm_label": "test_mock_motion_publisher_physical_limits_bounded()",
       "source_file": "tests/test_mock_motion_publisher.py",
       "source_location": "L59"
-    },
-    {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
-      "label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L99"
     },
     {
       "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_trajectory_generation",
@@ -2325,6 +2265,18 @@
       "source_location": "L33"
     },
     {
+      "id": "src_edge_node_main_main",
+      "label": "main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "src/edge_node/main.py",
+      "source_location": "L18"
+    },
+    {
       "id": "src_edge_node_node_edgenode_close",
       "label": ".close()",
       "_callable": true,
@@ -2421,6 +2373,66 @@
       "source_location": "L134"
     },
     {
+      "id": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
+      "label": "parse_robot_topic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "parse_robot_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L175"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robot_command_topic",
+      "label": "robot_command_topic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "robot_command_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L163"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
+      "label": "robot_telemetry_topic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "robot_telemetry_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L169"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_validate_robot_id",
+      "label": "_validate_robot_id()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "_validate_robot_id()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L158"
+    },
+    {
+      "id": "tests_test_domain_test_datafabric_key_expressions",
+      "label": "test_datafabric_key_expressions()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "test_datafabric_key_expressions()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L154"
+    },
+    {
       "id": "tests_test_domain_test_emergency_stop_and_reset_fault_payload_serialization",
       "label": "test_emergency_stop_and_reset_fault_payload_serialization()",
       "_callable": true,
@@ -2431,18 +2443,6 @@
       "norm_label": "test_emergency_stop_and_reset_fault_payload_serialization()",
       "source_file": "tests/test_domain.py",
       "source_location": "L266"
-    },
-    {
-      "id": "tests_test_domain_test_palm_actuate_payload_serialization",
-      "label": "test_palm_actuate_payload_serialization()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "test_palm_actuate_payload_serialization()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L210"
     },
     {
       "id": "tests_test_domain_test_trajectory_execute_payload_serialization",
@@ -3974,92 +3974,48 @@
       "source_location": "L1"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_py_any",
-      "label": "Any",
+      "id": "tests_test_edge_node",
+      "label": "test_edge_node.py",
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": "any",
+      "norm_label": "test_edge_node.py",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "tests_test_edge_node_py_fixture",
+      "label": "fixture",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "fixture",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_py_robottelemetryevent",
-      "label": "RobotTelemetryEvent",
+      "id": "src_domain_domain_rationale_25",
+      "label": "Operational command type",
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
-      "file_type": "code",
-      "norm_label": "robottelemetryevent",
-      "source_file": "",
-      "source_location": ""
+      "community_name": "test_edge_node.py",
+      "file_type": "rationale",
+      "norm_label": "operational command type",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L25"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_rationale_183",
-      "label": "Calculates deterministic joint angles clamped to physical limits [-pi, pi].",
+      "id": "tests_test_edge_node_rationale_1",
+      "label": "Tests for EdgeNode ROS2 and DataFabric command ingestion.",
       "_origin": "ast",
       "community": 104,
-      "community_name": ".publish_tick",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
-      "norm_label": "calculates deterministic joint angles clamped to physical limits [-pi, pi].",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L183"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_194",
-      "label": "Calculates instantaneous joint velocities from analytical derivatives.",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": ".publish_tick",
-      "file_type": "rationale",
-      "norm_label": "calculates instantaneous joint velocities from analytical derivatives.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L194"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_215",
-      "label": "Retrieves clock nanoseconds and ROS2 stamp struct in a single clock snapshot.",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": ".publish_tick",
-      "file_type": "rationale",
-      "norm_label": "retrieves clock nanoseconds and ros2 stamp struct in a single clock snapshot.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L215"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_243",
-      "label": "Constructs a standard sensor_msgs/msg/JointState message.",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": ".publish_tick",
-      "file_type": "rationale",
-      "norm_label": "constructs a standard sensor_msgs/msg/jointstate message.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L243"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_275",
-      "label": "Constructs a typed RobotTelemetryEvent conforming to the wire contract.",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": ".publish_tick",
-      "file_type": "rationale",
-      "norm_label": "constructs a typed robottelemetryevent conforming to the wire contract.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L275"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_295",
-      "label": "Publishes one synchronized 30 Hz step to both ROS2 and Zenoh.",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": ".publish_tick",
-      "file_type": "rationale",
-      "norm_label": "publishes one synchronized 30 hz step to both ros2 and zenoh.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L295"
+      "norm_label": "tests for edgenode ros2 and datafabric command ingestion.",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L1"
     },
     {
       "id": "support_files_specs_unit3_implementation_wireframe",
@@ -5122,37 +5078,48 @@
       "source_location": "L3"
     },
     {
-      "id": "src_domain_domain_rationale_164",
-      "label": "Returns the locked DataFabric command key expression for a robot.",
+      "id": "src_domain_domain_rationale_105",
+      "label": "End-effector dexterous palm pneumatic actuation and grasp status",
       "_origin": "ast",
       "community": 116,
-      "community_name": "robot_telemetry_topic",
+      "community_name": "RobotState",
       "file_type": "rationale",
-      "norm_label": "returns the locked datafabric command key expression for a robot.",
+      "norm_label": "end-effector dexterous palm pneumatic actuation and grasp status",
       "source_file": "src/domain/domain.py",
-      "source_location": "L164"
+      "source_location": "L105"
     },
     {
-      "id": "src_domain_domain_rationale_170",
-      "label": "Returns the locked DataFabric telemetry key expression for a robot.",
+      "id": "src_domain_domain_rationale_113",
+      "label": "Edge AI inference latency and object classification metrics",
       "_origin": "ast",
       "community": 116,
-      "community_name": "robot_telemetry_topic",
+      "community_name": "RobotState",
       "file_type": "rationale",
-      "norm_label": "returns the locked datafabric telemetry key expression for a robot.",
+      "norm_label": "edge ai inference latency and object classification metrics",
       "source_file": "src/domain/domain.py",
-      "source_location": "L170"
+      "source_location": "L113"
     },
     {
-      "id": "src_domain_domain_rationale_176",
-      "label": "Parses a DataFabric key expression into (robot_id, channel) or returns None if\u2026",
+      "id": "src_domain_domain_rationale_146",
+      "label": "Canonical schema for outbound telemetry events emitted by EdgeNode over\u2026",
       "_origin": "ast",
       "community": 116,
-      "community_name": "robot_telemetry_topic",
+      "community_name": "RobotState",
       "file_type": "rationale",
-      "norm_label": "parses a datafabric key expression into (robot_id, channel) or returns none if...",
+      "norm_label": "canonical schema for outbound telemetry events emitted by edgenode over...",
       "source_file": "src/domain/domain.py",
-      "source_location": "L176"
+      "source_location": "L146"
+    },
+    {
+      "id": "src_domain_domain_rationale_36",
+      "label": "Current lifecycle state of the robotic manipulator",
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "RobotState",
+      "file_type": "rationale",
+      "norm_label": "current lifecycle state of the robotic manipulator",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L36"
     },
     {
       "id": "beans_hand_sim_liyi_phase_3_3d_visualization_dynamic_kinematic_sync",
@@ -6678,11 +6645,10 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 4.0: Domain Schemas &amp; Palm Actuation Contracts",
-        "status": "completed",
+        "status": "todo",
         "type": "task",
-        "priority": "normal",
         "created_at": "2026-09-14T15:17:02Z",
-        "updated_at": "2026-09-14T15:40:16Z",
+        "updated_at": "2026-09-14T15:17:02Z",
         "parent": "hand-sim-lm3u"
       },
       "node_kind": "page",
@@ -6700,7 +6666,7 @@
       "node_kind": "heading",
       "norm_label": "acceptance criteria",
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L22"
+      "source_location": "L21"
     },
     {
       "id": "beans_hand_sim_kiai_unit_40_domain_schemas_palm_actuation_contracts_blocked_by",
@@ -6712,7 +6678,7 @@
       "node_kind": "heading",
       "norm_label": "blocked by",
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L31"
+      "source_location": "L30"
     },
     {
       "id": "beans_hand_sim_kiai_unit_40_domain_schemas_palm_actuation_contracts_parent",
@@ -6724,19 +6690,7 @@
       "node_kind": "heading",
       "norm_label": "parent",
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L14"
-    },
-    {
-      "id": "beans_hand_sim_kiai_unit_40_domain_schemas_palm_actuation_contracts_summary_of_changes",
-      "label": "Summary of Changes",
-      "_origin": "ast",
-      "community": 134,
-      "community_name": "hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "file_type": "document",
-      "node_kind": "heading",
-      "norm_label": "summary of changes",
-      "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L35"
+      "source_location": "L13"
     },
     {
       "id": "beans_hand_sim_kiai_unit_40_domain_schemas_palm_actuation_contracts_what_to_build",
@@ -6748,7 +6702,7 @@
       "node_kind": "heading",
       "norm_label": "what to build",
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L18"
+      "source_location": "L17"
     },
     {
       "id": "beans_hand_sim_osnb_unit_41_dexterous_palm_3d_model_kinematic_flange_m",
@@ -7525,6 +7479,50 @@
       "norm_label": "items",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L55"
+    },
+    {
+      "id": "enum",
+      "label": "Enum",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "Enum",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "str",
+      "label": "str",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "Enum",
+      "file_type": "code",
+      "norm_label": "str",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_domain_domain_rationale_10",
+      "label": "Actuation action to execute on dexterous palm",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "Enum",
+      "file_type": "rationale",
+      "norm_label": "actuation action to execute on dexterous palm",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L10"
+    },
+    {
+      "id": "src_domain_domain_rationale_17",
+      "label": "Pre-defined canonical UR5e posture",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "Enum",
+      "file_type": "rationale",
+      "norm_label": "pre-defined canonical ur5e posture",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L17"
     },
     {
       "id": "schemas_robot_command_schema_defs_reset_fault_payload",
@@ -12895,77 +12893,22 @@
       "label": "test_domain.py",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_domain.py",
       "source_file": "tests/test_domain.py",
       "source_location": "L1"
     },
     {
-      "id": "tests_test_edge_node",
-      "label": "test_edge_node.py",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "test_edge_node.py",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "tests_test_edge_node_py_fixture",
-      "label": "fixture",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "code",
-      "norm_label": "fixture",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "src_domain_domain_rationale_134",
       "label": "Canonical schema for inbound commands sent to EdgeNode over WebSocket or\u2026",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotState",
+      "community_name": "test_domain.py",
       "file_type": "rationale",
       "norm_label": "canonical schema for inbound commands sent to edgenode over websocket or...",
       "source_file": "src/domain/domain.py",
       "source_location": "L134"
-    },
-    {
-      "id": "src_domain_domain_rationale_146",
-      "label": "Canonical schema for outbound telemetry events emitted by EdgeNode over\u2026",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "rationale",
-      "norm_label": "canonical schema for outbound telemetry events emitted by edgenode over...",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L146"
-    },
-    {
-      "id": "src_domain_domain_rationale_36",
-      "label": "Current lifecycle state of the robotic manipulator",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "rationale",
-      "norm_label": "current lifecycle state of the robotic manipulator",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L36"
-    },
-    {
-      "id": "tests_test_edge_node_rationale_1",
-      "label": "Tests for EdgeNode ROS2 and DataFabric command ingestion.",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotState",
-      "file_type": "rationale",
-      "norm_label": "tests for edgenode ros2 and datafabric command ingestion.",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L1"
     },
     {
       "id": "agents_commands_cargo_audit",
@@ -15076,6 +15019,28 @@
       "source_location": "L1"
     },
     {
+      "id": "src_edge_node_mock_motion_publisher_py_any",
+      "label": "Any",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_py_robottelemetryevent",
+      "label": "RobotTelemetryEvent",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "robottelemetryevent",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "tests_test_mock_motion_publisher",
       "label": "test_mock_motion_publisher.py",
       "_origin": "ast",
@@ -15109,6 +15074,28 @@
       "source_location": "L1"
     },
     {
+      "id": "src_edge_node_mock_motion_publisher_rationale_183",
+      "label": "Calculates deterministic joint angles clamped to physical limits [-pi, pi].",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "rationale",
+      "norm_label": "calculates deterministic joint angles clamped to physical limits [-pi, pi].",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L183"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_rationale_194",
+      "label": "Calculates instantaneous joint velocities from analytical derivatives.",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "rationale",
+      "norm_label": "calculates instantaneous joint velocities from analytical derivatives.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L194"
+    },
+    {
       "id": "src_edge_node_mock_motion_publisher_rationale_211",
       "label": "Returns the most recent calculated joint positions (zero-order hold).",
       "_origin": "ast",
@@ -15118,6 +15105,50 @@
       "norm_label": "returns the most recent calculated joint positions (zero-order hold).",
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L211"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_rationale_215",
+      "label": "Retrieves clock nanoseconds and ROS2 stamp struct in a single clock snapshot.",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "rationale",
+      "norm_label": "retrieves clock nanoseconds and ros2 stamp struct in a single clock snapshot.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L215"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_rationale_243",
+      "label": "Constructs a standard sensor_msgs/msg/JointState message.",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "rationale",
+      "norm_label": "constructs a standard sensor_msgs/msg/jointstate message.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L243"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_rationale_275",
+      "label": "Constructs a typed RobotTelemetryEvent conforming to the wire contract.",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "rationale",
+      "norm_label": "constructs a typed robottelemetryevent conforming to the wire contract.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L275"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_rationale_295",
+      "label": "Publishes one synchronized 30 Hz step to both ROS2 and Zenoh.",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "rationale",
+      "norm_label": "publishes one synchronized 30 hz step to both ros2 and zenoh.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L295"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_rationale_327",
@@ -17653,17 +17684,6 @@
       "source_location": ""
     },
     {
-      "id": "enum",
-      "label": "Enum",
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "src_domain_domain_py_src_domain_domain",
       "label": "domain.py",
       "_origin": "ast",
@@ -17673,50 +17693,6 @@
       "norm_label": "domain.py",
       "source_file": "src/domain/domain.py",
       "source_location": "L1"
-    },
-    {
-      "id": "str",
-      "label": "str",
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "str",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_domain_domain_rationale_10",
-      "label": "Actuation action to execute on dexterous palm",
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "actuation action to execute on dexterous palm",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L10"
-    },
-    {
-      "id": "src_domain_domain_rationale_105",
-      "label": "End-effector dexterous palm pneumatic actuation and grasp status",
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "end-effector dexterous palm pneumatic actuation and grasp status",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L105"
-    },
-    {
-      "id": "src_domain_domain_rationale_113",
-      "label": "Edge AI inference latency and object classification metrics",
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "edge ai inference latency and object classification metrics",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L113"
     },
     {
       "id": "src_domain_domain_rationale_123",
@@ -17730,26 +17706,37 @@
       "source_location": "L123"
     },
     {
-      "id": "src_domain_domain_rationale_17",
-      "label": "Pre-defined canonical UR5e posture",
+      "id": "src_domain_domain_rationale_164",
+      "label": "Returns the locked DataFabric command key expression for a robot.",
       "_origin": "ast",
       "community": 97,
       "community_name": "domain.py",
       "file_type": "rationale",
-      "norm_label": "pre-defined canonical ur5e posture",
+      "norm_label": "returns the locked datafabric command key expression for a robot.",
       "source_file": "src/domain/domain.py",
-      "source_location": "L17"
+      "source_location": "L164"
     },
     {
-      "id": "src_domain_domain_rationale_25",
-      "label": "Operational command type",
+      "id": "src_domain_domain_rationale_170",
+      "label": "Returns the locked DataFabric telemetry key expression for a robot.",
       "_origin": "ast",
       "community": 97,
       "community_name": "domain.py",
       "file_type": "rationale",
-      "norm_label": "operational command type",
+      "norm_label": "returns the locked datafabric telemetry key expression for a robot.",
       "source_file": "src/domain/domain.py",
-      "source_location": "L25"
+      "source_location": "L170"
+    },
+    {
+      "id": "src_domain_domain_rationale_176",
+      "label": "Parses a DataFabric key expression into (robot_id, channel) or returns None if\u2026",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "parses a datafabric key expression into (robot_id, channel) or returns none if...",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L176"
     },
     {
       "id": "src_domain_domain_rationale_73",
@@ -28276,7 +28263,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L14",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -28287,7 +28274,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L18",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -28298,7 +28285,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L22",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -28309,18 +28296,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L31",
-      "weight": 1.0
-    },
-    {
-      "source": "beans_hand_sim_kiai_unit_40_domain_schemas_palm_actuation_contracts",
-      "target": "beans_hand_sim_kiai_unit_40_domain_schemas_palm_actuation_contracts_summary_of_changes",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": ".beans/hand-sim-kiai--unit-40-domain-schemas-palm-actuation-contracts.md",
-      "source_location": "L35",
+      "source_location": "L30",
       "weight": 1.0
     },
     {

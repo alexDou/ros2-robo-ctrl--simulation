@@ -8,7 +8,9 @@
 use std::time::Duration;
 use actix_web::{test, web, App, HttpServer};
 use futures_util::{SinkExt, StreamExt};
-use gateway::domain::{CommandType, ErrorFrame, RobotCommand, RobotState, RobotTelemetryEvent};
+use gateway::domain::{
+    CommandType, ErrorFrame, PalmState, RobotCommand, RobotState, RobotTelemetryEvent,
+};
 use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
 use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
@@ -150,6 +152,7 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
         timestamp_ns: 1_700_000_000_000_000_000,
         robot_state: RobotState::Idle,
         joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: Some("cmd-1234".to_string()),
     };
@@ -222,6 +225,7 @@ async fn test_ws_30hz_telemetry_high_throughput() {
             timestamp_ns: 1_700_000_000_000_000_000 + (i as u64 * 33_333_333),
             robot_state: RobotState::Idle,
             joint_positions: [i as f64 * 0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+            palm_state: PalmState::default(),
             inference_metrics: None,
             command_id: None,
         };

@@ -1,7 +1,9 @@
 use gateway::domain::{
     parse_robot_topic, robot_command_topic, robot_telemetry_topic, validate_joint_positions,
-    ArmJointPositions, CommandType, DomainError, ErrorFrame, InferenceMetrics, RobotCommand,
-    RobotState, RobotTelemetryEvent, CANONICAL_UR5E_JOINTS, UR5E_JOINTS,
+    ArmJointPositions, CommandType, DomainError, EmergencyStopPayload, ErrorFrame,
+    InferenceMetrics, PalmAction, PalmActuatePayload, PalmState, PoseName, ResetFaultPayload,
+    RobotCommand, RobotState, RobotTelemetryEvent, TrajectoryExecutePayload, CANONICAL_UR5E_JOINTS,
+    UR5E_JOINTS,
 };
 use serde_json::json;
 
@@ -44,6 +46,7 @@ fn test_robot_telemetry_event_serialization_round_trip() {
         timestamp_ns: 1_725_894_942_000_000_000,
         robot_state: RobotState::Idle,
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
         inference_metrics: Some(InferenceMetrics {
             latency_ms: 12.4,
             confidence: 0.96,
@@ -140,6 +143,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
         timestamp_ns: 12345,
         robot_state: RobotState::Idle,
         joint_positions: valid_positions,
+        palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
     };
@@ -149,6 +153,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
         timestamp_ns: 12345,
         robot_state: RobotState::Idle,
         joint_positions: [f64::NAN, 0.0, 0.0, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
     };
@@ -158,6 +163,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
         timestamp_ns: 12345,
         robot_state: RobotState::Idle,
         joint_positions: [0.0, f64::INFINITY, 0.0, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
     };
@@ -167,6 +173,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
         timestamp_ns: 12345,
         robot_state: RobotState::Idle,
         joint_positions: [0.0, 0.0, f64::NEG_INFINITY, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
     };
@@ -200,3 +207,127 @@ fn test_datafabric_key_expressions() {
     assert!(robot_command_topic("").is_err());
     assert!(robot_command_topic("bad/id").is_err());
 }
+
+#[test]
+fn test_palm_actuate_payload_serialization_round_trip() {
+    let payload = PalmActuatePayload {
+        action: PalmAction::Grasp,
+    };
+    let serialized = serde_json::to_string(&payload).expect("Serialize PalmActuatePayload");
+    assert_eq!(serialized, r#"{"action":"GRASP"}"#);
+
+    let deserialized: PalmActuatePayload =
+        serde_json::from_str(&serialized).expect("Deserialize PalmActuatePayload");
+    assert_eq!(deserialized.action, PalmAction::Grasp);
+
+    let release_payload: PalmActuatePayload =
+        serde_json::from_str(r#"{"action":"RELEASE"}"#).expect("Deserialize RELEASE action");
+    assert_eq!(release_payload.action, PalmAction::Release);
+
+    let invalid_res: Result<PalmActuatePayload, _> =
+        serde_json::from_str(r#"{"action":"UNKNOWN"}"#);
+    assert!(invalid_res.is_err(), "Expected deserialization to fail on invalid action");
+
+    // Command wrapper
+    let cmd = RobotCommand {
+        command_id: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d".to_string(),
+        sender_id: "ui-client".to_string(),
+        timestamp_ns: 1_725_894_942_000_000_000,
+        r#type: CommandType::PalmActuate,
+        payload: serde_json::to_value(&payload).expect("payload to value"),
+    };
+    let cmd_json = serde_json::to_string(&cmd).expect("Serialize PalmActuate command");
+    let cmd_deserialized: RobotCommand =
+        serde_json::from_str(&cmd_json).expect("Deserialize PalmActuate command");
+    assert_eq!(cmd_deserialized.r#type, CommandType::PalmActuate);
+}
+
+#[test]
+fn test_trajectory_execute_payload_serialization_round_trip() {
+    let canned_home = TrajectoryExecutePayload {
+        pose_name: Some(PoseName::Home),
+        waypoints: None,
+    };
+    let serialized_home = serde_json::to_string(&canned_home).expect("Serialize Home payload");
+    assert!(serialized_home.contains(r#""pose_name":"HOME""#));
+
+    let deserialized_home: TrajectoryExecutePayload =
+        serde_json::from_str(&serialized_home).expect("Deserialize Home payload");
+    assert_eq!(deserialized_home.pose_name, Some(PoseName::Home));
+
+    let canned_ready: TrajectoryExecutePayload =
+        serde_json::from_str(r#"{"pose_name":"READY"}"#).expect("Deserialize READY");
+    assert_eq!(canned_ready.pose_name, Some(PoseName::Ready));
+
+    let canned_inspect: TrajectoryExecutePayload =
+        serde_json::from_str(r#"{"pose_name":"INSPECT_POSE"}"#).expect("Deserialize INSPECT_POSE");
+    assert_eq!(canned_inspect.pose_name, Some(PoseName::InspectPose));
+
+    let waypoints = vec![
+        [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        [0.1, -1.50, 1.60, 0.0, 0.0, 0.0],
+    ];
+    let custom_traj = TrajectoryExecutePayload {
+        pose_name: None,
+        waypoints: Some(waypoints.clone()),
+    };
+    let serialized_custom =
+        serde_json::to_string(&custom_traj).expect("Serialize custom trajectory");
+    let deserialized_custom: TrajectoryExecutePayload =
+        serde_json::from_str(&serialized_custom).expect("Deserialize custom trajectory");
+    assert_eq!(deserialized_custom.waypoints, Some(waypoints));
+
+    let invalid_pose: Result<TrajectoryExecutePayload, _> =
+        serde_json::from_str(r#"{"pose_name":"INVALID_POSE"}"#);
+    assert!(invalid_pose.is_err());
+}
+
+#[test]
+fn test_emergency_stop_and_reset_fault_payload_round_trip() {
+    let estop = EmergencyStopPayload {
+        reason: Some("Collision risk".to_string()),
+    };
+    let serialized_estop = serde_json::to_string(&estop).expect("Serialize EmergencyStopPayload");
+    let deserialized_estop: EmergencyStopPayload =
+        serde_json::from_str(&serialized_estop).expect("Deserialize EmergencyStopPayload");
+    assert_eq!(deserialized_estop.reason, Some("Collision risk".to_string()));
+
+    let estop_empty: EmergencyStopPayload =
+        serde_json::from_str("{}").expect("Deserialize empty EmergencyStopPayload");
+    assert_eq!(estop_empty.reason, None);
+
+    let reset: ResetFaultPayload =
+        serde_json::from_str("{}").expect("Deserialize ResetFaultPayload");
+    let serialized_reset = serde_json::to_string(&reset).expect("Serialize ResetFaultPayload");
+    assert_eq!(serialized_reset, "{}");
+}
+
+#[test]
+fn test_robot_telemetry_event_with_palm_state() {
+    let event = RobotTelemetryEvent {
+        timestamp_ns: 1_725_894_942_000_000_000,
+        robot_state: RobotState::Idle,
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        palm_state: PalmState { is_grasped: true },
+        inference_metrics: None,
+        command_id: None,
+    };
+    let serialized = serde_json::to_string(&event).expect("Serialize telemetry event");
+    assert!(serialized.contains(r#""palm_state":{"is_grasped":true}"#));
+
+    let deserialized: RobotTelemetryEvent =
+        serde_json::from_str(&serialized).expect("Deserialize telemetry event");
+    assert!(deserialized.palm_state.is_grasped);
+
+    // Safe default: missing palm_state deserializes to false
+    let raw_no_palm = json!({
+        "timestamp_ns": 12345,
+        "robot_state": "IDLE",
+        "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    })
+    .to_string();
+    let deserialized_default: RobotTelemetryEvent =
+        serde_json::from_str(&raw_no_palm).expect("Deserialize telemetry without palm_state");
+    assert!(!deserialized_default.palm_state.is_grasped);
+}
+
