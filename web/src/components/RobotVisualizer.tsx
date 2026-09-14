@@ -387,6 +387,18 @@ export function RobotVisualizer({
       getScene: () => scene,
       getRenderer: () => renderer,
       getRobot: () => loadedRobot,
+      getPalmNozzleState: (): { isGrasped: boolean; emissiveHex: number; emissiveIntensity: number } | null => {
+        if (!loadedRobot) return null;
+        const nozzle = loadedRobot.getObjectByName('palm-suction-nozzle') as THREE.Mesh | undefined;
+        if (!nozzle || !nozzle.material || Array.isArray(nozzle.material)) return null;
+        const mat = nozzle.material as THREE.MeshStandardMaterial;
+        if (typeof mat.emissiveIntensity !== 'number' || !mat.emissive) return null;
+        return {
+          isGrasped: mat.emissiveIntensity > 0,
+          emissiveHex: mat.emissive.getHex(),
+          emissiveIntensity: mat.emissiveIntensity,
+        };
+      },
     };
 
     if (typeof window !== 'undefined') {

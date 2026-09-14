@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-14)
 
 ## Corpus Check
-- 180 files · ~97,360 words
+- 181 files · ~98,435 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1532 nodes · 1924 edges · 155 communities (110 shown, 25 thin omitted)
+- 1550 nodes · 1951 edges · 158 communities (111 shown, 27 thin omitted)
 - Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 99 edges (avg confidence: 0.93)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2015743b`
+- Built from commit: `62c6afe3`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -93,9 +93,9 @@
 - hand-sim-iy13--unit-22-gateway-high-throughput-30-hz-telemetry-mu.md
 - hand-sim-n9ch--unit-24-multi-service-30-hz-end-to-end-playwright.md
 - EdgeNode
-- test_domain.py
+- domain.py
 - unit2/implementation_wireframe.md
-- MockJointStatePublisher
+- test_edge_node.py
 - JointStateMapper
 - dependencies
 - robotLoader.ts
@@ -111,7 +111,7 @@
 - typescript
 - vite
 - 0001. Defer Gazebo Physics to Phase 4 in Favor of Dynamic Mock Telemetry for Phase 3 3D Spatial Mapping
-- domain.py
+- PalmAction
 - hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md
 - main.tsx
 - hand-sim-2lcq--unit-32-teleopclient-threejs-robotvisualizer-canva.md
@@ -150,35 +150,38 @@
 - confidence
 - is_grasped
 - PoseName
+- world.ts
+- ServiceHarness
+- harness.ts
 
 ## God Nodes (most connected - your core abstractions)
-1. `EdgeNode` - 35 edges
-2. `TeleopPage` - 27 edges
+1. `TeleopPage` - 40 edges
+2. `EdgeNode` - 36 edges
 3. `MockMotionPublisher` - 21 edges
 4. `RobotState` - 18 edges
 5. `TelemetrySubscription` - 18 edges
 6. `compilerOptions` - 18 edges
-7. `CommandType` - 13 edges
-8. `RobotCommand` - 13 edges
-9. `DataFabricPort` - 13 edges
-10. `RobotTelemetryEvent` - 12 edges
+7. `ServiceHarness` - 15 edges
+8. `CommandType` - 13 edges
+9. `RobotCommand` - 13 edges
+10. `DataFabricPort` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `test_robot_command_malformed_fails_validation()` --uses--> `RobotCommand`  [INFERRED]
-  tests/test_domain.py → src/domain/domain.py
 - `test_edge_node_command_handling_malformed_payload()` --uses--> `EdgeNode`  [INFERRED]
   tests/test_edge_node.py → src/edge_node/node.py
-- `test_trajectory_execute_payload_serialization()` --uses--> `PoseName`  [INFERRED]
+- `test_palm_actuate_payload_serialization()` --uses--> `PalmAction`  [INFERRED]
   tests/test_domain.py → src/domain/domain.py
-- `test_palm_actuate_payload_serialization()` --uses--> `CommandType`  [INFERRED]
-  tests/test_domain.py → src/domain/domain.py
-- `test_robot_telemetry_event_malformed_fails()` --uses--> `RobotState`  [INFERRED]
-  tests/test_domain.py → src/domain/domain.py
+- `test_edge_node_canned_trajectory_execution()` --uses--> `PoseName`  [INFERRED]
+  tests/test_edge_node.py → src/domain/domain.py
+- `test_edge_node_joint_state_subscription_and_streaming()` --uses--> `RobotState`  [INFERRED]
+  tests/test_edge_node.py → src/domain/domain.py
+- `test_edge_node_lifecycle_initial_state()` --uses--> `RobotState`  [INFERRED]
+  tests/test_edge_node.py → src/domain/domain.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (155 total, 25 thin omitted)
+## Communities (158 total, 27 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -226,7 +229,7 @@ Nodes (17): ask(), ask_secret(), banner(), _clear(), _existing(), finish(), note
 
 ### Community 11 - "TelemetrySubscription"
 Cohesion: 0.06
-Nodes (40): Box, Data, Debug, Deref, DerefMut, ErrorFrame, FnOnce, Formatter (+32 more)
+Nodes (39): Box, Data, Debug, Deref, DerefMut, FnOnce, Formatter, HashMap (+31 more)
 
 ### Community 12 - "Diagnosing Bugs"
 Cohesion: 0.13
@@ -373,8 +376,8 @@ Cohesion: 0.06
 Nodes (34): elbow_joint, joint_positions, palm_state, robot_state, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint (+26 more)
 
 ### Community 57 - "RobotState"
-Cohesion: 0.16
-Nodes (23): Enum, CommandType, PoseName, RobotCommand, RobotState, Canonical schema for inbound commands sent to EdgeNode over WebSocket or…, Pre-defined canonical UR5e posture, Operational command type (+15 more)
+Cohesion: 0.17
+Nodes (20): CommandType, RobotCommand, RobotState, RobotTelemetryEvent, Canonical schema for inbound commands sent to EdgeNode over WebSocket or…, Canonical schema for outbound telemetry events emitted by EdgeNode over…, Operational command type, Current lifecycle state of the robotic manipulator (+12 more)
 
 ### Community 77 - "ActiveSessionRegistry"
 Cohesion: 0.17
@@ -389,20 +392,16 @@ Cohesion: 0.20
 Nodes (10): BOOTING, EXECUTING, FAULT, IDLE, PROCESSING, robot_state, description, enum (+2 more)
 
 ### Community 81 - "MockMotionPublisher"
-Cohesion: 0.09
-Nodes (24): Node, JointSinusoidConfig, main(), MockMotionPublisher, Any, RobotTelemetryEvent, Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.…, Calculates deterministic joint angles clamped to physical limits [-pi, pi]. (+16 more)
+Cohesion: 0.08
+Nodes (26): Node, JointSinusoidConfig, main(), MockMotionPublisher, Any, RobotTelemetryEvent, Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.…, Calculates deterministic joint angles clamped to physical limits [-pi, pi]. (+18 more)
 
 ### Community 82 - "error_frame.schema.json"
 Cohesion: 0.07
 Nodes (28): error_code, message, additionalProperties, description, description, minLength, type, $id (+20 more)
 
-### Community 83 - "TeleopPage"
-Cohesion: 0.07
-Nodes (10): DEFAULT_ROBOT_ID, TeleopPage, __dirname, __filename, HarnessConfig, ROOT_DIR, ServiceHarness, WEB_DIR (+2 more)
-
 ### Community 84 - "contracts.ts"
-Cohesion: 0.05
-Nodes (52): armJointPositionsSchema, CANONICAL_POSES, commandTypeSchema, EmergencyStopPayload, emergencyStopPayloadSchema, errorFrameSchema, InferenceMetrics, inferenceMetricsSchema (+44 more)
+Cohesion: 0.06
+Nodes (49): armJointPositionsSchema, commandTypeSchema, EmergencyStopPayload, emergencyStopPayloadSchema, errorFrameSchema, InferenceMetrics, inferenceMetricsSchema, isRobotCommand() (+41 more)
 
 ### Community 86 - "scripts"
 Cohesion: 0.15
@@ -446,19 +445,19 @@ Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ### Community 96 - "EdgeNode"
 Cohesion: 0.20
-Nodes (9): PalmAction, EdgeNode, Any, RobotTelemetryEvent, Ingests a JointState ROS2 message and updates canonical joint positions. Args:…, Emits a periodic 30 Hz RobotTelemetryEvent with current joint positions., Ingests, validates, and processes an inbound RobotCommand payload string or…, EdgeNode combining ROS2 node capabilities with Eclipse Zenoh DataFabric pub/sub. (+1 more)
+Nodes (10): ErrorFrame, PalmAction, EdgeNode, Any, RobotTelemetryEvent, Ingests a JointState ROS2 message and updates canonical joint positions. Args:…, Emits a periodic 30 Hz RobotTelemetryEvent with current joint positions., Ingests, validates, and processes an inbound RobotCommand payload string or… (+2 more)
 
-### Community 97 - "test_domain.py"
-Cohesion: 0.10
-Nodes (23): BaseModel, EmergencyStopPayload, ErrorFrame, InferenceMetrics, PalmState, ResetFaultPayload, RobotTelemetryEvent, TrajectoryExecutePayload (+15 more)
+### Community 97 - "domain.py"
+Cohesion: 0.11
+Nodes (23): BaseModel, EmergencyStopPayload, ErrorFrame, InferenceMetrics, PalmActuatePayload, PalmState, parse_robot_topic(), ResetFaultPayload (+15 more)
 
 ### Community 98 - "unit2/implementation_wireframe.md"
 Cohesion: 0.22
 Nodes (8): Contract-First Parallel Execution Model, Ready to Begin Implementation, Step 1: Named JointState Extractor & Hybrid Mock Publisher (EdgeNode / Python), Step 2: Continuous 30 Hz Telemetry Streaming Loop (EdgeNode / Python), Step 3: Gateway Stream Multiplexing & High-Throughput Forwarding (Gateway / Rust), Step 4: Non-Reactive Ingestion & Direct DOM Painting (TeleopClient / Preact), Step 5: Cross-Language Schema Alignment & Boundary Validation, The Integration Verification (The Continuous Telemetry Test)
 
-### Community 99 - "MockJointStatePublisher"
-Cohesion: 0.18
-Nodes (10): JointState, main(), MockJointStatePublisher, Standalone synthetic ROS2 JointState publisher at 30 Hz., ROS2 node publishing synthetic JointState messages at 30 Hz., Creates a synthetic JointState message with canonical joint names., Publishes a single JointState message and returns it., test_joint_state_mapper_canonical_order_and_zero_order_hold() (+2 more)
+### Community 99 - "test_edge_node.py"
+Cohesion: 0.12
+Nodes (16): JointState, main(), MockJointStatePublisher, Standalone synthetic ROS2 JointState publisher at 30 Hz., ROS2 node publishing synthetic JointState messages at 30 Hz., Creates a synthetic JointState message with canonical joint names., Publishes a single JointState message and returns it., mock_ros_node() (+8 more)
 
 ### Community 100 - "JointStateMapper"
 Cohesion: 0.13
@@ -470,7 +469,7 @@ Nodes (9): preact, three, urdf-loader, dependencies, preact, three, urdf-loader,
 
 ### Community 102 - "robotLoader.ts"
 Cohesion: 0.11
-Nodes (22): ADR-0001, createDexterousPalm(), disposeMaterial(), getLatestPositions(), PalmProceduralAssets, RobotVisualizer(), RobotVisualizerProps, applyJointPositions() (+14 more)
+Nodes (24): ADR-0001, UR5E_JOINTS, UR5eJoint, createDexterousPalm(), disposeMaterial(), getLatestPositions(), PalmProceduralAssets, RobotVisualizer() (+16 more)
 
 ### Community 103 - "TelemetryMonitor.test.tsx"
 Cohesion: 0.27
@@ -488,17 +487,17 @@ Nodes (8): Contract-First Parallel Execution Model, Ready to Begin Implementatio
 Cohesion: 0.33
 Nodes (5): 0001. Defer Gazebo Physics to Phase 4 in Favor of Dynamic Mock Telemetry for Phase 3 3D Spatial Mapping, Consequences, Context, Decision, Status
 
-### Community 116 - "domain.py"
-Cohesion: 0.18
-Nodes (14): PalmAction, PalmActuatePayload, parse_robot_topic(), robot_command_topic(), robot_telemetry_topic(), _validate_robot_id(), Actuation action to execute on dexterous palm, Returns the locked DataFabric command key expression for a robot. (+6 more)
+### Community 116 - "PalmAction"
+Cohesion: 0.25
+Nodes (9): Enum, PalmAction, PoseName, TrajectoryExecutePayload, Actuation action to execute on dexterous palm, Pre-defined canonical UR5e posture, Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom…, str (+1 more)
 
 ### Community 117 - "hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md"
 Cohesion: 0.25
 Nodes (7): Further Notes, Implementation Decisions, Out of Scope, Problem Statement, Solution, Testing Decisions, User Stories
 
 ### Community 118 - "main.tsx"
-Cohesion: 0.33
-Nodes (5): App(), root, isBrowser(), getAllParams(), getParam()
+Cohesion: 0.29
+Nodes (6): DEFAULT_ROBOT_ID, App(), root, isBrowser(), getAllParams(), getParam()
 
 ### Community 119 - "hand-sim-2lcq--unit-32-teleopclient-threejs-robotvisualizer-canva.md"
 Cohesion: 0.40
@@ -620,20 +619,28 @@ Nodes (5): default, description, type, properties, is_grasped
 Cohesion: 0.67
 Nodes (3): PoseName, OperatorToolbar(), OperatorToolbarProps
 
+### Community 155 - "world.ts"
+Cohesion: 0.36
+Nodes (3): CANONICAL_POSES, CustomWorld, ICustomWorld
+
+### Community 157 - "harness.ts"
+Cohesion: 0.33
+Nodes (5): __dirname, __filename, HarnessConfig, ROOT_DIR, WEB_DIR
+
 ## Knowledge Gaps
-- **735 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+730 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 924 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **25 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **734 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+729 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 936 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `properties` connect `properties` to `palm_state`, `enum`, `robot_telemetry_event.schema.json`, `joint_positions`, `inference_metrics`?**
-  _High betweenness centrality (0.023) - this node is a cross-community bridge._
-- **Why does `EdgeNode` connect `EdgeNode` to `domain.py`, `RobotState`, `JointStateMapper`, `test_domain.py`?**
+  _High betweenness centrality (0.024) - this node is a cross-community bridge._
+- **Why does `EdgeNode` connect `EdgeNode` to `domain.py`, `test_edge_node.py`, `JointStateMapper`, `PalmAction`, `RobotState`?**
   _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **Why does `DataFabricPort` connect `TelemetrySubscription` to `ActiveSessionRegistry`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `$defs` connect `emergency_stop_payload` to `palm_actuate_payload`, `reset_fault_payload`, `trajectory_execute_payload`, `robot_command.schema.json`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **Are the 19 inferred relationships involving `EdgeNode` (e.g. with `CommandType` and `ErrorFrame`) actually correct?**
   _`EdgeNode` has 19 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 8 inferred relationships involving `MockMotionPublisher` (e.g. with `RobotState` and `RobotTelemetryEvent`) actually correct?**
@@ -641,4 +648,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 14 inferred relationships involving `RobotState` (e.g. with `MockMotionPublisher` and `EdgeNode`) actually correct?**
   _`RobotState` has 14 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema` to the rest of the system?**
-  _735 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _734 weakly-connected nodes found - possible documentation gaps or missing edges._

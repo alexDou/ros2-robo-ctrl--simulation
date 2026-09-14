@@ -172,9 +172,11 @@ class EdgeNode:
         self, action: PalmAction, command_id: Optional[str] = None
     ) -> Optional[RobotTelemetryEvent]:
         self.robot_state = RobotState.PROCESSING
-        # 200ms simulated pneumatic delay
-        time.sleep(0.2)
-        if self._abort_event.is_set():
+        # 200ms simulated pneumatic delay, immediately preemptible by abort event
+        if self._abort_event.wait(0.2) or self._abort_event.is_set():
+            return None
+
+        if self.robot_state == RobotState.FAULT:
             return None
 
         self.palm_state.is_grasped = (action == PalmAction.GRASP)
@@ -192,9 +194,10 @@ class EdgeNode:
     ) -> Optional[RobotTelemetryEvent]:
         self.robot_state = RobotState.PROCESSING
         if planning_delay > 0:
-            time.sleep(planning_delay)
+            if self._abort_event.wait(planning_delay):
+                return None
 
-        if self._abort_event.is_set():
+        if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
             return None
 
         self.robot_state = RobotState.EXECUTING
@@ -215,9 +218,10 @@ class EdgeNode:
             ]
             self.mapper.set_positions(current)
             if duration > 0:
-                time.sleep(dt)
+                if self._abort_event.wait(dt):
+                    break
 
-        if self._abort_event.is_set():
+        if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
             return None
 
         self.mapper.set_positions(target_positions)
@@ -292,8 +296,7 @@ class EdgeNode:
             self.logger.warning(
                 f"Command {command.command_id} ({command.type.value}) rejected: robot is {self.robot_state.value}"
             )
-            if self._zenoh_pub is not None:
-                self._zenoh_pub.put(err_frame.model_dump_json())
+            self._publish_error(err_frame)
             return err_frame
 
         if command.type == CommandType.PALM_ACTUATE:
@@ -368,6 +371,13 @@ class EdgeNode:
             self._zenoh_pub.put(event.model_dump_json(exclude_none=True))
             self.logger.debug(
                 f"Emitted RobotTelemetryEvent to {self.telemetry_topic} (state={event.robot_state.value})"
+            )
+
+    def _publish_error(self, err_frame: ErrorFrame) -> None:
+        if self._zenoh_pub is not None:
+            self._zenoh_pub.put(err_frame.model_dump_json())
+            self.logger.warning(
+                f"Emitted ErrorFrame to {self.telemetry_topic}: {err_frame.error_code} - {err_frame.message}"
             )
 
     def close(self) -> None:

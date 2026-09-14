@@ -96,9 +96,9 @@
   "94": "hand-sim-iy13--unit-22-gateway-high-throughput-30-hz-telemetry-mu.md",
   "95": "hand-sim-n9ch--unit-24-multi-service-30-hz-end-to-end-playwright.md",
   "96": "EdgeNode",
-  "97": "test_domain.py",
+  "97": "domain.py",
   "98": "unit2/implementation_wireframe.md",
-  "99": "MockJointStatePublisher",
+  "99": "test_edge_node.py",
   "100": "JointStateMapper",
   "101": "dependencies",
   "102": "robotLoader.ts",
@@ -115,7 +115,7 @@
   "113": "typescript",
   "114": "vite",
   "115": "0001. Defer Gazebo Physics to Phase 4 in Favor of Dynamic Mock Telemetry for Phase 3 3D Spatial Mapping",
-  "116": "domain.py",
+  "116": "PalmAction",
   "117": "hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md",
   "118": "main.tsx",
   "119": "hand-sim-2lcq--unit-32-teleopclient-threejs-robotvisualizer-canva.md",
@@ -153,5 +153,8 @@
   "151": "properties",
   "152": "confidence",
   "153": "is_grasped",
-  "154": "PoseName"
+  "154": "PoseName",
+  "155": "world.ts",
+  "156": "ServiceHarness",
+  "157": "harness.ts"
 }

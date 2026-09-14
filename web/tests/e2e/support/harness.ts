@@ -119,6 +119,43 @@ export class ServiceHarness {
     this.edgeNodeProcess.stderr?.on('data', recordEdgeLog);
 
     // 3b. Start Mock Motion Publisher at 30 Hz
+    await this.startMockPublisher();
+
+    // 4. Start Vite web server
+    this.webProcess = spawn('npm', ['run', 'dev', '--', '--port', String(this.webPort), '--strictPort'], {
+      cwd: WEB_DIR,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    this.webProcess.stderr?.on('data', (d: Buffer) => {
+      if (process.env.DEBUG_E2E) process.stderr.write(`[VITE] ${d.toString()}`);
+    });
+
+    // 5. Await health checks
+    await Promise.all([
+      this.pollHttp(`http://127.0.0.1:${this.gatewayPort}/health`),
+      this.pollHttp(`http://127.0.0.1:${this.webPort}/`),
+    ]);
+
+    // Wait for Zenoh peer discovery to establish between Gateway and EdgeNode
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+
+  public getCapturedLogs(): string {
+    return this.edgeNodeLogs.join('');
+  }
+
+  public isMockPublisherRunning(): boolean {
+    return (
+      this.mockPublisherProcess !== null &&
+      !this.mockPublisherProcess.killed &&
+      this.mockPublisherProcess.exitCode === null
+    );
+  }
+
+  public async startMockPublisher(): Promise<void> {
+    if (this.isMockPublisherRunning()) return;
+
     const isMockMotion = this.publisherScript.includes('mock_motion_publisher');
     const publisherArgs = isMockMotion
       ? [
@@ -162,50 +199,53 @@ export class ServiceHarness {
     this.mockPublisherProcess.stdout?.on('data', recordMockLog);
     this.mockPublisherProcess.stderr?.on('data', recordMockLog);
 
-    // 4. Start Vite web server
-    this.webProcess = spawn('npm', ['run', 'dev', '--', '--port', String(this.webPort), '--strictPort'], {
-      cwd: WEB_DIR,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    this.webProcess.stderr?.on('data', (d: Buffer) => {
-      if (process.env.DEBUG_E2E) process.stderr.write(`[VITE] ${d.toString()}`);
-    });
-
-    // 5. Await health checks
-    await Promise.all([
-      this.pollHttp(`http://127.0.0.1:${this.gatewayPort}/health`),
-      this.pollHttp(`http://127.0.0.1:${this.webPort}/`),
-    ]);
-
-    // Wait for Zenoh peer discovery to establish between Gateway and EdgeNode
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 600));
   }
 
-  public getCapturedLogs(): string {
-    return this.edgeNodeLogs.join('');
+  public async stopMockPublisher(): Promise<void> {
+    if (
+      !this.mockPublisherProcess ||
+      this.mockPublisherProcess.killed ||
+      this.mockPublisherProcess.exitCode !== null
+    ) {
+      this.mockPublisherProcess = null;
+      return;
+    }
+    await this.killChild(this.mockPublisherProcess);
+    this.mockPublisherProcess = null;
+  }
+
+  private async killChild(proc: ChildProcess | null): Promise<void> {
+    if (!proc || proc.killed || proc.exitCode !== null) return;
+    await new Promise<void>((resolve) => {
+      if (proc.exitCode !== null) return resolve();
+      let timeout: ReturnType<typeof setTimeout> | null = null;
+      const onExit = () => {
+        if (timeout) clearTimeout(timeout);
+        resolve();
+      };
+      proc.once('exit', onExit);
+      try {
+        proc.kill('SIGTERM');
+      } catch {
+        onExit();
+        return;
+      }
+      timeout = setTimeout(() => {
+        try {
+          proc.kill('SIGKILL');
+        } catch {}
+        resolve();
+      }, 1500);
+    });
   }
 
   public async stop(): Promise<void> {
-    const killProc = async (proc: ChildProcess | null) => {
-      if (!proc || proc.killed || proc.exitCode !== null) return;
-      try {
-        proc.kill('SIGTERM');
-        const timeout = setTimeout(() => {
-          try {
-            proc.kill('SIGKILL');
-          } catch {}
-        }, 1500);
-        await new Promise((resolve) => proc.on('exit', resolve));
-        clearTimeout(timeout);
-      } catch {}
-    };
-
     await Promise.all([
-      killProc(this.mockPublisherProcess),
-      killProc(this.edgeNodeProcess),
-      killProc(this.gatewayProcess),
-      killProc(this.webProcess),
+      this.stopMockPublisher(),
+      this.killChild(this.edgeNodeProcess),
+      this.killChild(this.gatewayProcess),
+      this.killChild(this.webProcess),
     ]);
 
     this.cleanStalePorts();
