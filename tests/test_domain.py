@@ -5,6 +5,7 @@ from domain import (
     CANONICAL_UR5E_JOINTS,
     UR5E_JOINTS,
     ArmJointPositions,
+    ClearWorkspacePayload,
     CommandType,
     EmergencyStopPayload,
     ErrorFrame,
@@ -17,6 +18,8 @@ from domain import (
     RobotCommand,
     RobotState,
     RobotTelemetryEvent,
+    SpawnObjectPayload,
+    SpawnObjectType,
     TrajectoryExecutePayload,
     parse_robot_topic,
     robot_command_topic,
@@ -201,10 +204,14 @@ def test_canonical_json_schemas():
     assert "TRAJECTORY_EXECUTE" in cmd_data["properties"]["type"]["enum"]
     assert "EMERGENCY_STOP" in cmd_data["properties"]["type"]["enum"]
     assert "RESET_FAULT" in cmd_data["properties"]["type"]["enum"]
+    assert "SPAWN_OBJECT" in cmd_data["properties"]["type"]["enum"]
+    assert "CLEAR_WORKSPACE" in cmd_data["properties"]["type"]["enum"]
     assert "palm_actuate_payload" in cmd_data["$defs"]
     assert "trajectory_execute_payload" in cmd_data["$defs"]
     assert "emergency_stop_payload" in cmd_data["$defs"]
     assert "reset_fault_payload" in cmd_data["$defs"]
+    assert "spawn_object_payload" in cmd_data["$defs"]
+    assert "clear_workspace_payload" in cmd_data["$defs"]
 
 
 def test_palm_actuate_payload_serialization():
@@ -312,5 +319,66 @@ def test_robot_telemetry_event_palm_state():
         RobotTelemetryEvent.model_validate_json(
             '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "palm_state": {"is_grasped": "not_a_bool"}}'
         )
+
+
+def test_spawn_object_payload_serialization():
+    payload = SpawnObjectPayload(x=0.5, y=-0.1, z=0.0, object_type=SpawnObjectType.GEAR)
+    assert payload.x == 0.5
+    assert payload.y == -0.1
+    assert payload.z == 0.0
+    assert payload.object_type == SpawnObjectType.GEAR
+    json_data = payload.model_dump_json()
+    assert '"object_type":"GEAR"' in json_data or '"object_type": "GEAR"' in json_data
+    restored = SpawnObjectPayload.model_validate_json(json_data)
+    assert restored == payload
+
+    # Test in RobotCommand wrapper
+    cmd = RobotCommand(
+        command_id="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        sender_id="ui-client",
+        timestamp_ns=1_725_894_942_000_000_000,
+        type=CommandType.SPAWN_OBJECT,
+        payload=payload.model_dump(),
+    )
+    restored_cmd = RobotCommand.model_validate_json(cmd.model_dump_json())
+    assert restored_cmd.type == CommandType.SPAWN_OBJECT
+    assert restored_cmd.payload["object_type"] == "GEAR"
+    assert restored_cmd.payload["x"] == 0.5
+
+    # Invalid object_type
+    with pytest.raises(ValidationError):
+        SpawnObjectPayload.model_validate_json('{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "INVALID"}')
+
+    # Missing required field
+    with pytest.raises(ValidationError):
+        SpawnObjectPayload.model_validate_json('{"x": 0.5, "y": 0.0, "z": 0.0}')
+
+    # Extra fields rejected (strict)
+    with pytest.raises(ValidationError):
+        SpawnObjectPayload.model_validate_json('{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "extra": 1}')
+
+
+def test_clear_workspace_payload_serialization():
+    payload = ClearWorkspacePayload()
+    assert payload.model_dump() == {}
+    restored = ClearWorkspacePayload.model_validate_json("{}")
+    assert restored == payload
+
+    # Test in RobotCommand wrapper
+    cmd = RobotCommand(
+        command_id="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        sender_id="ui-client",
+        timestamp_ns=1_725_894_942_000_000_000,
+        type=CommandType.CLEAR_WORKSPACE,
+        payload=payload.model_dump(),
+    )
+    restored_cmd = RobotCommand.model_validate_json(cmd.model_dump_json())
+    assert restored_cmd.type == CommandType.CLEAR_WORKSPACE
+    assert restored_cmd.payload == {}
+
+    # Extra fields rejected (strict)
+    with pytest.raises(ValidationError):
+        ClearWorkspacePayload.model_validate_json('{"unexpected": "field"}')
+
 
 

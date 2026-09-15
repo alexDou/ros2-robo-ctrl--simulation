@@ -434,8 +434,10 @@ def emit_rust(ir: DomainIR) -> str:
             f.kind == "array" and any(fa.name == f.ref for fa in ir.fixed_arrays) for f in m.fields
         )
         eq_derive = "" if has_float else ", Eq"
-        default_derive = ", Default" if m.name in ("PalmState", "ResetFaultPayload", "EmergencyStopPayload", "TrajectoryExecutePayload") else ""
+        default_derive = ", Default" if m.name in ("PalmState", "ResetFaultPayload", "EmergencyStopPayload", "TrajectoryExecutePayload", "ClearWorkspacePayload") else ""
         lines.append(f"#[derive(Debug, Clone, PartialEq{eq_derive}, Serialize, Deserialize{default_derive})]")
+        if not m.additional_properties:
+            lines.append("#[serde(deny_unknown_fields)]")
         lines.append(f"pub struct {m.name} {{")
         for f in m.fields:
             fname = f"r#{f.name}" if f.name == "type" else f.name

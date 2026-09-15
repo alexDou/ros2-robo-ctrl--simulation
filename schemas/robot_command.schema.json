@@ -84,6 +84,47 @@
       "description": "Typed payload for RESET_FAULT command",
       "properties": {},
       "additionalProperties": false
+    },
+    "spawn_object_payload": {
+      "type": "object",
+      "title": "SpawnObjectPayload",
+      "description": "Typed payload for SPAWN_OBJECT command",
+      "required": [
+        "x",
+        "y",
+        "z",
+        "object_type"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "description": "Cartesian X in meters (REP-103 robot base frame)"
+        },
+        "y": {
+          "type": "number",
+          "description": "Cartesian Y in meters (REP-103 robot base frame)"
+        },
+        "z": {
+          "type": "number",
+          "description": "Cartesian Z in meters (clamped to table surface 0.0m)"
+        },
+        "object_type": {
+          "type": "string",
+          "title": "SpawnObjectType",
+          "enum": [
+            "GEAR"
+          ],
+          "description": "Type of object to spawn"
+        }
+      },
+      "additionalProperties": false
+    },
+    "clear_workspace_payload": {
+      "type": "object",
+      "title": "ClearWorkspacePayload",
+      "description": "Typed payload for CLEAR_WORKSPACE command",
+      "properties": {},
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -111,7 +152,9 @@
         "PALM_ACTUATE",
         "TRAJECTORY_EXECUTE",
         "EMERGENCY_STOP",
-        "RESET_FAULT"
+        "RESET_FAULT",
+        "SPAWN_OBJECT",
+        "CLEAR_WORKSPACE"
       ],
       "description": "Operational command type"
     },
