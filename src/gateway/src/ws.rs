@@ -15,8 +15,8 @@ fn current_time_ns() -> u64 {
 
 fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), String> {
     use crate::domain::{
-        CommandType, EmergencyStopPayload, PalmActuatePayload, ResetFaultPayload,
-        TrajectoryExecutePayload,
+        ClearWorkspacePayload, CommandType, EmergencyStopPayload, PalmActuatePayload,
+        ResetFaultPayload, SpawnObjectPayload, TrajectoryExecutePayload,
     };
     use serde::Deserialize;
     match cmd.r#type {
@@ -37,6 +37,16 @@ fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), Str
         }
         CommandType::ResetFault => {
             ResetFaultPayload::deserialize(&cmd.payload)
+                .map(|_| ())
+                .map_err(|e| e.to_string())
+        }
+        CommandType::SpawnObject => {
+            SpawnObjectPayload::deserialize(&cmd.payload)
+                .map(|_| ())
+                .map_err(|e| e.to_string())
+        }
+        CommandType::ClearWorkspace => {
+            ClearWorkspacePayload::deserialize(&cmd.payload)
                 .map(|_| ())
                 .map_err(|e| e.to_string())
         }

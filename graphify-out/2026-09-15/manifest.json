@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "CONTEXT.md": {
-    "mtime": 1789510223.4390705,
-    "seen": 1789511862.5127401,
-    "ast_hash": "fd9d91358dcc4a13a06739de102c3c0b",
+    "mtime": 1789398683.5162835,
+    "seen": 1789399104.26624,
+    "ast_hash": "e5f3fe9c8591187d8fa4c12fef2a34e1",
     "semantic_hash": ""
   },
   "README.md": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "schemas/robot_command.schema.json": {
-    "mtime": 1789511749.9658008,
-    "seen": 1789511862.5073357,
-    "ast_hash": "a619698bab70c2e2f117b09371c74939",
+    "mtime": 1789399641.0381234,
+    "seen": 1789400058.653099,
+    "ast_hash": "ee52a57dccc8279bbca0e3ff27ecdcc4",
     "semantic_hash": ""
   },
   "schemas/robot_telemetry_event.schema.json": {
@@ -774,15 +774,15 @@
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
-    "mtime": 1789511699.25662,
-    "seen": 1789511862.5078835,
-    "ast_hash": "73cec84a0b23bfdd2a1dbcbae8d1a548",
+    "mtime": 1789399920.1496558,
+    "seen": 1789400058.6549835,
+    "ast_hash": "96cde1c7f7cef6ea9853bd7ce092cede",
     "semantic_hash": ""
   },
   "tests/test_domain.py": {
-    "mtime": 1789511636.6954966,
-    "seen": 1789511862.5079286,
-    "ast_hash": "8f36fc6aca0252f54eb26b5b5e4e5b1b",
+    "mtime": 1789399481.27802,
+    "seen": 1789400058.6550012,
+    "ast_hash": "7396a57eea5ff515fc56926d37febc30",
     "semantic_hash": ""
   },
   "src/edge_node/main.py": {
@@ -810,9 +810,9 @@
     "semantic_hash": ""
   },
   "src/gateway/src/ws.rs": {
-    "mtime": 1789511808.2044234,
-    "seen": 1789511862.5078828,
-    "ast_hash": "73ae937e339dd48ae249d585bdcf6aba",
+    "mtime": 1789408464.0846007,
+    "seen": 1789408860.9183733,
+    "ast_hash": "b1abe8114ef8bc4418579c90a9d4109b",
     "semantic_hash": ""
   },
   "src/gateway/tests/ws_gateway_test.rs": {
@@ -852,9 +852,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
-    "mtime": 1789511734.4534154,
-    "seen": 1789511862.5087812,
-    "ast_hash": "37c57509679de01ec960c2d4cf1c0b34",
+    "mtime": 1789399975.9976509,
+    "seen": 1789400058.6561623,
+    "ast_hash": "659908f7aab4f32557e25fbeff49e881",
     "semantic_hash": ""
   },
   "web/tests/unit/env.test.ts": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "scripts/generate_domain.py": {
-    "mtime": 1789511758.45102,
-    "seen": 1789511862.507401,
-    "ast_hash": "b2c8308cbdba7086b99088aad12399bf",
+    "mtime": 1789405144.2675817,
+    "seen": 1789405389.6304224,
+    "ast_hash": "74b7318255c6ecdd294fd4e42effa3e8",
     "semantic_hash": ""
   },
   "src/domain/__init__.py": {
@@ -924,21 +924,21 @@
     "semantic_hash": ""
   },
   "src/domain/domain.py": {
-    "mtime": 1789511760.2150602,
-    "seen": 1789511862.507488,
-    "ast_hash": "f57af5e566d4cdfa98eb8cccdcf5b7da",
+    "mtime": 1789405157.0046456,
+    "seen": 1789405389.630502,
+    "ast_hash": "4ffa989d04ded449d85561a71ca25652",
     "semantic_hash": ""
   },
   "src/domain/domain.rs": {
-    "mtime": 1789511760.2146146,
-    "seen": 1789511862.5074894,
-    "ast_hash": "3a9d61ff04f7add119eaaf1b6f68c472",
+    "mtime": 1789405157.0017219,
+    "seen": 1789405389.6305034,
+    "ast_hash": "8d457f5956085806c0f2dc8c69d3fb55",
     "semantic_hash": ""
   },
   "web/domain/contracts.ts": {
-    "mtime": 1789511760.2153318,
-    "seen": 1789511862.5080216,
-    "ast_hash": "19e2696190947d819b38b712045cd37c",
+    "mtime": 1789405157.0056586,
+    "seen": 1789405389.630933,
+    "ast_hash": "3ed60cd3d86c2a8f828dfeff924da554",
     "semantic_hash": ""
   },
   "support_files/specs/units.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "web/domain/parsers.ts": {
-    "mtime": 1789511784.550732,
-    "seen": 1789511862.5080566,
-    "ast_hash": "bd380094148829bed8b4be22adafe010",
+    "mtime": 1789403349.8014135,
+    "seen": 1789405389.6309855,
+    "ast_hash": "5385be23e17d6e589c7524ce761a04ea",
     "semantic_hash": ""
   },
   "src/edge_node/mapper.py": {
@@ -1152,9 +1152,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-lm3u--phase-4-dexterous-palm-integration-actuation-found.md": {
-    "mtime": 1789417657.7347689,
-    "seen": 1789511862.5125606,
-    "ast_hash": "7a98901e9feaff1a74e101825d8f0037",
+    "mtime": 1789398782.0722752,
+    "seen": 1789399104.2660954,
+    "ast_hash": "7587e9ec92e05fcc3cd6ea79e094d43e",
     "semantic_hash": ""
   },
   ".beans/hand-sim-osnb--unit-41-dexterous-palm-3d-model-kinematic-flange-m.md": {
@@ -1233,66 +1233,6 @@
     "mtime": 1789414285.3235579,
     "seen": 1789414441.61683,
     "ast_hash": "581417b7d6cc30f88393e8e370fcf35b",
-    "semantic_hash": ""
-  },
-  ".beans/hand-sim-24sn--unit-52-edgenode-workcellstate-server-side-lockout.md": {
-    "mtime": 1789511357.1926525,
-    "seen": 1789511862.5120914,
-    "ast_hash": "31e098f59ba70ad15d4039dbd5b8a9bf",
-    "semantic_hash": ""
-  },
-  ".beans/hand-sim-366j--unit-51-3d-workcell-table-raycaster-procedural-gea.md": {
-    "mtime": 1789511352.134313,
-    "seen": 1789511862.5121458,
-    "ast_hash": "e378b7776824a25f29f4539c0f87c4dc",
-    "semantic_hash": ""
-  },
-  ".beans/hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md": {
-    "mtime": 1789511366.0742507,
-    "seen": 1789511862.5121467,
-    "ast_hash": "4af15190f00ec16c96b9715578fc577a",
-    "semantic_hash": ""
-  },
-  ".beans/hand-sim-7w33--unit-5-interactive-3d-workcell-click-to-place-gear.md": {
-    "mtime": 1789510666.291545,
-    "seen": 1789511862.512172,
-    "ast_hash": "13e67669d8773ca67158f526d7b1251f",
-    "semantic_hash": ""
-  },
-  ".beans/hand-sim-lg8q--unit-55-multi-service-system-integration-suite.md": {
-    "mtime": 1789511370.558554,
-    "seen": 1789511862.5125287,
-    "ast_hash": "e33b91b4e96261358d5d33729b6b3d69",
-    "semantic_hash": ""
-  },
-  ".beans/hand-sim-tuyu--unit-50-domain-schemas-spawning-contracts.md": {
-    "mtime": 1789511546.936619,
-    "seen": 1789511862.5126665,
-    "ast_hash": "3300f865d6c2a5b197041bd066a28f33",
-    "semantic_hash": ""
-  },
-  ".beans/hand-sim-wqyv--unit-53-gateway-stateless-schema-validation.md": {
-    "mtime": 1789511361.7573621,
-    "seen": 1789511862.5126963,
-    "ast_hash": "decad3f54fd553f9c3948bf1bede20d1",
-    "semantic_hash": ""
-  },
-  "docs/adr/0002-in-process-workcell-state-isolation.md": {
-    "mtime": 1789510565.9333065,
-    "seen": 1789511862.512797,
-    "ast_hash": "ffd5a05490c3699004a26a20fb0fe435",
-    "semantic_hash": ""
-  },
-  "support_files/specs/unit5/implementation_wireframe.md": {
-    "mtime": 1789510590.5684195,
-    "seen": 1789511862.513323,
-    "ast_hash": "989f0ba541528ae6d5293b67527f2398",
-    "semantic_hash": ""
-  },
-  "support_files/specs/unit5/overview.md": {
-    "mtime": 1789510577.8365638,
-    "seen": 1789511862.5133238,
-    "ast_hash": "c65985244626c6902b89f4391136f49c",
     "semantic_hash": ""
   }
 }

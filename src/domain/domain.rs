@@ -28,6 +28,13 @@ pub enum PoseName {
     InspectPose,
 }
 
+/// Type of object to spawn
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum SpawnObjectType {
+    Gear,
+}
+
 /// Operational command type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -38,6 +45,8 @@ pub enum CommandType {
     TrajectoryExecute,
     EmergencyStop,
     ResetFault,
+    SpawnObject,
+    ClearWorkspace,
 }
 
 /// Current lifecycle state of the robotic manipulator
@@ -98,12 +107,14 @@ pub fn validate_joint_positions(joint_positions: &ArmJointPositions) -> Result<(
 
 /// Typed payload for PALM_ACTUATE command to toggle suction or grasp status
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PalmActuatePayload {
     pub action: PalmAction,
 }
 
 /// Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom trajectories
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub struct TrajectoryExecutePayload {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub pose_name: Option<PoseName>,
@@ -113,6 +124,7 @@ pub struct TrajectoryExecutePayload {
 
 /// Typed payload for EMERGENCY_STOP command
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub struct EmergencyStopPayload {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
@@ -120,11 +132,29 @@ pub struct EmergencyStopPayload {
 
 /// Typed payload for RESET_FAULT command
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub struct ResetFaultPayload {
+}
+
+/// Typed payload for SPAWN_OBJECT command
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SpawnObjectPayload {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+    pub object_type: SpawnObjectType,
+}
+
+/// Typed payload for CLEAR_WORKSPACE command
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct ClearWorkspacePayload {
 }
 
 /// End-effector dexterous palm pneumatic actuation and grasp status
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
 pub struct PalmState {
     #[serde(default)]
     pub is_grasped: bool,
@@ -132,6 +162,7 @@ pub struct PalmState {
 
 /// Edge AI inference latency and object classification metrics
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct InferenceMetrics {
     pub latency_ms: f64,
     pub confidence: f64,
@@ -140,6 +171,7 @@ pub struct InferenceMetrics {
 
 /// Canonical schema for structured error frames returned by Gateway over WebSocket
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ErrorFrame {
     pub r#type: String,
     pub error_code: String,
@@ -161,6 +193,7 @@ impl ErrorFrame {
 
 /// Canonical schema for inbound commands sent to EdgeNode over WebSocket or DataFabric
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RobotCommand {
     pub command_id: String,
     pub sender_id: String,
@@ -171,6 +204,7 @@ pub struct RobotCommand {
 
 /// Canonical schema for outbound telemetry events emitted by EdgeNode over DataFabric and WebSocket
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RobotTelemetryEvent {
     pub timestamp_ns: u64,
     pub robot_state: RobotState,

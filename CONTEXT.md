@@ -76,6 +76,32 @@ _Avoid_: Peg, stacker, pole
 Physical disposal destination chute receiving cracked or defective gearwheels regardless of color.
 _Avoid_: Trash, reject pile, discard box
 
+**WorkcellTable**:
+Physical horizontal workspace surface located in front of the robotic manipulator receiving object placement coordinates.
+_Avoid_: Desk, bench, ground plane, platform
+
+**Gearwheel**:
+Cylindrical manufactured workpiece with perimeter teeth targeted for ingestion, pickup, and sorting.
+_Avoid_: Item, puck, token, part
+
+**ReachabilityBoundary**:
+Valid radial operational envelope between inner radius ($0.35\text{m}$) and outer radius ($0.75\text{m}$) for Cartesian manipulator targeting.
+_Avoid_: Reach limit, boundary zone, work area
+
+**ClickLockout**:
+Client-side operator interlock preventing additional object placement while an active gearwheel is present in the workspace or RobotState is not IDLE.
+_Avoid_: Click debounce, place lock, input gate
+
+**ClearWorkspace**:
+Explicit administrative command and action resetting active workcell objects and lifting placement lockouts.
+_Avoid_: Reset scene, wipe table, delete objects
+
+**WorkcellState**:
+Authoritative domain state component within EdgeNode tracking active workcell workpiece presence, occupancy, and coordinates.
+_Avoid_: Scene graph, world model, spawn manager
+
+
+
 
 
 

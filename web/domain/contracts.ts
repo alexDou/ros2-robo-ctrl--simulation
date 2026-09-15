@@ -70,6 +70,19 @@ export const poseNameSchema = PoseNameSchema;
 
 export type PoseName = z.infer<typeof PoseNameSchema>;
 
+/** Type of object to spawn */
+export const SpawnObjectType = {
+  GEAR: 'GEAR',
+} as const;
+
+export const SpawnObjectTypeSchema = z.enum([
+  'GEAR',
+], { message: 'Invalid spawn object type' });
+
+export const spawnObjectTypeSchema = SpawnObjectTypeSchema;
+
+export type SpawnObjectType = z.infer<typeof SpawnObjectTypeSchema>;
+
 /** Operational command type */
 export const CommandType = {
   PING: 'PING',
@@ -78,6 +91,8 @@ export const CommandType = {
   TRAJECTORY_EXECUTE: 'TRAJECTORY_EXECUTE',
   EMERGENCY_STOP: 'EMERGENCY_STOP',
   RESET_FAULT: 'RESET_FAULT',
+  SPAWN_OBJECT: 'SPAWN_OBJECT',
+  CLEAR_WORKSPACE: 'CLEAR_WORKSPACE',
 } as const;
 
 export const CommandTypeSchema = z.enum([
@@ -87,6 +102,8 @@ export const CommandTypeSchema = z.enum([
   'TRAJECTORY_EXECUTE',
   'EMERGENCY_STOP',
   'RESET_FAULT',
+  'SPAWN_OBJECT',
+  'CLEAR_WORKSPACE',
 ], { message: 'Invalid command type' });
 
 export const commandTypeSchema = CommandTypeSchema;
@@ -208,6 +225,34 @@ export const ResetFaultPayloadSchema = jsonInput.pipe(rawResetFaultPayloadSchema
 export const resetFaultPayloadSchema = ResetFaultPayloadSchema;
 
 export type ResetFaultPayload = z.infer<typeof rawResetFaultPayloadSchema>;
+
+/** Typed payload for SPAWN_OBJECT command */
+export const rawSpawnObjectPayloadSchema = z.object(
+  {
+    x: z.number({ message: "Field 'x' must be a number" }),
+    y: z.number({ message: "Field 'y' must be a number" }),
+    z: z.number({ message: "Field 'z' must be a number" }),
+    object_type: SpawnObjectTypeSchema,
+  },
+  { message: 'SpawnObjectPayload payload must be an object' }
+).strict();
+
+export const SpawnObjectPayloadSchema = jsonInput.pipe(rawSpawnObjectPayloadSchema);
+export const spawnObjectPayloadSchema = SpawnObjectPayloadSchema;
+
+export type SpawnObjectPayload = z.infer<typeof rawSpawnObjectPayloadSchema>;
+
+/** Typed payload for CLEAR_WORKSPACE command */
+export const rawClearWorkspacePayloadSchema = z.object(
+  {
+  },
+  { message: 'ClearWorkspacePayload payload must be an object' }
+).strict();
+
+export const ClearWorkspacePayloadSchema = jsonInput.pipe(rawClearWorkspacePayloadSchema);
+export const clearWorkspacePayloadSchema = ClearWorkspacePayloadSchema;
+
+export type ClearWorkspacePayload = z.infer<typeof rawClearWorkspacePayloadSchema>;
 
 /** End-effector dexterous palm pneumatic actuation and grasp status */
 export const rawPalmStateSchema = z.object(
@@ -331,6 +376,22 @@ export function parseResetFaultPayload(input: unknown): ResetFaultPayload {
 
 export function isResetFaultPayload(input: unknown): input is ResetFaultPayload {
   return resetFaultPayloadSchema.safeParse(input).success;
+}
+
+export function parseSpawnObjectPayload(input: unknown): SpawnObjectPayload {
+  return unwrapZod<SpawnObjectPayload>(spawnObjectPayloadSchema.safeParse(input));
+}
+
+export function isSpawnObjectPayload(input: unknown): input is SpawnObjectPayload {
+  return spawnObjectPayloadSchema.safeParse(input).success;
+}
+
+export function parseClearWorkspacePayload(input: unknown): ClearWorkspacePayload {
+  return unwrapZod<ClearWorkspacePayload>(clearWorkspacePayloadSchema.safeParse(input));
+}
+
+export function isClearWorkspacePayload(input: unknown): input is ClearWorkspacePayload {
+  return clearWorkspacePayloadSchema.safeParse(input).success;
 }
 
 export function parsePalmState(input: unknown): PalmState {

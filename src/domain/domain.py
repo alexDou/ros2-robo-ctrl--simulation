@@ -21,6 +21,12 @@ class PoseName(str, Enum):
     INSPECT_POSE = "INSPECT_POSE"
 
 
+class SpawnObjectType(str, Enum):
+    """Type of object to spawn"""
+
+    GEAR = "GEAR"
+
+
 class CommandType(str, Enum):
     """Operational command type"""
 
@@ -30,6 +36,8 @@ class CommandType(str, Enum):
     TRAJECTORY_EXECUTE = "TRAJECTORY_EXECUTE"
     EMERGENCY_STOP = "EMERGENCY_STOP"
     RESET_FAULT = "RESET_FAULT"
+    SPAWN_OBJECT = "SPAWN_OBJECT"
+    CLEAR_WORKSPACE = "CLEAR_WORKSPACE"
 
 
 class RobotState(str, Enum):
@@ -103,6 +111,24 @@ class EmergencyStopPayload(BaseModel):
 
 class ResetFaultPayload(BaseModel):
     """Typed payload for RESET_FAULT command"""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+
+class SpawnObjectPayload(BaseModel):
+    """Typed payload for SPAWN_OBJECT command"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    x: float = Field(..., description="Cartesian X in meters (REP-103 robot base frame)")
+    y: float = Field(..., description="Cartesian Y in meters (REP-103 robot base frame)")
+    z: float = Field(..., description="Cartesian Z in meters (clamped to table surface 0.0m)")
+    object_type: SpawnObjectType = Field(..., description="Type of object to spawn")
+
+
+class ClearWorkspacePayload(BaseModel):
+    """Typed payload for CLEAR_WORKSPACE command"""
 
     model_config = ConfigDict(extra="forbid")
 
