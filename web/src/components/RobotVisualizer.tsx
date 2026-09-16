@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { URDFRobot } from 'urdf-loader';
-import { UR5E_JOINTS } from '@contracts';
+import { UR5E_JOINTS, type SpawnObjectPayload, type RobotState } from '@contracts';
 import * as robotLoader from '@utils/robotLoader';
 
 export interface RobotVisualizerProps {
@@ -15,6 +15,9 @@ export interface RobotVisualizerProps {
       palmState?: { is_grasped: boolean };
     };
   };
+  robotState?: RobotState | string;
+  hasActiveGear?: boolean;
+  onSpawnObject?: (payload: SpawnObjectPayload) => void;
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,
@@ -118,11 +121,139 @@ function createDexterousPalm(): PalmProceduralAssets {
   return { group, nozzleMesh, dispose };
 }
 
+interface TableProceduralAssets {
+  tableMesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+  reticleMesh: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
+  bounds: { minX: number; maxX: number; minY: number; maxY: number };
+  dispose: () => void;
+}
+
+function createWorkcellTable(): TableProceduralAssets {
+  const slabSizeX = 0.8;
+  const slabSizeY = 0.6;
+  const thickness = 0.04;
+  const centerX = 0.55;
+  const centerY = 0.0;
+
+  const tableGeom = new THREE.BoxGeometry(slabSizeX, slabSizeY, thickness);
+  const tableMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.8,
+    metalness: 0.2,
+  });
+  const tableMesh = new THREE.Mesh(tableGeom, tableMat);
+  tableMesh.name = 'workcell-table';
+  tableMesh.position.set(centerX, centerY, -thickness / 2);
+
+  const bounds = {
+    minX: centerX - slabSizeX / 2, // 0.15
+    maxX: centerX + slabSizeX / 2, // 0.95
+    minY: centerY - slabSizeY / 2, // -0.3
+    maxY: centerY + slabSizeY / 2, // 0.3
+  };
+
+  const reticleGeom = new THREE.RingGeometry(0.035, 0.045, 32);
+  const reticleMat = new THREE.MeshBasicMaterial({
+    color: 0x38bdf8,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.85,
+  });
+  const reticleMesh = new THREE.Mesh(reticleGeom, reticleMat);
+  reticleMesh.name = 'workcell-reticle';
+  reticleMesh.visible = false;
+  reticleMesh.position.set(centerX, centerY, 0.001);
+
+  const dispose = () => {
+    tableGeom.dispose();
+    disposeMaterial(tableMat);
+    reticleGeom.dispose();
+    disposeMaterial(reticleMat);
+  };
+
+  return { tableMesh, reticleMesh, bounds, dispose };
+}
+
+interface GearwheelProceduralAssets {
+  group: THREE.Group;
+  dispose: () => void;
+}
+
+function createProceduralGearwheel(): GearwheelProceduralAssets {
+  const group = new THREE.Group();
+  group.name = 'gearwheel';
+
+  const radius = 0.04;
+  const height = 0.02;
+
+  const bodyGeom = new THREE.CylinderGeometry(radius * 0.9, radius * 0.9, height, 24);
+  bodyGeom.rotateX(Math.PI / 2);
+  const bodyMat = new THREE.MeshStandardMaterial({
+    color: 0x64748b,
+    metalness: 0.7,
+    roughness: 0.3,
+  });
+  const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
+  bodyMesh.name = 'gear-body';
+  bodyMesh.position.set(0, 0, height / 2);
+  group.add(bodyMesh);
+
+  const numTeeth = 12;
+  const toothWidth = 0.008;
+  const toothDepth = radius * 0.25;
+  const toothGeom = new THREE.BoxGeometry(toothWidth, toothDepth, height);
+  const toothMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    metalness: 0.75,
+    roughness: 0.25,
+  });
+
+  for (let i = 0; i < numTeeth; i++) {
+    const angle = (i * 2 * Math.PI) / numTeeth;
+    const toothMesh = new THREE.Mesh(toothGeom, toothMat);
+    toothMesh.name = `gear-tooth-${i}`;
+    const dist = radius * 0.9;
+    toothMesh.position.set(
+      dist * Math.cos(angle),
+      dist * Math.sin(angle),
+      height / 2
+    );
+    toothMesh.rotation.z = angle + Math.PI / 2;
+    group.add(toothMesh);
+  }
+
+  const hubGeom = new THREE.CylinderGeometry(radius * 0.25, radius * 0.25, height * 1.05, 16);
+  hubGeom.rotateX(Math.PI / 2);
+  const hubMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    metalness: 0.9,
+    roughness: 0.2,
+  });
+  const hubMesh = new THREE.Mesh(hubGeom, hubMat);
+  hubMesh.name = 'gear-hub';
+  hubMesh.position.set(0, 0, height / 2);
+  group.add(hubMesh);
+
+  const dispose = () => {
+    bodyGeom.dispose();
+    disposeMaterial(bodyMat);
+    toothGeom.dispose();
+    disposeMaterial(toothMat);
+    hubGeom.dispose();
+    disposeMaterial(hubMat);
+  };
+
+  return { group, dispose };
+}
+
 export function RobotVisualizer({
   urdfUrl = robotLoader.DEFAULT_UR5E_URDF_PATH,
   assetBaseUrl,
   jointPositionsRef,
   telemetryBufferRef,
+  robotState,
+  hasActiveGear,
+  onSpawnObject,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -158,6 +289,17 @@ export function RobotVisualizer({
   const controlsFactoryRef = useRef(controlsFactory);
   controlsFactoryRef.current = controlsFactory;
 
+  const robotStatePropRef = useRef(robotState);
+  robotStatePropRef.current = robotState;
+
+  const hasActiveGearPropRef = useRef(hasActiveGear);
+  hasActiveGearPropRef.current = hasActiveGear;
+
+  const onSpawnObjectRef = useRef(onSpawnObject);
+  onSpawnObjectRef.current = onSpawnObject;
+
+  const clearWorkspaceRef = useRef<(() => void) | null>(null);
+
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
@@ -167,6 +309,9 @@ export function RobotVisualizer({
     let animId: number;
     let loadedRobot: URDFRobot | null = null;
     let palmAssets: PalmProceduralAssets | null = null;
+    let tableAssets: TableProceduralAssets | null = null;
+    let activeGearAssets: GearwheelProceduralAssets | null = null;
+    let isLockedOut = false;
     let wasGrasped = false;
     let needsRender = true;
     const lastRenderedPositions = new Float64Array(6).fill(NaN);
@@ -277,6 +422,11 @@ export function RobotVisualizer({
     robotGroup.rotation.x = -Math.PI / 2;
     scene.add(robotGroup);
 
+    // Mount WorkcellTable and Dynamic Reticle to robotGroup
+    tableAssets = createWorkcellTable();
+    robotGroup.add(tableAssets.tableMesh);
+    robotGroup.add(tableAssets.reticleMesh);
+
     // 8. Load UR5e robot model
     const loader = robotLoader.createRobotLoader({ assetBaseUrl });
     robotLoader.loadRobotModel(urdfUrl, loader)
@@ -337,6 +487,163 @@ export function RobotVisualizer({
     if (onSceneReadyRef.current) {
       onSceneReadyRef.current(scene, camera, controls, renderer);
     }
+
+    const spawnGearAt = (x: number, y: number) => {
+      if (activeGearAssets || isLockedOut || hasActiveGearPropRef.current) {
+        return;
+      }
+      const gear = createProceduralGearwheel();
+      gear.group.position.set(x, y, 0.0);
+      robotGroup.add(gear.group);
+      activeGearAssets = gear;
+      isLockedOut = true;
+      if (tableAssets) {
+        tableAssets.reticleMesh.visible = false;
+      }
+      needsRender = true;
+
+      if (onSpawnObjectRef.current) {
+        onSpawnObjectRef.current({
+          x,
+          y,
+          z: 0.0,
+          object_type: 'GEAR',
+        });
+      }
+    };
+
+    const clearWorkspace = () => {
+      if (activeGearAssets) {
+        if (activeGearAssets.group.parent) {
+          activeGearAssets.group.parent.remove(activeGearAssets.group);
+        }
+        activeGearAssets.dispose();
+        activeGearAssets = null;
+      }
+      isLockedOut = false;
+      needsRender = true;
+    };
+    clearWorkspaceRef.current = clearWorkspace;
+
+    const raycaster = new THREE.Raycaster();
+    const pointerNdc = new THREE.Vector2();
+
+    const getTableCoordinates = (clientX: number, clientY: number) => {
+      if (!tableAssets) return null;
+      const rect = canvas.getBoundingClientRect();
+      const rectWidth = rect.width || canvas.width || 800;
+      const rectHeight = rect.height || canvas.height || 600;
+      pointerNdc.x = ((clientX - rect.left) / rectWidth) * 2 - 1;
+      pointerNdc.y = -((clientY - rect.top) / rectHeight) * 2 + 1;
+
+      camera.updateMatrixWorld();
+      tableAssets.tableMesh.updateMatrixWorld(true);
+
+      raycaster.setFromCamera(pointerNdc, camera);
+      const intersects = raycaster.intersectObject(tableAssets.tableMesh, false);
+      if (intersects.length === 0) return null;
+
+      const localPoint = robotGroup.worldToLocal(intersects[0].point);
+      if (Math.abs(localPoint.z) > 0.01) {
+        return null;
+      }
+      return { x: localPoint.x, y: localPoint.y };
+    };
+
+    const handlePointerMoveCoords = (x: number, y: number) => {
+      if (isDisposed || !tableAssets) return;
+      const r = Math.sqrt(x * x + y * y);
+      const isReachable = r >= 0.35 && r <= 0.75;
+      const isInsideTable =
+        x >= tableAssets.bounds.minX &&
+        x <= tableAssets.bounds.maxX &&
+        y >= tableAssets.bounds.minY &&
+        y <= tableAssets.bounds.maxY;
+      const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+      const isLocked = isLockedOut || Boolean(hasActiveGearPropRef.current);
+
+      if (isReachable && isInsideTable && isIdle && !isLocked) {
+        tableAssets.reticleMesh.position.set(x, y, 0.001);
+        if (!tableAssets.reticleMesh.visible) {
+          tableAssets.reticleMesh.visible = true;
+        }
+        needsRender = true;
+      } else {
+        if (tableAssets.reticleMesh.visible) {
+          tableAssets.reticleMesh.visible = false;
+          needsRender = true;
+        }
+      }
+    };
+
+    const handlePointerLeaveAction = () => {
+      if (tableAssets && tableAssets.reticleMesh.visible) {
+        tableAssets.reticleMesh.visible = false;
+        needsRender = true;
+      }
+    };
+
+    const handleClickCoords = (x: number, y: number) => {
+      if (isDisposed || !tableAssets) return false;
+      const isLocked = isLockedOut || Boolean(hasActiveGearPropRef.current);
+      const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+      if (isLocked || !isIdle) return false;
+
+      const r = Math.sqrt(x * x + y * y);
+      const isReachable = r >= 0.35 && r <= 0.75;
+      const isInsideTable =
+        x >= tableAssets.bounds.minX &&
+        x <= tableAssets.bounds.maxX &&
+        y >= tableAssets.bounds.minY &&
+        y <= tableAssets.bounds.maxY;
+
+      if (isReachable && isInsideTable) {
+        spawnGearAt(x, y);
+        return true;
+      }
+      return false;
+    };
+
+    let pointerDownPos: { x: number; y: number } | null = null;
+
+    const onPointerDown = (event: PointerEvent) => {
+      pointerDownPos = { x: event.clientX, y: event.clientY };
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (isDisposed || !tableAssets) return;
+      const coords = getTableCoordinates(event.clientX, event.clientY);
+      if (coords) {
+        handlePointerMoveCoords(coords.x, coords.y);
+      } else {
+        handlePointerLeaveAction();
+      }
+    };
+
+    const onPointerLeave = () => {
+      handlePointerLeaveAction();
+    };
+
+    const onCanvasClick = (event: MouseEvent) => {
+      if (isDisposed || !tableAssets) return;
+      if (pointerDownPos) {
+        const dx = event.clientX - pointerDownPos.x;
+        const dy = event.clientY - pointerDownPos.y;
+        if (dx * dx + dy * dy > 16) {
+          // Camera orbit drag was performed, ignore click
+          return;
+        }
+      }
+      const coords = getTableCoordinates(event.clientX, event.clientY);
+      if (coords) {
+        handleClickCoords(coords.x, coords.y);
+      }
+    };
+
+    canvas.addEventListener('pointerdown', onPointerDown);
+    canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerleave', onPointerLeave);
+    canvas.addEventListener('click', onCanvasClick);
 
     // Expose debug handle on window for testing and diagnostics
     const visualizerHandle = {
@@ -399,6 +706,40 @@ export function RobotVisualizer({
           isGrasped: mat.emissiveIntensity > 0,
           emissiveHex: mat.emissive.getHex(),
           emissiveIntensity: mat.emissiveIntensity,
+        };
+      },
+      getTableMesh: () => tableAssets?.tableMesh ?? null,
+      getReticleMesh: () => tableAssets?.reticleMesh ?? null,
+      getGearMesh: () => activeGearAssets?.group ?? null,
+      getGearPosition: () => {
+        if (!activeGearAssets) return null;
+        const pos = activeGearAssets.group.position;
+        return { x: pos.x, y: pos.y, z: pos.z };
+      },
+      hasActiveGear: () => activeGearAssets !== null,
+      isLockedOut: () => isLockedOut,
+      clearWorkspace: () => {
+        clearWorkspace();
+      },
+      simulatePointerMove: (x: number, y: number) => {
+        handlePointerMoveCoords(x, y);
+      },
+      simulatePointerLeave: () => {
+        handlePointerLeaveAction();
+      },
+      simulateClick: (x: number, y: number) => {
+        return handleClickCoords(x, y);
+      },
+      raycastPointer: (clientX: number, clientY: number) => {
+        const coords = getTableCoordinates(clientX, clientY);
+        if (!coords) return null;
+        const r = Math.sqrt(coords.x * coords.x + coords.y * coords.y);
+        return {
+          x: coords.x,
+          y: coords.y,
+          z: 0.0,
+          isReachable: r >= 0.35 && r <= 0.75,
+          isInsideTable: coords.x >= 0.25 && coords.x <= 0.85 && coords.y >= -0.3 && coords.y <= 0.3,
         };
       },
     };
@@ -523,6 +864,12 @@ export function RobotVisualizer({
         }
       }
 
+      canvas.removeEventListener('pointerdown', onPointerDown);
+      canvas.removeEventListener('pointermove', onPointerMove);
+      canvas.removeEventListener('pointerleave', onPointerLeave);
+      canvas.removeEventListener('click', onCanvasClick);
+      clearWorkspaceRef.current = null;
+
       // Dispose procedural palm assets
       if (palmAssets) {
         if (palmAssets.group.parent) {
@@ -530,6 +877,27 @@ export function RobotVisualizer({
         }
         palmAssets.dispose();
         palmAssets = null;
+      }
+
+      // Dispose active gear assets
+      if (activeGearAssets) {
+        if (activeGearAssets.group.parent) {
+          activeGearAssets.group.parent.remove(activeGearAssets.group);
+        }
+        activeGearAssets.dispose();
+        activeGearAssets = null;
+      }
+
+      // Dispose workcell table assets
+      if (tableAssets) {
+        if (tableAssets.tableMesh.parent) {
+          tableAssets.tableMesh.parent.remove(tableAssets.tableMesh);
+        }
+        if (tableAssets.reticleMesh.parent) {
+          tableAssets.reticleMesh.parent.remove(tableAssets.reticleMesh);
+        }
+        tableAssets.dispose();
+        tableAssets = null;
       }
 
       // Dispose all geometries and materials across scene
@@ -559,6 +927,12 @@ export function RobotVisualizer({
       }
     };
   }, [urdfUrl, assetBaseUrl]);
+
+  useEffect(() => {
+    if (hasActiveGear === false) {
+      clearWorkspaceRef.current?.();
+    }
+  }, [hasActiveGear]);
   return (
     <div
       ref={containerRef}

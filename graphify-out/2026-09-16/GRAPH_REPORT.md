@@ -1,7 +1,7 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-16)
 
 ## Corpus Check
-- 191 files · ~107,219 words
+- 191 files · ~106,837 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

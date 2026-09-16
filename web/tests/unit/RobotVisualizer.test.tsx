@@ -702,6 +702,503 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(matDisposeSpy).toHaveBeenCalled();
     });
   });
+
+  describe('Unit 5.1: 3D Workcell Table, Raycaster & Procedural Gear Ingestion', () => {
+    let fakeTool0Link: THREE.Object3D;
+    let fakeRobot: any;
+
+    beforeEach(() => {
+      fakeTool0Link = new THREE.Object3D();
+      fakeTool0Link.name = 'tool0';
+
+      fakeRobot = new THREE.Group();
+      fakeRobot.name = 'ur5e-mock';
+      fakeRobot.links = {
+        tool0: fakeTool0Link,
+      };
+      fakeRobot.joints = {};
+      fakeRobot.setJointValue = vi.fn();
+      fakeRobot.add(fakeTool0Link);
+
+      vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot as any);
+    });
+
+    it('mounts WorkcellTable slab (0.8m x 0.6m) inside robotGroup flush at Z = 0.0m with open flanks', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      expect(visualizer).toBeDefined();
+
+      const tableMesh = visualizer.getTableMesh();
+      expect(tableMesh).toBeDefined();
+      expect(tableMesh.name).toBe('workcell-table');
+
+      // Slab dimensions: 0.8m x 0.6m (width and depth)
+      const geom = tableMesh.geometry as THREE.BoxGeometry;
+      expect(geom).toBeDefined();
+      const dims = [geom.parameters.width, geom.parameters.height];
+      expect(dims).toContain(0.8);
+      expect(dims).toContain(0.6);
+
+      // Top surface flush at Z = 0.0m
+      const thickness = geom.parameters.depth;
+      expect(tableMesh.position.z + thickness / 2).toBeCloseTo(0.0, 4);
+
+      // Center position
+      expect(tableMesh.position.x).toBeCloseTo(0.55, 2);
+      expect(tableMesh.position.y).toBeCloseTo(0.0, 2);
+    });
+
+    it('pointer raycaster calculates Cartesian coordinates and shows reticle within reachability boundary (0.35m <= R <= 0.75m)', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const reticle = visualizer.getReticleMesh();
+      expect(reticle).toBeDefined();
+      expect(reticle.name).toBe('workcell-reticle');
+      expect(reticle.visible).toBe(false);
+
+      // Hover reachable table position: x=0.5, y=0.0 (R=0.5m)
+      act(() => {
+        visualizer.simulatePointerMove(0.5, 0.0);
+      });
+
+      expect(reticle.visible).toBe(true);
+      expect(reticle.position.x).toBeCloseTo(0.5, 2);
+      expect(reticle.position.y).toBeCloseTo(0.0, 2);
+      expect(reticle.position.z).toBeCloseTo(0.001, 3);
+
+      // Reticle material has visible light accent shade
+      const reticleMat = reticle.material as THREE.MeshBasicMaterial;
+      expect(reticleMat.color).toBeDefined();
+    });
+
+    it('reticle automatically hides when outside reachability boundary (R < 0.35m or R > 0.75m)', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const reticle = visualizer.getReticleMesh();
+
+      // 1. Hover reachable spot
+      act(() => {
+        visualizer.simulatePointerMove(0.5, 0.0);
+      });
+      expect(reticle.visible).toBe(true);
+
+      // 2. Hover inner unreachable deadzone: x=0.25, y=0.0 (R=0.25m < 0.35m)
+      act(() => {
+        visualizer.simulatePointerMove(0.25, 0.0);
+      });
+      expect(reticle.visible).toBe(false);
+
+      // 3. Hover outer unreachable boundary: x=0.85, y=0.0 (R=0.85m > 0.75m)
+      act(() => {
+        visualizer.simulatePointerMove(0.85, 0.0);
+      });
+      expect(reticle.visible).toBe(false);
+
+      // 4. Pointer leaves table
+      act(() => {
+        visualizer.simulatePointerLeave();
+      });
+      expect(reticle.visible).toBe(false);
+
+      // 5. Reachable distance R ~ 0.64m, but y=0.4m is outside table bounds (slabDepth/2 = 0.3m)
+      act(() => {
+        visualizer.simulatePointerMove(0.5, 0.4);
+      });
+      expect(reticle.visible).toBe(false);
+    });
+
+    it('reticle automatically hides when robot_state is not IDLE or when locked out', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      const { rerender } = render(
+        <RobotVisualizer
+          robotState="EXECUTING"
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const reticle = visualizer.getReticleMesh();
+
+      // In EXECUTING state, hovering reachable spot hides reticle
+      act(() => {
+        visualizer.simulatePointerMove(0.5, 0.0);
+      });
+      expect(reticle.visible).toBe(false);
+
+      // Re-render in IDLE state
+      rerender(
+        <RobotVisualizer
+          robotState="IDLE"
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+        />
+      );
+
+      act(() => {
+        visualizer.simulatePointerMove(0.5, 0.0);
+      });
+      expect(reticle.visible).toBe(true);
+    });
+
+    it('clicking reachable spot spawns procedural gearwheel mesh and triggers onSpawnObject', async () => {
+      const onSpawnSpy = vi.fn();
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            onSpawnObject={onSpawnSpy}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      expect(visualizer.hasActiveGear()).toBe(false);
+
+      // Click reachable table spot: x=0.5, y=0.1 (R ~ 0.51m)
+      act(() => {
+        visualizer.simulateClick(0.5, 0.1);
+      });
+
+      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(onSpawnSpy).toHaveBeenCalledTimes(1);
+      expect(onSpawnSpy).toHaveBeenCalledWith({
+        x: 0.5,
+        y: 0.1,
+        z: 0.0,
+        object_type: 'GEAR',
+      });
+
+      // Gear mesh resting at clicked coordinates
+      const gearMesh = visualizer.getGearMesh();
+      expect(gearMesh).toBeDefined();
+      expect(gearMesh.name).toBe('gearwheel');
+      expect(gearMesh.position.x).toBeCloseTo(0.5, 2);
+      expect(gearMesh.position.y).toBeCloseTo(0.1, 2);
+      expect(gearMesh.position.z).toBeCloseTo(0.0, 2);
+
+      // Verify procedural gear features (body, teeth, hub)
+      const childNames = gearMesh.children.map((c: any) => c.name);
+      expect(childNames).toContain('gear-body');
+      expect(childNames).toContain('gear-hub');
+      expect(childNames.some((n: string) => n.startsWith('gear-tooth-'))).toBe(true);
+    });
+
+    it('enforces client-side ClickLockout preventing further clicks while gearwheel is present', async () => {
+      const onSpawnSpy = vi.fn();
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            onSpawnObject={onSpawnSpy}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Click 1: spawns gear
+      act(() => {
+        visualizer.simulateClick(0.5, 0.0);
+      });
+      expect(visualizer.isLockedOut()).toBe(true);
+      expect(onSpawnSpy).toHaveBeenCalledTimes(1);
+
+      // Reticle should be hidden while locked out
+      act(() => {
+        visualizer.simulatePointerMove(0.6, 0.0);
+      });
+      expect(visualizer.getReticleMesh().visible).toBe(false);
+
+      // Click 2: blocked by ClickLockout
+      act(() => {
+        visualizer.simulateClick(0.6, 0.0);
+      });
+      expect(onSpawnSpy).toHaveBeenCalledTimes(1);
+      expect(visualizer.getGearPosition().x).toBeCloseTo(0.5, 2);
+    });
+
+    it('clearing workspace destroys 3D gearwheel mesh and lifts ClickLockout', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      const { rerender } = render(
+        <RobotVisualizer
+          hasActiveGear={false}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Click to place gear
+      act(() => {
+        visualizer.simulateClick(0.5, 0.0);
+      });
+      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(visualizer.isLockedOut()).toBe(true);
+
+      // Clear workspace via clearWorkspace()
+      act(() => {
+        visualizer.clearWorkspace();
+      });
+
+      expect(visualizer.hasActiveGear()).toBe(false);
+      expect(visualizer.isLockedOut()).toBe(false);
+      expect(visualizer.getGearMesh()).toBeNull();
+
+      // Rerender with hasActiveGear=true
+      act(() => {
+        rerender(
+          <RobotVisualizer
+            hasActiveGear={true}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+          />
+        );
+      });
+
+      // Now rerender with hasActiveGear=false lifts lockout and clears workspace
+      act(() => {
+        rerender(
+          <RobotVisualizer
+            hasActiveGear={false}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+          />
+        );
+      });
+
+      expect(visualizer.hasActiveGear()).toBe(false);
+      expect(visualizer.isLockedOut()).toBe(false);
+      expect(visualizer.getGearMesh()).toBeNull();
+
+      // Able to click and spawn again
+      act(() => {
+        visualizer.simulateClick(0.55, 0.0);
+      });
+      expect(visualizer.hasActiveGear()).toBe(true);
+    });
+
+    it('cleans up and disposes table, reticle, and gear geometries and materials on unmount', async () => {
+      let unmountFn: () => void;
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        const res = render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+        unmountFn = res.unmount;
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const table = visualizer.getTableMesh();
+      const reticle = visualizer.getReticleMesh();
+
+      // Spawn a gear first
+      act(() => {
+        visualizer.simulateClick(0.5, 0.0);
+      });
+      const gear = visualizer.getGearMesh();
+      const gearBody = gear.children.find((c: any) => c.name === 'gear-body');
+
+      const tableGeomSpy = vi.spyOn(table.geometry, 'dispose');
+      const tableMatSpy = vi.spyOn(table.material as THREE.Material, 'dispose');
+      const reticleGeomSpy = vi.spyOn(reticle.geometry, 'dispose');
+      const reticleMatSpy = vi.spyOn(reticle.material as THREE.Material, 'dispose');
+      const gearGeomSpy = vi.spyOn(gearBody.geometry, 'dispose');
+      const gearMatSpy = vi.spyOn(gearBody.material as THREE.Material, 'dispose');
+
+      act(() => {
+        unmountFn();
+      });
+
+      expect(tableGeomSpy).toHaveBeenCalled();
+      expect(tableMatSpy).toHaveBeenCalled();
+      expect(reticleGeomSpy).toHaveBeenCalled();
+      expect(reticleMatSpy).toHaveBeenCalled();
+      expect(gearGeomSpy).toHaveBeenCalled();
+      expect(gearMatSpy).toHaveBeenCalled();
+    });
+
+    it('clicking outside table lateral edges does not spawn gear', async () => {
+      const onSpawnSpy = vi.fn();
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            onSpawnObject={onSpawnSpy}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Click outside lateral table edge: x=0.5, y=0.4 (R ~ 0.64m but y > 0.3m)
+      act(() => {
+        const clicked = visualizer.simulateClick(0.5, 0.4);
+        expect(clicked).toBe(false);
+      });
+
+      expect(visualizer.hasActiveGear()).toBe(false);
+      expect(visualizer.isLockedOut()).toBe(false);
+      expect(onSpawnSpy).not.toHaveBeenCalled();
+    });
+
+    it('filters out canvas drag events (e.g. camera orbit) and does not spawn gear', async () => {
+      const onSpawnSpy = vi.fn();
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      const { container } = render(
+        <RobotVisualizer
+          onSpawnObject={onSpawnSpy}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const canvas = container.querySelector('canvas')!;
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Simulate pointerdown at (100, 100) and click at (150, 150) (distance > 4px drag)
+      act(() => {
+        const downEvt =
+          typeof PointerEvent !== 'undefined'
+            ? new PointerEvent('pointerdown', { clientX: 100, clientY: 100, bubbles: true })
+            : new MouseEvent('pointerdown', { clientX: 100, clientY: 100, bubbles: true });
+        canvas.dispatchEvent(downEvt);
+        canvas.dispatchEvent(new MouseEvent('click', { clientX: 150, clientY: 150, bubbles: true }));
+      });
+
+      expect(visualizer.hasActiveGear()).toBe(false);
+      expect(visualizer.isLockedOut()).toBe(false);
+      expect(onSpawnSpy).not.toHaveBeenCalled();
+    });
+  });
 });
+
 
 
