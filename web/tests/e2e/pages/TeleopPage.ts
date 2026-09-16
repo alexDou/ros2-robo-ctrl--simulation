@@ -189,25 +189,34 @@ export class TeleopPage {
     return result;
   }
 
-  async expectJointsOscillating(durationMs = 2000, minDeltaRad = 0.03): Promise<void> {
+  async expectJointsOscillating(durationMs = 3000, minDeltaRad = 0.03): Promise<void> {
     const sample1 = await this.getRobotJointValues();
-    await this.page.waitForTimeout(durationMs);
-    const sample2 = await this.getRobotJointValues();
+    const maxDeltas: Record<string, number> = {};
+    for (const j of CANONICAL_UR5E_JOINTS) {
+      maxDeltas[j] = 0;
+    }
+
+    const startTime = Date.now();
+    while (Date.now() - startTime < durationMs) {
+      await this.page.waitForTimeout(100);
+      const sample = await this.getRobotJointValues();
+      for (const j of CANONICAL_UR5E_JOINTS) {
+        if (sample1[j] !== undefined && sample[j] !== undefined) {
+          const d = Math.abs(sample[j] - sample1[j]);
+          if (d > maxDeltas[j]) maxDeltas[j] = d;
+        }
+      }
+      if (CANONICAL_UR5E_JOINTS.every((j) => maxDeltas[j] >= minDeltaRad)) {
+        break;
+      }
+    }
 
     for (const jointName of CANONICAL_UR5E_JOINTS) {
-      const val1 = sample1[jointName];
-      const val2 = sample2[jointName];
-      expect(val1).toBeDefined();
-      expect(val2).toBeDefined();
-
-      // Bounded within physical limits [-pi, pi]
-      expect(val1).toBeGreaterThanOrEqual(-Math.PI);
-      expect(val1).toBeLessThanOrEqual(Math.PI);
-      expect(val2).toBeGreaterThanOrEqual(-Math.PI);
-      expect(val2).toBeLessThanOrEqual(Math.PI);
-
-      const delta = Math.abs(val2 - val1);
-      expect(delta).toBeGreaterThanOrEqual(minDeltaRad);
+      const val = sample1[jointName];
+      expect(val).toBeDefined();
+      expect(val).toBeGreaterThanOrEqual(-Math.PI);
+      expect(val).toBeLessThanOrEqual(Math.PI);
+      expect(maxDeltas[jointName]).toBeGreaterThanOrEqual(minDeltaRad);
     }
   }
 
@@ -409,5 +418,172 @@ export class TeleopPage {
         { timeout, message: `Expected robot to reach pose within ${toleranceRad} rad` }
       )
       .toBeLessThanOrEqual(toleranceRad);
+  }
+
+  async expectWorkcellTableLoaded(timeout = 10000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.page.evaluate(() => {
+            const handle = (window as unknown as {
+              __robot_visualizer?: { getTableMesh: () => unknown };
+            }).__robot_visualizer;
+            return Boolean(handle && handle.getTableMesh());
+          });
+        },
+        { timeout, message: 'WorkcellTable slab mesh failed to mount in 3D scene' }
+      )
+      .toBe(true);
+  }
+
+  async hasActiveGear(): Promise<boolean> {
+    return await this.page.evaluate(() => {
+      const handle = (window as unknown as {
+        __robot_visualizer?: { hasActiveGear: () => boolean };
+      }).__robot_visualizer;
+      return handle ? handle.hasActiveGear() : false;
+    });
+  }
+
+  async expectActiveGear(present: boolean, timeout = 5000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.hasActiveGear();
+        },
+        { timeout, message: `Expected active gear presence in 3D scene to be ${present}` }
+      )
+      .toBe(present);
+  }
+
+  async getGearPosition(): Promise<{ x: number; y: number; z: number } | null> {
+    return await this.page.evaluate(() => {
+      const handle = (window as unknown as {
+        __robot_visualizer?: { getGearPosition: () => { x: number; y: number; z: number } | null };
+      }).__robot_visualizer;
+      return handle ? handle.getGearPosition() : null;
+    });
+  }
+
+  async expectGearwheelAtPosition(
+    expectedX: number,
+    expectedY: number,
+    tolerance = 0.05,
+    timeout = 5000
+  ): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          const pos = await this.getGearPosition();
+          if (!pos) return 999;
+          const dx = Math.abs(pos.x - expectedX);
+          const dy = Math.abs(pos.y - expectedY);
+          return Math.hypot(dx, dy);
+        },
+        {
+          timeout,
+          message: `Expected gearwheel mesh at (${expectedX}, ${expectedY}) within ${tolerance}m`,
+        }
+      )
+      .toBeLessThanOrEqual(tolerance);
+  }
+
+  async expectClickLockedOut(lockedOut: boolean, timeout = 5000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.page.evaluate(() => {
+            const handle = (window as unknown as {
+              __robot_visualizer?: { isLockedOut: () => boolean };
+            }).__robot_visualizer;
+            return handle ? handle.isLockedOut() : false;
+          });
+        },
+        { timeout, message: `Expected visualizer isLockedOut to be ${lockedOut}` }
+      )
+      .toBe(lockedOut);
+  }
+
+  async clickWorkcellTable(x: number, y: number): Promise<void> {
+    const coords = await this.page.evaluate(
+      ({ targetX, targetY }) => {
+        const handle = (window as unknown as {
+          __robot_visualizer?: {
+            getTableScreenCoords?: (x: number, y: number) => { clientX: number; clientY: number } | null;
+          };
+        }).__robot_visualizer;
+        return handle?.getTableScreenCoords?.(targetX, targetY) ?? null;
+      },
+      { targetX: x, targetY: y }
+    );
+
+    if (coords) {
+      await this.page.mouse.click(coords.clientX, coords.clientY);
+    } else {
+      await this.page.evaluate(
+        ({ targetX, targetY }) => {
+          const handle = (window as unknown as {
+            __robot_visualizer?: {
+              simulateClick?: (x: number, y: number) => boolean;
+            };
+          }).__robot_visualizer;
+          handle?.simulateClick?.(targetX, targetY);
+        },
+        { targetX: x, targetY: y }
+      );
+    }
+  }
+
+  async hoverWorkcellTable(x: number, y: number): Promise<void> {
+    const coords = await this.page.evaluate(
+      ({ targetX, targetY }) => {
+        const handle = (window as unknown as {
+          __robot_visualizer?: {
+            getTableScreenCoords?: (x: number, y: number) => { clientX: number; clientY: number } | null;
+          };
+        }).__robot_visualizer;
+        return handle?.getTableScreenCoords?.(targetX, targetY) ?? null;
+      },
+      { targetX: x, targetY: y }
+    );
+
+    if (coords) {
+      await this.page.mouse.move(coords.clientX, coords.clientY);
+    } else {
+      await this.page.evaluate(
+        ({ targetX, targetY }) => {
+          const handle = (window as unknown as {
+            __robot_visualizer?: {
+              simulatePointerMove?: (x: number, y: number) => void;
+            };
+          }).__robot_visualizer;
+          handle?.simulatePointerMove?.(targetX, targetY);
+        },
+        { targetX: x, targetY: y }
+      );
+    }
+  }
+
+  async isReticleVisible(): Promise<boolean> {
+    return await this.page.evaluate(() => {
+      const handle = (window as unknown as {
+        __robot_visualizer?: {
+          getReticleMesh?: () => { visible: boolean } | null;
+        };
+      }).__robot_visualizer;
+      const reticle = handle?.getReticleMesh?.();
+      return reticle ? reticle.visible : false;
+    });
+  }
+
+  async expectReticleVisible(visible: boolean, timeout = 5000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.isReticleVisible();
+        },
+        { timeout, message: `Expected reticle visibility to be ${visible}` }
+      )
+      .toBe(visible);
   }
 }

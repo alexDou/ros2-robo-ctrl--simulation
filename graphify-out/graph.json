@@ -17,6 +17,19 @@
       "source_location": "L9"
     },
     {
+      "id": "web_domain_contracts_spawnobjectpayload",
+      "label": "SpawnObjectPayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "RobotVisualizer.tsx",
+      "file_type": "code",
+      "norm_label": "spawnobjectpayload",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L243"
+    },
+    {
       "id": "web_domain_contracts_ur5ejoint",
       "label": "UR5eJoint",
       "_callable": true,
@@ -54,6 +67,19 @@
       "norm_label": "palmproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
       "source_location": "L61"
+    },
+    {
+      "id": "web_src_components_robotvisualizer_robotvisualizerprops",
+      "label": "RobotVisualizerProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "RobotVisualizer.tsx",
+      "file_type": "code",
+      "norm_label": "robotvisualizerprops",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L8"
     },
     {
       "id": "web_src_components_robotvisualizer_tableproceduralassets",
@@ -95,6 +121,19 @@
       "source_location": "L155"
     },
     {
+      "id": "web_domain_contracts_posename",
+      "label": "PoseName",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "posename",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L57"
+    },
+    {
       "id": "web_domain_contracts_robotstate",
       "label": "RobotState",
       "_callable": true,
@@ -106,6 +145,19 @@
       "norm_label": "robotstate",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L114"
+    },
+    {
+      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
+      "label": "OperatorToolbarProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "operatortoolbarprops",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L3"
     },
     {
       "id": "web_src_components_telemetrymonitor_telemetrymonitorprops",
@@ -140,7 +192,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "commandtype",
       "source_file": "src/domain/domain.py",
@@ -153,7 +205,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "errorframe",
       "source_file": "src/domain/domain.py",
@@ -166,7 +218,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "robotcommand",
       "source_file": "src/domain/domain.py",
@@ -179,24 +231,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "robotstate",
       "source_file": "src/domain/domain.py",
       "source_location": "L43"
     },
     {
-      "id": "src_edge_node_node_edgenode",
-      "label": "EdgeNode",
+      "id": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
+      "label": "RobotTelemetryEvent",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
-      "norm_label": "edgenode",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L34"
+      "norm_label": "robottelemetryevent",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L178"
     },
     {
       "id": "src_edge_node_workcell_activegear",
@@ -303,6 +355,19 @@
       "source_location": "L7"
     },
     {
+      "id": "src_edge_node_mock_publisher_mockjointstatepublisher",
+      "label": "MockJointStatePublisher",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "code",
+      "norm_label": "mockjointstatepublisher",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L21"
+    },
+    {
       "id": "web_tests_e2e_support_world_customworld",
       "label": "CustomWorld",
       "_callable": true,
@@ -353,6 +418,19 @@
       "norm_label": "harnessconfig",
       "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L12"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_jointsinusoidconfig",
+      "label": "JointSinusoidConfig",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 169,
+      "community_name": ".__init__",
+      "file_type": "code",
+      "norm_label": "jointsinusoidconfig",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L33"
     },
     {
       "id": "scripts_generate_domain_constantdef",
@@ -452,7 +530,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "clearworkspacepayload",
       "source_file": "src/domain/domain.py",
@@ -465,7 +543,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "emergencystoppayload",
       "source_file": "src/domain/domain.py",
@@ -478,24 +556,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "inferencemetrics",
       "source_file": "src/domain/domain.py",
       "source_location": "L145"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_palmactuatepayload",
-      "label": "PalmActuatePayload",
+      "id": "src_domain_domain_py_src_domain_domain_palmstate",
+      "label": "PalmState",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
-      "norm_label": "palmactuatepayload",
+      "norm_label": "palmstate",
       "source_file": "src/domain/domain.py",
-      "source_location": "L87"
+      "source_location": "L137"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_resetfaultpayload",
@@ -504,24 +582,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "resetfaultpayload",
       "source_file": "src/domain/domain.py",
       "source_location": "L112"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_robottelemetryevent",
-      "label": "RobotTelemetryEvent",
+      "id": "src_domain_domain_py_src_domain_domain_spawnobjectpayload",
+      "label": "SpawnObjectPayload",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
-      "norm_label": "robottelemetryevent",
+      "norm_label": "spawnobjectpayload",
       "source_file": "src/domain/domain.py",
-      "source_location": "L178"
+      "source_location": "L119"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_trajectoryexecutepayload",
@@ -530,24 +608,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "trajectoryexecutepayload",
       "source_file": "src/domain/domain.py",
       "source_location": "L95"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_jointsinusoidconfig",
-      "label": "JointSinusoidConfig",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "jointsinusoidconfig",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L33"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher",
@@ -561,19 +626,6 @@
       "norm_label": "mockmotionpublisher",
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L92"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_mockjointstatepublisher",
-      "label": "MockJointStatePublisher",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "mockjointstatepublisher",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L21"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage",
@@ -706,19 +758,6 @@
       "source_location": "L42"
     },
     {
-      "id": "web_domain_contracts_posename",
-      "label": "PoseName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "posename",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L57"
-    },
-    {
       "id": "web_domain_contracts_robotcommand",
       "label": "RobotCommand",
       "_callable": true,
@@ -730,45 +769,6 @@
       "norm_label": "robotcommand",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L316"
-    },
-    {
-      "id": "web_domain_contracts_spawnobjectpayload",
-      "label": "SpawnObjectPayload",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "spawnobjectpayload",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L243"
-    },
-    {
-      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
-      "label": "OperatorToolbarProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbarprops",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L3"
-    },
-    {
-      "id": "web_src_components_robotvisualizer_robotvisualizerprops",
-      "label": "RobotVisualizerProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "robotvisualizerprops",
-      "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L8"
     },
     {
       "id": "web_src_components_teleopclient_connectionstate",
@@ -797,6 +797,19 @@
       "source_location": "L36"
     },
     {
+      "id": "src_edge_node_node_edgenode",
+      "label": "EdgeNode",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "edgenode",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L34"
+    },
+    {
       "id": "src_domain_domain_py_src_domain_domain_palmaction",
       "label": "PalmAction",
       "_callable": true,
@@ -810,17 +823,17 @@
       "source_location": "L9"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_palmstate",
-      "label": "PalmState",
+      "id": "src_domain_domain_py_src_domain_domain_palmactuatepayload",
+      "label": "PalmActuatePayload",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
       "community_name": "domain.py",
       "file_type": "code",
-      "norm_label": "palmstate",
+      "norm_label": "palmactuatepayload",
       "source_file": "src/domain/domain.py",
-      "source_location": "L137"
+      "source_location": "L87"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_posename",
@@ -834,19 +847,6 @@
       "norm_label": "posename",
       "source_file": "src/domain/domain.py",
       "source_location": "L16"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_spawnobjectpayload",
-      "label": "SpawnObjectPayload",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "spawnobjectpayload",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L119"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_spawnobjecttype",
@@ -1114,6 +1114,18 @@
       "source_location": "L433"
     },
     {
+      "id": "web_src_components_operatortoolbar_operatortoolbar",
+      "label": "OperatorToolbar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "operatortoolbar()",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L16"
+    },
+    {
       "id": "web_src_components_telemetrymonitor_telemetrymonitor",
       "label": "TelemetryMonitor()",
       "_callable": true,
@@ -1174,12 +1186,24 @@
       "source_location": "L83"
     },
     {
+      "id": "tests_test_edge_node_mock_ros_node",
+      "label": "mock_ros_node()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "mock_ros_node()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L12"
+    },
+    {
       "id": "tests_test_edge_node_test_edge_node_canned_trajectory_execution",
       "label": "test_edge_node_canned_trajectory_execution()",
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_canned_trajectory_execution()",
       "source_file": "tests/test_edge_node.py",
@@ -1191,7 +1215,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_clear_workspace_invalid_payload_error_frame()",
       "source_file": "tests/test_edge_node.py",
@@ -1203,7 +1227,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_clear_workspace_rejected_when_not_idle()",
       "source_file": "tests/test_edge_node.py",
@@ -1215,7 +1239,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_clear_workspace_resets_gear_when_idle()",
       "source_file": "tests/test_edge_node.py",
@@ -1227,7 +1251,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_command_handling_malformed_payload()",
       "source_file": "tests/test_edge_node.py",
@@ -1239,7 +1263,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_command_handling_valid_ping()",
       "source_file": "tests/test_edge_node.py",
@@ -1251,7 +1275,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_emergency_stop_and_reset_fault()",
       "source_file": "tests/test_edge_node.py",
@@ -1263,7 +1287,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_joint_state_subscription_and_streaming()",
       "source_file": "tests/test_edge_node.py",
@@ -1275,7 +1299,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_lifecycle_initial_state()",
       "source_file": "tests/test_edge_node.py",
@@ -1287,7 +1311,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_palm_actuate_pneumatic_delay()",
       "source_file": "tests/test_edge_node.py",
@@ -1299,7 +1323,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_single_command_gating_busy_rejection()",
       "source_file": "tests/test_edge_node.py",
@@ -1311,7 +1335,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_spawn_object_idle_stores_coordinates()",
       "source_file": "tests/test_edge_node.py",
@@ -1323,7 +1347,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_spawn_object_invalid_payload_error_frame()",
       "source_file": "tests/test_edge_node.py",
@@ -1335,7 +1359,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_spawn_object_lockout_when_gear_already_active()",
       "source_file": "tests/test_edge_node.py",
@@ -1347,7 +1371,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_spawn_object_rejected_when_not_idle()",
       "source_file": "tests/test_edge_node.py",
@@ -1359,7 +1383,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node_zenoh_pub_sub_round_trip()",
       "source_file": "tests/test_edge_node.py",
@@ -1371,7 +1395,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_mock_joint_state_publisher()",
       "source_file": "tests/test_edge_node.py",
@@ -1383,11 +1407,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_mock_joint_state_publisher_dynamic()",
       "source_file": "tests/test_edge_node.py",
       "source_location": "L203"
+    },
+    {
+      "id": "tests_test_edge_node_test_workcell_state_non_finite_rejection_and_frozen_dataclass",
+      "label": "test_workcell_state_non_finite_rejection_and_frozen_dataclass()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "test_workcell_state_non_finite_rejection_and_frozen_dataclass()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L530"
+    },
+    {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
+      "label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L99"
     },
     {
       "id": "web_src_main_app",
@@ -1582,16 +1630,16 @@
       "source_location": "L52"
     },
     {
-      "id": "tests_test_edge_node_test_workcell_state_non_finite_rejection_and_frozen_dataclass",
-      "label": "test_workcell_state_non_finite_rejection_and_frozen_dataclass()",
+      "id": "tests_test_edge_node_test_workcell_state_domain_unit",
+      "label": "test_workcell_state_domain_unit()",
       "_callable": true,
       "_origin": "ast",
       "community": 144,
       "community_name": "WorkcellState",
       "file_type": "code",
-      "norm_label": "test_workcell_state_non_finite_rejection_and_frozen_dataclass()",
+      "norm_label": "test_workcell_state_domain_unit()",
       "source_file": "tests/test_edge_node.py",
-      "source_location": "L530"
+      "source_location": "L359"
     },
     {
       "id": "web_tests_unit_teleopclient_test_mockwebsocket_close",
@@ -1666,16 +1714,64 @@
       "source_location": "L36"
     },
     {
-      "id": "src_edge_node_node_edgenode_close",
-      "label": ".close()",
+      "id": "src_edge_node_mock_publisher_main",
+      "label": "main()",
       "_callable": true,
       "_origin": "ast",
-      "community": 152,
-      "community_name": ".close",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
       "file_type": "code",
-      "norm_label": ".close()",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L457"
+      "norm_label": "main()",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L72"
+    },
+    {
+      "id": "src_edge_node_mock_publisher_mockjointstatepublisher_create_joint_state_msg",
+      "label": ".create_joint_state_msg()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "code",
+      "norm_label": ".create_joint_state_msg()",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L47"
+    },
+    {
+      "id": "src_edge_node_mock_publisher_mockjointstatepublisher_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_edge_node_mock_publisher_mockjointstatepublisher_publish_joint_state",
+      "label": ".publish_joint_state()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "code",
+      "norm_label": ".publish_joint_state()",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L65"
+    },
+    {
+      "id": "tests_test_edge_node_test_joint_state_mapper_canonical_order_and_zero_order_hold",
+      "label": "test_joint_state_mapper_canonical_order_and_zero_order_hold()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "code",
+      "norm_label": "test_joint_state_mapper_canonical_order_and_zero_order_hold()",
+      "source_file": "tests/test_edge_node.py",
+      "source_location": "L102"
     },
     {
       "id": "web_tests_e2e_support_harness_serviceharness_cleanstaleports",
@@ -1688,6 +1784,18 @@
       "norm_label": ".cleanstaleports()",
       "source_file": "web/tests/e2e/support/harness.ts",
       "source_location": "L47"
+    },
+    {
+      "id": "web_tests_e2e_support_harness_serviceharness_clearcapturedlogs",
+      "label": ".clearCapturedLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 156,
+      "community_name": "ServiceHarness",
+      "file_type": "code",
+      "norm_label": ".clearcapturedlogs()",
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L148"
     },
     {
       "id": "web_tests_e2e_support_harness_serviceharness_constructor",
@@ -1723,7 +1831,7 @@
       "file_type": "code",
       "norm_label": ".ismockpublisherrunning()",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L148"
+      "source_location": "L152"
     },
     {
       "id": "web_tests_e2e_support_harness_serviceharness_killchild",
@@ -1735,7 +1843,7 @@
       "file_type": "code",
       "norm_label": ".killchild()",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L218"
+      "source_location": "L222"
     },
     {
       "id": "web_tests_e2e_support_harness_serviceharness_pollhttp",
@@ -1771,7 +1879,7 @@
       "file_type": "code",
       "norm_label": ".startmockpublisher()",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L156"
+      "source_location": "L160"
     },
     {
       "id": "web_tests_e2e_support_harness_serviceharness_stop",
@@ -1783,7 +1891,7 @@
       "file_type": "code",
       "norm_label": ".stop()",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L243"
+      "source_location": "L247"
     },
     {
       "id": "web_tests_e2e_support_harness_serviceharness_stopmockpublisher",
@@ -1795,7 +1903,7 @@
       "file_type": "code",
       "norm_label": ".stopmockpublisher()",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L205"
+      "source_location": "L209"
     },
     {
       "id": "web_tests_e2e_support_world_customworld_constructor",
@@ -1810,16 +1918,64 @@
       "source_location": "L29"
     },
     {
-      "id": "tests_test_edge_node_mock_ros_node",
-      "label": "mock_ros_node()",
+      "id": "src_edge_node_mock_motion_publisher_build_arg_parser",
+      "label": "build_arg_parser()",
       "_callable": true,
       "_origin": "ast",
-      "community": 168,
-      "community_name": "mock_ros_node",
+      "community": 158,
+      "community_name": "mock_motion_publisher.py",
       "file_type": "code",
-      "norm_label": "mock_ros_node()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L12"
+      "norm_label": "build_arg_parser()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L350"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_main",
+      "label": "main()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "mock_motion_publisher.py",
+      "file_type": "code",
+      "norm_label": "main()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L391"
+    },
+    {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_cli_defaults_and_flags",
+      "label": "test_mock_motion_publisher_cli_defaults_and_flags()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "mock_motion_publisher.py",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_cli_defaults_and_flags()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L185"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 169,
+      "community_name": ".__init__",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L95"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_init_zenoh",
+      "label": "._init_zenoh()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 169,
+      "community_name": ".__init__",
+      "file_type": "code",
+      "norm_label": "._init_zenoh()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L170"
     },
     {
       "id": "scripts_generate_domain_emit_python",
@@ -1935,7 +2091,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_canonical_joint_constants()",
       "source_file": "tests/test_domain.py",
@@ -1947,7 +2103,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_canonical_json_schemas()",
       "source_file": "tests/test_domain.py",
@@ -1959,7 +2115,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_clear_workspace_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -1971,7 +2127,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_emergency_stop_and_reset_fault_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -1983,23 +2139,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_error_frame_serialization_round_trip()",
       "source_file": "tests/test_domain.py",
       "source_location": "L145"
-    },
-    {
-      "id": "tests_test_domain_test_palm_actuate_payload_serialization",
-      "label": "test_palm_actuate_payload_serialization()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotTelemetryEvent",
-      "file_type": "code",
-      "norm_label": "test_palm_actuate_payload_serialization()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L217"
     },
     {
       "id": "tests_test_domain_test_robot_command_malformed_fails_validation",
@@ -2007,7 +2151,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_command_malformed_fails_validation()",
       "source_file": "tests/test_domain.py",
@@ -2019,7 +2163,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_command_ping_serialization_round_trip()",
       "source_file": "tests/test_domain.py",
@@ -2031,7 +2175,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_telemetry_event_malformed_fails()",
       "source_file": "tests/test_domain.py",
@@ -2043,7 +2187,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_telemetry_event_palm_state()",
       "source_file": "tests/test_domain.py",
@@ -2055,11 +2199,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_robot_telemetry_event_serialization_round_trip()",
       "source_file": "tests/test_domain.py",
       "source_location": "L57"
+    },
+    {
+      "id": "tests_test_domain_test_spawn_object_payload_serialization",
+      "label": "test_spawn_object_payload_serialization()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "test_domain.py",
+      "file_type": "code",
+      "norm_label": "test_spawn_object_payload_serialization()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L324"
     },
     {
       "id": "tests_test_domain_test_trajectory_execute_payload_serialization",
@@ -2067,59 +2223,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_trajectory_execute_payload_serialization()",
       "source_file": "tests/test_domain.py",
       "source_location": "L243"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_build_arg_parser",
-      "label": "build_arg_parser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "build_arg_parser()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L350"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L391"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_positions",
-      "label": ".calculate_joint_positions()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".calculate_joint_positions()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L182"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_velocities",
-      "label": ".calculate_joint_velocities()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".calculate_joint_velocities()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L193"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_close",
@@ -2134,30 +2242,6 @@
       "source_location": "L326"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_joint_state_msg",
-      "label": ".create_joint_state_msg()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".create_joint_state_msg()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L236"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_telemetry_event",
-      "label": ".create_telemetry_event()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".create_telemetry_event()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L269"
-    },
-    {
       "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_get_current_positions",
       "label": ".get_current_positions()",
       "_callable": true,
@@ -2168,114 +2252,6 @@
       "norm_label": ".get_current_positions()",
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L210"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_get_timestamp_ns_and_stamp",
-      "label": "._get_timestamp_ns_and_stamp()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "._get_timestamp_ns_and_stamp()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L214"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L95"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_init_zenoh",
-      "label": "._init_zenoh()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "._init_zenoh()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L170"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_publish_tick",
-      "label": ".publish_tick()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".publish_tick()",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L294"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_main",
-      "label": "main()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "main()",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L72"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_mockjointstatepublisher_create_joint_state_msg",
-      "label": ".create_joint_state_msg()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".create_joint_state_msg()",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L47"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_mockjointstatepublisher_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L24"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_mockjointstatepublisher_publish_joint_state",
-      "label": ".publish_joint_state()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": ".publish_joint_state()",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L65"
-    },
-    {
-      "id": "tests_test_edge_node_test_joint_state_mapper_canonical_order_and_zero_order_hold",
-      "label": "test_joint_state_mapper_canonical_order_and_zero_order_hold()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "test_joint_state_mapper_canonical_order_and_zero_order_hold()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L102"
     },
     {
       "id": "tests_test_mock_motion_publisher_mock_ros_node",
@@ -2302,18 +2278,6 @@
       "source_location": "L119"
     },
     {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_cli_defaults_and_flags",
-      "label": "test_mock_motion_publisher_cli_defaults_and_flags()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_cli_defaults_and_flags()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L185"
-    },
-    {
       "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_joint_state_message",
       "label": "test_mock_motion_publisher_joint_state_message()",
       "_callable": true,
@@ -2338,18 +2302,6 @@
       "source_location": "L59"
     },
     {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
-      "label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L99"
-    },
-    {
       "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_trajectory_generation",
       "label": "test_mock_motion_publisher_trajectory_generation()",
       "_callable": true,
@@ -2362,18 +2314,6 @@
       "source_location": "L31"
     },
     {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_zenoh_and_ros_publication",
-      "label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L144"
-    },
-    {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickcannedpose",
       "label": ".clickCannedPose()",
       "_callable": true,
@@ -2383,7 +2323,7 @@
       "file_type": "code",
       "norm_label": ".clickcannedpose()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L294"
+      "source_location": "L303"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickclearworkspace",
@@ -2395,7 +2335,7 @@
       "file_type": "code",
       "norm_label": ".clickclearworkspace()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L315"
+      "source_location": "L324"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickemergencystop",
@@ -2407,7 +2347,7 @@
       "file_type": "code",
       "norm_label": ".clickemergencystop()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L310"
+      "source_location": "L319"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickpalmtoggle",
@@ -2419,7 +2359,7 @@
       "file_type": "code",
       "norm_label": ".clickpalmtoggle()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L305"
+      "source_location": "L314"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickping",
@@ -2443,7 +2383,19 @@
       "file_type": "code",
       "norm_label": ".clickresetfault()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L328"
+      "source_location": "L337"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickworkcelltable",
+      "label": ".clickWorkcellTable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".clickworkcelltable()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L507"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_constructor",
@@ -2467,7 +2419,7 @@
       "file_type": "code",
       "norm_label": ".expectactionbuttonsdisabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L333"
+      "source_location": "L342"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsenabled",
@@ -2479,7 +2431,19 @@
       "file_type": "code",
       "norm_label": ".expectactionbuttonsenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L340"
+      "source_location": "L349"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactivegear",
+      "label": ".expectActiveGear()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectactivegear()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L448"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectcanonicaljointsdisplayed",
@@ -2503,7 +2467,7 @@
       "file_type": "code",
       "norm_label": ".expectcleanvisualizerdisposal()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L284"
+      "source_location": "L293"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttondisabled",
@@ -2515,7 +2479,7 @@
       "file_type": "code",
       "norm_label": ".expectclearworkspacebuttondisabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L324"
+      "source_location": "L333"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttonenabled",
@@ -2527,7 +2491,19 @@
       "file_type": "code",
       "norm_label": ".expectclearworkspacebuttonenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L320"
+      "source_location": "L329"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectclicklockedout",
+      "label": ".expectClickLockedOut()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectclicklockedout()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L491"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectconflictbanner",
@@ -2563,7 +2539,7 @@
       "file_type": "code",
       "norm_label": ".expectemergencystopbuttonenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L355"
+      "source_location": "L364"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecterrordiagnostic",
@@ -2590,6 +2566,18 @@
       "source_location": "L66"
     },
     {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectgearwheelatposition",
+      "label": ".expectGearwheelAtPosition()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectgearwheelatposition()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L468"
+    },
+    {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectjointsoscillating",
       "label": ".expectJointsOscillating()",
       "_callable": true,
@@ -2611,7 +2599,7 @@
       "file_type": "code",
       "norm_label": ".expectlinkcoordinatesmoving()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L214"
+      "source_location": "L223"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmbuttontext",
@@ -2623,7 +2611,7 @@
       "file_type": "code",
       "norm_label": ".expectpalmbuttontext()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L363"
+      "source_location": "L372"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmnozzlehighlighted",
@@ -2635,7 +2623,7 @@
       "file_type": "code",
       "norm_label": ".expectpalmnozzlehighlighted()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L367"
+      "source_location": "L376"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmstatus",
@@ -2647,7 +2635,7 @@
       "file_type": "code",
       "norm_label": ".expectpalmstatus()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L359"
+      "source_location": "L368"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttondisabled",
@@ -2659,7 +2647,7 @@
       "file_type": "code",
       "norm_label": ".expectresetfaultbuttondisabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L347"
+      "source_location": "L356"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttonenabled",
@@ -2671,7 +2659,19 @@
       "file_type": "code",
       "norm_label": ".expectresetfaultbuttonenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L351"
+      "source_location": "L360"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectreticlevisible",
+      "label": ".expectReticleVisible()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectreticlevisible()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L579"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectrobotatpose",
@@ -2683,7 +2683,7 @@
       "file_type": "code",
       "norm_label": ".expectrobotatpose()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L391"
+      "source_location": "L400"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectsidebarinsyncwithvisualizer",
@@ -2695,7 +2695,7 @@
       "file_type": "code",
       "norm_label": ".expectsidebarinsyncwithvisualizer()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L229"
+      "source_location": "L238"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecttelemetryfrequencyrange",
@@ -2734,6 +2734,30 @@
       "source_location": "L134"
     },
     {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectworkcelltableloaded",
+      "label": ".expectWorkcellTableLoaded()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".expectworkcelltableloaded()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L423"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_getgearposition",
+      "label": ".getGearPosition()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".getgearposition()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L459"
+    },
+    {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getlinkworldposition",
       "label": ".getLinkWorldPosition()",
       "_callable": true,
@@ -2755,7 +2779,7 @@
       "file_type": "code",
       "norm_label": ".getrenderermemoryinfo()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L263"
+      "source_location": "L272"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getrobotjointvalues",
@@ -2794,6 +2818,30 @@
       "source_location": "L53"
     },
     {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_hasactivegear",
+      "label": ".hasActiveGear()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".hasactivegear()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L439"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_hoverworkcelltable",
+      "label": ".hoverWorkcellTable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".hoverworkcelltable()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L537"
+    },
+    {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_injectrawframe",
       "label": ".injectRawFrame()",
       "_callable": true,
@@ -2804,6 +2852,18 @@
       "norm_label": ".injectrawframe()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
       "source_location": "L75"
+    },
+    {
+      "id": "web_tests_e2e_pages_teleoppage_teleoppage_isreticlevisible",
+      "label": ".isReticleVisible()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 83,
+      "community_name": "TeleopPage",
+      "file_type": "code",
+      "norm_label": ".isreticlevisible()",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L567"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_waitforrobotloaded",
@@ -3238,18 +3298,6 @@
       "source_location": "L18"
     },
     {
-      "id": "web_src_components_operatortoolbar_operatortoolbar",
-      "label": "OperatorToolbar()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbar()",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L16"
-    },
-    {
       "id": "web_src_components_teleopclient_teleopclient",
       "label": "TeleopClient()",
       "_callable": true,
@@ -3262,12 +3310,24 @@
       "source_location": "L46"
     },
     {
+      "id": "src_edge_node_node_edgenode_close",
+      "label": ".close()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": ".close()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L457"
+    },
+    {
       "id": "src_edge_node_node_edgenode_create_telemetry_event",
       "label": "._create_telemetry_event()",
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "._create_telemetry_event()",
       "source_file": "src/edge_node/node.py",
@@ -3279,7 +3339,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "._execute_palm_actuation()",
       "source_file": "src/edge_node/node.py",
@@ -3291,7 +3351,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "._execute_trajectory()",
       "source_file": "src/edge_node/node.py",
@@ -3303,11 +3363,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": ".handle_command_payload()",
       "source_file": "src/edge_node/node.py",
       "source_location": "L238"
+    },
+    {
+      "id": "src_edge_node_node_edgenode_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "src_edge_node_node_edgenode_init_zenoh",
+      "label": "._init_zenoh()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "._init_zenoh()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L118"
     },
     {
       "id": "src_edge_node_node_edgenode_on_joint_state",
@@ -3315,7 +3399,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": ".on_joint_state()",
       "source_file": "src/edge_node/node.py",
@@ -3327,7 +3411,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "._on_zenoh_sample()",
       "source_file": "src/edge_node/node.py",
@@ -3339,7 +3423,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "._publish_error()",
       "source_file": "src/edge_node/node.py",
@@ -3351,7 +3435,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "._publish_telemetry()",
       "source_file": "src/edge_node/node.py",
@@ -3363,7 +3447,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": ".publish_telemetry_tick()",
       "source_file": "src/edge_node/node.py",
@@ -3418,30 +3502,6 @@
       "source_location": "L191"
     },
     {
-      "id": "src_edge_node_node_edgenode_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L37"
-    },
-    {
-      "id": "src_edge_node_node_edgenode_init_zenoh",
-      "label": "._init_zenoh()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "._init_zenoh()",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L118"
-    },
-    {
       "id": "tests_test_domain_test_datafabric_key_expressions",
       "label": "test_datafabric_key_expressions()",
       "_callable": true,
@@ -3454,28 +3514,100 @@
       "source_location": "L157"
     },
     {
-      "id": "tests_test_domain_test_spawn_object_payload_serialization",
-      "label": "test_spawn_object_payload_serialization()",
+      "id": "tests_test_domain_test_palm_actuate_payload_serialization",
+      "label": "test_palm_actuate_payload_serialization()",
       "_callable": true,
       "_origin": "ast",
       "community": 97,
       "community_name": "domain.py",
       "file_type": "code",
-      "norm_label": "test_spawn_object_payload_serialization()",
+      "norm_label": "test_palm_actuate_payload_serialization()",
       "source_file": "tests/test_domain.py",
-      "source_location": "L324"
+      "source_location": "L217"
     },
     {
-      "id": "tests_test_edge_node_test_workcell_state_domain_unit",
-      "label": "test_workcell_state_domain_unit()",
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_zenoh_and_ros_publication",
+      "label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
       "_callable": true,
       "_origin": "ast",
       "community": 97,
       "community_name": "domain.py",
       "file_type": "code",
-      "norm_label": "test_workcell_state_domain_unit()",
-      "source_file": "tests/test_edge_node.py",
-      "source_location": "L359"
+      "norm_label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L144"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_positions",
+      "label": ".calculate_joint_positions()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": ".publish_tick",
+      "file_type": "code",
+      "norm_label": ".calculate_joint_positions()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L182"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_calculate_joint_velocities",
+      "label": ".calculate_joint_velocities()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": ".publish_tick",
+      "file_type": "code",
+      "norm_label": ".calculate_joint_velocities()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L193"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_joint_state_msg",
+      "label": ".create_joint_state_msg()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": ".publish_tick",
+      "file_type": "code",
+      "norm_label": ".create_joint_state_msg()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L236"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_create_telemetry_event",
+      "label": ".create_telemetry_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": ".publish_tick",
+      "file_type": "code",
+      "norm_label": ".create_telemetry_event()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L269"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_get_timestamp_ns_and_stamp",
+      "label": "._get_timestamp_ns_and_stamp()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": ".publish_tick",
+      "file_type": "code",
+      "norm_label": "._get_timestamp_ns_and_stamp()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L214"
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_mockmotionpublisher_publish_tick",
+      "label": ".publish_tick()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 99,
+      "community_name": ".publish_tick",
+      "file_type": "code",
+      "norm_label": ".publish_tick()",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L294"
     },
     {
       "id": "agents_skills_triage_skill",
@@ -4813,6 +4945,17 @@
       "source_location": "L144"
     },
     {
+      "id": "web_src_components_operatortoolbar",
+      "label": "OperatorToolbar.tsx",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "TelemetryMonitor.test.tsx",
+      "file_type": "code",
+      "norm_label": "operatortoolbar.tsx",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "web_src_components_telemetrymonitor",
       "label": "TelemetryMonitor.tsx",
       "_origin": "ast",
@@ -6053,18 +6196,29 @@
       "label": "test_edge_node.py",
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "code",
       "norm_label": "test_edge_node.py",
       "source_file": "tests/test_edge_node.py",
       "source_location": "L1"
     },
     {
+      "id": "tests_test_edge_node_py_fixture",
+      "label": "fixture",
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "test_edge_node.py",
+      "file_type": "code",
+      "norm_label": "fixture",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "src_domain_domain_rationale_156",
       "label": "Canonical schema for structured error frames returned by Gateway over WebSocket",
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "canonical schema for structured error frames returned by gateway over websocket",
       "source_file": "src/domain/domain.py",
@@ -6075,18 +6229,29 @@
       "label": "Canonical schema for inbound commands sent to EdgeNode over WebSocket or\u2026",
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "canonical schema for inbound commands sent to edgenode over websocket or...",
       "source_file": "src/domain/domain.py",
       "source_location": "L167"
     },
     {
+      "id": "src_domain_domain_rationale_179",
+      "label": "Canonical schema for outbound telemetry events emitted by EdgeNode over\u2026",
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "test_edge_node.py",
+      "file_type": "rationale",
+      "norm_label": "canonical schema for outbound telemetry events emitted by edgenode over...",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L179"
+    },
+    {
       "id": "src_domain_domain_rationale_31",
       "label": "Operational command type",
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "operational command type",
       "source_file": "src/domain/domain.py",
@@ -6097,29 +6262,18 @@
       "label": "Current lifecycle state of the robotic manipulator",
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "current lifecycle state of the robotic manipulator",
       "source_file": "src/domain/domain.py",
       "source_location": "L44"
     },
     {
-      "id": "src_edge_node_node_rationale_35",
-      "label": "EdgeNode combining ROS2 node capabilities with Eclipse Zenoh DataFabric pub/sub.",
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "EdgeNode",
-      "file_type": "rationale",
-      "norm_label": "edgenode combining ros2 node capabilities with eclipse zenoh datafabric pub/sub.",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L35"
-    },
-    {
       "id": "tests_test_edge_node_rationale_1",
       "label": "Tests for EdgeNode ROS2 and DataFabric command ingestion.",
       "_origin": "ast",
       "community": 116,
-      "community_name": "EdgeNode",
+      "community_name": "test_edge_node.py",
       "file_type": "rationale",
       "norm_label": "tests for edgenode ros2 and datafabric command ingestion.",
       "source_file": "tests/test_edge_node.py",
@@ -8977,10 +9131,76 @@
       "source_location": "L1"
     },
     {
+      "id": "jointstate",
+      "label": "JointState",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "code",
+      "norm_label": "jointstate",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_edge_node_mock_publisher",
+      "label": "mock_publisher.py",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "code",
+      "norm_label": "mock_publisher.py",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_edge_node_mock_publisher_rationale_1",
+      "label": "Standalone synthetic ROS2 JointState publisher at 30 Hz.",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "rationale",
+      "norm_label": "standalone synthetic ros2 jointstate publisher at 30 hz.",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_edge_node_mock_publisher_rationale_22",
+      "label": "ROS2 node publishing synthetic JointState messages at 30 Hz.",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "rationale",
+      "norm_label": "ros2 node publishing synthetic jointstate messages at 30 hz.",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L22"
+    },
+    {
+      "id": "src_edge_node_mock_publisher_rationale_48",
+      "label": "Creates a synthetic JointState message with canonical joint names.",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "rationale",
+      "norm_label": "creates a synthetic jointstate message with canonical joint names.",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L48"
+    },
+    {
+      "id": "src_edge_node_mock_publisher_rationale_66",
+      "label": "Publishes a single JointState message and returns it.",
+      "_origin": "ast",
+      "community": 146,
+      "community_name": "MockJointStatePublisher",
+      "file_type": "rationale",
+      "norm_label": "publishes a single jointstate message and returns it.",
+      "source_file": "src/edge_node/mock_publisher.py",
+      "source_location": "L66"
+    },
+    {
       "id": "schemas_robot_command_schema_properties_x",
       "label": "x",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "x",
@@ -8991,7 +9211,7 @@
       "id": "schemas_robot_command_schema_properties_y",
       "label": "y",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "y",
@@ -9002,7 +9222,7 @@
       "id": "schemas_robot_command_schema_properties_z",
       "label": "z",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "z",
@@ -9013,7 +9233,7 @@
       "id": "schemas_robot_command_schema_spawn_object_payload_properties",
       "label": "properties",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "properties",
@@ -9024,7 +9244,7 @@
       "id": "schemas_robot_command_schema_x_description",
       "label": "description",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
@@ -9035,7 +9255,7 @@
       "id": "schemas_robot_command_schema_x_type",
       "label": "type",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
@@ -9046,7 +9266,7 @@
       "id": "schemas_robot_command_schema_y_description",
       "label": "description",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
@@ -9057,7 +9277,7 @@
       "id": "schemas_robot_command_schema_y_type",
       "label": "type",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
@@ -9068,7 +9288,7 @@
       "id": "schemas_robot_command_schema_z_description",
       "label": "description",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "description",
@@ -9079,78 +9299,12 @@
       "id": "schemas_robot_command_schema_z_type",
       "label": "type",
       "_origin": "ast",
-      "community": 146,
+      "community": 147,
       "community_name": "properties",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L108"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 147,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L117"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_enum",
-      "label": "enum",
-      "_origin": "ast",
-      "community": 147,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L114"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 147,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L113"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 147,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L112"
-    },
-    {
-      "id": "schemas_robot_command_schema_properties_object_type",
-      "label": "object_type",
-      "_origin": "ast",
-      "community": 147,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "object_type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L111"
-    },
-    {
-      "id": "ref_gear",
-      "label": "GEAR",
-      "_origin": "ast",
-      "community": 147,
-      "community_name": "object_type",
-      "file_type": "concept",
-      "norm_label": "gear",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L114"
     },
     {
       "id": "support_files_specs_unit5_implementation_wireframe",
@@ -9673,15 +9827,103 @@
       "source_location": "L46"
     },
     {
-      "id": "src_edge_node_node_rationale_458",
-      "label": "Cleans up Zenoh subscriptions/sessions and ROS2 nodes.",
+      "id": "schemas_robot_telemetry_event_schema_detected_object_description",
+      "label": "description",
       "_origin": "ast",
       "community": 152,
-      "community_name": ".close",
-      "file_type": "rationale",
-      "norm_label": "cleans up zenoh subscriptions/sessions and ros2 nodes.",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L458"
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L123"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_minlength",
+      "label": "minLength",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "minlength",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L122"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_detected_object_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L121"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
+      "label": "properties",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "properties",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L108"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L112"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_minimum",
+      "label": "minimum",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "minimum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L111"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_latency_ms_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L110"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_detected_object",
+      "label": "detected_object",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "detected_object",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L120"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_latency_ms",
+      "label": "latency_ms",
+      "_origin": "ast",
+      "community": 152,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "latency_ms",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L109"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_is_grasped_default",
@@ -9866,6 +10108,17 @@
       "source_location": "L1"
     },
     {
+      "id": "web_tests_e2e_steps_workcell_steps",
+      "label": "workcell.steps.ts",
+      "_origin": "ast",
+      "community": 155,
+      "community_name": "world.ts",
+      "file_type": "code",
+      "norm_label": "workcell.steps.ts",
+      "source_file": "web/tests/e2e/steps/workcell.steps.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "web_tests_e2e_support_hooks",
       "label": "hooks.ts",
       "_origin": "ast",
@@ -9943,59 +10196,37 @@
       "source_location": "L10"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_confidence_description",
-      "label": "description",
+      "id": "argumentparser",
+      "label": "ArgumentParser",
       "_origin": "ast",
       "community": 158,
-      "community_name": "confidence",
+      "community_name": "mock_motion_publisher.py",
       "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L118"
+      "norm_label": "argumentparser",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_confidence_maximum",
-      "label": "maximum",
+      "id": "src_edge_node_mock_motion_publisher",
+      "label": "mock_motion_publisher.py",
       "_origin": "ast",
       "community": 158,
-      "community_name": "confidence",
+      "community_name": "mock_motion_publisher.py",
       "file_type": "code",
-      "norm_label": "maximum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L117"
+      "norm_label": "mock_motion_publisher.py",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L1"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_confidence_minimum",
-      "label": "minimum",
+      "id": "src_edge_node_mock_motion_publisher_rationale_1",
+      "label": "Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.\u2026",
       "_origin": "ast",
       "community": 158,
-      "community_name": "confidence",
-      "file_type": "code",
-      "norm_label": "minimum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L116"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_confidence_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 158,
-      "community_name": "confidence",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L115"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_confidence",
-      "label": "confidence",
-      "_origin": "ast",
-      "community": 158,
-      "community_name": "confidence",
-      "file_type": "code",
-      "norm_label": "confidence",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L114"
+      "community_name": "mock_motion_publisher.py",
+      "file_type": "rationale",
+      "norm_label": "standalone continuous 30 hz sinusoidal mock motion publisher for ur5e....",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L1"
     },
     {
       "id": "schemas_robot_command_schema_clear_workspace_payload_additionalproperties",
@@ -10559,11 +10790,11 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 5.4: TeleopClient Operator Toolbar Clear Workspace",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
         "priority": "normal",
         "created_at": "2026-09-15T22:29:24Z",
-        "updated_at": "2026-09-15T22:29:26Z",
+        "updated_at": "2026-09-16T12:13:00Z",
         "parent": "hand-sim-7w33"
       },
       "node_kind": "page",
@@ -10594,6 +10825,18 @@
       "norm_label": "blocked by",
       "source_file": ".beans/hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md",
       "source_location": "L29"
+    },
+    {
+      "id": "beans_hand_sim_3hb6_unit_54_teleopclient_operator_toolbar_clear_worksp_implementation_summary",
+      "label": "Implementation Summary",
+      "_origin": "ast",
+      "community": 164,
+      "community_name": "hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "implementation summary",
+      "source_file": ".beans/hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md",
+      "source_location": "L32"
     },
     {
       "id": "beans_hand_sim_3hb6_unit_54_teleopclient_operator_toolbar_clear_worksp_parent",
@@ -10851,15 +11094,92 @@
       "source_location": "L19"
     },
     {
-      "id": "tests_test_edge_node_py_fixture",
-      "label": "fixture",
+      "id": "schemas_robot_command_schema_object_type_description",
+      "label": "description",
       "_origin": "ast",
       "community": 168,
-      "community_name": "mock_ros_node",
+      "community_name": "object_type",
       "file_type": "code",
-      "norm_label": "fixture",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L117"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_enum",
+      "label": "enum",
+      "_origin": "ast",
+      "community": 168,
+      "community_name": "object_type",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L114"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 168,
+      "community_name": "object_type",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L113"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 168,
+      "community_name": "object_type",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L112"
+    },
+    {
+      "id": "schemas_robot_command_schema_properties_object_type",
+      "label": "object_type",
+      "_origin": "ast",
+      "community": 168,
+      "community_name": "object_type",
+      "file_type": "code",
+      "norm_label": "object_type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L111"
+    },
+    {
+      "id": "ref_gear",
+      "label": "GEAR",
+      "_origin": "ast",
+      "community": 168,
+      "community_name": "object_type",
+      "file_type": "concept",
+      "norm_label": "gear",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L114"
+    },
+    {
+      "id": "node",
+      "label": "Node",
+      "_origin": "ast",
+      "community": 169,
+      "community_name": ".__init__",
+      "file_type": "code",
+      "norm_label": "node",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "src_edge_node_mock_motion_publisher_rationale_34",
+      "label": "Configuration for a single joint's continuous sinusoidal oscillation.",
+      "_origin": "ast",
+      "community": 169,
+      "community_name": ".__init__",
+      "file_type": "rationale",
+      "norm_label": "configuration for a single joint's continuous sinusoidal oscillation.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L34"
     },
     {
       "id": "agents_skills_ask_matt_skill",
@@ -11009,6 +11329,61 @@
       "norm_label": "interactive 3d workcell & click-to-place gear ingestion",
       "source_file": "support_files/specs/unit5/overview.md",
       "source_location": "L1"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "confidence",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L118"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_maximum",
+      "label": "maximum",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "confidence",
+      "file_type": "code",
+      "norm_label": "maximum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L117"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_minimum",
+      "label": "minimum",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "confidence",
+      "file_type": "code",
+      "norm_label": "minimum",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L116"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_confidence_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "confidence",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L115"
+    },
+    {
+      "id": "schemas_robot_telemetry_event_schema_properties_confidence",
+      "label": "confidence",
+      "_origin": "ast",
+      "community": 171,
+      "community_name": "confidence",
+      "file_type": "code",
+      "norm_label": "confidence",
+      "source_file": "schemas/robot_telemetry_event.schema.json",
+      "source_location": "L114"
     },
     {
       "id": "agents_skills_cargo_toolchain_skill",
@@ -15793,7 +16168,7 @@
       "label": "BaseModel",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "basemodel",
       "source_file": "",
@@ -15804,7 +16179,7 @@
       "label": "test_domain.py",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "code",
       "norm_label": "test_domain.py",
       "source_file": "tests/test_domain.py",
@@ -15815,7 +16190,7 @@
       "label": "Typed payload for EMERGENCY_STOP command",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for emergency_stop command",
       "source_file": "src/domain/domain.py",
@@ -15826,62 +16201,62 @@
       "label": "Typed payload for RESET_FAULT command",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for reset_fault command",
       "source_file": "src/domain/domain.py",
       "source_location": "L113"
     },
     {
+      "id": "src_domain_domain_rationale_120",
+      "label": "Typed payload for SPAWN_OBJECT command",
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "test_domain.py",
+      "file_type": "rationale",
+      "norm_label": "typed payload for spawn_object command",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L120"
+    },
+    {
       "id": "src_domain_domain_rationale_131",
       "label": "Typed payload for CLEAR_WORKSPACE command",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for clear_workspace command",
       "source_file": "src/domain/domain.py",
       "source_location": "L131"
     },
     {
+      "id": "src_domain_domain_rationale_138",
+      "label": "End-effector dexterous palm pneumatic actuation and grasp status",
+      "_origin": "ast",
+      "community": 57,
+      "community_name": "test_domain.py",
+      "file_type": "rationale",
+      "norm_label": "end-effector dexterous palm pneumatic actuation and grasp status",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L138"
+    },
+    {
       "id": "src_domain_domain_rationale_146",
       "label": "Edge AI inference latency and object classification metrics",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "rationale",
       "norm_label": "edge ai inference latency and object classification metrics",
       "source_file": "src/domain/domain.py",
       "source_location": "L146"
     },
     {
-      "id": "src_domain_domain_rationale_179",
-      "label": "Canonical schema for outbound telemetry events emitted by EdgeNode over\u2026",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotTelemetryEvent",
-      "file_type": "rationale",
-      "norm_label": "canonical schema for outbound telemetry events emitted by edgenode over...",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L179"
-    },
-    {
-      "id": "src_domain_domain_rationale_88",
-      "label": "Typed payload for PALM_ACTUATE command to toggle suction or grasp status",
-      "_origin": "ast",
-      "community": 57,
-      "community_name": "RobotTelemetryEvent",
-      "file_type": "rationale",
-      "norm_label": "typed payload for palm_actuate command to toggle suction or grasp status",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L88"
-    },
-    {
       "id": "src_domain_domain_rationale_96",
       "label": "Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom\u2026",
       "_origin": "ast",
       "community": 57,
-      "community_name": "RobotTelemetryEvent",
+      "community_name": "test_domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for trajectory_execute command dispatching canned or custom...",
       "source_file": "src/domain/domain.py",
@@ -17655,83 +18030,6 @@
       "source_location": "L53"
     },
     {
-      "id": "argumentparser",
-      "label": "ArgumentParser",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "argumentparser",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "jointstate",
-      "label": "JointState",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "jointstate",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "node",
-      "label": "Node",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "node",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher",
-      "label": "mock_motion_publisher.py",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "mock_motion_publisher.py",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_py_any",
-      "label": "Any",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_py_robottelemetryevent",
-      "label": "RobotTelemetryEvent",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "robottelemetryevent",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_edge_node_mock_publisher",
-      "label": "mock_publisher.py",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "code",
-      "norm_label": "mock_publisher.py",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L1"
-    },
-    {
       "id": "tests_test_mock_motion_publisher",
       "label": "test_mock_motion_publisher.py",
       "_origin": "ast",
@@ -17754,39 +18052,6 @@
       "source_location": ""
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_rationale_1",
-      "label": "Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.\u2026",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "standalone continuous 30 hz sinusoidal mock motion publisher for ur5e....",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_183",
-      "label": "Calculates deterministic joint angles clamped to physical limits [-pi, pi].",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "calculates deterministic joint angles clamped to physical limits [-pi, pi].",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L183"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_194",
-      "label": "Calculates instantaneous joint velocities from analytical derivatives.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "calculates instantaneous joint velocities from analytical derivatives.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L194"
-    },
-    {
       "id": "src_edge_node_mock_motion_publisher_rationale_211",
       "label": "Returns the most recent calculated joint positions (zero-order hold).",
       "_origin": "ast",
@@ -17796,50 +18061,6 @@
       "norm_label": "returns the most recent calculated joint positions (zero-order hold).",
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L211"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_215",
-      "label": "Retrieves clock nanoseconds and ROS2 stamp struct in a single clock snapshot.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "retrieves clock nanoseconds and ros2 stamp struct in a single clock snapshot.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L215"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_243",
-      "label": "Constructs a standard sensor_msgs/msg/JointState message.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "constructs a standard sensor_msgs/msg/jointstate message.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L243"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_275",
-      "label": "Constructs a typed RobotTelemetryEvent conforming to the wire contract.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "constructs a typed robottelemetryevent conforming to the wire contract.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L275"
-    },
-    {
-      "id": "src_edge_node_mock_motion_publisher_rationale_295",
-      "label": "Publishes one synchronized 30 Hz step to both ROS2 and Zenoh.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "publishes one synchronized 30 hz step to both ros2 and zenoh.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L295"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_rationale_327",
@@ -17853,17 +18074,6 @@
       "source_location": "L327"
     },
     {
-      "id": "src_edge_node_mock_motion_publisher_rationale_34",
-      "label": "Configuration for a single joint's continuous sinusoidal oscillation.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "configuration for a single joint's continuous sinusoidal oscillation.",
-      "source_file": "src/edge_node/mock_motion_publisher.py",
-      "source_location": "L34"
-    },
-    {
       "id": "src_edge_node_mock_motion_publisher_rationale_93",
       "label": "Generates continuous 30 Hz sinusoidal trajectories across UR5e joints.",
       "_origin": "ast",
@@ -17873,50 +18083,6 @@
       "norm_label": "generates continuous 30 hz sinusoidal trajectories across ur5e joints.",
       "source_file": "src/edge_node/mock_motion_publisher.py",
       "source_location": "L93"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_rationale_1",
-      "label": "Standalone synthetic ROS2 JointState publisher at 30 Hz.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "standalone synthetic ros2 jointstate publisher at 30 hz.",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_rationale_22",
-      "label": "ROS2 node publishing synthetic JointState messages at 30 Hz.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "ros2 node publishing synthetic jointstate messages at 30 hz.",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L22"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_rationale_48",
-      "label": "Creates a synthetic JointState message with canonical joint names.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "creates a synthetic jointstate message with canonical joint names.",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L48"
-    },
-    {
-      "id": "src_edge_node_mock_publisher_rationale_66",
-      "label": "Publishes a single JointState message and returns it.",
-      "_origin": "ast",
-      "community": 81,
-      "community_name": "MockMotionPublisher",
-      "file_type": "rationale",
-      "norm_label": "publishes a single jointstate message and returns it.",
-      "source_file": "src/edge_node/mock_publisher.py",
-      "source_location": "L66"
     },
     {
       "id": "tests_test_mock_motion_publisher_rationale_1",
@@ -19499,17 +19665,6 @@
       "source_location": "L1"
     },
     {
-      "id": "web_src_components_operatortoolbar",
-      "label": "OperatorToolbar.tsx",
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbar.tsx",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "web_src_components_teleopclient",
       "label": "TeleopClient.tsx",
       "_origin": "ast",
@@ -20181,7 +20336,7 @@
       "label": "ErrorFrame",
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "errorframe",
       "source_file": "",
@@ -20192,7 +20347,7 @@
       "label": "PalmAction",
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "palmaction",
       "source_file": "",
@@ -20203,7 +20358,7 @@
       "label": "Any",
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "any",
       "source_file": "",
@@ -20214,7 +20369,7 @@
       "label": "RobotTelemetryEvent",
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "code",
       "norm_label": "robottelemetryevent",
       "source_file": "",
@@ -20225,7 +20380,7 @@
       "label": "Ingests a JointState ROS2 message and updates canonical joint positions. Args:\u2026",
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "rationale",
       "norm_label": "ingests a jointstate ros2 message and updates canonical joint positions. args:...",
       "source_file": "src/edge_node/node.py",
@@ -20236,7 +20391,7 @@
       "label": "Emits a periodic 30 Hz RobotTelemetryEvent with current joint positions.",
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "rationale",
       "norm_label": "emits a periodic 30 hz robottelemetryevent with current joint positions.",
       "source_file": "src/edge_node/node.py",
@@ -20247,11 +20402,33 @@
       "label": "Ingests, validates, and processes an inbound RobotCommand payload string or\u2026",
       "_origin": "ast",
       "community": 96,
-      "community_name": ".handle_command_payload",
+      "community_name": "EdgeNode",
       "file_type": "rationale",
       "norm_label": "ingests, validates, and processes an inbound robotcommand payload string or...",
       "source_file": "src/edge_node/node.py",
       "source_location": "L241"
+    },
+    {
+      "id": "src_edge_node_node_rationale_35",
+      "label": "EdgeNode combining ROS2 node capabilities with Eclipse Zenoh DataFabric pub/sub.",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "rationale",
+      "norm_label": "edgenode combining ros2 node capabilities with eclipse zenoh datafabric pub/sub.",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L35"
+    },
+    {
+      "id": "src_edge_node_node_rationale_458",
+      "label": "Cleans up Zenoh subscriptions/sessions and ROS2 nodes.",
+      "_origin": "ast",
+      "community": 96,
+      "community_name": "EdgeNode",
+      "file_type": "rationale",
+      "norm_label": "cleans up zenoh subscriptions/sessions and ros2 nodes.",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L458"
     },
     {
       "id": "enum",
@@ -20296,28 +20473,6 @@
       "norm_label": "actuation action to execute on dexterous palm",
       "source_file": "src/domain/domain.py",
       "source_location": "L10"
-    },
-    {
-      "id": "src_domain_domain_rationale_120",
-      "label": "Typed payload for SPAWN_OBJECT command",
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "typed payload for spawn_object command",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L120"
-    },
-    {
-      "id": "src_domain_domain_rationale_138",
-      "label": "End-effector dexterous palm pneumatic actuation and grasp status",
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "end-effector dexterous palm pneumatic actuation and grasp status",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L138"
     },
     {
       "id": "src_domain_domain_rationale_17",
@@ -20373,6 +20528,17 @@
       "norm_label": "type of object to spawn",
       "source_file": "src/domain/domain.py",
       "source_location": "L25"
+    },
+    {
+      "id": "src_domain_domain_rationale_88",
+      "label": "Typed payload for PALM_ACTUATE command to toggle suction or grasp status",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "typed payload for palm_actuate command to toggle suction or grasp status",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L88"
     },
     {
       "id": "support_files_specs_unit2_implementation_wireframe",
@@ -20483,103 +20649,92 @@
       "source_location": "L119"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_description",
-      "label": "description",
+      "id": "src_edge_node_mock_motion_publisher_py_any",
+      "label": "Any",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
+      "community_name": ".publish_tick",
       "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L123"
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_minlength",
-      "label": "minLength",
+      "id": "src_edge_node_mock_motion_publisher_py_robottelemetryevent",
+      "label": "RobotTelemetryEvent",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
+      "community_name": ".publish_tick",
       "file_type": "code",
-      "norm_label": "minlength",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L122"
+      "norm_label": "robottelemetryevent",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_detected_object_type",
-      "label": "type",
+      "id": "src_edge_node_mock_motion_publisher_rationale_183",
+      "label": "Calculates deterministic joint angles clamped to physical limits [-pi, pi].",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L121"
+      "community_name": ".publish_tick",
+      "file_type": "rationale",
+      "norm_label": "calculates deterministic joint angles clamped to physical limits [-pi, pi].",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L183"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_inference_metrics_properties",
-      "label": "properties",
+      "id": "src_edge_node_mock_motion_publisher_rationale_194",
+      "label": "Calculates instantaneous joint velocities from analytical derivatives.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
-      "file_type": "code",
-      "norm_label": "properties",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L108"
+      "community_name": ".publish_tick",
+      "file_type": "rationale",
+      "norm_label": "calculates instantaneous joint velocities from analytical derivatives.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L194"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_description",
-      "label": "description",
+      "id": "src_edge_node_mock_motion_publisher_rationale_215",
+      "label": "Retrieves clock nanoseconds and ROS2 stamp struct in a single clock snapshot.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L112"
+      "community_name": ".publish_tick",
+      "file_type": "rationale",
+      "norm_label": "retrieves clock nanoseconds and ros2 stamp struct in a single clock snapshot.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L215"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_minimum",
-      "label": "minimum",
+      "id": "src_edge_node_mock_motion_publisher_rationale_243",
+      "label": "Constructs a standard sensor_msgs/msg/JointState message.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
-      "file_type": "code",
-      "norm_label": "minimum",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L111"
+      "community_name": ".publish_tick",
+      "file_type": "rationale",
+      "norm_label": "constructs a standard sensor_msgs/msg/jointstate message.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L243"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_latency_ms_type",
-      "label": "type",
+      "id": "src_edge_node_mock_motion_publisher_rationale_275",
+      "label": "Constructs a typed RobotTelemetryEvent conforming to the wire contract.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L110"
+      "community_name": ".publish_tick",
+      "file_type": "rationale",
+      "norm_label": "constructs a typed robottelemetryevent conforming to the wire contract.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L275"
     },
     {
-      "id": "schemas_robot_telemetry_event_schema_properties_detected_object",
-      "label": "detected_object",
+      "id": "src_edge_node_mock_motion_publisher_rationale_295",
+      "label": "Publishes one synchronized 30 Hz step to both ROS2 and Zenoh.",
       "_origin": "ast",
       "community": 99,
-      "community_name": "properties",
-      "file_type": "code",
-      "norm_label": "detected_object",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L120"
-    },
-    {
-      "id": "schemas_robot_telemetry_event_schema_properties_latency_ms",
-      "label": "latency_ms",
-      "_origin": "ast",
-      "community": 99,
-      "community_name": "properties",
-      "file_type": "code",
-      "norm_label": "latency_ms",
-      "source_file": "schemas/robot_telemetry_event.schema.json",
-      "source_location": "L109"
+      "community_name": ".publish_tick",
+      "file_type": "rationale",
+      "norm_label": "publishes one synchronized 30 hz step to both ros2 and zenoh.",
+      "source_file": "src/edge_node/mock_motion_publisher.py",
+      "source_location": "L295"
     }
   ],
   "links": [
@@ -22176,7 +22331,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L780",
+      "source_location": "L801",
       "weight": 1.0
     },
     {
@@ -22360,6 +22515,30 @@
       "weight": 1.0
     },
     {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage_expectactivegear",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_hasactivegear",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L452",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage_expectgearwheelatposition",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_getgearposition",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L477",
+      "weight": 1.0
+    },
+    {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage_expectjointsoscillating",
       "target": "web_tests_e2e_pages_teleoppage_teleoppage_getrobotjointvalues",
       "relation": "calls",
@@ -22380,7 +22559,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L219",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage_expectreticlevisible",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_isreticlevisible",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -22392,7 +22583,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L399",
+      "source_location": "L408",
       "weight": 1.0
     },
     {
@@ -22440,7 +22631,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L157",
+      "source_location": "L161",
       "weight": 1.0
     },
     {
@@ -22452,7 +22643,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L245",
+      "source_location": "L249",
       "weight": 1.0
     },
     {
@@ -22464,7 +22655,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L246",
+      "source_location": "L250",
       "weight": 1.0
     },
     {
@@ -22476,7 +22667,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L251",
+      "source_location": "L255",
       "weight": 1.0
     },
     {
@@ -22488,7 +22679,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L214",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -25504,6 +25695,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_tests_e2e_steps_workcell_steps",
+      "target": "web_tests_e2e_support_world_customworld",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/workcell.steps.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
       "source": "web_tests_e2e_support_harness",
       "target": "web_domain_contracts_default_robot_id",
       "relation": "imports",
@@ -26990,6 +27193,18 @@
       "context": "import",
       "source_file": "web/tests/e2e/steps/teleop.steps.ts",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_steps_workcell_steps",
+      "target": "web_tests_e2e_support_world",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/e2e/steps/workcell.steps.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -31720,6 +31935,17 @@
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md",
       "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "beans_hand_sim_3hb6_unit_54_teleopclient_operator_toolbar_clear_worksp",
+      "target": "beans_hand_sim_3hb6_unit_54_teleopclient_operator_toolbar_clear_worksp_implementation_summary",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".beans/hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -42416,7 +42642,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L214",
+      "source_location": "L223",
       "weight": 1.0
     },
     {
@@ -42427,7 +42653,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L229",
+      "source_location": "L238",
       "weight": 1.0
     },
     {
@@ -42438,7 +42664,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L263",
+      "source_location": "L272",
       "weight": 1.0
     },
     {
@@ -42460,7 +42686,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L284",
+      "source_location": "L293",
       "weight": 1.0
     },
     {
@@ -42471,7 +42697,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L294",
+      "source_location": "L303",
       "weight": 1.0
     },
     {
@@ -42482,7 +42708,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L305",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -42493,7 +42719,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L310",
+      "source_location": "L319",
       "weight": 1.0
     },
     {
@@ -42504,7 +42730,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L315",
+      "source_location": "L324",
       "weight": 1.0
     },
     {
@@ -42515,7 +42741,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L320",
+      "source_location": "L329",
       "weight": 1.0
     },
     {
@@ -42526,7 +42752,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L324",
+      "source_location": "L333",
       "weight": 1.0
     },
     {
@@ -42537,7 +42763,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L328",
+      "source_location": "L337",
       "weight": 1.0
     },
     {
@@ -42548,7 +42774,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L333",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -42559,7 +42785,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L340",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -42570,7 +42796,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L347",
+      "source_location": "L356",
       "weight": 1.0
     },
     {
@@ -42581,7 +42807,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L351",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -42592,7 +42818,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L355",
+      "source_location": "L364",
       "weight": 1.0
     },
     {
@@ -42603,7 +42829,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L359",
+      "source_location": "L368",
       "weight": 1.0
     },
     {
@@ -42614,7 +42840,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L363",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -42625,7 +42851,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L367",
+      "source_location": "L376",
       "weight": 1.0
     },
     {
@@ -42636,7 +42862,84 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L391",
+      "source_location": "L400",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectworkcelltableloaded",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L423",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_hasactivegear",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L439",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactivegear",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L448",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_getgearposition",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L459",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectgearwheelatposition",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L468",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectclicklockedout",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L491",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickworkcelltable",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L507",
       "weight": 1.0
     },
     {
@@ -42652,6 +42955,28 @@
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_hoverworkcelltable",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L537",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_isreticlevisible",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L567",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
       "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectconnectionstatus",
       "relation": "method",
       "_origin": "ast",
@@ -42659,6 +42984,17 @@
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
       "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectreticlevisible",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L579",
       "weight": 1.0
     },
     {
@@ -42740,7 +43076,7 @@
     },
     {
       "source": "web_tests_e2e_support_harness_serviceharness",
-      "target": "web_tests_e2e_support_harness_serviceharness_ismockpublisherrunning",
+      "target": "web_tests_e2e_support_harness_serviceharness_clearcapturedlogs",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -42751,13 +43087,24 @@
     },
     {
       "source": "web_tests_e2e_support_harness_serviceharness",
+      "target": "web_tests_e2e_support_harness_serviceharness_ismockpublisherrunning",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/support/harness.ts",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_support_harness_serviceharness",
       "target": "web_tests_e2e_support_harness_serviceharness_startmockpublisher",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L156",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -42768,7 +43115,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L205",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -42779,7 +43126,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L218",
+      "source_location": "L222",
       "weight": 1.0
     },
     {
@@ -42790,7 +43137,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/harness.ts",
-      "source_location": "L243",
+      "source_location": "L247",
       "weight": 1.0
     },
     {
@@ -45535,5 +45882,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "058daf172f0e0ee465820b5277c39e290babb50d"
+  "built_at_commit": "59719992f5aa247f52d061642b97c0e7acdf957d"
 }

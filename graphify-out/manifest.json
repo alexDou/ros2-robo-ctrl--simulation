@@ -882,9 +882,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1789560364.2003088,
-    "seen": 1789560779.1501596,
-    "ast_hash": "81a612510c3924bd0276d583638eb9dd",
+    "mtime": 1789561500.7490673,
+    "seen": 1789561577.0315423,
+    "ast_hash": "4c318fec13d877bf159fff05404999dc",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
@@ -894,15 +894,15 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789414222.6325634,
-    "seen": 1789414441.6169293,
-    "ast_hash": "7141798758f5777dffcd7ed748d4d500",
+    "mtime": 1789562186.1250114,
+    "seen": 1789562278.5145977,
+    "ast_hash": "657a38894b17d59317ed2f67f457ec8c",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
-    "mtime": 1789414354.5202887,
-    "seen": 1789414441.6169314,
-    "ast_hash": "8844b258eed1f7bab0f17fbd56876565",
+    "mtime": 1789562194.17083,
+    "seen": 1789562278.5145984,
+    "ast_hash": "86df4ef679869570a945c99372c9da65",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/world.ts": {
@@ -1098,9 +1098,9 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789557801.9565432,
-    "seen": 1789557938.3697224,
-    "ast_hash": "0ad787797cf5730703a8781053b19ca7",
+    "mtime": 1789562206.9454138,
+    "seen": 1789562278.5142434,
+    "ast_hash": "3f795c4a08804a7e7adad9724eefd548",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
@@ -1248,9 +1248,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md": {
-    "mtime": 1789511366.0742507,
-    "seen": 1789511862.5121467,
-    "ast_hash": "4af15190f00ec16c96b9715578fc577a",
+    "mtime": 1789560802.4041378,
+    "seen": 1789561577.0369303,
+    "ast_hash": "54d523056fb0132d8437a6d6918b5680",
     "semantic_hash": ""
   },
   ".beans/hand-sim-7w33--unit-5-interactive-3d-workcell-click-to-place-gear.md": {
@@ -1299,6 +1299,12 @@
     "mtime": 1789559058.633457,
     "seen": 1789559349.582064,
     "ast_hash": "dfbae349ea8252d7704e0c203dc989c2",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/steps/workcell.steps.ts": {
+    "mtime": 1789562217.2665637,
+    "seen": 1789562278.514597,
+    "ast_hash": "94faf008f3da832fd019f6d67765dcda",
     "semantic_hash": ""
   }
 }

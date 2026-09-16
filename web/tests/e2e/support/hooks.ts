@@ -31,8 +31,11 @@ Before(async function (this: CustomWorld, scenario) {
   this.harness = sharedHarness;
   this.baseUrl = sharedHarness.baseUrl;
   this.browser = sharedBrowser;
+  this.harness.clearCapturedLogs();
 
-  const isClosedLoop = scenario.pickle.tags.some((t) => t.name === '@closed-loop');
+  const isClosedLoop = scenario.pickle.tags.some(
+    (t) => t.name === '@closed-loop' || t.name === '@workcell'
+  );
   if (isClosedLoop) {
     if (this.harness.isMockPublisherRunning()) {
       await this.harness.stopMockPublisher();
@@ -58,13 +61,16 @@ After(async function (this: CustomWorld, scenario) {
     }
   }
 
-  // Restore IDLE state if robot was left in FAULT
+  // Restore IDLE state if robot was left in FAULT and clear active gear
   if (this.teleopPage && this.page && !this.page.isClosed()) {
     try {
       const badge = await this.teleopPage.connectionBadge.innerText({ timeout: 500 }).catch(() => '');
       if (badge.includes('FAULT')) {
         await this.teleopPage.clickResetFault().catch(() => {});
         await this.teleopPage.expectConnectionStatus(/IDLE/, 1000).catch(() => {});
+      }
+      if (await this.teleopPage.hasActiveGear()) {
+        await this.teleopPage.clickClearWorkspace().catch(() => {});
       }
     } catch {
       // Ignore cleanup error on teardown
