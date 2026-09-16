@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from domain import (
     CANONICAL_POSES,
     DEFAULT_ROBOT_ID,
+    ClearWorkspacePayload,
     CommandType,
     ErrorFrame,
     PalmAction,
@@ -18,12 +19,14 @@ from domain import (
     RobotCommand,
     RobotState,
     RobotTelemetryEvent,
+    SpawnObjectPayload,
     TrajectoryExecutePayload,
     robot_command_topic,
     robot_telemetry_topic,
 )
 
 from edge_node.mapper import JointStateMapper
+from edge_node.workcell import WorkcellOccupiedError, WorkcellState
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +49,7 @@ class EdgeNode:
         self.mapper = JointStateMapper()
         self.robot_state = RobotState.BOOTING
         self.palm_state = PalmState(is_grasped=False)
+        self.workcell_state = WorkcellState()
         self._abort_event = threading.Event()
         self.active_motion_thread: Optional[threading.Thread] = None
 
@@ -286,7 +290,7 @@ class EdgeNode:
             self._publish_telemetry(event)
             return event
 
-        # SingleCommandGating: only admit motion/actuation commands when IDLE
+        # SingleCommandGating: only admit operational/workcell commands when IDLE
         if self.robot_state != RobotState.IDLE:
             err_frame = ErrorFrame(
                 error_code="ROBOT_BUSY",
@@ -360,6 +364,76 @@ class EdgeNode:
                 self.active_motion_thread = t
                 t.start()
                 return None
+
+        if command.type == CommandType.SPAWN_OBJECT:
+            try:
+                spawn_payload = SpawnObjectPayload.model_validate(command.payload)
+            except ValidationError as err:
+                self.logger.error(
+                    f"Invalid SpawnObjectPayload in command {command.command_id}: {err}"
+                )
+                err_frame = ErrorFrame(
+                    error_code="INVALID_COMMAND_PAYLOAD",
+                    message=f"Invalid SpawnObjectPayload: {err}",
+                    timestamp_ns=now_ns,
+                )
+                self._publish_error(err_frame)
+                return err_frame
+
+            try:
+                self.workcell_state.spawn_gear(spawn_payload)
+            except WorkcellOccupiedError:
+                err_frame = ErrorFrame(
+                    error_code="WORKCELL_OCCUPIED",
+                    message=f"Active gear already present in workcell; rejecting spawn command {command.command_id}",
+                    timestamp_ns=now_ns,
+                )
+                self.logger.warning(
+                    f"Command {command.command_id} (SPAWN_OBJECT) rejected: active gear already present"
+                )
+                self._publish_error(err_frame)
+                return err_frame
+            except ValueError as val_err:
+                err_frame = ErrorFrame(
+                    error_code="INVALID_COMMAND_PAYLOAD",
+                    message=f"Invalid coordinate values: {val_err}",
+                    timestamp_ns=now_ns,
+                )
+                self.logger.warning(
+                    f"Command {command.command_id} (SPAWN_OBJECT) rejected: {val_err}"
+                )
+                self._publish_error(err_frame)
+                return err_frame
+
+            self.logger.info(
+                f"Spawned {spawn_payload.object_type.value} at ({spawn_payload.x:.3f}, {spawn_payload.y:.3f}, {spawn_payload.z:.3f}) for command '{command.command_id}'"
+            )
+            event = self._create_telemetry_event(command_id=command.command_id)
+            self._publish_telemetry(event)
+            return event
+
+        if command.type == CommandType.CLEAR_WORKSPACE:
+            try:
+                ClearWorkspacePayload.model_validate(command.payload)
+            except ValidationError as err:
+                self.logger.error(
+                    f"Invalid ClearWorkspacePayload in command {command.command_id}: {err}"
+                )
+                err_frame = ErrorFrame(
+                    error_code="INVALID_COMMAND_PAYLOAD",
+                    message=f"Invalid ClearWorkspacePayload: {err}",
+                    timestamp_ns=now_ns,
+                )
+                self._publish_error(err_frame)
+                return err_frame
+
+            self.workcell_state.clear()
+            self.logger.info(
+                f"Workspace cleared for command '{command.command_id}'"
+            )
+            event = self._create_telemetry_event(command_id=command.command_id)
+            self._publish_telemetry(event)
+            return event
 
         self.logger.info(
             f"Received {command.type.value} command '{command.command_id}' from '{command.sender_id}'"
