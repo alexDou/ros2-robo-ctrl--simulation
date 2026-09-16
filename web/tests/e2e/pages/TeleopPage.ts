@@ -22,6 +22,7 @@ export class TeleopPage {
   readonly palmStatusBadge: Locator;
   readonly resetFaultButton: Locator;
   readonly emergencyStopButton: Locator;
+  readonly clearWorkspaceButton: Locator;
   readonly toolbarErrorBanner: Locator;
 
   constructor(page: Page) {
@@ -45,6 +46,7 @@ export class TeleopPage {
     this.palmStatusBadge = page.getByTestId('palm-status');
     this.resetFaultButton = page.getByTestId('reset-fault-button');
     this.emergencyStopButton = page.getByTestId('emergency-stop-button');
+    this.clearWorkspaceButton = page.getByTestId('clear-workspace-button');
     this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
   }
 
@@ -308,6 +310,19 @@ export class TeleopPage {
   async clickEmergencyStop(): Promise<void> {
     await expect(this.emergencyStopButton).toBeEnabled();
     await this.emergencyStopButton.click();
+  }
+
+  async clickClearWorkspace(): Promise<void> {
+    await expect(this.clearWorkspaceButton).toBeEnabled();
+    await this.clearWorkspaceButton.click();
+  }
+
+  async expectClearWorkspaceButtonEnabled(): Promise<void> {
+    await expect(this.clearWorkspaceButton).toBeEnabled();
+  }
+
+  async expectClearWorkspaceButtonDisabled(): Promise<void> {
+    await expect(this.clearWorkspaceButton).toBeDisabled();
   }
 
   async clickResetFault(): Promise<void> {

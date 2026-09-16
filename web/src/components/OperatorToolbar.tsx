@@ -3,10 +3,12 @@ import { PoseName, type RobotState } from '@contracts';
 export interface OperatorToolbarProps {
   robotState: RobotState | string | null;
   isGrasped: boolean;
+  hasActiveGear: boolean;
   onExecutePose: (poseName: PoseName) => void;
   onTogglePalm: () => void;
   onEmergencyStop: () => void;
   onResetFault: () => void;
+  onClearWorkspace: () => void;
   errorBanner?: { errorCode: string; message: string } | null;
   disabled?: boolean;
 }
@@ -14,10 +16,12 @@ export interface OperatorToolbarProps {
 export function OperatorToolbar({
   robotState,
   isGrasped,
+  hasActiveGear,
   onExecutePose,
   onTogglePalm,
   onEmergencyStop,
   onResetFault,
+  onClearWorkspace,
   errorBanner,
   disabled = false,
 }: OperatorToolbarProps) {
@@ -27,6 +31,7 @@ export function OperatorToolbar({
   // Action buttons disabled unless robot is IDLE and not externally disabled
   const actionDisabled = disabled || !isIdle;
   const resetFaultDisabled = disabled || !isFault;
+  const clearWorkspaceDisabled = disabled || !isIdle || !hasActiveGear;
 
   return (
     <div
@@ -180,6 +185,33 @@ export function OperatorToolbar({
           >
             {isGrasped ? 'Grasped' : 'Released'}
           </span>
+        </div>
+
+        {/* Workspace Cluster: Workcell / Workspace Controls */}
+        <div
+          data-testid="workspace-control-cluster"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}
+        >
+          <span style={{ color: '#9ca3af', fontSize: '0.8125rem', fontWeight: 600 }}>Workcell:</span>
+          <button
+            data-testid="clear-workspace-button"
+            type="button"
+            onClick={onClearWorkspace}
+            disabled={clearWorkspaceDisabled}
+            style={{
+              backgroundColor: clearWorkspaceDisabled ? '#374151' : '#4b5563',
+              color: clearWorkspaceDisabled ? '#9ca3af' : '#ffffff',
+              padding: '0.4rem 0.8rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              cursor: clearWorkspaceDisabled ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s ease',
+            }}
+          >
+            Clear Workspace
+          </button>
         </div>
 
         {/* Right Cluster: Safety Cluster */}

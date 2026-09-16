@@ -15,6 +15,7 @@ import {
   createEmergencyStopCommand,
   createResetFaultCommand,
   createSpawnObjectCommand,
+  createClearWorkspaceCommand,
   serializeCommand,
   type SpawnObjectPayload,
 } from '@domain/parsers';
@@ -259,7 +260,8 @@ export function TeleopClient({
   const handleSpawnObject = useCallback(
     (payload: SpawnObjectPayload) => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-      if (robotState && robotState !== 'IDLE') return;
+      const currentRobotState = robotState ?? 'IDLE';
+      if (currentRobotState !== 'IDLE') return;
       if (hasActiveGear) return;
       const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
       wsRef.current.send(serializeCommand(cmd));
@@ -267,6 +269,16 @@ export function TeleopClient({
     },
     [robotState, hasActiveGear]
   );
+
+  const handleClearWorkspace = useCallback(() => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    const currentRobotState = robotState ?? 'IDLE';
+    if (currentRobotState !== 'IDLE') return;
+    if (!hasActiveGear) return;
+    const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
+    wsRef.current.send(serializeCommand(cmd));
+    setHasActiveGear(false);
+  }, [robotState, hasActiveGear]);
 
   const handlePing = () => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
@@ -414,10 +426,12 @@ export function TeleopClient({
           <OperatorToolbar
             robotState={robotState || 'IDLE'}
             isGrasped={!!palmState?.is_grasped}
+            hasActiveGear={hasActiveGear}
             onExecutePose={handleExecutePose}
             onTogglePalm={handleTogglePalm}
             onEmergencyStop={handleEmergencyStop}
             onResetFault={handleResetFault}
+            onClearWorkspace={handleClearWorkspace}
             errorBanner={errorBanner}
             disabled={connectionState !== 'CONNECTED'}
           />
