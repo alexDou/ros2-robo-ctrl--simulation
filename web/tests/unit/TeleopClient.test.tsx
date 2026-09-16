@@ -481,7 +481,82 @@ describe('TeleopClient Component', () => {
       expect(screen.queryByTestId('toolbar-error-banner')).toBeNull();
     });
   });
+
+  describe('Unit 5.1: 3D Workcell Table, Raycaster & Procedural Gear Ingestion', () => {
+    it('dispatches SPAWN_OBJECT command when valid reachable table spot is clicked', () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      expect(visualizer).toBeDefined();
+
+      // Click reachable table spot
+      act(() => {
+        visualizer.simulateClick(0.5, 0.1);
+      });
+
+      expect(ws.sentMessages.length).toBe(1);
+      const sentCmd = JSON.parse(ws.sentMessages[0]);
+      expect(sentCmd.type).toBe(CommandType.SPAWN_OBJECT);
+      expect(sentCmd.payload.x).toBeCloseTo(0.5, 2);
+      expect(sentCmd.payload.y).toBeCloseTo(0.1, 2);
+      expect(sentCmd.payload.z).toBeCloseTo(0.0, 2);
+      expect(sentCmd.payload.object_type).toBe('GEAR');
+    });
+
+    it('enforces client-side ClickLockout preventing second SPAWN_OBJECT command dispatch', () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Click 1
+      act(() => {
+        visualizer.simulateClick(0.5, 0.1);
+      });
+      expect(ws.sentMessages.length).toBe(1);
+
+      // Click 2: blocked by ClickLockout
+      act(() => {
+        visualizer.simulateClick(0.6, 0.0);
+      });
+      expect(ws.sentMessages.length).toBe(1);
+    });
+
+    it('does not dispatch SPAWN_OBJECT command when robot_state is not IDLE', () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      // Robot transitions to EXECUTING
+      const telemExecuting: RobotTelemetryEvent = {
+        timestamp_ns: '1700000000000000000',
+        robot_state: RobotState.EXECUTING,
+        joint_positions: [0, 0, 0, 0, 0, 0],
+        palm_state: { is_grasped: false },
+      };
+      act(() => {
+        ws.simulateMessage(JSON.stringify(telemExecuting));
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      // Click while busy
+      act(() => {
+        visualizer.simulateClick(0.5, 0.0);
+      });
+      expect(ws.sentMessages.length).toBe(0);
+    });
+  });
 });
+
 
 
 

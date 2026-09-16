@@ -14,7 +14,9 @@ import {
   createPalmActuateCommand,
   createEmergencyStopCommand,
   createResetFaultCommand,
+  createSpawnObjectCommand,
   serializeCommand,
+  type SpawnObjectPayload,
 } from '@domain/parsers';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { TelemetryMonitor } from '@components/TelemetryMonitor';
@@ -64,6 +66,7 @@ export function TeleopClient({
   const [connectionState, setConnectionState] = useState<ConnectionState>('CONNECTING');
   const [conflictReason, setConflictReason] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [hasActiveGear, setHasActiveGear] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() => {
     if (typeof window !== 'undefined') {
       if (typeof window.matchMedia === 'function') {
@@ -253,6 +256,18 @@ export function TeleopClient({
     wsRef.current.send(serializeCommand(cmd));
   }, []);
 
+  const handleSpawnObject = useCallback(
+    (payload: SpawnObjectPayload) => {
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+      if (robotState && robotState !== 'IDLE') return;
+      if (hasActiveGear) return;
+      const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
+      wsRef.current.send(serializeCommand(cmd));
+      setHasActiveGear(true);
+    },
+    [robotState, hasActiveGear]
+  );
+
   const handlePing = () => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     const pingCmd = createPingCommand({ senderId: 'ui-client' });
@@ -389,6 +404,9 @@ export function TeleopClient({
             assetBaseUrl={assetBaseUrl}
             telemetryBufferRef={bufferRef}
             jointPositionsRef={jointPositionsRef}
+            robotState={robotState || 'IDLE'}
+            hasActiveGear={hasActiveGear}
+            onSpawnObject={handleSpawnObject}
             rendererFactory={rendererFactory}
             controlsFactory={controlsFactory}
             style={{ flex: 1, width: '100%', minHeight: '480px' }}

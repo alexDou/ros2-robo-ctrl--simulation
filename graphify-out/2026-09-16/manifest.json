@@ -1098,15 +1098,15 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789557801.9565432,
-    "seen": 1789557938.3697224,
-    "ast_hash": "0ad787797cf5730703a8781053b19ca7",
+    "mtime": 1789555789.567321,
+    "seen": 1789555942.008928,
+    "ast_hash": "ea55d41745d928a5bffaec04b76070ab",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
-    "mtime": 1789557910.8638155,
-    "seen": 1789557938.3702116,
-    "ast_hash": "4aeb81f7a5e162fea0bc64d5f538e62b",
+    "mtime": 1789555870.5679283,
+    "seen": 1789555942.0093808,
+    "ast_hash": "07ad1747ba3852a556d58fe586e8fc8b",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/dynamic_motion.steps.ts": {
