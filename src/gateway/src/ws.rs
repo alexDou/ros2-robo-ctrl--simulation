@@ -41,9 +41,12 @@ fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), Str
                 .map_err(|e| e.to_string())
         }
         CommandType::SpawnObject => {
-            SpawnObjectPayload::deserialize(&cmd.payload)
-                .map(|_| ())
-                .map_err(|e| e.to_string())
+            let payload = SpawnObjectPayload::deserialize(&cmd.payload)
+                .map_err(|e| e.to_string())?;
+            if !payload.x.is_finite() || !payload.y.is_finite() || !payload.z.is_finite() {
+                return Err("Coordinates x, y, and z must be finite floats".to_string());
+            }
+            Ok(())
         }
         CommandType::ClearWorkspace => {
             ClearWorkspacePayload::deserialize(&cmd.payload)

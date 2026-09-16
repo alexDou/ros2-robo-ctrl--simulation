@@ -26,10 +26,14 @@ from domain import (
 )
 
 from .node import EdgeNode
+from .workcell import ActiveGear, WorkcellOccupiedError, WorkcellState
 
 __all__ = [
     "DEFAULT_ROBOT_ID",
     "EdgeNode",
+    "ActiveGear",
+    "WorkcellOccupiedError",
+    "WorkcellState",
     "CommandType",
     "EmergencyStopPayload",
     "ErrorFrame",
