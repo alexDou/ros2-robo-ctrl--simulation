@@ -1,12 +1,12 @@
 ---
 # hand-sim-e8n5
 title: 'Phase 1: Distributed Telemetry Streaming & 3D Teleoperation Visualizer'
-status: todo
+status: completed
 type: feature
 tags:
     - ready-for-agent
 created_at: 2026-09-09T15:14:02Z
-updated_at: 2026-09-09T15:14:02Z
+updated_at: 2026-09-16T12:40:00Z
 ---
 
 ## Problem Statement
@@ -136,3 +136,12 @@ A decoupled three-tier distributed architecture spanning:
 
 - The RESTful endpoint `/ws/teleop/robot/{id}` replaces the earlier query parameter draft (`/ws/teleop?robot_id={id}`) to adhere strictly to RESTful resource hierarchy conventions.
 - Phase 1 implementation follows four sequential vertical walking skeleton units as detailed in the roadmap documentation: Unit 1 (Ping-Pong walking skeleton), Unit 2 (Continuous telemetry streaming), Unit 3 (Three.js WebGL & Gazebo sync), and Unit 4 (Bidirectional teleoperation & state machine).
+
+## Completion Summary
+
+Phase 1 (Units 1.1 to 1.5) fully implemented, verified, and integrated:
+- Unit 1.1: Single-source-of-truth domain schemas and cross-language types for PING and RobotTelemetryEvent.
+- Unit 1.2: Gateway Actix-Web WebSocket boundary enforcing ActiveSession per robot with 409 Conflict on duplicate connections.
+- Unit 1.3: EdgeNode ROS2 Jazzy command ingestion and DataFabric pub/sub forwarding via Zenoh.
+- Unit 1.4: Preact TeleopClient with ping-pong controls, connection state badges, and live event log.
+- Unit 1.5: Multi-service Playwright E2E suite validating end-to-end PING loop, active session exclusivity, and error frame handling.
