@@ -828,9 +828,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789555724.1289744,
-    "seen": 1789555942.0089617,
-    "ast_hash": "b8607f50382be539f9d09c6bcdf77e3a",
+    "mtime": 1789560706.500089,
+    "seen": 1789560779.1499789,
+    "ast_hash": "e30dc6c3af6df4cd09c2daaef03acad2",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/TeleopClient.test.tsx": {
-    "mtime": 1789555429.3592265,
-    "seen": 1789555942.009416,
-    "ast_hash": "83d1a507c972aab47f51bd619d348015",
+    "mtime": 1789560735.228738,
+    "seen": 1789560779.1504307,
+    "ast_hash": "7a5538a69090eead6685f8147c0d8cec",
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
@@ -882,9 +882,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1789412386.4467144,
-    "seen": 1789412825.14108,
-    "ast_hash": "d482d1a17c9851d1c84e8969b4731678",
+    "mtime": 1789560364.2003088,
+    "seen": 1789560779.1501596,
+    "ast_hash": "81a612510c3924bd0276d583638eb9dd",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
@@ -1224,9 +1224,9 @@
     "semantic_hash": ""
   },
   "web/src/components/OperatorToolbar.tsx": {
-    "mtime": 1789403389.1600795,
-    "seen": 1789405389.6310117,
-    "ast_hash": "6dcaa6828bcb891fdff655dd35a159dd",
+    "mtime": 1789560657.237694,
+    "seen": 1789560779.149913,
+    "ast_hash": "1bc36bbe77c6ca4291490e2612fc4a2e",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/closed_loop.steps.ts": {
@@ -1236,9 +1236,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-24sn--unit-52-edgenode-workcellstate-server-side-lockout.md": {
-    "mtime": 1789511357.1926525,
-    "seen": 1789511862.5120914,
-    "ast_hash": "31e098f59ba70ad15d4039dbd5b8a9bf",
+    "mtime": 1789559374.2044883,
+    "seen": 1789560779.1535435,
+    "ast_hash": "602c14236bc3e0b9cdd914de8cbdcef0",
     "semantic_hash": ""
   },
   ".beans/hand-sim-366j--unit-51-3d-workcell-table-raycaster-procedural-gea.md": {
@@ -1272,9 +1272,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-wqyv--unit-53-gateway-stateless-schema-validation.md": {
-    "mtime": 1789511361.7573621,
-    "seen": 1789511862.5126963,
-    "ast_hash": "decad3f54fd553f9c3948bf1bede20d1",
+    "mtime": 1789559379.6006758,
+    "seen": 1789560779.1542904,
+    "ast_hash": "6f71ea565347f5255948c43694a0351c",
     "semantic_hash": ""
   },
   "docs/adr/0002-in-process-workcell-state-isolation.md": {
