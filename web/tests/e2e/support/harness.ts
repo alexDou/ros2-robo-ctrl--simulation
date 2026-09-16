@@ -145,6 +145,10 @@ export class ServiceHarness {
     return this.edgeNodeLogs.join('');
   }
 
+  public clearCapturedLogs(): void {
+    this.edgeNodeLogs.length = 0;
+  }
+
   public isMockPublisherRunning(): boolean {
     return (
       this.mockPublisherProcess !== null &&

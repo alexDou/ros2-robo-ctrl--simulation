@@ -717,7 +717,10 @@ export function RobotVisualizer({
         return { x: pos.x, y: pos.y, z: pos.z };
       },
       hasActiveGear: () => activeGearAssets !== null,
-      isLockedOut: () => isLockedOut,
+      isLockedOut: () => {
+        const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+        return isLockedOut || Boolean(activeGearAssets) || Boolean(hasActiveGearPropRef.current) || !isIdle;
+      },
       clearWorkspace: () => {
         clearWorkspace();
       },
@@ -732,14 +735,32 @@ export function RobotVisualizer({
       },
       raycastPointer: (clientX: number, clientY: number) => {
         const coords = getTableCoordinates(clientX, clientY);
-        if (!coords) return null;
+        if (!coords || !tableAssets) return null;
         const r = Math.sqrt(coords.x * coords.x + coords.y * coords.y);
         return {
           x: coords.x,
           y: coords.y,
           z: 0.0,
           isReachable: r >= 0.35 && r <= 0.75,
-          isInsideTable: coords.x >= 0.25 && coords.x <= 0.85 && coords.y >= -0.3 && coords.y <= 0.3,
+          isInsideTable:
+            coords.x >= tableAssets.bounds.minX &&
+            coords.x <= tableAssets.bounds.maxX &&
+            coords.y >= tableAssets.bounds.minY &&
+            coords.y <= tableAssets.bounds.maxY,
+        };
+      },
+      getTableScreenCoords: (x: number, y: number): { clientX: number; clientY: number } | null => {
+        if (!tableAssets || isDisposed) return null;
+        camera.updateMatrixWorld();
+        robotGroup.updateMatrixWorld(true);
+        const p = new THREE.Vector3(x, y, 0.0);
+        robotGroup.localToWorld(p);
+        p.project(camera);
+        if (p.z < -1 || p.z > 1 || Math.abs(p.x) > 1 || Math.abs(p.y) > 1) return null;
+        const rect = canvas.getBoundingClientRect();
+        return {
+          clientX: rect.left + ((p.x + 1) * rect.width) / 2,
+          clientY: rect.top + ((-p.y + 1) * rect.height) / 2,
         };
       },
     };
