@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
-    "mtime": 1789639803.9365103,
-    "seen": 1789639913.5343244,
-    "ast_hash": "fa0c10b4756f85bd6730c751288ba779",
+    "mtime": 1789640596.776047,
+    "seen": 1789640667.9658284,
+    "ast_hash": "2841616f04a3dec01af1c9eb9fadde09",
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789639849.95621,
-    "seen": 1789639913.5345283,
-    "ast_hash": "330125a3fecd01bd92178d29b578611e",
+    "mtime": 1789640633.0125554,
+    "seen": 1789640667.9660578,
+    "ast_hash": "ffed7848e656dde09299e802dfafaf47",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
@@ -816,15 +816,15 @@
     "semantic_hash": ""
   },
   "src/gateway/tests/ws_gateway_test.rs": {
-    "mtime": 1789559315.85498,
-    "seen": 1789559349.5823221,
-    "ast_hash": "53ca282fc31ca7c5a519055abf16bcaa",
+    "mtime": 1789644356.0395389,
+    "seen": 1789644405.457201,
+    "ast_hash": "641b6cdce83a61d45d36fcff27a3f1f1",
     "semantic_hash": ""
   },
   "tests/test_edge_node.py": {
-    "mtime": 1789639830.4876041,
-    "seen": 1789639913.5348465,
-    "ast_hash": "347bb15cdbd6ac63521a85fff6aee62e",
+    "mtime": 1789640609.8491478,
+    "seen": 1789640667.9664578,
+    "ast_hash": "c33f80b4f911097aea1915c1b37702b2",
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
@@ -1296,9 +1296,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/workcell.py": {
-    "mtime": 1789639660.597902,
-    "seen": 1789639913.5345318,
-    "ast_hash": "d96e47f324efe26410b12c9d3bab9942",
+    "mtime": 1789640340.3997471,
+    "seen": 1789640667.9660594,
+    "ast_hash": "a56eff7f00ed5c440be28b86d6ea0c63",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/workcell.steps.ts": {
@@ -1350,9 +1350,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-z7s4--unit-62-edgenode-event-driven-workcellstate-autono.md": {
-    "mtime": 1789579625.9751203,
-    "seen": 1789579798.2761977,
-    "ast_hash": "c24ab1a8824c7f8b4f3c4c3d33f6f4c2",
+    "mtime": 1789640685.5059493,
+    "seen": 1789644405.4625335,
+    "ast_hash": "7fb6999d013ed9174933b1385c377ed1",
     "semantic_hash": ""
   },
   "support_files/specs/unit6/implementation_wireframe.md": {
@@ -1377,6 +1377,24 @@
     "mtime": 1789639053.3116813,
     "seen": 1789639091.1375198,
     "ast_hash": "b29ba40b9928ef1aff3b02a879761a5e",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-wt44--unit-65-refactoring-real-robot-native-ros2-archite.md": {
+    "mtime": 1789644054.2175114,
+    "seen": 1789644405.462503,
+    "ast_hash": "0edc1ff5cb62d61610e30759ae3cd717",
+    "semantic_hash": ""
+  },
+  "docs/adr/0004-real-robot-ros2-native-architecture-and-gateway-throttling.md": {
+    "mtime": 1789644037.7094803,
+    "seen": 1789644405.462685,
+    "ast_hash": "34cb797761f897c6fdbd3245c3fcb7c1",
+    "semantic_hash": ""
+  },
+  "support_files/specs/unit6/unit_6_5_refactoring_architecture.md": {
+    "mtime": 1789644048.7948298,
+    "seen": 1789644405.463298,
+    "ast_hash": "a9d39ac486fa3cb2bb68db130a7c661f",
     "semantic_hash": ""
   }
 }
