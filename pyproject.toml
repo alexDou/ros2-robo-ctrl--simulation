@@ -32,6 +32,7 @@ packages = ["src/edge_node", "src/domain"]
 dev = []
 
 [tool.pytest.ini_options]
-pythonpath = ["src", "src/ros2/workcell_manager"]
+pythonpath = ["src", "src/ros2/workcell_manager", "src/ros2/arm_controller"]
 testpaths = ["tests"]
+
 
