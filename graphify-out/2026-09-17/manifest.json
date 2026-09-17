@@ -810,15 +810,15 @@
     "semantic_hash": ""
   },
   "src/gateway/src/ws.rs": {
-    "mtime": 1789636879.0663004,
-    "seen": 1789637259.356673,
-    "ast_hash": "6fe56bec0e87f9369631124005eba1ad",
+    "mtime": 1789644754.8932028,
+    "seen": 1789644830.2319908,
+    "ast_hash": "62c5cc0fbf2c71bda6f0553751d2de79",
     "semantic_hash": ""
   },
   "src/gateway/tests/ws_gateway_test.rs": {
-    "mtime": 1789644356.0395389,
-    "seen": 1789644405.457201,
-    "ast_hash": "641b6cdce83a61d45d36fcff27a3f1f1",
+    "mtime": 1789644782.3022246,
+    "seen": 1789644830.2320564,
+    "ast_hash": "536c5eb3107b28cf5178df3f8b50ab8e",
     "semantic_hash": ""
   },
   "tests/test_edge_node.py": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-i13f--unit-63-gateway-stateless-schema-validation-comman.md": {
-    "mtime": 1789579654.9288144,
-    "seen": 1789579798.2750068,
-    "ast_hash": "90fcd1d3c89c02ef309adb4df4f7f541",
+    "mtime": 1789644792.3076127,
+    "seen": 1789644830.2400944,
+    "ast_hash": "c1675fd2dfb07ce40a824d63336f9d74",
     "semantic_hash": ""
   },
   ".beans/hand-sim-poc1--unit-65-multi-service-closed-loop-system-integrati.md": {
