@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1789659503.9915342,
-    "seen": 1789659633.0456376,
-    "ast_hash": "981968bed851b70e56c68ade0d995037",
+    "mtime": 1789661317.5157359,
+    "seen": 1789661488.146604,
+    "ast_hash": "cebc1003607c4f8fab4fa95d4fd7880e",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -1440,9 +1440,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-z7uz--refactor-a2-standalone-arm-controller-action-serve.md": {
-    "mtime": 1789648350.8381662,
-    "seen": 1789648372.2722626,
-    "ast_hash": "8d9ce16952e2c5893b94809b8113a386",
+    "mtime": 1789660306.1629558,
+    "seen": 1789661488.156924,
+    "ast_hash": "044e4fb263d86cf51f6c424b0b90752a",
     "semantic_hash": ""
   },
   "tests/test_robot_control_interfaces.py": {
@@ -1488,21 +1488,21 @@
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/arm_controller/__init__.py": {
-    "mtime": 1789659311.3346624,
-    "seen": 1789659633.0464504,
-    "ast_hash": "31d638af8eec09c5027ead50f270c4de",
+    "mtime": 1789660054.2641392,
+    "seen": 1789660293.0101068,
+    "ast_hash": "54c127ce4559254f2d9d3284b19a74e2",
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/arm_controller/arm_controller_node.py": {
-    "mtime": 1789659305.6777298,
-    "seen": 1789659633.0464518,
-    "ast_hash": "ac08faaa057028b14a368bd5ccf89609",
+    "mtime": 1789660219.0956254,
+    "seen": 1789660293.0101116,
+    "ast_hash": "6eeae16b25838b7fcc10647c8208cd3a",
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/arm_controller/kinematics.py": {
-    "mtime": 1789659279.0250514,
-    "seen": 1789659633.0464532,
-    "ast_hash": "fe0e4bc62e72d970370d98638429ede4",
+    "mtime": 1789660042.8765402,
+    "seen": 1789660293.0101142,
+    "ast_hash": "b71febe38b029a017cb67a1eb3b18bed",
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/setup.py": {
@@ -1512,15 +1512,45 @@
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/test/test_arm_controller.py": {
-    "mtime": 1789659407.8045595,
-    "seen": 1789659633.0464575,
-    "ast_hash": "c341da19b1df422c5bec4f80d27df5a5",
+    "mtime": 1789660247.7324038,
+    "seen": 1789660293.010176,
+    "ast_hash": "6875ead522c4a7ab11daee03a2d460e7",
     "semantic_hash": ""
   },
   "tests/test_arm_controller.py": {
-    "mtime": 1789659557.5145514,
-    "seen": 1789659633.0465999,
-    "ast_hash": "c341da19b1df422c5bec4f80d27df5a5",
+    "mtime": 1789660247.7324038,
+    "seen": 1789660293.0104558,
+    "ast_hash": "6875ead522c4a7ab11daee03a2d460e7",
+    "semantic_hash": ""
+  },
+  "src/ros2/robot_bringup/launch/robot_nodes.launch.py": {
+    "mtime": 1789661192.5656142,
+    "seen": 1789661488.1486173,
+    "ast_hash": "c09cf2474ec129447b881ce063010d5c",
+    "semantic_hash": ""
+  },
+  "src/ros2/robot_bringup/setup.py": {
+    "mtime": 1789661256.9531612,
+    "seen": 1789661488.1486208,
+    "ast_hash": "9ae9cf3f949e185f36dd6c177f8a7bdb",
+    "semantic_hash": ""
+  },
+  "src/ros2/robot_bringup/test/test_robot_nodes_launch.py": {
+    "mtime": 1789661422.7922983,
+    "seen": 1789661488.1486228,
+    "ast_hash": "7a35ee7c922e0300461279a96c1fce1b",
+    "semantic_hash": ""
+  },
+  "tests/test_robot_nodes_launch.py": {
+    "mtime": 1789661422.7922983,
+    "seen": 1789661488.149183,
+    "ast_hash": "7a35ee7c922e0300461279a96c1fce1b",
+    "semantic_hash": ""
+  },
+  "src/ros2/robot_bringup/config/ur_controllers.yaml": {
+    "mtime": 1789661006.122932,
+    "seen": 1789661488.1572978,
+    "ast_hash": "bad5427c97ececb862f3d7d0e6ac1ea8",
     "semantic_hash": ""
   }
 }
