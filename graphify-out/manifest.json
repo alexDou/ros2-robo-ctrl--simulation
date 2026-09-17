@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
-    "mtime": 1789638524.3832393,
-    "seen": 1789638569.7746909,
-    "ast_hash": "8ab564b622780c8ccb09145c2195cf34",
+    "mtime": 1789640596.776047,
+    "seen": 1789640667.9658284,
+    "ast_hash": "2841616f04a3dec01af1c9eb9fadde09",
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789559100.0997615,
-    "seen": 1789559349.5820618,
-    "ast_hash": "9c2aaee36f76819345338b594ad20fd0",
+    "mtime": 1789640633.0125554,
+    "seen": 1789640667.9660578,
+    "ast_hash": "ffed7848e656dde09299e802dfafaf47",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
@@ -822,9 +822,9 @@
     "semantic_hash": ""
   },
   "tests/test_edge_node.py": {
-    "mtime": 1789559208.6665487,
-    "seen": 1789559349.5823483,
-    "ast_hash": "aaaa7a99856e84a6c5056c0d6ff7dc98",
+    "mtime": 1789640609.8491478,
+    "seen": 1789640667.9664578,
+    "ast_hash": "c33f80b4f911097aea1915c1b37702b2",
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
@@ -1296,9 +1296,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/workcell.py": {
-    "mtime": 1789559058.633457,
-    "seen": 1789559349.582064,
-    "ast_hash": "dfbae349ea8252d7704e0c203dc989c2",
+    "mtime": 1789640340.3997471,
+    "seen": 1789640667.9660594,
+    "ast_hash": "a56eff7f00ed5c440be28b86d6ea0c63",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/workcell.steps.ts": {

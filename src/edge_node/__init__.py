@@ -14,11 +14,14 @@ from domain import (
     PalmAction,
     PalmActuatePayload,
     PalmState,
+    PickAndPlaceTargetPayload,
     PoseName,
     ResetFaultPayload,
     RobotCommand,
     RobotState,
     RobotTelemetryEvent,
+    SpawnObjectPayload,
+    SpawnObjectType,
     TrajectoryExecutePayload,
     parse_robot_topic,
     robot_command_topic,
@@ -41,7 +44,14 @@ from .kinematics import (
     normalize_angle,
 )
 from .node import EdgeNode
-from .workcell import ActiveGear, WorkcellOccupiedError, WorkcellState
+from .workcell import (
+    GEAR_STACK_HEIGHT_STEP_M,
+    MAX_TOWER_STACK_CAPACITY,
+    ActiveGear,
+    WorkcellOccupiedError,
+    WorkcellState,
+    WorkpieceSpawnedEvent,
+)
 
 __all__ = [
     "DEFAULT_ROBOT_ID",
@@ -49,6 +59,9 @@ __all__ = [
     "ActiveGear",
     "WorkcellOccupiedError",
     "WorkcellState",
+    "WorkpieceSpawnedEvent",
+    "GEAR_STACK_HEIGHT_STEP_M",
+    "MAX_TOWER_STACK_CAPACITY",
     "DEFAULT_DOWNWARD_ORIENTATION",
     "DEFAULT_SPINDLE_TOWER_COORDS",
     "DEFAULT_TCP_OFFSET_M",
@@ -69,11 +82,14 @@ __all__ = [
     "PalmAction",
     "PalmActuatePayload",
     "PalmState",
+    "PickAndPlaceTargetPayload",
     "PoseName",
     "ResetFaultPayload",
     "RobotCommand",
     "RobotState",
     "RobotTelemetryEvent",
+    "SpawnObjectPayload",
+    "SpawnObjectType",
     "TrajectoryExecutePayload",
     "parse_robot_topic",
     "robot_command_topic",

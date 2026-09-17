@@ -15,6 +15,7 @@ from domain import (
     PalmAction,
     PalmActuatePayload,
     PalmState,
+    PickAndPlaceTargetPayload,
     PoseName,
     RobotCommand,
     RobotState,
@@ -25,8 +26,14 @@ from domain import (
     robot_telemetry_topic,
 )
 
+from edge_node.kinematics import (
+    KinematicsError,
+    OutOfReachError,
+    PickAndPlaceTrajectoryGenerator,
+    normalize_angle,
+)
 from edge_node.mapper import JointStateMapper
-from edge_node.workcell import WorkcellOccupiedError, WorkcellState
+from edge_node.workcell import WorkcellOccupiedError, WorkcellState, WorkpieceSpawnedEvent
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +48,10 @@ class EdgeNode:
         zenoh_session: Optional[Any] = None,
         auto_connect: bool = True,
         joint_states_topic: str = "/joint_states",
+        workcell_state: Optional[WorkcellState] = None,
+        trajectory_generator: Optional[Any] = None,
+        ik_solver: Optional[Any] = None,
+        step_duration: float = 0.1,
     ) -> None:
         self.robot_id = robot_id
         self.command_topic = robot_command_topic(robot_id)
@@ -49,9 +60,23 @@ class EdgeNode:
         self.mapper = JointStateMapper()
         self.robot_state = RobotState.BOOTING
         self.palm_state = PalmState(is_grasped=False)
-        self.workcell_state = WorkcellState()
+        self.workcell_state = workcell_state if workcell_state is not None else WorkcellState()
+        self.step_duration = step_duration
         self._abort_event = threading.Event()
+        self._state_lock = threading.Lock()
+        self._pub_lock = threading.Lock()
         self.active_motion_thread: Optional[threading.Thread] = None
+
+        if trajectory_generator is not None:
+            self.trajectory_generator = trajectory_generator
+        elif ik_solver is not None:
+            self.trajectory_generator = PickAndPlaceTrajectoryGenerator(solver=ik_solver)
+        else:
+            self.trajectory_generator = PickAndPlaceTrajectoryGenerator()
+
+        self._next_execution_sync: bool = False
+        self._last_execution_result: Optional[RobotTelemetryEvent | ErrorFrame] = None
+        self._workcell_unsub = self.workcell_state.subscribe(self._on_workpiece_spawned)
 
         # ROS2 Node setup
         self._owns_ros_node = False
@@ -161,7 +186,7 @@ class EdgeNode:
             timestamp_ns=now_ns,
             robot_state=self.robot_state,
             joint_positions=self.mapper.get_positions(),
-            palm_state=self.palm_state,
+            palm_state=PalmState(is_grasped=self.palm_state.is_grasped),
             inference_metrics=None,
             command_id=command_id,
         )
@@ -180,11 +205,11 @@ class EdgeNode:
         if self._abort_event.wait(0.2) or self._abort_event.is_set():
             return None
 
-        if self.robot_state == RobotState.FAULT:
-            return None
-
-        self.palm_state.is_grasped = (action == PalmAction.GRASP)
-        self.robot_state = RobotState.IDLE
+        with self._state_lock:
+            if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+                return None
+            self.palm_state.is_grasped = (action == PalmAction.GRASP)
+            self.robot_state = RobotState.IDLE
         event = self._create_telemetry_event(command_id=command_id)
         self._publish_telemetry(event)
         return event
@@ -225,15 +250,184 @@ class EdgeNode:
                 if self._abort_event.wait(dt):
                     break
 
-        if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
-            return None
-
-        self.mapper.set_positions(target_positions)
-        self.robot_state = RobotState.IDLE
+        with self._state_lock:
+            if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+                return None
+            self.mapper.set_positions(target_positions)
+            self.robot_state = RobotState.IDLE
 
         event = self._create_telemetry_event(command_id=command_id)
         self._publish_telemetry(event)
         return event
+
+    def _on_workpiece_spawned(
+        self, event: WorkpieceSpawnedEvent
+    ) -> Optional[RobotTelemetryEvent | ErrorFrame]:
+        """Handles WorkpieceSpawnedEvent emitted by WorkcellState."""
+        now_ns = time.time_ns()
+        if hasattr(self.ros2_node, "get_clock"):
+            try:
+                now_ns = self.ros2_node.get_clock().now().nanoseconds
+            except Exception:
+                pass
+
+        if self.robot_state != RobotState.IDLE:
+            err_frame = ErrorFrame(
+                error_code="ROBOT_BUSY",
+                message=f"Robot is currently {self.robot_state.value}; rejecting workpiece event for command {event.command_id}",
+                timestamp_ns=now_ns,
+            )
+            self.logger.warning(
+                f"Workpiece event {event.command_id} rejected: robot is {self.robot_state.value}"
+            )
+            self._publish_error(err_frame)
+            self._last_execution_result = err_frame
+            return err_frame
+
+        self._abort_event.clear()
+        sync = getattr(self, "_next_execution_sync", False)
+        if sync:
+            result = self._execute_pick_and_place_sequence(event, synchronous=True)
+            self._last_execution_result = result
+            return result
+        else:
+            self.robot_state = RobotState.PROCESSING
+            self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+            t = threading.Thread(
+                target=self._execute_pick_and_place_sequence,
+                args=(event, False),
+                daemon=True,
+            )
+            self.active_motion_thread = t
+            t.start()
+            return None
+
+    def _execute_pick_and_place_sequence(
+        self,
+        event: WorkpieceSpawnedEvent,
+        synchronous: bool = False,
+    ) -> Optional[RobotTelemetryEvent | ErrorFrame]:
+        """Executes 10-step pick-and-place sequence on background thread or synchronously."""
+        now_ns = time.time_ns()
+        if hasattr(self.ros2_node, "get_clock"):
+            try:
+                now_ns = self.ros2_node.get_clock().now().nanoseconds
+            except Exception:
+                pass
+
+        # 1. PROCESSING phase: Analytical IK computation
+        self.robot_state = RobotState.PROCESSING
+        self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+
+        if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+            return None
+
+        current_joints = list(self.mapper.get_positions())
+        try:
+            waypoints = self.trajectory_generator.generate_trajectory(
+                pick_coords=event.pick_coords,
+                drop_coords=event.drop_coords,
+                current_joints=current_joints,
+            )
+        except OutOfReachError as err:
+            self.logger.warning(f"Target coordinate out of reach: {err}")
+            self.workcell_state.clear_active_gear()
+            with self._state_lock:
+                if self.robot_state != RobotState.FAULT:
+                    self.robot_state = RobotState.IDLE
+            self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+            err_frame = ErrorFrame(
+                error_code="OUT_OF_REACH",
+                message=f"Target coordinate out of reach: {err}",
+                timestamp_ns=now_ns,
+            )
+            self._publish_error(err_frame)
+            self._last_execution_result = err_frame
+            return err_frame
+        except Exception as err:
+            self.logger.error(f"Failed to generate trajectory: {err}")
+            self.workcell_state.clear_active_gear()
+            with self._state_lock:
+                if self.robot_state != RobotState.FAULT:
+                    self.robot_state = RobotState.IDLE
+            self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+            err_frame = ErrorFrame(
+                error_code="KINEMATICS_ERROR",
+                message=f"Failed to generate trajectory: {err}",
+                timestamp_ns=now_ns,
+            )
+            self._publish_error(err_frame)
+            self._last_execution_result = err_frame
+            return err_frame
+
+        if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+            return None
+
+        # 2. EXECUTING phase: 30 Hz joint interpolation & palm actuation
+        self.robot_state = RobotState.EXECUTING
+        self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+
+        rate_hz = 30.0
+        dt = 1.0 / rate_hz
+
+        for step in waypoints:
+            if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+                return None
+
+            # Skip redundant terminal waypoint 10 if identical to HOME waypoint 9
+            if step.step_number == 10 and step.name == "complete":
+                continue
+
+            pause_s = getattr(step, "pause_duration_s", 0.0)
+            if pause_s > 0.0:
+                self.palm_state.is_grasped = step.is_grasped
+                self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+                if not synchronous:
+                    if self._abort_event.wait(pause_s):
+                        return None
+                continue
+
+            start_pos = list(self.mapper.get_positions())
+            target_pos = list(step.joint_positions)
+
+            if synchronous or self.step_duration <= 0.0:
+                self.mapper.set_positions(target_pos)
+                self.palm_state.is_grasped = step.is_grasped
+                self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+            else:
+                total_steps = max(1, int(round(self.step_duration * rate_hz)))
+                for sub_step in range(1, total_steps + 1):
+                    if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+                        return None
+                    u = min(1.0, sub_step / total_steps)
+                    s = 3.0 * (u ** 2) - 2.0 * (u ** 3)
+                    current = [
+                        normalize_angle(start_pos[i] + s * normalize_angle(target_pos[i] - start_pos[i]))
+                        for i in range(6)
+                    ]
+                    self.mapper.set_positions(current)
+                    self._publish_telemetry(self._create_telemetry_event(command_id=event.command_id))
+                    if self._abort_event.wait(dt):
+                        return None
+
+                if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+                    return None
+
+                self.mapper.set_positions(target_pos)
+                self.palm_state.is_grasped = step.is_grasped
+
+        with self._state_lock:
+            if self._abort_event.is_set() or self.robot_state == RobotState.FAULT:
+                return None
+            # 3. Arrived at HOME: Record placed gear and transition to IDLE
+            self.workcell_state.record_placed_gear()
+            self.palm_state.is_grasped = False
+            self.robot_state = RobotState.IDLE
+
+        final_event = self._create_telemetry_event(command_id=event.command_id)
+        self._publish_telemetry(final_event)
+        self._last_execution_result = final_event
+        return final_event
 
     def handle_command_payload(
         self, payload: str | bytes, synchronous: bool = False
@@ -271,8 +465,9 @@ class EdgeNode:
             self.logger.warning(
                 f"EMERGENCY_STOP received '{command.command_id}' from '{command.sender_id}'"
             )
-            self._abort_event.set()
-            self.robot_state = RobotState.FAULT
+            with self._state_lock:
+                self._abort_event.set()
+                self.robot_state = RobotState.FAULT
             event = self._create_telemetry_event(command_id=command.command_id)
             self._publish_telemetry(event)
             return event
@@ -281,11 +476,20 @@ class EdgeNode:
             self.logger.info(
                 f"RESET_FAULT received '{command.command_id}' from '{command.sender_id}'"
             )
-            if self.robot_state == RobotState.FAULT:
-                if self.active_motion_thread and self.active_motion_thread.is_alive():
-                    self.active_motion_thread.join(timeout=0.2)
-                self._abort_event.clear()
-                self.robot_state = RobotState.IDLE
+            if self.active_motion_thread and self.active_motion_thread.is_alive():
+                self.active_motion_thread.join(timeout=0.5)
+                if self.active_motion_thread.is_alive():
+                    err_frame = ErrorFrame(
+                        error_code="THREAD_ABORT_TIMEOUT",
+                        message="Active motion thread did not terminate within timeout; cannot reset fault",
+                        timestamp_ns=now_ns,
+                    )
+                    self._publish_error(err_frame)
+                    return err_frame
+            with self._state_lock:
+                if self.robot_state == RobotState.FAULT:
+                    self._abort_event.clear()
+                    self.robot_state = RobotState.IDLE
             event = self._create_telemetry_event(command_id=command.command_id)
             self._publish_telemetry(event)
             return event
@@ -435,24 +639,62 @@ class EdgeNode:
             self._publish_telemetry(event)
             return event
 
+        if command.type == CommandType.PICK_AND_PLACE_TARGET:
+            try:
+                pnp_payload = PickAndPlaceTargetPayload.model_validate(command.payload)
+            except ValidationError as err:
+                self.logger.error(
+                    f"Invalid PickAndPlaceTargetPayload in command {command.command_id}: {err}"
+                )
+                err_frame = ErrorFrame(
+                    error_code="INVALID_COMMAND_PAYLOAD",
+                    message=f"Invalid PickAndPlaceTargetPayload: {err}",
+                    timestamp_ns=now_ns,
+                )
+                self._publish_error(err_frame)
+                return err_frame
+
+            self._next_execution_sync = synchronous
+            self._last_execution_result = None
+            try:
+                self.workcell_state.spawn_pick_and_place(
+                    pnp_payload, command_id=command.command_id
+                )
+                return self._last_execution_result
+            except ValueError as val_err:
+                err_frame = ErrorFrame(
+                    error_code="INVALID_COMMAND_PAYLOAD",
+                    message=f"Invalid coordinate values: {val_err}",
+                    timestamp_ns=now_ns,
+                )
+                self.logger.warning(
+                    f"Command {command.command_id} (PICK_AND_PLACE_TARGET) rejected: {val_err}"
+                )
+                self._publish_error(err_frame)
+                return err_frame
+            finally:
+                self._next_execution_sync = False
+
         self.logger.info(
             f"Received {command.type.value} command '{command.command_id}' from '{command.sender_id}'"
         )
         return None
 
     def _publish_telemetry(self, event: RobotTelemetryEvent) -> None:
-        if self._zenoh_pub is not None:
-            self._zenoh_pub.put(event.model_dump_json(exclude_none=True))
-            self.logger.debug(
-                f"Emitted RobotTelemetryEvent to {self.telemetry_topic} (state={event.robot_state.value})"
-            )
+        with self._pub_lock:
+            if self._zenoh_pub is not None:
+                self._zenoh_pub.put(event.model_dump_json(exclude_none=True))
+                self.logger.debug(
+                    f"Emitted RobotTelemetryEvent to {self.telemetry_topic} (state={event.robot_state.value})"
+                )
 
     def _publish_error(self, err_frame: ErrorFrame) -> None:
-        if self._zenoh_pub is not None:
-            self._zenoh_pub.put(err_frame.model_dump_json())
-            self.logger.warning(
-                f"Emitted ErrorFrame to {self.telemetry_topic}: {err_frame.error_code} - {err_frame.message}"
-            )
+        with self._pub_lock:
+            if self._zenoh_pub is not None:
+                self._zenoh_pub.put(err_frame.model_dump_json())
+                self.logger.warning(
+                    f"Emitted ErrorFrame to {self.telemetry_topic}: {err_frame.error_code} - {err_frame.message}"
+                )
 
     def close(self) -> None:
         """Cleans up Zenoh subscriptions/sessions and ROS2 nodes."""
@@ -491,6 +733,13 @@ class EdgeNode:
             except Exception:
                 pass
             self.zenoh_session = None
+
+        if hasattr(self, "_workcell_unsub") and self._workcell_unsub is not None:
+            try:
+                self._workcell_unsub()
+            except Exception:
+                pass
+            self._workcell_unsub = None
 
         if self._owns_ros_node and self.ros2_node is not None:
             try:

@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
-    "mtime": 1789638524.3832393,
-    "seen": 1789638569.7746909,
-    "ast_hash": "8ab564b622780c8ccb09145c2195cf34",
+    "mtime": 1789639803.9365103,
+    "seen": 1789639913.5343244,
+    "ast_hash": "fa0c10b4756f85bd6730c751288ba779",
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/node.py": {
-    "mtime": 1789559100.0997615,
-    "seen": 1789559349.5820618,
-    "ast_hash": "9c2aaee36f76819345338b594ad20fd0",
+    "mtime": 1789639849.95621,
+    "seen": 1789639913.5345283,
+    "ast_hash": "330125a3fecd01bd92178d29b578611e",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
@@ -822,9 +822,9 @@
     "semantic_hash": ""
   },
   "tests/test_edge_node.py": {
-    "mtime": 1789559208.6665487,
-    "seen": 1789559349.5823483,
-    "ast_hash": "aaaa7a99856e84a6c5056c0d6ff7dc98",
+    "mtime": 1789639830.4876041,
+    "seen": 1789639913.5348465,
+    "ast_hash": "347bb15cdbd6ac63521a85fff6aee62e",
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
@@ -1296,9 +1296,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/workcell.py": {
-    "mtime": 1789559058.633457,
-    "seen": 1789559349.582064,
-    "ast_hash": "dfbae349ea8252d7704e0c203dc989c2",
+    "mtime": 1789639660.597902,
+    "seen": 1789639913.5345318,
+    "ast_hash": "d96e47f324efe26410b12c9d3bab9942",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/workcell.steps.ts": {
@@ -1320,9 +1320,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-4igp--unit-61-analytical-ur5e-inverse-kinematics-solver.md": {
-    "mtime": 1789579612.3262641,
-    "seen": 1789579798.2738407,
-    "ast_hash": "692fdf587892cd661ee9c5a32a37b440",
+    "mtime": 1789638609.9253073,
+    "seen": 1789639091.14368,
+    "ast_hash": "343213fd013475b105df142c57c07413",
     "semantic_hash": ""
   },
   ".beans/hand-sim-6yut--unit-64-teleopclient-spindletower-3d-fixture-kinem.md": {
@@ -1368,15 +1368,15 @@
     "semantic_hash": ""
   },
   "src/edge_node/kinematics.py": {
-    "mtime": 1789638410.009384,
-    "seen": 1789638569.7746952,
-    "ast_hash": "70b3def3a076ad1c512d6ebdb7419e99",
+    "mtime": 1789639044.4568,
+    "seen": 1789639091.1369774,
+    "ast_hash": "dff927d75c49f9266abc7303ddd833eb",
     "semantic_hash": ""
   },
   "tests/test_kinematics.py": {
-    "mtime": 1789638383.0484939,
-    "seen": 1789638569.7751756,
-    "ast_hash": "00eeac2fea02017989e127301407241e",
+    "mtime": 1789639053.3116813,
+    "seen": 1789639091.1375198,
+    "ast_hash": "b29ba40b9928ef1aff3b02a879761a5e",
     "semantic_hash": ""
   }
 }
