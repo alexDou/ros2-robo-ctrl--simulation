@@ -810,15 +810,15 @@
     "semantic_hash": ""
   },
   "src/gateway/src/ws.rs": {
-    "mtime": 1789636879.0663004,
-    "seen": 1789637259.356673,
-    "ast_hash": "6fe56bec0e87f9369631124005eba1ad",
+    "mtime": 1789644754.8932028,
+    "seen": 1789644830.2319908,
+    "ast_hash": "62c5cc0fbf2c71bda6f0553751d2de79",
     "semantic_hash": ""
   },
   "src/gateway/tests/ws_gateway_test.rs": {
-    "mtime": 1789559315.85498,
-    "seen": 1789559349.5823221,
-    "ast_hash": "53ca282fc31ca7c5a519055abf16bcaa",
+    "mtime": 1789644782.3022246,
+    "seen": 1789644830.2320564,
+    "ast_hash": "536c5eb3107b28cf5178df3f8b50ab8e",
     "semantic_hash": ""
   },
   "tests/test_edge_node.py": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-i13f--unit-63-gateway-stateless-schema-validation-comman.md": {
-    "mtime": 1789579654.9288144,
-    "seen": 1789579798.2750068,
-    "ast_hash": "90fcd1d3c89c02ef309adb4df4f7f541",
+    "mtime": 1789644792.3076127,
+    "seen": 1789644830.2400944,
+    "ast_hash": "c1675fd2dfb07ce40a824d63336f9d74",
     "semantic_hash": ""
   },
   ".beans/hand-sim-poc1--unit-65-multi-service-closed-loop-system-integrati.md": {
@@ -1350,9 +1350,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-z7s4--unit-62-edgenode-event-driven-workcellstate-autono.md": {
-    "mtime": 1789579625.9751203,
-    "seen": 1789579798.2761977,
-    "ast_hash": "c24ab1a8824c7f8b4f3c4c3d33f6f4c2",
+    "mtime": 1789640685.5059493,
+    "seen": 1789644405.4625335,
+    "ast_hash": "7fb6999d013ed9174933b1385c377ed1",
     "semantic_hash": ""
   },
   "support_files/specs/unit6/implementation_wireframe.md": {
@@ -1377,6 +1377,24 @@
     "mtime": 1789639053.3116813,
     "seen": 1789639091.1375198,
     "ast_hash": "b29ba40b9928ef1aff3b02a879761a5e",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-wt44--unit-65-refactoring-real-robot-native-ros2-archite.md": {
+    "mtime": 1789644054.2175114,
+    "seen": 1789644405.462503,
+    "ast_hash": "0edc1ff5cb62d61610e30759ae3cd717",
+    "semantic_hash": ""
+  },
+  "docs/adr/0004-real-robot-ros2-native-architecture-and-gateway-throttling.md": {
+    "mtime": 1789644037.7094803,
+    "seen": 1789644405.462685,
+    "ast_hash": "34cb797761f897c6fdbd3245c3fcb7c1",
+    "semantic_hash": ""
+  },
+  "support_files/specs/unit6/unit_6_5_refactoring_architecture.md": {
+    "mtime": 1789644048.7948298,
+    "seen": 1789644405.463298,
+    "ast_hash": "a9d39ac486fa3cb2bb68db130a7c661f",
     "semantic_hash": ""
   }
 }

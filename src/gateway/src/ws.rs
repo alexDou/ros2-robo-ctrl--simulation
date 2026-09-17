@@ -59,20 +59,11 @@ fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), Str
             if !payload.pick_x.is_finite() || !payload.pick_y.is_finite() || !payload.pick_z.is_finite() {
                 return Err("Coordinates must be finite floats".to_string());
             }
-            if let Some(x) = payload.drop_x {
-                if !x.is_finite() {
-                    return Err("Coordinates must be finite floats".to_string());
-                }
-            }
-            if let Some(y) = payload.drop_y {
-                if !y.is_finite() {
-                    return Err("Coordinates must be finite floats".to_string());
-                }
-            }
-            if let Some(z) = payload.drop_z {
-                if !z.is_finite() {
-                    return Err("Coordinates must be finite floats".to_string());
-                }
+            if payload.drop_x.is_some_and(|x| !x.is_finite())
+                || payload.drop_y.is_some_and(|y| !y.is_finite())
+                || payload.drop_z.is_some_and(|z| !z.is_finite())
+            {
+                return Err("Coordinates must be finite floats".to_string());
             }
             Ok(())
         }
