@@ -177,8 +177,12 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
   - Implements `robot_nodes.launch.py` in `src/ros2/robot_bringup` orchestrating `ros2_control` (with `use_fake_hardware` switch), `workcell_node`, and `arm_controller_node`.
 - **Refactor-A.4: Edge Gateway Throttler, Action Bridge & Launcher**:
   - Integrates `zenoh-bridge-ros2dds` into `scripts/launch_gateway.sh`, implements 500Hz-to-30Hz `TelemetryThrottler` in Rust Gateway, and bridges Action feedback to WebSockets.
-- **Refactor-A.5: Multi-Service System Integration Verification & Migration**:
-  - Multi-service Playwright integration suite verifying end-to-end pick-and-place with separate log streams; cleanly retires legacy prototype files.
+- **Refactor-A.5: Mock Gateway E2E Test Harness & UI Suite Migration**:
+  - Implements lightweight in-process MockGateway emulating Gateway WebSocket protocol and /health; refactors test harness to run hermetically without spawning backend binaries; creates `scripts/launch_web.sh`; migrates existing 4 E2E features.
+- **Refactor-A.6: Pick-and-Place & SpindleTower Stacking UI E2E Feature**:
+  - Gherkin feature and step definitions verifying closed-loop table click -> Action progress feedback -> tool flange grasp attachment -> SpindleTower stacking -> ClickLockout reset against MockGateway.
+- **Refactor-A.7: Legacy Prototype Retirement & Full System Verification**:
+  - Cleanly removes deprecated `src/edge_node/` prototype and obsolete tests; adjusts non-RT timing tolerance in launch test; harmonizes full test suite across Cargo, Colcon, Pytest, and Web.
 
 ---
 

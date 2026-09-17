@@ -1,12 +1,13 @@
 ---
 # hand-sim-yopr
-title: 'Refactor-A.5: Multi-Service Integration Suite & Prototype Migration'
+title: 'Refactor-A.5: Mock Gateway E2E Test Harness & UI Suite Migration'
 status: todo
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-17T12:32:42Z
-updated_at: 2026-09-17T12:32:42Z
+updated_at: 2026-09-17T22:28:54Z
 parent: hand-sim-wt44
 blocked_by:
     - hand-sim-bjcw
@@ -19,16 +20,15 @@ hand-sim-wt44
 
 ## What to build
 
-Multi-service Playwright integration suite running robot_bringup, launch_gateway.sh, and launch_web.sh. Validates end-to-end closed loop (table click -> Action goal -> 500 Hz motion -> SpindleTower stacking -> 30 Hz telemetry with <50ms latency budget). Retires legacy prototype in src/edge_node/.
+Implement lightweight MockGateway in Node/TypeScript (web/tests/e2e/support/mock_gateway.ts) to emulate Gateway WebSocket protocol (/ws/teleop/robot/{id}) and HTTP /health. Refactor ServiceHarness and Cucumber hooks to test TeleopClient purely against MockGateway in-process without spawning backend binaries (cargo gateway, ROS2 nodes, mock motion publisher). Add scripts/launch_web.sh for Vite dev server. Migrate existing features (teleop.feature, dynamic_motion.feature, closed_loop.feature, workcell.feature) to run green in seconds.
 
 ## Acceptance criteria
 
-- [ ] scripts/launch_web.sh boots Vite dev server
-- [ ] Integration test harness in web/tests/e2e/ orchestrates robot_bringup, launch_gateway.sh, and launch_web.sh
-- [ ] Table click dispatches target, moves manipulator through 10-step sequence in 500 Hz simulation, and stacks gear on SpindleTower
-- [ ] Confirms real-time telemetry latency remains below 50ms
-- [ ] Deprecated prototype files in src/edge_node/ retired and removed cleanly
-- [ ] Full project test suite (cargo test, colcon test, vitest) passes green
+- [ ] scripts/launch_web.sh boots Vite dev server with signal trap cleanup
+- [ ] MockGateway implemented in web/tests/e2e/support/mock_gateway.ts supporting WS protocol, 409 conflict, 30 Hz telemetry stream, and command handling
+- [ ] web/tests/e2e/support/harness.ts and hooks.ts refactored to run hermetically against MockGateway without child processes
+- [ ] Existing E2E features (teleop, dynamic_motion, closed_loop, workcell) pass reliably in headless mode
+- [ ] Web test suite (npm --prefix web run test, test:e2e, lint, typecheck) passes 100% green in <5 seconds
 
 ## Blocked by
 
