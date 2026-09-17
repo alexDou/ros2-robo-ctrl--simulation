@@ -97,8 +97,17 @@ Explicit administrative command and action resetting active workcell objects and
 _Avoid_: Reset scene, wipe table, delete objects
 
 **WorkcellState**:
-Authoritative domain state component within EdgeNode tracking active workcell workpiece presence, occupancy, and coordinates.
-_Avoid_: Scene graph, world model, spawn manager
+Authoritative domain state component within EdgeNode tracking active workcell workpiece presence, coordinates, and spindle tower inventory.
+_Avoid_: Scene graph, world model, spawn manager, entity repo
+
+**AnalyticalInverseKinematics**:
+Closed-form geometric solver computing exact 6-DoF joint configurations for Cartesian waypoints with minimal angular displacement.
+_Avoid_: Numerical IK, Jacobian solver, trajectory optimizer
+
+**PickAndPlaceSequence**:
+Deterministic multi-phase waypoint trajectory executing workpiece approach, pick, grasp, lift, drop, release, and return to home.
+_Avoid_: Motion script, pick routine, macro
+
 
 
 

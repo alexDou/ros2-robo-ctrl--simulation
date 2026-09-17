@@ -5,6 +5,9 @@ import type { URDFRobot } from 'urdf-loader';
 import { UR5E_JOINTS, type SpawnObjectPayload, type RobotState } from '@contracts';
 import * as robotLoader from '@utils/robotLoader';
 
+export const REACHABILITY_MIN_RADIUS = 0.40;
+export const REACHABILITY_MAX_RADIUS = 0.75;
+
 export interface RobotVisualizerProps {
   urdfUrl?: string;
   assetBaseUrl?: string;
@@ -121,10 +124,97 @@ function createDexterousPalm(): PalmProceduralAssets {
   return { group, nozzleMesh, dispose };
 }
 
+interface PedestalProceduralAssets {
+  group: THREE.Group;
+  dispose: () => void;
+}
+
+function createRobotPedestal(): PedestalProceduralAssets {
+  const group = new THREE.Group();
+  group.name = 'robot-pedestal-table';
+
+  const thickness = 0.04;
+  const tableWidth = 0.32;
+  const tableDepth = 0.32;
+
+  // 1. Pedestal top table slab (flush at Z = 0.0m)
+  const topGeom = new THREE.BoxGeometry(tableWidth, tableDepth, thickness);
+  const topMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.7,
+    metalness: 0.3,
+  });
+  const topMesh = new THREE.Mesh(topGeom, topMat);
+  topMesh.name = 'pedestal-top';
+  topMesh.position.set(0, 0, -thickness / 2);
+  group.add(topMesh);
+
+  // 2. Machined aluminum mounting adapter flange under robot base
+  const flangeRadius = 0.088;
+  const flangeHeight = 0.005;
+  const flangeGeom = new THREE.CylinderGeometry(flangeRadius, flangeRadius, flangeHeight, 32);
+  flangeGeom.rotateX(Math.PI / 2);
+  const flangeMat = new THREE.MeshStandardMaterial({
+    color: 0x64748b,
+    metalness: 0.8,
+    roughness: 0.2,
+  });
+  const flangeMesh = new THREE.Mesh(flangeGeom, flangeMat);
+  flangeMesh.name = 'pedestal-flange';
+  flangeMesh.position.set(0, 0, flangeHeight / 2);
+  group.add(flangeMesh);
+
+  // 3. Central heavy-duty support column
+  const colRadius = 0.09;
+  const colHeight = 0.20;
+  const colGeom = new THREE.CylinderGeometry(colRadius, colRadius, colHeight, 32);
+  colGeom.rotateX(Math.PI / 2);
+  const colMat = new THREE.MeshStandardMaterial({
+    color: 0x0f172a,
+    roughness: 0.85,
+    metalness: 0.25,
+  });
+  const colMesh = new THREE.Mesh(colGeom, colMat);
+  colMesh.name = 'pedestal-column';
+  colMesh.position.set(0, 0, -thickness - colHeight / 2);
+  group.add(colMesh);
+
+  // 4. Floor mounting foot plate
+  const footWidth = 0.36;
+  const footDepth = 0.36;
+  const footHeight = 0.015;
+  const footGeom = new THREE.BoxGeometry(footWidth, footDepth, footHeight);
+  const footMat = new THREE.MeshStandardMaterial({
+    color: 0x1e293b,
+    roughness: 0.8,
+    metalness: 0.3,
+  });
+  const footMesh = new THREE.Mesh(footGeom, footMat);
+  footMesh.name = 'pedestal-foot';
+  footMesh.position.set(0, 0, -thickness - colHeight - footHeight / 2);
+  group.add(footMesh);
+
+  const dispose = () => {
+    topGeom.dispose();
+    disposeMaterial(topMat);
+    flangeGeom.dispose();
+    disposeMaterial(flangeMat);
+    colGeom.dispose();
+    disposeMaterial(colMat);
+    footGeom.dispose();
+    disposeMaterial(footMat);
+  };
+
+  return { group, dispose };
+}
+
 interface TableProceduralAssets {
   tableMesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+  matMesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
+  borderLines: THREE.LineSegments<THREE.EdgesGeometry, THREE.LineBasicMaterial>;
   reticleMesh: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
   bounds: { minX: number; maxX: number; minY: number; maxY: number };
+  matBounds: { minX: number; maxX: number; minY: number; maxY: number };
   dispose: () => void;
 }
 
@@ -145,6 +235,33 @@ function createWorkcellTable(): TableProceduralAssets {
   tableMesh.name = 'workcell-table';
   tableMesh.position.set(centerX, centerY, -thickness / 2);
 
+  // Sturdy industrial table legs
+  const legWidth = 0.04;
+  const legHeight = 0.215;
+  const legGeom = new THREE.BoxGeometry(legWidth, legWidth, legHeight);
+  const legMat = new THREE.MeshStandardMaterial({
+    color: 0x0f172a,
+    roughness: 0.85,
+    metalness: 0.25,
+  });
+
+  const legOffsetX = slabSizeX / 2 - 0.04;
+  const legOffsetY = slabSizeY / 2 - 0.04;
+  const legOffsets = [
+    [-legOffsetX, -legOffsetY],
+    [legOffsetX, -legOffsetY],
+    [-legOffsetX, legOffsetY],
+    [legOffsetX, legOffsetY],
+  ];
+
+  for (let i = 0; i < legOffsets.length; i++) {
+    const [dx, dy] = legOffsets[i];
+    const legMesh = new THREE.Mesh(legGeom, legMat);
+    legMesh.name = `table-leg-${i}`;
+    legMesh.position.set(dx, dy, -thickness / 2 - legHeight / 2);
+    tableMesh.add(legMesh);
+  }
+
   const bounds = {
     minX: centerX - slabSizeX / 2, // 0.15
     maxX: centerX + slabSizeX / 2, // 0.95
@@ -152,26 +269,68 @@ function createWorkcellTable(): TableProceduralAssets {
     maxY: centerY + slabSizeY / 2, // 0.3
   };
 
+  // Dedicated landing mat across the reachable gear ingestion area (0.40m <= R <= 0.75m)
+  const matBounds = {
+    minX: 0.40,
+    maxX: 0.70,
+    minY: -0.22,
+    maxY: 0.22,
+  };
+  const matSizeX = matBounds.maxX - matBounds.minX; // 0.30m
+  const matSizeY = matBounds.maxY - matBounds.minY; // 0.44m
+  const matThickness = 0.004;
+  const matCenterX = (matBounds.minX + matBounds.maxX) / 2; // 0.55m
+  const matCenterY = 0.0;
+
+  const matGeom = new THREE.BoxGeometry(matSizeX, matSizeY, matThickness);
+  const matMat = new THREE.MeshStandardMaterial({
+    color: 0x0f172a, // noticeably darker slate-900 precision surface
+    roughness: 0.9,
+    metalness: 0.1,
+  });
+  const matMesh = new THREE.Mesh(matGeom, matMat);
+  matMesh.name = 'workcell-landing-mat';
+  matMesh.position.set(matCenterX, matCenterY, matThickness / 2);
+
+  // Technical boundary outline for landing mat
+  const borderGeom = new THREE.EdgesGeometry(matGeom);
+  const borderMat = new THREE.LineBasicMaterial({
+    color: 0x38bdf8, // technical cyan border accent
+    transparent: true,
+    opacity: 0.85,
+  });
+  const borderLines = new THREE.LineSegments(borderGeom, borderMat);
+  borderLines.name = 'workcell-landing-mat-border';
+  borderLines.position.set(matCenterX, matCenterY, matThickness / 2);
+
   const reticleGeom = new THREE.RingGeometry(0.035, 0.045, 32);
   const reticleMat = new THREE.MeshBasicMaterial({
     color: 0x38bdf8,
     side: THREE.DoubleSide,
     transparent: true,
     opacity: 0.85,
+    depthTest: false,
   });
   const reticleMesh = new THREE.Mesh(reticleGeom, reticleMat);
   reticleMesh.name = 'workcell-reticle';
   reticleMesh.visible = false;
-  reticleMesh.position.set(centerX, centerY, 0.001);
+  reticleMesh.renderOrder = 999;
+  reticleMesh.position.set(centerX, centerY, 0.006);
 
   const dispose = () => {
     tableGeom.dispose();
     disposeMaterial(tableMat);
+    legGeom.dispose();
+    disposeMaterial(legMat);
+    matGeom.dispose();
+    disposeMaterial(matMat);
+    borderGeom.dispose();
+    disposeMaterial(borderMat);
     reticleGeom.dispose();
     disposeMaterial(reticleMat);
   };
 
-  return { tableMesh, reticleMesh, bounds, dispose };
+  return { tableMesh, matMesh, borderLines, reticleMesh, bounds, matBounds, dispose };
 }
 
 interface GearwheelProceduralAssets {
@@ -190,8 +349,8 @@ function createProceduralGearwheel(): GearwheelProceduralAssets {
   bodyGeom.rotateX(Math.PI / 2);
   const bodyMat = new THREE.MeshStandardMaterial({
     color: 0x64748b,
-    metalness: 0.7,
-    roughness: 0.3,
+    metalness: 0.35,
+    roughness: 0.5,
   });
   const bodyMesh = new THREE.Mesh(bodyGeom, bodyMat);
   bodyMesh.name = 'gear-body';
@@ -204,8 +363,8 @@ function createProceduralGearwheel(): GearwheelProceduralAssets {
   const toothGeom = new THREE.BoxGeometry(toothWidth, toothDepth, height);
   const toothMat = new THREE.MeshStandardMaterial({
     color: 0x475569,
-    metalness: 0.75,
-    roughness: 0.25,
+    metalness: 0.4,
+    roughness: 0.45,
   });
 
   for (let i = 0; i < numTeeth; i++) {
@@ -226,8 +385,8 @@ function createProceduralGearwheel(): GearwheelProceduralAssets {
   hubGeom.rotateX(Math.PI / 2);
   const hubMat = new THREE.MeshStandardMaterial({
     color: 0x1e293b,
-    metalness: 0.9,
-    roughness: 0.2,
+    metalness: 0.5,
+    roughness: 0.4,
   });
   const hubMesh = new THREE.Mesh(hubGeom, hubMat);
   hubMesh.name = 'gear-hub';
@@ -309,6 +468,7 @@ export function RobotVisualizer({
     let animId: number;
     let loadedRobot: URDFRobot | null = null;
     let palmAssets: PalmProceduralAssets | null = null;
+    let pedestalAssets: PedestalProceduralAssets | null = null;
     let tableAssets: TableProceduralAssets | null = null;
     let activeGearAssets: GearwheelProceduralAssets | null = null;
     let isLockedOut = false;
@@ -399,21 +559,22 @@ export function RobotVisualizer({
       controls.addEventListener('change', onControlsChange);
     }
 
-    // 5. Calibrated 1m ground grid with 10cm subdivisions (1m size, 10 divisions)
-    const gridHelper = new THREE.GridHelper(1.0, 10, 0x4b5563, 0x374151);
-    gridHelper.position.y = 0;
+    // 5. Calibrated ground floor grid with 10cm subdivisions (2m size, 20 divisions)
+    // Positioned at floor level (y = -0.255m) beneath the pedestal foot and table legs
+    const gridHelper = new THREE.GridHelper(2.0, 20, 0x4b5563, 0x374151);
+    gridHelper.position.set(0, -0.255, 0);
     scene.add(gridHelper);
 
-    // 6. Balanced lighting (diffuse ambient + key directional + soft fill)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    // 6. Balanced lighting (diffuse ambient + key directional + neutral fill)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
     keyLight.position.set(2.0, 4.0, 3.0);
     scene.add(keyLight);
 
-    const fillLight = new THREE.DirectionalLight(0x90cdf4, 0.4);
-    fillLight.position.set(-2.0, 2.0, -2.0);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.45);
+    fillLight.position.set(-2.0, 3.0, -2.0);
     scene.add(fillLight);
 
     // 7. Robot group adhering to REP-103 to WebGL conversion (rotation.x = -Math.PI / 2)
@@ -422,9 +583,15 @@ export function RobotVisualizer({
     robotGroup.rotation.x = -Math.PI / 2;
     scene.add(robotGroup);
 
-    // Mount WorkcellTable and Dynamic Reticle to robotGroup
+    // Mount Robot Pedestal Table to robotGroup
+    pedestalAssets = createRobotPedestal();
+    robotGroup.add(pedestalAssets.group);
+
+    // Mount WorkcellTable, Landing Mat, Boundary Outline, and Dynamic Reticle to robotGroup
     tableAssets = createWorkcellTable();
     robotGroup.add(tableAssets.tableMesh);
+    robotGroup.add(tableAssets.matMesh);
+    robotGroup.add(tableAssets.borderLines);
     robotGroup.add(tableAssets.reticleMesh);
 
     // 8. Load UR5e robot model
@@ -493,7 +660,7 @@ export function RobotVisualizer({
         return;
       }
       const gear = createProceduralGearwheel();
-      gear.group.position.set(x, y, 0.0);
+      gear.group.position.set(x, y, 0.004);
       robotGroup.add(gear.group);
       activeGearAssets = gear;
       isLockedOut = true;
@@ -538,13 +705,14 @@ export function RobotVisualizer({
 
       camera.updateMatrixWorld();
       tableAssets.tableMesh.updateMatrixWorld(true);
+      tableAssets.matMesh.updateMatrixWorld(true);
 
       raycaster.setFromCamera(pointerNdc, camera);
-      const intersects = raycaster.intersectObject(tableAssets.tableMesh, false);
+      const intersects = raycaster.intersectObjects([tableAssets.matMesh, tableAssets.tableMesh], false);
       if (intersects.length === 0) return null;
 
       const localPoint = robotGroup.worldToLocal(intersects[0].point);
-      if (Math.abs(localPoint.z) > 0.01) {
+      if (Math.abs(localPoint.z) > 0.05) {
         return null;
       }
       return { x: localPoint.x, y: localPoint.y };
@@ -553,17 +721,22 @@ export function RobotVisualizer({
     const handlePointerMoveCoords = (x: number, y: number) => {
       if (isDisposed || !tableAssets) return;
       const r = Math.sqrt(x * x + y * y);
-      const isReachable = r >= 0.35 && r <= 0.75;
+      const isReachable = r >= REACHABILITY_MIN_RADIUS && r <= REACHABILITY_MAX_RADIUS;
       const isInsideTable =
         x >= tableAssets.bounds.minX &&
         x <= tableAssets.bounds.maxX &&
         y >= tableAssets.bounds.minY &&
         y <= tableAssets.bounds.maxY;
+      const isInsideMat =
+        x >= tableAssets.matBounds.minX &&
+        x <= tableAssets.matBounds.maxX &&
+        y >= tableAssets.matBounds.minY &&
+        y <= tableAssets.matBounds.maxY;
       const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
       const isLocked = isLockedOut || Boolean(hasActiveGearPropRef.current);
 
-      if (isReachable && isInsideTable && isIdle && !isLocked) {
-        tableAssets.reticleMesh.position.set(x, y, 0.001);
+      if (isReachable && isInsideTable && isInsideMat && isIdle && !isLocked) {
+        tableAssets.reticleMesh.position.set(x, y, 0.006);
         if (!tableAssets.reticleMesh.visible) {
           tableAssets.reticleMesh.visible = true;
         }
@@ -590,17 +763,23 @@ export function RobotVisualizer({
       if (isLocked || !isIdle) return false;
 
       const r = Math.sqrt(x * x + y * y);
-      const isReachable = r >= 0.35 && r <= 0.75;
+      const isReachable = r >= REACHABILITY_MIN_RADIUS && r <= REACHABILITY_MAX_RADIUS;
       const isInsideTable =
         x >= tableAssets.bounds.minX &&
         x <= tableAssets.bounds.maxX &&
         y >= tableAssets.bounds.minY &&
         y <= tableAssets.bounds.maxY;
+      const isInsideMat =
+        x >= tableAssets.matBounds.minX &&
+        x <= tableAssets.matBounds.maxX &&
+        y >= tableAssets.matBounds.minY &&
+        y <= tableAssets.matBounds.maxY;
 
-      if (isReachable && isInsideTable) {
+      if (isReachable && isInsideTable && isInsideMat) {
         spawnGearAt(x, y);
         return true;
       }
+
       return false;
     };
 
@@ -709,6 +888,8 @@ export function RobotVisualizer({
         };
       },
       getTableMesh: () => tableAssets?.tableMesh ?? null,
+      getPedestalMesh: () => pedestalAssets?.group ?? null,
+      getLandingMatMesh: () => tableAssets?.matMesh ?? null,
       getReticleMesh: () => tableAssets?.reticleMesh ?? null,
       getGearMesh: () => activeGearAssets?.group ?? null,
       getGearPosition: () => {
@@ -737,16 +918,22 @@ export function RobotVisualizer({
         const coords = getTableCoordinates(clientX, clientY);
         if (!coords || !tableAssets) return null;
         const r = Math.sqrt(coords.x * coords.x + coords.y * coords.y);
+        const isInsideMat =
+          coords.x >= tableAssets.matBounds.minX &&
+          coords.x <= tableAssets.matBounds.maxX &&
+          coords.y >= tableAssets.matBounds.minY &&
+          coords.y <= tableAssets.matBounds.maxY;
         return {
           x: coords.x,
           y: coords.y,
           z: 0.0,
-          isReachable: r >= 0.35 && r <= 0.75,
+          isReachable: r >= REACHABILITY_MIN_RADIUS && r <= REACHABILITY_MAX_RADIUS,
           isInsideTable:
             coords.x >= tableAssets.bounds.minX &&
             coords.x <= tableAssets.bounds.maxX &&
             coords.y >= tableAssets.bounds.minY &&
             coords.y <= tableAssets.bounds.maxY,
+          isInsideMat,
         };
       },
       getTableScreenCoords: (x: number, y: number): { clientX: number; clientY: number } | null => {
@@ -909,10 +1096,25 @@ export function RobotVisualizer({
         activeGearAssets = null;
       }
 
+      // Dispose robot pedestal table assets
+      if (pedestalAssets) {
+        if (pedestalAssets.group.parent) {
+          pedestalAssets.group.parent.remove(pedestalAssets.group);
+        }
+        pedestalAssets.dispose();
+        pedestalAssets = null;
+      }
+
       // Dispose workcell table assets
       if (tableAssets) {
         if (tableAssets.tableMesh.parent) {
           tableAssets.tableMesh.parent.remove(tableAssets.tableMesh);
+        }
+        if (tableAssets.matMesh.parent) {
+          tableAssets.matMesh.parent.remove(tableAssets.matMesh);
+        }
+        if (tableAssets.borderLines.parent) {
+          tableAssets.borderLines.parent.remove(tableAssets.borderLines);
         }
         if (tableAssets.reticleMesh.parent) {
           tableAssets.reticleMesh.parent.remove(tableAssets.reticleMesh);

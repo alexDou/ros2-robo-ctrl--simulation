@@ -72,7 +72,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     expect(canvas).toBeDefined();
   });
 
-  it('configures 1m ground grid helper with 10cm subdivisions', () => {
+  it('configures ground grid helper at floor level under table and pedestal with 10cm subdivisions', () => {
     let capturedScene: THREE.Scene | null = null;
 
     render(
@@ -91,8 +91,8 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     ) as THREE.GridHelper | undefined;
 
     expect(gridHelper).toBeDefined();
-    // 1m grid with 10 divisions => 10cm cells
-    expect(gridHelper?.position.y).toBe(0);
+    // Grid positioned at floor level (y = -0.255m) beneath pedestal foot and table legs
+    expect(gridHelper?.position.y).toBeCloseTo(-0.255, 3);
   });
 
   it('configures balanced ambient and directional key lighting', () => {
@@ -766,7 +766,77 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(tableMesh.position.y).toBeCloseTo(0.0, 2);
     });
 
-    it('pointer raycaster calculates Cartesian coordinates and shows reticle within reachability boundary (0.35m <= R <= 0.75m)', async () => {
+    it('mounts dedicated robot pedestal table under robot base with flange and column', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const pedestal = visualizer.getPedestalMesh();
+      expect(pedestal).toBeDefined();
+      expect(pedestal.name).toBe('robot-pedestal-table');
+
+      const top = pedestal.getObjectByName('pedestal-top');
+      const flange = pedestal.getObjectByName('pedestal-flange');
+      const col = pedestal.getObjectByName('pedestal-column');
+      const foot = pedestal.getObjectByName('pedestal-foot');
+
+      expect(top).toBeDefined();
+      expect(flange).toBeDefined();
+      expect(col).toBeDefined();
+      expect(foot).toBeDefined();
+    });
+
+    it('mounts dark ESD landing mat and technical boundary border across reachability zone', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const mat = visualizer.getLandingMatMesh();
+      expect(mat).toBeDefined();
+      expect(mat.name).toBe('workcell-landing-mat');
+
+      const matGeom = mat.geometry as THREE.BoxGeometry;
+      expect(matGeom.parameters.width).toBeCloseTo(0.30, 2);
+      expect(matGeom.parameters.height).toBeCloseTo(0.44, 2);
+      expect(matGeom.parameters.depth).toBeCloseTo(0.004, 3);
+
+      const matMat = mat.material as THREE.MeshStandardMaterial;
+      expect(matMat.color.getHex()).toBe(0x0f172a);
+    });
+
+    it('pointer raycaster calculates Cartesian coordinates and shows reticle within reachability boundary (0.40m <= R <= 0.75m)', async () => {
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -800,14 +870,16 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(reticle.visible).toBe(true);
       expect(reticle.position.x).toBeCloseTo(0.5, 2);
       expect(reticle.position.y).toBeCloseTo(0.0, 2);
-      expect(reticle.position.z).toBeCloseTo(0.001, 3);
+      expect(reticle.position.z).toBeCloseTo(0.006, 3);
+      expect(reticle.renderOrder).toBe(999);
 
-      // Reticle material has visible light accent shade
+      // Reticle material has visible light accent shade and depthTest disabled for overlay
       const reticleMat = reticle.material as THREE.MeshBasicMaterial;
       expect(reticleMat.color).toBeDefined();
+      expect(reticleMat.depthTest).toBe(false);
     });
 
-    it('reticle automatically hides when outside reachability boundary (R < 0.35m or R > 0.75m)', async () => {
+    it('reticle automatically hides when outside reachability boundary (R < 0.40m or R > 0.75m)', async () => {
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -830,31 +902,37 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       const visualizer = (window as any).__robot_visualizer;
       const reticle = visualizer.getReticleMesh();
 
-      // 1. Hover reachable spot
+      // 1. Hover reachable spot: x=0.50, y=0.0 (R=0.50m >= 0.40m)
       act(() => {
         visualizer.simulatePointerMove(0.5, 0.0);
       });
       expect(reticle.visible).toBe(true);
 
-      // 2. Hover inner unreachable deadzone: x=0.25, y=0.0 (R=0.25m < 0.35m)
+      // 2. Hover inner unreachable deadzone: x=0.25, y=0.0 (R=0.25m < 0.40m)
       act(() => {
         visualizer.simulatePointerMove(0.25, 0.0);
       });
       expect(reticle.visible).toBe(false);
 
-      // 3. Hover outer unreachable boundary: x=0.85, y=0.0 (R=0.85m > 0.75m)
+      // 3. Hover newly shifted inner deadzone: x=0.38, y=0.0 (R=0.38m < 0.40m)
+      act(() => {
+        visualizer.simulatePointerMove(0.38, 0.0);
+      });
+      expect(reticle.visible).toBe(false);
+
+      // 4. Hover outer unreachable boundary: x=0.85, y=0.0 (R=0.85m > 0.75m)
       act(() => {
         visualizer.simulatePointerMove(0.85, 0.0);
       });
       expect(reticle.visible).toBe(false);
 
-      // 4. Pointer leaves table
+      // 5. Pointer leaves table
       act(() => {
         visualizer.simulatePointerLeave();
       });
       expect(reticle.visible).toBe(false);
 
-      // 5. Reachable distance R ~ 0.64m, but y=0.4m is outside table bounds (slabDepth/2 = 0.3m)
+      // 6. Reachable distance R ~ 0.64m, but y=0.4m is outside table bounds (slabDepth/2 = 0.3m)
       act(() => {
         visualizer.simulatePointerMove(0.5, 0.4);
       });
@@ -949,13 +1027,18 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(gearMesh.name).toBe('gearwheel');
       expect(gearMesh.position.x).toBeCloseTo(0.5, 2);
       expect(gearMesh.position.y).toBeCloseTo(0.1, 2);
-      expect(gearMesh.position.z).toBeCloseTo(0.0, 2);
+      expect(gearMesh.position.z).toBeCloseTo(0.004, 3);
 
-      // Verify procedural gear features (body, teeth, hub)
+      // Verify procedural gear features (body, teeth, hub) and matte steel finish
       const childNames = gearMesh.children.map((c: any) => c.name);
       expect(childNames).toContain('gear-body');
       expect(childNames).toContain('gear-hub');
       expect(childNames.some((n: string) => n.startsWith('gear-tooth-'))).toBe(true);
+
+      const bodyMesh = gearMesh.getObjectByName('gear-body') as THREE.Mesh;
+      const bodyMat = bodyMesh.material as THREE.MeshStandardMaterial;
+      expect(bodyMat.metalness).toBeCloseTo(0.35, 2);
+      expect(bodyMat.roughness).toBeCloseTo(0.5, 2);
     });
 
     it('enforces client-side ClickLockout preventing further clicks while gearwheel is present', async () => {

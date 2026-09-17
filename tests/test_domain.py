@@ -13,6 +13,7 @@ from domain import (
     PalmAction,
     PalmActuatePayload,
     PalmState,
+    PickAndPlaceTargetPayload,
     PoseName,
     ResetFaultPayload,
     RobotCommand,
@@ -206,12 +207,14 @@ def test_canonical_json_schemas():
     assert "RESET_FAULT" in cmd_data["properties"]["type"]["enum"]
     assert "SPAWN_OBJECT" in cmd_data["properties"]["type"]["enum"]
     assert "CLEAR_WORKSPACE" in cmd_data["properties"]["type"]["enum"]
+    assert "PICK_AND_PLACE_TARGET" in cmd_data["properties"]["type"]["enum"]
     assert "palm_actuate_payload" in cmd_data["$defs"]
     assert "trajectory_execute_payload" in cmd_data["$defs"]
     assert "emergency_stop_payload" in cmd_data["$defs"]
     assert "reset_fault_payload" in cmd_data["$defs"]
     assert "spawn_object_payload" in cmd_data["$defs"]
     assert "clear_workspace_payload" in cmd_data["$defs"]
+    assert "pick_and_place_target_payload" in cmd_data["$defs"]
 
 
 def test_palm_actuate_payload_serialization():
@@ -379,6 +382,75 @@ def test_clear_workspace_payload_serialization():
     # Extra fields rejected (strict)
     with pytest.raises(ValidationError):
         ClearWorkspacePayload.model_validate_json('{"unexpected": "field"}')
+
+
+def test_pick_and_place_target_payload_serialization():
+    # Full payload with pick and drop
+    payload_full = PickAndPlaceTargetPayload(
+        pick_x=0.5,
+        pick_y=-0.1,
+        pick_z=0.0,
+        drop_x=0.4,
+        drop_y=-0.3,
+        drop_z=0.02,
+    )
+    assert payload_full.pick_x == 0.5
+    assert payload_full.pick_y == -0.1
+    assert payload_full.pick_z == 0.0
+    assert payload_full.drop_x == 0.4
+    assert payload_full.drop_y == -0.3
+    assert payload_full.drop_z == 0.02
+
+    json_full = payload_full.model_dump_json()
+    assert '"pick_x":0.5' in json_full or '"pick_x": 0.5' in json_full
+    assert '"drop_x":0.4' in json_full or '"drop_x": 0.4' in json_full
+    restored_full = PickAndPlaceTargetPayload.model_validate_json(json_full)
+    assert restored_full == payload_full
+
+    # Payload with pick only (optional drop defaults to None)
+    payload_pick_only = PickAndPlaceTargetPayload(
+        pick_x=0.45,
+        pick_y=0.15,
+        pick_z=0.0,
+    )
+    assert payload_pick_only.pick_x == 0.45
+    assert payload_pick_only.pick_y == 0.15
+    assert payload_pick_only.pick_z == 0.0
+    assert payload_pick_only.drop_x is None
+    assert payload_pick_only.drop_y is None
+    assert payload_pick_only.drop_z is None
+
+    json_pick_only = payload_pick_only.model_dump_json()
+    restored_pick_only = PickAndPlaceTargetPayload.model_validate_json(json_pick_only)
+    assert restored_pick_only == payload_pick_only
+
+    # Test in RobotCommand wrapper
+    cmd = RobotCommand(
+        command_id="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        sender_id="ui-client",
+        timestamp_ns=1_725_894_942_000_000_000,
+        type=CommandType.PICK_AND_PLACE_TARGET,
+        payload=payload_full.model_dump(),
+    )
+    restored_cmd = RobotCommand.model_validate_json(cmd.model_dump_json())
+    assert restored_cmd.type == CommandType.PICK_AND_PLACE_TARGET
+    assert restored_cmd.payload["pick_x"] == 0.5
+    assert restored_cmd.payload["drop_x"] == 0.4
+
+    # Missing required pick coordinate (pick_z missing)
+    with pytest.raises(ValidationError):
+        PickAndPlaceTargetPayload.model_validate_json('{"pick_x": 0.5, "pick_y": 0.0}')
+
+    # Invalid non-numeric type
+    with pytest.raises(ValidationError):
+        PickAndPlaceTargetPayload.model_validate_json('{"pick_x": "not_a_number", "pick_y": 0.0, "pick_z": 0.0}')
+
+    # Extra fields rejected (strict extra="forbid")
+    with pytest.raises(ValidationError):
+        PickAndPlaceTargetPayload.model_validate_json(
+            '{"pick_x": 0.5, "pick_y": 0.0, "pick_z": 0.0, "unexpected_field": 123}'
+        )
+
 
 
 

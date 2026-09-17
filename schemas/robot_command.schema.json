@@ -125,6 +125,43 @@
       "description": "Typed payload for CLEAR_WORKSPACE command",
       "properties": {},
       "additionalProperties": false
+    },
+    "pick_and_place_target_payload": {
+      "type": "object",
+      "title": "PickAndPlaceTargetPayload",
+      "description": "Typed payload for PICK_AND_PLACE_TARGET command",
+      "required": [
+        "pick_x",
+        "pick_y",
+        "pick_z"
+      ],
+      "properties": {
+        "pick_x": {
+          "type": "number",
+          "description": "Cartesian X pick coordinate in robot base frame"
+        },
+        "pick_y": {
+          "type": "number",
+          "description": "Cartesian Y pick coordinate in robot base frame"
+        },
+        "pick_z": {
+          "type": "number",
+          "description": "Cartesian Z pick coordinate in robot base frame"
+        },
+        "drop_x": {
+          "type": "number",
+          "description": "Optional custom Cartesian X drop target coordinate"
+        },
+        "drop_y": {
+          "type": "number",
+          "description": "Optional custom Cartesian Y drop target coordinate"
+        },
+        "drop_z": {
+          "type": "number",
+          "description": "Optional custom Cartesian Z drop target coordinate"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "properties": {
@@ -154,7 +191,8 @@
         "EMERGENCY_STOP",
         "RESET_FAULT",
         "SPAWN_OBJECT",
-        "CLEAR_WORKSPACE"
+        "CLEAR_WORKSPACE",
+        "PICK_AND_PLACE_TARGET"
       ],
       "description": "Operational command type"
     },
