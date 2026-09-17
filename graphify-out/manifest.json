@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "src/edge_node/__init__.py": {
-    "mtime": 1789558225.8739314,
-    "seen": 1789558588.1936636,
-    "ast_hash": "e19aab45b0f69d55ae5b72ab491ad574",
+    "mtime": 1789638524.3832393,
+    "seen": 1789638569.7746909,
+    "ast_hash": "8ab564b622780c8ccb09145c2195cf34",
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
@@ -1320,9 +1320,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-4igp--unit-61-analytical-ur5e-inverse-kinematics-solver.md": {
-    "mtime": 1789579612.3262641,
-    "seen": 1789579798.2738407,
-    "ast_hash": "692fdf587892cd661ee9c5a32a37b440",
+    "mtime": 1789638609.9253073,
+    "seen": 1789639091.14368,
+    "ast_hash": "343213fd013475b105df142c57c07413",
     "semantic_hash": ""
   },
   ".beans/hand-sim-6yut--unit-64-teleopclient-spindletower-3d-fixture-kinem.md": {
@@ -1344,9 +1344,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-yilh--unit-60-domain-schemas-wire-contracts-cross-langua.md": {
-    "mtime": 1789579589.6295028,
-    "seen": 1789579798.2761903,
-    "ast_hash": "e66a60f64c15757620e431f16caa719d",
+    "mtime": 1789637771.8096087,
+    "seen": 1789638569.7825985,
+    "ast_hash": "48df57234ec1da3cff31fd3e71096500",
     "semantic_hash": ""
   },
   ".beans/hand-sim-z7s4--unit-62-edgenode-event-driven-workcellstate-autono.md": {
@@ -1365,6 +1365,18 @@
     "mtime": 1789636233.6539874,
     "seen": 1789636256.3551543,
     "ast_hash": "2d6cbb9a47aee4b0af0dd0a8cfead0df",
+    "semantic_hash": ""
+  },
+  "src/edge_node/kinematics.py": {
+    "mtime": 1789639044.4568,
+    "seen": 1789639091.1369774,
+    "ast_hash": "dff927d75c49f9266abc7303ddd833eb",
+    "semantic_hash": ""
+  },
+  "tests/test_kinematics.py": {
+    "mtime": 1789639053.3116813,
+    "seen": 1789639091.1375198,
+    "ast_hash": "b29ba40b9928ef1aff3b02a879761a5e",
     "semantic_hash": ""
   }
 }
