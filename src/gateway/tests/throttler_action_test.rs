@@ -1,0 +1,258 @@
+#![allow(
+    clippy::as_conversions,
+    clippy::cast_precision_loss,
+    clippy::suboptimal_flops,
+    clippy::items_after_statements
+)]
+
+use std::time::Duration;
+use actix_web::{web, App, HttpServer};
+use futures_util::{SinkExt, StreamExt};
+use gateway::action::{ActionFeedbackFrame, ActionPoint, PickAndPlaceFeedback, PickAndPlaceGoal};
+use gateway::domain::{CommandType, RobotCommand, RobotState, RobotTelemetryEvent};
+use gateway::throttler::TelemetryThrottler;
+use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
+use tokio_tungstenite::connect_async;
+use tokio_tungstenite::tungstenite::Message;
+
+#[test]
+fn test_action_goal_and_feedback_serialization() {
+    // 1. PickAndPlaceGoal JSON round-trip
+    let goal = PickAndPlaceGoal {
+        pick_coords: ActionPoint::new(0.35, 0.15, 0.02),
+        drop_coords: ActionPoint::new(0.40, -0.30, 0.04),
+        use_custom_drop: true,
+        command_id: "cmd-pnp-101".to_string(),
+    };
+    let json = serde_json::to_string(&goal).expect("serialize goal");
+    let deserialized: PickAndPlaceGoal = serde_json::from_str(&json).expect("deserialize goal");
+    assert_eq!(goal, deserialized);
+    assert!(json.contains("\"pick_coords\""));
+    assert!(json.contains("\"drop_coords\""));
+    assert!(json.contains("\"use_custom_drop\":true"));
+    assert!(json.contains("\"command_id\":\"cmd-pnp-101\""));
+
+    // 2. PickAndPlaceFeedback JSON round-trip
+    let feedback = PickAndPlaceFeedback {
+        phase: "APPROACHING".to_string(),
+        percent_complete: 25.0,
+    };
+    let fb_json = serde_json::to_string(&feedback).expect("serialize feedback");
+    let fb_deserialized: PickAndPlaceFeedback =
+        serde_json::from_str(&fb_json).expect("deserialize feedback");
+    assert_eq!(feedback, fb_deserialized);
+    assert!(fb_json.contains("\"phase\":\"APPROACHING\""));
+    assert!(fb_json.contains("\"percent_complete\":25.0"));
+
+    // 3. ActionFeedbackFrame WebSocket progress frame round-trip
+    let frame = ActionFeedbackFrame::new("cmd-pnp-101", "GRASPING", 50.0, 1_700_000_000_000);
+    let frame_json = serde_json::to_string(&frame).expect("serialize action feedback frame");
+    let frame_deserialized: ActionFeedbackFrame =
+        serde_json::from_str(&frame_json).expect("deserialize action feedback frame");
+    assert_eq!(frame, frame_deserialized);
+    assert_eq!(frame_deserialized.r#type, "ACTION_FEEDBACK");
+    assert_eq!(frame_deserialized.command_id, "cmd-pnp-101");
+    assert_eq!(frame_deserialized.phase, "GRASPING");
+    assert!((frame_deserialized.percent_complete - 50.0).abs() < 1e-6);
+}
+
+#[tokio::test]
+async fn test_telemetry_throttler_500hz_to_30hz_stability() {
+    let throttler = TelemetryThrottler::new();
+    let mut rx = throttler.subscribe();
+
+    // Spawn 500 Hz telemetry producer (1 sample every 2ms)
+    let throttler_feed = throttler.clone();
+    let feeder_handle = tokio::spawn(async move {
+        let mut ticker = tokio::time::interval(Duration::from_millis(2));
+        ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+        for i in 0..400 {
+            ticker.tick().await;
+            let event = RobotTelemetryEvent {
+                timestamp_ns: 1_700_000_000_000_000_000 + (i * 2_000_000),
+                robot_state: RobotState::Executing,
+                joint_positions: [i as f64 * 0.001, 0.0, 0.0, 0.0, 0.0, 0.0],
+                palm_state: gateway::domain::PalmState::default(),
+                inference_metrics: None,
+                command_id: None,
+            };
+            throttler_feed.push_event(event);
+        }
+    });
+
+    // Warm up: wait for first throttled frame to establish steady-state before timing
+    let _ = rx.recv().await;
+
+    let mut count = 0;
+    let start = std::time::Instant::now();
+    let target_duration = Duration::from_millis(600);
+
+    while start.elapsed() < target_duration {
+        match tokio::time::timeout(Duration::from_millis(60), rx.recv()).await {
+            Ok(Ok(_event)) => {
+                count += 1;
+            }
+            Ok(Err(_)) => break,
+            Err(_) => {
+                if feeder_handle.is_finished() {
+                    break;
+                }
+            }
+        }
+    }
+
+    let elapsed_sec = start.elapsed().as_secs_f64();
+    let effective_hz = f64::from(count) / elapsed_sec;
+
+    let _ = feeder_handle.await;
+    throttler.stop();
+
+    println!("Throttler received {count} frames in {elapsed_sec:.3}s (rate: {effective_hz:.2} Hz)");
+    // Acceptance criterion: 30 Hz decimation rate stability (30 ± 2 Hz nominal)
+    assert!(
+        (27.0..=33.0).contains(&effective_hz),
+        "Expected effective decimation rate 30 ± 3 Hz under test load, got {effective_hz:.2} Hz ({count} frames in {elapsed_sec:.3}s)"
+    );
+}
+
+#[tokio::test]
+async fn test_telemetry_throttler_raw_joint_states_ingestion() {
+    let throttler = TelemetryThrottler::new();
+
+    // Raw ROS 2 sensor_msgs/msg/JointState JSON
+    let raw_joint_state_json = r#"{
+        "name": [
+            "shoulder_pan_joint",
+            "shoulder_lift_joint",
+            "elbow_joint",
+            "wrist_1_joint",
+            "wrist_2_joint",
+            "wrist_3_joint",
+            "extraneous_gripper_joint"
+        ],
+        "position": [0.15, -1.25, 1.45, -1.85, -1.57, 0.25, 0.08]
+    }"#;
+
+    throttler
+        .push_raw(raw_joint_state_json)
+        .expect("ingest raw joint states");
+
+    let sampled = throttler
+        .sample_latest()
+        .expect("expected latest sample present");
+
+    assert_eq!(sampled.robot_state, RobotState::Executing);
+    assert!((sampled.joint_positions[0] - 0.15).abs() < 1e-6);
+    assert!((sampled.joint_positions[1] - (-1.25)).abs() < 1e-6);
+    assert!((sampled.joint_positions[2] - 1.45).abs() < 1e-6);
+    assert!((sampled.joint_positions[3] - (-1.85)).abs() < 1e-6);
+    assert!((sampled.joint_positions[4] - (-1.57)).abs() < 1e-6);
+    assert!((sampled.joint_positions[5] - 0.25).abs() < 1e-6);
+
+    throttler.stop();
+}
+
+#[tokio::test]
+async fn test_ws_pick_and_place_translates_to_action_and_relays_feedback() {
+    let registry = web::Data::new(ActiveSessionRegistry::default());
+    let fabric = web::Data::new(DataFabricPort::memory());
+
+    let reg_clone = registry.clone();
+    let fab_clone = fabric.clone();
+
+    let server = HttpServer::new(move || {
+        App::new()
+            .app_data(reg_clone.clone())
+            .app_data(fab_clone.clone())
+            .route("/ws/teleop/robot/{id}", web::get().to(teleop_ws))
+    })
+    .bind(("127.0.0.1", 0))
+    .expect("bind ephemeral port");
+
+    let port = server.addrs()[0].port();
+    let srv_handle = server.run();
+    tokio::spawn(srv_handle);
+
+    let ws_url = format!("ws://127.0.0.1:{port}/ws/teleop/robot/robot-action-test");
+    let (mut ws_stream, _) = connect_async(&ws_url)
+        .await
+        .expect("WebSocket connection handshake failed");
+
+    assert!(registry.is_active("robot-action-test"));
+
+    // Subscribe to action goal on fabric
+    let mut goal_rx = fabric
+        .subscribe_action_goal("robot-action-test")
+        .expect("subscribe action goal");
+
+    // 1. Send valid PICK_AND_PLACE_TARGET frame over WebSocket
+    let pnp_cmd = RobotCommand {
+        command_id: "cmd-pnp-action-42".to_string(),
+        sender_id: "test-teleop-client".to_string(),
+        timestamp_ns: 1_700_000_000_000_000_000,
+        r#type: CommandType::PickAndPlaceTarget,
+        payload: serde_json::json!({
+            "pick_x": 0.35,
+            "pick_y": 0.15,
+            "pick_z": 0.02,
+            "drop_x": 0.40,
+            "drop_y": -0.30,
+            "drop_z": 0.08
+        }),
+    };
+    ws_stream
+        .send(Message::Text(
+            serde_json::to_string(&pnp_cmd).expect("serialize pnp_cmd"),
+        ))
+        .await
+        .expect("send PICK_AND_PLACE_TARGET");
+
+    // 2. Assert translated PickAndPlaceGoal received on fabric
+    let received_goal = tokio::time::timeout(Duration::from_millis(500), goal_rx.recv())
+        .await
+        .expect("timed out waiting for action goal")
+        .expect("goal rx");
+
+    assert_eq!(received_goal.command_id, "cmd-pnp-action-42");
+    assert!(received_goal.use_custom_drop);
+    assert!((received_goal.pick_coords.x - 0.35).abs() < 1e-6);
+    assert!((received_goal.pick_coords.y - 0.15).abs() < 1e-6);
+    assert!((received_goal.pick_coords.z - 0.02).abs() < 1e-6);
+    assert!((received_goal.drop_coords.x - 0.40).abs() < 1e-6);
+    assert!((received_goal.drop_coords.y - (-0.30)).abs() < 1e-6);
+    assert!((received_goal.drop_coords.z - 0.08).abs() < 1e-6);
+
+    // 3. Emit ActionFeedbackFrame onto fabric, verify client receives it over WebSocket
+    let feedback_frame = ActionFeedbackFrame::new(
+        "cmd-pnp-action-42",
+        "TRANSFERRING",
+        60.0,
+        1_700_000_000_100,
+    );
+    fabric
+        .publish_action_feedback("robot-action-test", &feedback_frame)
+        .await
+        .expect("publish action feedback");
+
+    let client_msg = tokio::time::timeout(Duration::from_millis(500), ws_stream.next())
+        .await
+        .expect("timed out waiting for feedback frame")
+        .expect("ws stream open")
+        .expect("msg ok");
+
+    match client_msg {
+        Message::Text(txt) => {
+            let received_fb: ActionFeedbackFrame =
+                serde_json::from_str(&txt).expect("parse action feedback frame");
+            assert_eq!(received_fb.r#type, "ACTION_FEEDBACK");
+            assert_eq!(received_fb.command_id, "cmd-pnp-action-42");
+            assert_eq!(received_fb.phase, "TRANSFERRING");
+            assert!((received_fb.percent_complete - 60.0).abs() < 1e-6);
+        }
+        other => panic!("expected text message, got {other:?}"),
+    }
+
+    drop(ws_stream);
+    tokio::time::sleep(Duration::from_millis(50)).await;
+    assert!(!registry.is_active("robot-action-test"));
+}
