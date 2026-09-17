@@ -93,6 +93,7 @@ export const CommandType = {
   RESET_FAULT: 'RESET_FAULT',
   SPAWN_OBJECT: 'SPAWN_OBJECT',
   CLEAR_WORKSPACE: 'CLEAR_WORKSPACE',
+  PICK_AND_PLACE_TARGET: 'PICK_AND_PLACE_TARGET',
 } as const;
 
 export const CommandTypeSchema = z.enum([
@@ -104,6 +105,7 @@ export const CommandTypeSchema = z.enum([
   'RESET_FAULT',
   'SPAWN_OBJECT',
   'CLEAR_WORKSPACE',
+  'PICK_AND_PLACE_TARGET',
 ], { message: 'Invalid command type' });
 
 export const commandTypeSchema = CommandTypeSchema;
@@ -254,6 +256,24 @@ export const clearWorkspacePayloadSchema = ClearWorkspacePayloadSchema;
 
 export type ClearWorkspacePayload = z.infer<typeof rawClearWorkspacePayloadSchema>;
 
+/** Typed payload for PICK_AND_PLACE_TARGET command */
+export const rawPickAndPlaceTargetPayloadSchema = z.object(
+  {
+    pick_x: z.number({ message: "Field 'pick_x' must be a number" }),
+    pick_y: z.number({ message: "Field 'pick_y' must be a number" }),
+    pick_z: z.number({ message: "Field 'pick_z' must be a number" }),
+    drop_x: z.number({ message: "Field 'drop_x' must be a number" }).nullish(),
+    drop_y: z.number({ message: "Field 'drop_y' must be a number" }).nullish(),
+    drop_z: z.number({ message: "Field 'drop_z' must be a number" }).nullish(),
+  },
+  { message: 'PickAndPlaceTargetPayload payload must be an object' }
+).strict();
+
+export const PickAndPlaceTargetPayloadSchema = jsonInput.pipe(rawPickAndPlaceTargetPayloadSchema);
+export const pickAndPlaceTargetPayloadSchema = PickAndPlaceTargetPayloadSchema;
+
+export type PickAndPlaceTargetPayload = z.infer<typeof rawPickAndPlaceTargetPayloadSchema>;
+
 /** End-effector dexterous palm pneumatic actuation and grasp status */
 export const rawPalmStateSchema = z.object(
   {
@@ -392,6 +412,14 @@ export function parseClearWorkspacePayload(input: unknown): ClearWorkspacePayloa
 
 export function isClearWorkspacePayload(input: unknown): input is ClearWorkspacePayload {
   return clearWorkspacePayloadSchema.safeParse(input).success;
+}
+
+export function parsePickAndPlaceTargetPayload(input: unknown): PickAndPlaceTargetPayload {
+  return unwrapZod<PickAndPlaceTargetPayload>(pickAndPlaceTargetPayloadSchema.safeParse(input));
+}
+
+export function isPickAndPlaceTargetPayload(input: unknown): input is PickAndPlaceTargetPayload {
+  return pickAndPlaceTargetPayloadSchema.safeParse(input).success;
 }
 
 export function parsePalmState(input: unknown): PalmState {

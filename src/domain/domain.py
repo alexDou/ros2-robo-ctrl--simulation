@@ -38,6 +38,7 @@ class CommandType(str, Enum):
     RESET_FAULT = "RESET_FAULT"
     SPAWN_OBJECT = "SPAWN_OBJECT"
     CLEAR_WORKSPACE = "CLEAR_WORKSPACE"
+    PICK_AND_PLACE_TARGET = "PICK_AND_PLACE_TARGET"
 
 
 class RobotState(str, Enum):
@@ -132,6 +133,19 @@ class ClearWorkspacePayload(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+
+
+class PickAndPlaceTargetPayload(BaseModel):
+    """Typed payload for PICK_AND_PLACE_TARGET command"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    pick_x: float = Field(..., description="Cartesian X pick coordinate in robot base frame")
+    pick_y: float = Field(..., description="Cartesian Y pick coordinate in robot base frame")
+    pick_z: float = Field(..., description="Cartesian Z pick coordinate in robot base frame")
+    drop_x: Optional[float] = Field(default=None, description="Optional custom Cartesian X drop target coordinate")
+    drop_y: Optional[float] = Field(default=None, description="Optional custom Cartesian Y drop target coordinate")
+    drop_z: Optional[float] = Field(default=None, description="Optional custom Cartesian Z drop target coordinate")
 
 
 class PalmState(BaseModel):

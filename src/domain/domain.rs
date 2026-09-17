@@ -47,6 +47,7 @@ pub enum CommandType {
     ResetFault,
     SpawnObject,
     ClearWorkspace,
+    PickAndPlaceTarget,
 }
 
 /// Current lifecycle state of the robotic manipulator
@@ -150,6 +151,21 @@ pub struct SpawnObjectPayload {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct ClearWorkspacePayload {
+}
+
+/// Typed payload for PICK_AND_PLACE_TARGET command
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PickAndPlaceTargetPayload {
+    pub pick_x: f64,
+    pub pick_y: f64,
+    pub pick_z: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_x: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_y: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub drop_z: Option<f64>,
 }
 
 /// End-effector dexterous palm pneumatic actuation and grasp status

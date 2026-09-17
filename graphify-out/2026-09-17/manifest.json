@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "schemas/robot_command.schema.json": {
-    "mtime": 1789511749.9658008,
-    "seen": 1789511862.5073357,
-    "ast_hash": "a619698bab70c2e2f117b09371c74939",
+    "mtime": 1789636665.213121,
+    "seen": 1789637259.3559484,
+    "ast_hash": "1046f55554cd283f066cf0e233c3d172",
     "semantic_hash": ""
   },
   "schemas/robot_telemetry_event.schema.json": {
@@ -774,15 +774,15 @@
     "semantic_hash": ""
   },
   "src/gateway/tests/domain_contract_test.rs": {
-    "mtime": 1789512191.8053684,
-    "seen": 1789555942.0086713,
-    "ast_hash": "8a1022b1eb21a7a4945a803d7baf06d0",
+    "mtime": 1789636861.7417324,
+    "seen": 1789637259.356674,
+    "ast_hash": "ccd52ddec9d133187914b2c96ddf3858",
     "semantic_hash": ""
   },
   "tests/test_domain.py": {
-    "mtime": 1789511636.6954966,
-    "seen": 1789511862.5079286,
-    "ast_hash": "8f36fc6aca0252f54eb26b5b5e4e5b1b",
+    "mtime": 1789636839.1782784,
+    "seen": 1789637259.3567069,
+    "ast_hash": "14dba028172a239e2f550cbf3eb3afed",
     "semantic_hash": ""
   },
   "src/edge_node/main.py": {
@@ -810,9 +810,9 @@
     "semantic_hash": ""
   },
   "src/gateway/src/ws.rs": {
-    "mtime": 1789558471.4152875,
-    "seen": 1789558588.193951,
-    "ast_hash": "005af7217dc932f1ae7efbabb9e77bf4",
+    "mtime": 1789636879.0663004,
+    "seen": 1789637259.356673,
+    "ast_hash": "6fe56bec0e87f9369631124005eba1ad",
     "semantic_hash": ""
   },
   "src/gateway/tests/ws_gateway_test.rs": {
@@ -852,9 +852,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
-    "mtime": 1789511734.4534154,
-    "seen": 1789511862.5087812,
-    "ast_hash": "37c57509679de01ec960c2d4cf1c0b34",
+    "mtime": 1789637189.8652158,
+    "seen": 1789637259.357585,
+    "ast_hash": "90084110f65e0f0f1f4557dedc021a1a",
     "semantic_hash": ""
   },
   "web/tests/unit/env.test.ts": {
@@ -924,21 +924,21 @@
     "semantic_hash": ""
   },
   "src/domain/domain.py": {
-    "mtime": 1789512159.0045998,
-    "seen": 1789555942.0082474,
-    "ast_hash": "f57af5e566d4cdfa98eb8cccdcf5b7da",
+    "mtime": 1789636668.6971703,
+    "seen": 1789637259.3562784,
+    "ast_hash": "4ec7eea7d9221534728b2636db25ba65",
     "semantic_hash": ""
   },
   "src/domain/domain.rs": {
-    "mtime": 1789512159.004139,
-    "seen": 1789555942.008249,
-    "ast_hash": "c47fe0e9b5f68e12d540007014969281",
+    "mtime": 1789636668.6956418,
+    "seen": 1789637259.3562796,
+    "ast_hash": "0cc6f698e49e79c5e138a38493696705",
     "semantic_hash": ""
   },
   "web/domain/contracts.ts": {
-    "mtime": 1789512159.004833,
-    "seen": 1789555942.0088086,
-    "ast_hash": "19e2696190947d819b38b712045cd37c",
+    "mtime": 1789636668.698312,
+    "seen": 1789637259.356795,
+    "ast_hash": "5f600e967897b3400935e0a3fdd2fcdb",
     "semantic_hash": ""
   },
   "support_files/specs/units.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "web/domain/parsers.ts": {
-    "mtime": 1789511784.550732,
-    "seen": 1789511862.5080566,
-    "ast_hash": "bd380094148829bed8b4be22adafe010",
+    "mtime": 1789637213.384624,
+    "seen": 1789637259.3568244,
+    "ast_hash": "86b0d63b740293f50bd1792feb6809c4",
     "semantic_hash": ""
   },
   "src/edge_node/mapper.py": {
@@ -1317,6 +1317,54 @@
     "mtime": 1789578809.2778609,
     "seen": 1789578862.198158,
     "ast_hash": "08ec33884fbe9878542c0bf9ca2462a5",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-4igp--unit-61-analytical-ur5e-inverse-kinematics-solver.md": {
+    "mtime": 1789579612.3262641,
+    "seen": 1789579798.2738407,
+    "ast_hash": "692fdf587892cd661ee9c5a32a37b440",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-6yut--unit-64-teleopclient-spindletower-3d-fixture-kinem.md": {
+    "mtime": 1789579671.6196373,
+    "seen": 1789579798.273974,
+    "ast_hash": "727e99dfd67532e65e456c3655715240",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-i13f--unit-63-gateway-stateless-schema-validation-comman.md": {
+    "mtime": 1789579654.9288144,
+    "seen": 1789579798.2750068,
+    "ast_hash": "90fcd1d3c89c02ef309adb4df4f7f541",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-poc1--unit-65-multi-service-closed-loop-system-integrati.md": {
+    "mtime": 1789579701.8223162,
+    "seen": 1789579798.2757826,
+    "ast_hash": "dfb79ddbde9cf14cf5c7b9cbce8806a5",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-yilh--unit-60-domain-schemas-wire-contracts-cross-langua.md": {
+    "mtime": 1789579589.6295028,
+    "seen": 1789579798.2761903,
+    "ast_hash": "e66a60f64c15757620e431f16caa719d",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-z7s4--unit-62-edgenode-event-driven-workcellstate-autono.md": {
+    "mtime": 1789579625.9751203,
+    "seen": 1789579798.2761977,
+    "ast_hash": "c24ab1a8824c7f8b4f3c4c3d33f6f4c2",
+    "semantic_hash": ""
+  },
+  "support_files/specs/unit6/implementation_wireframe.md": {
+    "mtime": 1789636248.4278648,
+    "seen": 1789636256.3551521,
+    "ast_hash": "08ccafd3562fae792434d13891530973",
+    "semantic_hash": ""
+  },
+  "support_files/specs/unit6/overview.md": {
+    "mtime": 1789636233.6539874,
+    "seen": 1789636256.3551543,
+    "ast_hash": "2d6cbb9a47aee4b0af0dd0a8cfead0df",
     "semantic_hash": ""
   }
 }

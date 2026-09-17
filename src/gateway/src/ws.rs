@@ -16,7 +16,7 @@ fn current_time_ns() -> u64 {
 fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), String> {
     use crate::domain::{
         ClearWorkspacePayload, CommandType, EmergencyStopPayload, PalmActuatePayload,
-        ResetFaultPayload, SpawnObjectPayload, TrajectoryExecutePayload,
+        PickAndPlaceTargetPayload, ResetFaultPayload, SpawnObjectPayload, TrajectoryExecutePayload,
     };
     use serde::Deserialize;
     match cmd.r#type {
@@ -52,6 +52,29 @@ fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), Str
             ClearWorkspacePayload::deserialize(&cmd.payload)
                 .map(|_| ())
                 .map_err(|e| e.to_string())
+        }
+        CommandType::PickAndPlaceTarget => {
+            let payload = PickAndPlaceTargetPayload::deserialize(&cmd.payload)
+                .map_err(|e| e.to_string())?;
+            if !payload.pick_x.is_finite() || !payload.pick_y.is_finite() || !payload.pick_z.is_finite() {
+                return Err("Coordinates must be finite floats".to_string());
+            }
+            if let Some(x) = payload.drop_x {
+                if !x.is_finite() {
+                    return Err("Coordinates must be finite floats".to_string());
+                }
+            }
+            if let Some(y) = payload.drop_y {
+                if !y.is_finite() {
+                    return Err("Coordinates must be finite floats".to_string());
+                }
+            }
+            if let Some(z) = payload.drop_z {
+                if !z.is_finite() {
+                    return Err("Coordinates must be finite floats".to_string());
+                }
+            }
+            Ok(())
         }
         CommandType::Ping | CommandType::TeleopJointTarget => Ok(()),
     }

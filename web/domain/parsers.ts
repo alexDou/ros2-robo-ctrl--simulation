@@ -5,6 +5,7 @@ import {
   type PoseName,
   type PalmAction,
   type SpawnObjectPayload,
+  type PickAndPlaceTargetPayload,
 } from './contracts';
 
 function generateCommandId(commandId?: string): string {
@@ -124,6 +125,87 @@ export function createClearWorkspaceCommand(params?: {
     timestamp_ns: getTimestampNs(params?.timestampNs),
     type: CommandType.CLEAR_WORKSPACE,
     payload: {},
+  };
+}
+
+export function createPickAndPlaceTargetCommand(
+  payload: PickAndPlaceTargetPayload,
+  params?: {
+    senderId?: string;
+    commandId?: string;
+    timestampNs?: bigint | number;
+  }
+): RobotCommand;
+export function createPickAndPlaceTargetCommand(
+  pick: { x: number; y: number; z: number },
+  params?: {
+    senderId?: string;
+    commandId?: string;
+    timestampNs?: bigint | number;
+  }
+): RobotCommand;
+export function createPickAndPlaceTargetCommand(
+  pick: { x: number; y: number; z: number },
+  drop?: { x?: number; y?: number; z?: number },
+  params?: {
+    senderId?: string;
+    commandId?: string;
+    timestampNs?: bigint | number;
+  }
+): RobotCommand;
+export function createPickAndPlaceTargetCommand(
+  pickOrPayload: { x: number; y: number; z: number } | PickAndPlaceTargetPayload,
+  dropOrParams?:
+    | { x?: number; y?: number; z?: number }
+    | {
+        senderId?: string;
+        commandId?: string;
+        timestampNs?: bigint | number;
+      },
+  params?: {
+    senderId?: string;
+    commandId?: string;
+    timestampNs?: bigint | number;
+  }
+): RobotCommand {
+  let payload: PickAndPlaceTargetPayload;
+  let options: { senderId?: string; commandId?: string; timestampNs?: bigint | number } | undefined;
+
+  if ('pick_x' in pickOrPayload) {
+    payload = pickOrPayload;
+    options = dropOrParams as typeof options;
+  } else {
+    const isOptions = (val: unknown): val is typeof options =>
+      Boolean(
+        val &&
+          typeof val === 'object' &&
+          ('senderId' in val || 'commandId' in val || 'timestampNs' in val)
+      );
+
+    let drop: { x?: number; y?: number; z?: number } | undefined;
+    if (isOptions(dropOrParams)) {
+      options = dropOrParams;
+    } else {
+      drop = dropOrParams;
+      options = params;
+    }
+
+    payload = {
+      pick_x: pickOrPayload.x,
+      pick_y: pickOrPayload.y,
+      pick_z: pickOrPayload.z,
+      ...(drop?.x !== undefined ? { drop_x: drop.x } : {}),
+      ...(drop?.y !== undefined ? { drop_y: drop.y } : {}),
+      ...(drop?.z !== undefined ? { drop_z: drop.z } : {}),
+    };
+  }
+
+  return {
+    command_id: generateCommandId(options?.commandId),
+    sender_id: options?.senderId ?? 'teleop-ui',
+    timestamp_ns: getTimestampNs(options?.timestampNs),
+    type: CommandType.PICK_AND_PLACE_TARGET,
+    payload,
   };
 }
 
