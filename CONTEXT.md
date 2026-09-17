@@ -108,9 +108,23 @@ _Avoid_: Numerical IK, Jacobian solver, trajectory optimizer
 Deterministic multi-phase waypoint trajectory executing workpiece approach, pick, grasp, lift, drop, release, and return to home.
 _Avoid_: Motion script, pick routine, macro
 
+**WorkcellNode**:
+Authoritative standalone ROS2 node managing SpindleTower inventory, workpiece presence, and workspace lifecycle services.
+_Avoid_: Inventory tracker, table node, workcell manager
 
+**ArmControllerNode**:
+Standalone ROS2 Action Server node executing PickAndPlaceAction and commanding the scaled joint trajectory controller.
+_Avoid_: Arm node, motion runner, trajectory worker
 
+**TelemetryThrottler**:
+Non-blocking Gateway component sampling 500 Hz RTDE joint telemetry and decimating to a smooth 30 Hz WebSocket stream.
+_Avoid_: Downsampler, rate limiter, decimation filter
 
+**PickAndPlaceAction**:
+Typed ROS2 Action interface defining pick/drop Cartesian goal coordinates, step feedback phases, and final execution result.
+_Avoid_: Pick task, move action, trajectory command
 
-
+**SystemLauncher**:
+Central orchestration launcher managing startup, lifecycle, and orderly shutdown of robotics or multi-tier processes.
+_Avoid_: Bootstrapper, start script, runner
 

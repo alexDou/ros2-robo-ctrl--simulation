@@ -161,6 +161,27 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
 
 ---
 
+## Unit Refactoring-A: Production ROS2 Native Architecture & Real-Hardware Refactoring
+
+* **Objective**: Refactor simulation prototype backend into production-grade, real-hardware-ready ROS2 native architecture per [ADR 0004](../../docs/adr/0004-real-robot-ros2-native-architecture-and-gateway-throttling.md) and [unit_refactoring-a/overview.md](./unit_refactoring-a/overview.md). Eliminate mock debt with upstream `ros2_control` (500 Hz RTDE loop with fake hardware switch), decompose monolithic `EdgeNode` into standalone ROS2 packages (`workcell_manager` and `arm_controller`), define native ROS2 action and service interfaces in `robot_control_interfaces`, launch `zenoh-bridge-ros2dds` alongside Gateway in `launch_gateway.sh`, implement 500Hz-to-30Hz `TelemetryThrottler` in Rust Gateway, and establish dedicated per-service launch workflows.
+* **Architecture**: Contract-first staged development across decoupled ROS2 packages in `src/ros2/` and Rust Gateway.
+
+### Sub-Unit Breakdown
+- **Refactor-A.0: ROS2 Interfaces Package**:
+  - Defines `PickAndPlace.action`, `GetDropSlot.srv`, and `ClearWorkspace.srv` in `src/ros2/robot_control_interfaces` (`ament_cmake`).
+- **Refactor-A.1: Standalone Workcell Node**:
+  - Migrates `WorkcellState` into standalone `workcell_node` (`src/ros2/workcell_manager`), exposing services and `/workcell/inventory`.
+- **Refactor-A.2: Standalone Arm Controller Action Server**:
+  - Implements `arm_controller_node` (`src/ros2/arm_controller`) wrapping analytical IK, action server `PickAndPlace.action`, and trajectory client to `scaled_joint_trajectory_controller`.
+- **Refactor-A.3: Robotics Bringup & Launch Configuration**:
+  - Implements `robot_nodes.launch.py` in `src/ros2/robot_bringup` orchestrating `ros2_control` (with `use_fake_hardware` switch), `workcell_node`, and `arm_controller_node`.
+- **Refactor-A.4: Edge Gateway Throttler, Action Bridge & Launcher**:
+  - Integrates `zenoh-bridge-ros2dds` into `scripts/launch_gateway.sh`, implements 500Hz-to-30Hz `TelemetryThrottler` in Rust Gateway, and bridges Action feedback to WebSockets.
+- **Refactor-A.5: Multi-Service System Integration Verification & Migration**:
+  - Multi-service Playwright integration suite verifying end-to-end pick-and-place with separate log streams; cleanly retires legacy prototype files.
+
+---
+
 ## Unit 7: Multi-Color Gear Sorting & Defect QC Inspection
 
 * **Objective**: Extend pick-and-place with vision classification and automated sorting: gears spawn with randomized colors (Red, Green, Blue) and 20% defect probability (crack notch); EdgeNode routes good gears to matching color spindle towers and cracked gears to the Scrap Bin.

@@ -1,0 +1,13 @@
+# Goal
+geometry_msgs/Point pick_coords
+geometry_msgs/Point drop_coords
+bool use_custom_drop
+string command_id
+---
+# Result
+bool success
+string message
+---
+# Feedback
+string phase
+float32 percent_complete

@@ -684,9 +684,9 @@
     "semantic_hash": ""
   },
   "CONTEXT.md": {
-    "mtime": 1789578260.426477,
-    "seen": 1789578324.0917876,
-    "ast_hash": "087a3840f359e566ea9b1505c55631c5",
+    "mtime": 1789647049.6036143,
+    "seen": 1789648260.7561362,
+    "ast_hash": "f0d7dc2abdeb07291a173f344b54d6db",
     "semantic_hash": ""
   },
   "README.md": {
@@ -942,9 +942,9 @@
     "semantic_hash": ""
   },
   "support_files/specs/units.md": {
-    "mtime": 1789396856.3851142,
-    "seen": 1789399104.2664824,
-    "ast_hash": "bc8e1fc3514af59f139edcca2e2e9666",
+    "mtime": 1789648240.5606039,
+    "seen": 1789648260.757895,
+    "ast_hash": "b9a95dff394ec127d8986ebed55af11d",
     "semantic_hash": ""
   },
   ".beans/hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md": {
@@ -1326,9 +1326,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-6yut--unit-64-teleopclient-spindletower-3d-fixture-kinem.md": {
-    "mtime": 1789579671.6196373,
-    "seen": 1789579798.273974,
-    "ast_hash": "727e99dfd67532e65e456c3655715240",
+    "mtime": 1789645848.4677424,
+    "seen": 1789648260.7539308,
+    "ast_hash": "1ddf50f54e7c8cc61e81786464af1e81",
     "semantic_hash": ""
   },
   ".beans/hand-sim-i13f--unit-63-gateway-stateless-schema-validation-comman.md": {
@@ -1380,9 +1380,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-wt44--unit-65-refactoring-real-robot-native-ros2-archite.md": {
-    "mtime": 1789644054.2175114,
-    "seen": 1789644405.462503,
-    "ast_hash": "0edc1ff5cb62d61610e30759ae3cd717",
+    "mtime": 1789648243.2724962,
+    "seen": 1789648260.7560399,
+    "ast_hash": "904fcc99778547f98fa9ef0e9333c281",
     "semantic_hash": ""
   },
   "docs/adr/0004-real-robot-ros2-native-architecture-and-gateway-throttling.md": {
@@ -1391,10 +1391,70 @@
     "ast_hash": "34cb797761f897c6fdbd3245c3fcb7c1",
     "semantic_hash": ""
   },
-  "support_files/specs/unit6/unit_6_5_refactoring_architecture.md": {
-    "mtime": 1789644048.7948298,
-    "seen": 1789644405.463298,
-    "ast_hash": "a9d39ac486fa3cb2bb68db130a7c661f",
+  "support_files/specs/unit_6_5_refactoring_architecture.md": {
+    "mtime": 1789648252.9791105,
+    "seen": 1789648260.757887,
+    "ast_hash": "1fbb54ab64eb2ab628203144d9fb9640",
+    "semantic_hash": ""
+  },
+  "support_files/specs/unit_refactoring-a/implementation_wireframe.md": {
+    "mtime": 1789648231.915946,
+    "seen": 1789648260.7578907,
+    "ast_hash": "6f4c19611c1606b6294944acb902316c",
+    "semantic_hash": ""
+  },
+  "support_files/specs/unit_refactoring-a/overview.md": {
+    "mtime": 1789648214.6656265,
+    "seen": 1789648260.7578921,
+    "ast_hash": "e3d314777c341886ea83af979d53fb37",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-6bdr--refactor-a1-standalone-workcell-node-inventory-lif.md": {
+    "mtime": 1789648343.9574466,
+    "seen": 1789648372.2710557,
+    "ast_hash": "5e00a6148c0f0d60b5c622fc9b10c1cd",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-bjcw--refactor-a3-robotics-bringup-launch-configuration.md": {
+    "mtime": 1789648355.499976,
+    "seen": 1789648372.2712398,
+    "ast_hash": "eb994a63e4783dff8b65d1247aa28cda",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-glrj--refactor-a0-ros2-interfaces-package-pickandplace-g.md": {
+    "mtime": 1789648339.3436344,
+    "seen": 1789648372.271381,
+    "ast_hash": "b9b5eb9482a3f4bafcb86f355d0e50e9",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-gp9z--refactor-a4-gateway-500hz-to-30hz-telemetry-thrott.md": {
+    "mtime": 1789648359.0168324,
+    "seen": 1789648372.271382,
+    "ast_hash": "33399e9dc65d0daf4fe732f0135bed74",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-yopr--refactor-a5-multi-service-integration-suite-protot.md": {
+    "mtime": 1789648362.4626913,
+    "seen": 1789648372.2722273,
+    "ast_hash": "f59668d581efc10c0dfef01e49630605",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-z7uz--refactor-a2-standalone-arm-controller-action-serve.md": {
+    "mtime": 1789648350.8381662,
+    "seen": 1789648372.2722626,
+    "ast_hash": "8d9ce16952e2c5893b94809b8113a386",
+    "semantic_hash": ""
+  },
+  "tests/test_robot_control_interfaces.py": {
+    "mtime": 1789648891.3991272,
+    "seen": 1789648972.7465546,
+    "ast_hash": "f84f8bb5bb5ac2c91348268b50af107a",
+    "semantic_hash": ""
+  },
+  "src/ros2/robot_control_interfaces/CMakeLists.txt": {
+    "mtime": 1789648906.1014814,
+    "seen": 1789648972.7532234,
+    "ast_hash": "988b10f8a4cec4bccabacc6878d07705",
     "semantic_hash": ""
   }
 }
