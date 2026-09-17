@@ -482,8 +482,8 @@ describe('TeleopClient Component', () => {
     });
   });
 
-  describe('Unit 5.1: 3D Workcell Table, Raycaster & Procedural Gear Ingestion', () => {
-    it('dispatches SPAWN_OBJECT command when valid reachable table spot is clicked', () => {
+  describe('Unit 6.4: TeleopClient Pick-and-Place Target Dispatch & ClickLockout Lifecycle', () => {
+    it('dispatches PICK_AND_PLACE_TARGET command when valid reachable table spot is clicked', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
       const ws = MockWebSocket.instances[0];
       act(() => {
@@ -500,14 +500,13 @@ describe('TeleopClient Component', () => {
 
       expect(ws.sentMessages.length).toBe(1);
       const sentCmd = JSON.parse(ws.sentMessages[0]);
-      expect(sentCmd.type).toBe(CommandType.SPAWN_OBJECT);
-      expect(sentCmd.payload.x).toBeCloseTo(0.5, 2);
-      expect(sentCmd.payload.y).toBeCloseTo(0.1, 2);
-      expect(sentCmd.payload.z).toBeCloseTo(0.0, 2);
-      expect(sentCmd.payload.object_type).toBe('GEAR');
+      expect(sentCmd.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
+      expect(sentCmd.payload.pick_x).toBeCloseTo(0.5, 2);
+      expect(sentCmd.payload.pick_y).toBeCloseTo(0.1, 2);
+      expect(sentCmd.payload.pick_z).toBeCloseTo(0.0, 2);
     });
 
-    it('enforces client-side ClickLockout preventing second SPAWN_OBJECT command dispatch', () => {
+    it('enforces client-side ClickLockout preventing second PICK_AND_PLACE_TARGET command dispatch', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
       const ws = MockWebSocket.instances[0];
       act(() => {
@@ -529,7 +528,7 @@ describe('TeleopClient Component', () => {
       expect(ws.sentMessages.length).toBe(1);
     });
 
-    it('does not dispatch SPAWN_OBJECT command when robot_state is not IDLE', () => {
+    it('does not dispatch PICK_AND_PLACE_TARGET command when robot_state is not IDLE', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
       const ws = MockWebSocket.instances[0];
       act(() => {
@@ -553,6 +552,65 @@ describe('TeleopClient Component', () => {
         visualizer.simulateClick(0.5, 0.0);
       });
       expect(ws.sentMessages.length).toBe(0);
+    });
+
+    it('lifts ClickLockout automatically when robot returns to IDLE and gear has been deposited', () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Click 1
+      act(() => {
+        visualizer.simulateClick(0.5, 0.1);
+      });
+      expect(ws.sentMessages.length).toBe(1);
+      expect(visualizer.isLockedOut()).toBe(true);
+
+      // Transition to PROCESSING
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000000000000',
+          robot_state: RobotState.PROCESSING,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: false },
+        }));
+      });
+      expect(visualizer.isLockedOut()).toBe(true);
+
+      // Transition to EXECUTING
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000100000000',
+          robot_state: RobotState.EXECUTING,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: true },
+        }));
+      });
+      expect(visualizer.isLockedOut()).toBe(true);
+
+      // Deposit gear onto tower (simulated or via telemetry grasp release)
+      // When robot transitions back to IDLE, lockout lifts
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000200000000',
+          robot_state: RobotState.IDLE,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: false },
+        }));
+      });
+
+      // User can now click again to dispatch second PICK_AND_PLACE_TARGET
+      act(() => {
+        visualizer.simulateClick(0.55, -0.05);
+      });
+      expect(ws.sentMessages.length).toBe(2);
+      const secondCmd = JSON.parse(ws.sentMessages[1]);
+      expect(secondCmd.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
+      expect(secondCmd.payload.pick_x).toBeCloseTo(0.55, 2);
     });
   });
 
@@ -660,7 +718,7 @@ describe('TeleopClient Component', () => {
       });
       expect(ws.sentMessages.length).toBe(3);
       const secondSpawn = JSON.parse(ws.sentMessages[2]);
-      expect(secondSpawn.type).toBe(CommandType.SPAWN_OBJECT);
+      expect(secondSpawn.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
       expect(visualizer.hasActiveGear()).toBe(true);
       expect(visualizer.isLockedOut()).toBe(true);
     });

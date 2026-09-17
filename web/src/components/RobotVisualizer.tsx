@@ -2,11 +2,15 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { URDFRobot } from 'urdf-loader';
-import { UR5E_JOINTS, type SpawnObjectPayload, type RobotState } from '@contracts';
+import { UR5E_JOINTS, type SpawnObjectPayload, type PickAndPlaceTargetPayload, type RobotState } from '@contracts';
 import * as robotLoader from '@utils/robotLoader';
 
 export const REACHABILITY_MIN_RADIUS = 0.40;
 export const REACHABILITY_MAX_RADIUS = 0.75;
+export const SPINDLE_TOWER_COORDS = { x: 0.40, y: -0.30, z: 0.0 };
+export const GEAR_STACK_HEIGHT_STEP = 0.02;
+export const MAX_TOWER_STACK_CAPACITY = 10;
+export const GRASP_PROXIMITY_THRESHOLD_M = 0.015;
 
 export interface RobotVisualizerProps {
   urdfUrl?: string;
@@ -21,6 +25,7 @@ export interface RobotVisualizerProps {
   robotState?: RobotState | string;
   hasActiveGear?: boolean;
   onSpawnObject?: (payload: SpawnObjectPayload) => void;
+  onPickAndPlaceTarget?: (payload: PickAndPlaceTargetPayload) => void;
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,
@@ -405,6 +410,58 @@ function createProceduralGearwheel(): GearwheelProceduralAssets {
   return { group, dispose };
 }
 
+interface SpindleTowerProceduralAssets {
+  group: THREE.Group;
+  flangeMesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial>;
+  pinMesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial>;
+  dispose: () => void;
+}
+
+function createSpindleTower(): SpindleTowerProceduralAssets {
+  const group = new THREE.Group();
+  group.name = 'spindle-tower';
+  group.position.set(SPINDLE_TOWER_COORDS.x, SPINDLE_TOWER_COORDS.y, SPINDLE_TOWER_COORDS.z);
+
+  // 1. Aluminum base flange (r=0.04m, h=0.008m)
+  const flangeRadius = 0.04;
+  const flangeHeight = 0.008;
+  const flangeGeom = new THREE.CylinderGeometry(flangeRadius, flangeRadius, flangeHeight, 32);
+  flangeGeom.rotateX(Math.PI / 2);
+  const flangeMat = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    metalness: 0.8,
+    roughness: 0.2,
+  });
+  const flangeMesh = new THREE.Mesh(flangeGeom, flangeMat);
+  flangeMesh.name = 'spindle-base-flange';
+  flangeMesh.position.set(0, 0, flangeHeight / 2);
+  group.add(flangeMesh);
+
+  // 2. Vertical metal spindle pin / post (r=0.007m, h=0.20m)
+  const pinRadius = 0.007;
+  const pinHeight = 0.20;
+  const pinGeom = new THREE.CylinderGeometry(pinRadius, pinRadius, pinHeight, 32);
+  pinGeom.rotateX(Math.PI / 2);
+  const pinMat = new THREE.MeshStandardMaterial({
+    color: 0xe2e8f0,
+    metalness: 0.85,
+    roughness: 0.15,
+  });
+  const pinMesh = new THREE.Mesh(pinGeom, pinMat);
+  pinMesh.name = 'spindle-pin';
+  pinMesh.position.set(0, 0, pinHeight / 2);
+  group.add(pinMesh);
+
+  const dispose = () => {
+    flangeGeom.dispose();
+    disposeMaterial(flangeMat);
+    pinGeom.dispose();
+    disposeMaterial(pinMat);
+  };
+
+  return { group, flangeMesh, pinMesh, dispose };
+}
+
 export function RobotVisualizer({
   urdfUrl = robotLoader.DEFAULT_UR5E_URDF_PATH,
   assetBaseUrl,
@@ -413,6 +470,7 @@ export function RobotVisualizer({
   robotState,
   hasActiveGear,
   onSpawnObject,
+  onPickAndPlaceTarget,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -457,7 +515,12 @@ export function RobotVisualizer({
   const onSpawnObjectRef = useRef(onSpawnObject);
   onSpawnObjectRef.current = onSpawnObject;
 
+  const onPickAndPlaceTargetRef = useRef(onPickAndPlaceTarget);
+  onPickAndPlaceTargetRef.current = onPickAndPlaceTarget;
+
   const clearWorkspaceRef = useRef<(() => void) | null>(null);
+  const depositPendingGearRef = useRef<(() => void) | null>(null);
+  const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
 
   useEffect(() => {
     const container = containerRef.current;
@@ -470,7 +533,11 @@ export function RobotVisualizer({
     let palmAssets: PalmProceduralAssets | null = null;
     let pedestalAssets: PedestalProceduralAssets | null = null;
     let tableAssets: TableProceduralAssets | null = null;
+    let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
+    let mountLink: THREE.Object3D | null = null;
     let activeGearAssets: GearwheelProceduralAssets | null = null;
+    let attachedGear: GearwheelProceduralAssets | null = null;
+    const towerGears: GearwheelProceduralAssets[] = [];
     let isLockedOut = false;
     let wasGrasped = false;
     let needsRender = true;
@@ -594,6 +661,10 @@ export function RobotVisualizer({
     robotGroup.add(tableAssets.borderLines);
     robotGroup.add(tableAssets.reticleMesh);
 
+    // Mount SpindleTower fixture at (x=0.40, y=-0.30, z=0.0)
+    spindleTowerAssets = createSpindleTower();
+    robotGroup.add(spindleTowerAssets.group);
+
     // 8. Load UR5e robot model
     const loader = robotLoader.createRobotLoader({ assetBaseUrl });
     robotLoader.loadRobotModel(urdfUrl, loader)
@@ -616,11 +687,12 @@ export function RobotVisualizer({
         robotGroup.add(robot);
 
         // Mount Dexterous Palm to tool0 flange link with fallback chain
-        const mountLink =
+        mountLink =
           (robot.links && (robot.links['tool0'] || robot.links['flange'] || robot.links['wrist_3_link'])) ||
           robot.getObjectByName('tool0') ||
           robot.getObjectByName('flange') ||
-          robot.getObjectByName('wrist_3_link');
+          robot.getObjectByName('wrist_3_link') ||
+          null;
         if (mountLink) {
           palmAssets = createDexterousPalm();
           mountLink.add(palmAssets.group);
@@ -656,7 +728,7 @@ export function RobotVisualizer({
     }
 
     const spawnGearAt = (x: number, y: number) => {
-      if (activeGearAssets || isLockedOut || hasActiveGearPropRef.current) {
+      if (activeGearAssets || attachedGear || isLockedOut) {
         return;
       }
       const gear = createProceduralGearwheel();
@@ -669,6 +741,13 @@ export function RobotVisualizer({
       }
       needsRender = true;
 
+      if (onPickAndPlaceTargetRef.current) {
+        onPickAndPlaceTargetRef.current({
+          pick_x: x,
+          pick_y: y,
+          pick_z: 0.0,
+        });
+      }
       if (onSpawnObjectRef.current) {
         onSpawnObjectRef.current({
           x,
@@ -687,10 +766,81 @@ export function RobotVisualizer({
         activeGearAssets.dispose();
         activeGearAssets = null;
       }
+      if (attachedGear) {
+        if (attachedGear.group.parent) {
+          attachedGear.group.parent.remove(attachedGear.group);
+        }
+        attachedGear.dispose();
+        attachedGear = null;
+      }
+      for (const gear of towerGears) {
+        if (gear.group.parent) {
+          gear.group.parent.remove(gear.group);
+        }
+        gear.dispose();
+      }
+      towerGears.length = 0;
       isLockedOut = false;
       needsRender = true;
     };
     clearWorkspaceRef.current = clearWorkspace;
+
+    const depositGearToTower = (gearToDeposit: GearwheelProceduralAssets) => {
+      if (gearToDeposit.group.parent) {
+        gearToDeposit.group.parent.remove(gearToDeposit.group);
+      }
+      robotGroup.add(gearToDeposit.group);
+      gearToDeposit.group.rotation.set(0, 0, 0);
+
+      if (towerGears.length < MAX_TOWER_STACK_CAPACITY) {
+        const k = towerGears.length;
+        gearToDeposit.group.position.set(
+          SPINDLE_TOWER_COORDS.x,
+          SPINDLE_TOWER_COORDS.y,
+          k * GEAR_STACK_HEIGHT_STEP
+        );
+        towerGears.push(gearToDeposit);
+      } else {
+        const oldestGear = towerGears.shift()!;
+        if (oldestGear.group.parent) {
+          oldestGear.group.parent.remove(oldestGear.group);
+        }
+        oldestGear.dispose();
+
+        for (let i = 0; i < towerGears.length; i++) {
+          towerGears[i].group.position.set(
+            SPINDLE_TOWER_COORDS.x,
+            SPINDLE_TOWER_COORDS.y,
+            i * GEAR_STACK_HEIGHT_STEP
+          );
+        }
+
+        const topSlot = MAX_TOWER_STACK_CAPACITY - 1;
+        gearToDeposit.group.position.set(
+          SPINDLE_TOWER_COORDS.x,
+          SPINDLE_TOWER_COORDS.y,
+          topSlot * GEAR_STACK_HEIGHT_STEP
+        );
+        towerGears.push(gearToDeposit);
+      }
+    };
+
+    const depositPendingGear = () => {
+      if (attachedGear) {
+        const g = attachedGear;
+        attachedGear = null;
+        depositGearToTower(g);
+        isLockedOut = false;
+        needsRender = true;
+      } else if (activeGearAssets) {
+        const g = activeGearAssets;
+        activeGearAssets = null;
+        depositGearToTower(g);
+        isLockedOut = false;
+        needsRender = true;
+      }
+    };
+    depositPendingGearRef.current = depositPendingGear;
 
     const raycaster = new THREE.Raycaster();
     const pointerNdc = new THREE.Vector2();
@@ -733,7 +883,8 @@ export function RobotVisualizer({
         y >= tableAssets.matBounds.minY &&
         y <= tableAssets.matBounds.maxY;
       const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-      const isLocked = isLockedOut || Boolean(hasActiveGearPropRef.current);
+      const hasTableOrAttachedGear = activeGearAssets !== null || attachedGear !== null;
+      const isLocked = isLockedOut || hasTableOrAttachedGear || !isIdle;
 
       if (isReachable && isInsideTable && isInsideMat && isIdle && !isLocked) {
         tableAssets.reticleMesh.position.set(x, y, 0.006);
@@ -758,8 +909,9 @@ export function RobotVisualizer({
 
     const handleClickCoords = (x: number, y: number) => {
       if (isDisposed || !tableAssets) return false;
-      const isLocked = isLockedOut || Boolean(hasActiveGearPropRef.current);
       const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+      const hasTableOrAttachedGear = activeGearAssets !== null || attachedGear !== null;
+      const isLocked = isLockedOut || hasTableOrAttachedGear || !isIdle;
       if (isLocked || !isIdle) return false;
 
       const r = Math.sqrt(x * x + y * y);
@@ -887,20 +1039,29 @@ export function RobotVisualizer({
           emissiveIntensity: mat.emissiveIntensity,
         };
       },
+      getSpindleTowerMesh: () => spindleTowerAssets?.group ?? null,
+      getSpindleBaseFlangeMesh: () => spindleTowerAssets?.flangeMesh ?? null,
+      getSpindlePinMesh: () => spindleTowerAssets?.pinMesh ?? null,
+      getTowerGears: () => towerGears.map((g) => g.group),
+      getTowerGearCount: () => towerGears.length,
+      isGearAttached: () => attachedGear !== null,
+      getAttachedGearMesh: () => attachedGear?.group ?? null,
       getTableMesh: () => tableAssets?.tableMesh ?? null,
       getPedestalMesh: () => pedestalAssets?.group ?? null,
       getLandingMatMesh: () => tableAssets?.matMesh ?? null,
       getReticleMesh: () => tableAssets?.reticleMesh ?? null,
-      getGearMesh: () => activeGearAssets?.group ?? null,
+      getGearMesh: () => activeGearAssets?.group ?? attachedGear?.group ?? null,
       getGearPosition: () => {
-        if (!activeGearAssets) return null;
-        const pos = activeGearAssets.group.position;
+        const g = activeGearAssets?.group ?? attachedGear?.group;
+        if (!g) return null;
+        const pos = g.position;
         return { x: pos.x, y: pos.y, z: pos.z };
       },
-      hasActiveGear: () => activeGearAssets !== null,
+      hasActiveGear: () => activeGearAssets !== null || attachedGear !== null,
       isLockedOut: () => {
         const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-        return isLockedOut || Boolean(activeGearAssets) || Boolean(hasActiveGearPropRef.current) || !isIdle;
+        const hasTableOrAttachedGear = activeGearAssets !== null || attachedGear !== null;
+        return isLockedOut || hasTableOrAttachedGear || !isIdle;
       },
       clearWorkspace: () => {
         clearWorkspace();
@@ -1036,6 +1197,91 @@ export function RobotVisualizer({
         needsRender = true;
       }
 
+      // KinematicLinkAttachment logic
+      if (mountLink) {
+        // Case 1: Grasping active table gear -> parent to tool0
+        if (currentGrasped && !attachedGear && activeGearAssets) {
+          const gearWorldPos = new THREE.Vector3();
+          activeGearAssets.group.getWorldPosition(gearWorldPos);
+
+          const mountWorldPos = new THREE.Vector3();
+          mountLink.getWorldPosition(mountWorldPos);
+
+          let nozzleDist = Infinity;
+          if (palmAssets?.nozzleMesh) {
+            const nozzleWorldPos = new THREE.Vector3();
+            palmAssets.nozzleMesh.getWorldPosition(nozzleWorldPos);
+            nozzleDist = nozzleWorldPos.distanceTo(gearWorldPos);
+          }
+
+          let tipDist = Infinity;
+          if (palmAssets?.group) {
+            const tipWorldPos = palmAssets.group.localToWorld(new THREE.Vector3(0, 0, 0.108));
+            tipDist = tipWorldPos.distanceTo(gearWorldPos);
+          }
+
+          const mountDist = mountWorldPos.distanceTo(gearWorldPos);
+          const minDist = Math.min(mountDist, nozzleDist, tipDist);
+
+          if (minDist <= GRASP_PROXIMITY_THRESHOLD_M + 1e-4) {
+            mountLink.attach(activeGearAssets.group);
+            attachedGear = activeGearAssets;
+            activeGearAssets = null;
+            needsRender = true;
+          }
+        }
+        // Case 2: Releasing grasped gear -> unparent to tower stack at z_k
+        else if (!currentGrasped && attachedGear) {
+          mountLink.remove(attachedGear.group);
+          robotGroup.add(attachedGear.group);
+          attachedGear.group.rotation.set(0, 0, 0);
+
+          if (towerGears.length < MAX_TOWER_STACK_CAPACITY) {
+            const k = towerGears.length;
+            attachedGear.group.position.set(
+              SPINDLE_TOWER_COORDS.x,
+              SPINDLE_TOWER_COORDS.y,
+              k * GEAR_STACK_HEIGHT_STEP
+            );
+            towerGears.push(attachedGear);
+          } else {
+            // Visual FIFO bottom-drop shift when tower exceeds 10 gears
+            const oldestGear = towerGears.shift()!;
+            if (oldestGear.group.parent) {
+              oldestGear.group.parent.remove(oldestGear.group);
+            }
+            oldestGear.dispose();
+
+            for (let i = 0; i < towerGears.length; i++) {
+              towerGears[i].group.position.set(
+                SPINDLE_TOWER_COORDS.x,
+                SPINDLE_TOWER_COORDS.y,
+                i * GEAR_STACK_HEIGHT_STEP
+              );
+            }
+
+            const topSlot = MAX_TOWER_STACK_CAPACITY - 1; // 9
+            attachedGear.group.position.set(
+              SPINDLE_TOWER_COORDS.x,
+              SPINDLE_TOWER_COORDS.y,
+              topSlot * GEAR_STACK_HEIGHT_STEP
+            );
+            towerGears.push(attachedGear);
+          }
+
+          attachedGear = null;
+          isLockedOut = false;
+          needsRender = true;
+        }
+      }
+
+      // Automatic ClickLockout lifting when robot returns to IDLE with no active table gear
+      const isRobotIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+      if (isRobotIdle && activeGearAssets === null && attachedGear === null && isLockedOut) {
+        isLockedOut = false;
+        needsRender = true;
+      }
+
       // Render only when dirty, skipping static frames
       if (needsRender) {
         renderer.render(scene, camera);
@@ -1049,6 +1295,7 @@ export function RobotVisualizer({
     // 11. Cleanup lifecycle on unmount
     return () => {
       isDisposed = true;
+      depositPendingGearRef.current = null;
       cancelAnimationFrame(animId);
 
       if (typeof window !== 'undefined') {
@@ -1077,6 +1324,18 @@ export function RobotVisualizer({
       canvas.removeEventListener('pointerleave', onPointerLeave);
       canvas.removeEventListener('click', onCanvasClick);
       clearWorkspaceRef.current = null;
+
+      // Dispose all active and tower gears
+      clearWorkspace();
+
+      // Dispose SpindleTower fixture assets
+      if (spindleTowerAssets) {
+        if (spindleTowerAssets.group.parent) {
+          spindleTowerAssets.group.parent.remove(spindleTowerAssets.group);
+        }
+        spindleTowerAssets.dispose();
+        spindleTowerAssets = null;
+      }
 
       // Dispose procedural palm assets
       if (palmAssets) {
@@ -1156,6 +1415,15 @@ export function RobotVisualizer({
       clearWorkspaceRef.current?.();
     }
   }, [hasActiveGear]);
+
+  useEffect(() => {
+    const currentState = robotState || 'IDLE';
+    const prevState = prevRobotStateRef.current;
+    if (prevState !== 'IDLE' && currentState === 'IDLE') {
+      depositPendingGearRef.current?.();
+    }
+    prevRobotStateRef.current = currentState;
+  }, [robotState]);
   return (
     <div
       ref={containerRef}

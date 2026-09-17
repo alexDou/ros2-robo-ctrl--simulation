@@ -1281,7 +1281,490 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(onSpawnSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('Unit 6.4: TeleopClient SpindleTower 3D Fixture, KinematicLinkAttachment & Tower Stacking', () => {
+    let fakeTool0Link: THREE.Object3D;
+    let fakeRobot: any;
+
+    beforeEach(() => {
+      fakeTool0Link = new THREE.Object3D();
+      fakeTool0Link.name = 'tool0';
+
+      fakeRobot = new THREE.Group();
+      fakeRobot.name = 'ur5e-mock';
+      fakeRobot.links = {
+        tool0: fakeTool0Link,
+      };
+      fakeRobot.joints = {};
+      fakeRobot.setJointValue = vi.fn();
+      fakeRobot.add(fakeTool0Link);
+
+      vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot as any);
+    });
+
+    it('mounts SpindleTower 3D fixture at (x=0.40, y=-0.30, z=0.0) with base flange and 0.20m spindle pin', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const towerMesh = visualizer.getSpindleTowerMesh();
+      expect(towerMesh).toBeDefined();
+      expect(towerMesh).not.toBeNull();
+      expect(towerMesh.name).toBe('spindle-tower');
+      expect(towerMesh.position.x).toBeCloseTo(0.40, 2);
+      expect(towerMesh.position.y).toBeCloseTo(-0.30, 2);
+      expect(towerMesh.position.z).toBeCloseTo(0.0, 2);
+
+      const baseFlange = visualizer.getSpindleBaseFlangeMesh();
+      expect(baseFlange).toBeDefined();
+      expect(baseFlange).not.toBeNull();
+      expect(baseFlange.name).toBe('spindle-base-flange');
+
+      const pin = visualizer.getSpindlePinMesh();
+      expect(pin).toBeDefined();
+      expect(pin).not.toBeNull();
+      expect(pin.name).toBe('spindle-pin');
+      // Verify spindle pin height is 0.20m (parameters.height or geometry parameters)
+      const pinGeom = pin.geometry as THREE.CylinderGeometry;
+      expect(pinGeom.parameters.height).toBeCloseTo(0.20, 2);
+      expect(pinGeom.parameters.radiusTop).toBeCloseTo(0.007, 3);
+    });
+
+    it('parents gear to tool0 via KinematicLinkAttachment during grasp within 15mm proximity', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Click table to spawn gear at (0.50, 0.0)
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+
+      const gear = visualizer.getGearMesh();
+      expect(gear).not.toBeNull();
+      expect(visualizer.isGearAttached()).toBe(false);
+
+      // Position tool0 within 15mm of gear (gear is at x=0.50, y=0.0, z=0.004 in robot-root)
+      // Since robotGroup is rotated x = -PI/2, world position matches robotGroup.localToWorld
+      // Setting fakeTool0Link world position close to gear:
+      const gearWorldPos = new THREE.Vector3();
+      gear.getWorldPosition(gearWorldPos);
+      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone().add(new THREE.Vector3(0, 0.005, 0))));
+      fakeRobot.updateMatrixWorld(true);
+
+      // Actuate grasp in telemetry buffer
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+
+      expect(visualizer.isGearAttached()).toBe(true);
+      expect(gear.parent).toBe(fakeTool0Link);
+    });
+
+    it('does not parent gear to tool0 if distance exceeds 15mm proximity even when grasped', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+
+      const gear = visualizer.getGearMesh();
+      expect(gear).not.toBeNull();
+
+      // Tool is far away (> 15mm)
+      fakeTool0Link.position.set(0, 0.5, 0.5);
+      fakeRobot.updateMatrixWorld(true);
+
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(gear.parent).not.toBe(fakeTool0Link);
+    });
+
+    it('unparents gear to SpindleTower stack at z_k on release', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Spawn gear and attach
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+      const gear = visualizer.getGearMesh();
+      const gearWorldPos = new THREE.Vector3();
+      gear.getWorldPosition(gearWorldPos);
+      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
+      fakeRobot.updateMatrixWorld(true);
+
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+
+      // Release grasp at tower
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      act(() => {
+        stepFrame();
+      });
+
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(gear.parent).not.toBe(fakeTool0Link);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+
+      const towerGears = visualizer.getTowerGears();
+      expect(towerGears.length).toBe(1);
+      expect(towerGears[0].position.x).toBeCloseTo(0.40, 2);
+      expect(towerGears[0].position.y).toBeCloseTo(-0.30, 2);
+      expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
+    });
+
+    it('stacks multiple gears vertically at z_k = k * 0.02m', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Pick and place 3 gears
+      for (let k = 0; k < 3; k++) {
+        act(() => {
+          visualizer.simulateClick(0.50, 0.0);
+        });
+        const gear = visualizer.getGearMesh();
+        const gearWorldPos = new THREE.Vector3();
+        gear.getWorldPosition(gearWorldPos);
+        fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
+        fakeRobot.updateMatrixWorld(true);
+
+        telemetryBufferRef.current.palmState.is_grasped = true;
+        act(() => {
+          stepFrame();
+        });
+        expect(visualizer.isGearAttached()).toBe(true);
+
+        telemetryBufferRef.current.palmState.is_grasped = false;
+        act(() => {
+          stepFrame();
+        });
+        expect(visualizer.isGearAttached()).toBe(false);
+      }
+
+      expect(visualizer.getTowerGearCount()).toBe(3);
+      const towerGears = visualizer.getTowerGears();
+      expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
+      expect(towerGears[1].position.z).toBeCloseTo(1 * 0.02, 3);
+      expect(towerGears[2].position.z).toBeCloseTo(2 * 0.02, 3);
+    });
+
+    it('activates visual FIFO bottom-drop shift when tower exceeds 10 gears', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Stack 10 gears
+      for (let k = 0; k < 10; k++) {
+        act(() => {
+          visualizer.simulateClick(0.50, 0.0);
+        });
+        const gear = visualizer.getGearMesh();
+        const gearWorldPos = new THREE.Vector3();
+        gear.getWorldPosition(gearWorldPos);
+        fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
+        fakeRobot.updateMatrixWorld(true);
+
+        telemetryBufferRef.current.palmState.is_grasped = true;
+        act(() => {
+          stepFrame();
+        });
+        telemetryBufferRef.current.palmState.is_grasped = false;
+        act(() => {
+          stepFrame();
+        });
+      }
+
+      expect(visualizer.getTowerGearCount()).toBe(10);
+      const initialBottomGear = visualizer.getTowerGears()[0];
+      const secondGear = visualizer.getTowerGears()[1];
+      expect(initialBottomGear.position.z).toBeCloseTo(0.0, 3);
+      expect(secondGear.position.z).toBeCloseTo(0.02, 3);
+
+      // Stack 11th gear -> FIFO bottom-drop shift
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+      const gear11 = visualizer.getGearMesh();
+      const gearWorldPos = new THREE.Vector3();
+      gear11.getWorldPosition(gearWorldPos);
+      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
+      fakeRobot.updateMatrixWorld(true);
+
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      act(() => {
+        stepFrame();
+      });
+
+      // Capacity capped at 10
+      expect(visualizer.getTowerGearCount()).toBe(10);
+      const updatedGears = visualizer.getTowerGears();
+
+      // Oldest bottom gear has despawned and removed from parent
+      expect(initialBottomGear.parent).toBeNull();
+      // Former second gear shifted down to bottom (z=0.0)
+      expect(updatedGears[0]).toBe(secondGear);
+      expect(updatedGears[0].position.z).toBeCloseTo(0.0, 3);
+      // 11th gear lands at top slot (z = 9 * 0.02 = 0.18m)
+      expect(updatedGears[9]).toBe(gear11);
+      expect(updatedGears[9].position.z).toBeCloseTo(0.18, 3);
+    });
+
+    it('clears active table gear and all stacked tower meshes on clearWorkspace', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Place 2 gears on tower
+      for (let k = 0; k < 2; k++) {
+        act(() => {
+          visualizer.simulateClick(0.50, 0.0);
+        });
+        const gear = visualizer.getGearMesh();
+        const gearWorldPos = new THREE.Vector3();
+        gear.getWorldPosition(gearWorldPos);
+        fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
+        fakeRobot.updateMatrixWorld(true);
+
+        telemetryBufferRef.current.palmState.is_grasped = true;
+        act(() => {
+          stepFrame();
+        });
+        telemetryBufferRef.current.palmState.is_grasped = false;
+        act(() => {
+          stepFrame();
+        });
+      }
+
+      // Spawn a 3rd gear on table
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(visualizer.getTowerGearCount()).toBe(2);
+
+      // Call clearWorkspace
+      act(() => {
+        visualizer.clearWorkspace();
+      });
+
+      expect(visualizer.hasActiveGear()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(0);
+      expect(visualizer.getTowerGears().length).toBe(0);
+      expect(visualizer.getGearMesh()).toBeNull();
+      expect(visualizer.isLockedOut()).toBe(false);
+    });
+
+    it('disposes SpindleTower geometries and materials on unmount', async () => {
+      let unmountFn: () => void;
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        const res = render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />
+        );
+        unmountFn = res.unmount;
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const baseFlange = visualizer.getSpindleBaseFlangeMesh();
+      const pin = visualizer.getSpindlePinMesh();
+
+      const flangeGeomSpy = vi.spyOn(baseFlange.geometry, 'dispose');
+      const flangeMatSpy = vi.spyOn(baseFlange.material as THREE.Material, 'dispose');
+      const pinGeomSpy = vi.spyOn(pin.geometry, 'dispose');
+      const pinMatSpy = vi.spyOn(pin.material as THREE.Material, 'dispose');
+
+      act(() => {
+        unmountFn();
+      });
+
+      expect(flangeGeomSpy).toHaveBeenCalled();
+      expect(flangeMatSpy).toHaveBeenCalled();
+      expect(pinGeomSpy).toHaveBeenCalled();
+      expect(pinMatSpy).toHaveBeenCalled();
+    });
+  });
 });
+
 
 
 

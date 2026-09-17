@@ -14,10 +14,10 @@ import {
   createPalmActuateCommand,
   createEmergencyStopCommand,
   createResetFaultCommand,
-  createSpawnObjectCommand,
+  createPickAndPlaceTargetCommand,
   createClearWorkspaceCommand,
   serializeCommand,
-  type SpawnObjectPayload,
+  type PickAndPlaceTargetPayload,
 } from '@domain/parsers';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { TelemetryMonitor } from '@components/TelemetryMonitor';
@@ -257,17 +257,16 @@ export function TeleopClient({
     wsRef.current.send(serializeCommand(cmd));
   }, []);
 
-  const handleSpawnObject = useCallback(
-    (payload: SpawnObjectPayload) => {
+  const handlePickAndPlaceTarget = useCallback(
+    (payload: PickAndPlaceTargetPayload) => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
       const currentRobotState = robotState ?? 'IDLE';
       if (currentRobotState !== 'IDLE') return;
-      if (hasActiveGear) return;
-      const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
+      const cmd = createPickAndPlaceTargetCommand(payload, { senderId: 'ui-client' });
       wsRef.current.send(serializeCommand(cmd));
       setHasActiveGear(true);
     },
-    [robotState, hasActiveGear]
+    [robotState]
   );
 
   const handleClearWorkspace = useCallback(() => {
@@ -418,7 +417,7 @@ export function TeleopClient({
             jointPositionsRef={jointPositionsRef}
             robotState={robotState || 'IDLE'}
             hasActiveGear={hasActiveGear}
-            onSpawnObject={handleSpawnObject}
+            onPickAndPlaceTarget={handlePickAndPlaceTarget}
             rendererFactory={rendererFactory}
             controlsFactory={controlsFactory}
             style={{ flex: 1, width: '100%', minHeight: '480px' }}
