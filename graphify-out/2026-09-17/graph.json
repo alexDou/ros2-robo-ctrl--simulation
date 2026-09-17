@@ -17,19 +17,6 @@
       "source_location": "L9"
     },
     {
-      "id": "web_domain_contracts_ur5ejoint",
-      "label": "UR5eJoint",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 102,
-      "community_name": "RobotVisualizer.tsx",
-      "file_type": "code",
-      "norm_label": "ur5ejoint",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L151"
-    },
-    {
       "id": "web_src_components_robotvisualizer_gearwheelproceduralassets",
       "label": "GearwheelProceduralAssets",
       "_callable": true,
@@ -119,19 +106,6 @@
       "norm_label": "armjointpositions",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L157"
-    },
-    {
-      "id": "web_domain_contracts_robotstate",
-      "label": "RobotState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
-      "file_type": "code",
-      "norm_label": "robotstate",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L116"
     },
     {
       "id": "web_src_components_telemetrymonitor_telemetrymonitorprops",
@@ -275,19 +249,6 @@
       "norm_label": "outofreacherror",
       "source_file": "src/edge_node/kinematics.py",
       "source_location": "L49"
-    },
-    {
-      "id": "src_edge_node_kinematics_waypointstep",
-      "label": "WaypointStep",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 144,
-      "community_name": "node.py",
-      "file_type": "code",
-      "norm_label": "waypointstep",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L352"
     },
     {
       "id": "src_edge_node_workcell_workcelloccupiederror",
@@ -446,17 +407,17 @@
       "source_location": "L63"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_palmaction",
-      "label": "PalmAction",
+      "id": "src_edge_node_workcell_workpiecespawnedevent",
+      "label": "WorkpieceSpawnedEvent",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
+      "community": 158,
+      "community_name": "WorkcellState",
       "file_type": "code",
-      "norm_label": "palmaction",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L9"
+      "norm_label": "workpiecespawnedevent",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L30"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_palmstate",
@@ -465,37 +426,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 168,
-      "community_name": "domain.py",
+      "community_name": ".__init__",
       "file_type": "code",
       "norm_label": "palmstate",
       "source_file": "src/domain/domain.py",
       "source_location": "L151"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_posename",
-      "label": "PoseName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "posename",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L16"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_spawnobjecttype",
-      "label": "SpawnObjectType",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "spawnobjecttype",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L24"
     },
     {
       "id": "src_edge_node_kinematics_ur5ekinematics",
@@ -521,7 +456,7 @@
       "file_type": "code",
       "norm_label": "testrobotnodesbringup",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L86"
+      "source_location": "L100"
     },
     {
       "id": "src_ros2_arm_controller_arm_controller_kinematics_actionphase",
@@ -654,19 +589,6 @@
       "source_location": "L141"
     },
     {
-      "id": "src_edge_node_workcell_workpiecespawnedevent",
-      "label": "WorkpieceSpawnedEvent",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
-      "file_type": "code",
-      "norm_label": "workpiecespawnedevent",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L30"
-    },
-    {
       "id": "src_edge_node_mock_publisher_mockjointstatepublisher",
       "label": "MockJointStatePublisher",
       "_callable": true,
@@ -691,6 +613,84 @@
       "norm_label": "pickandplacetrajectorygenerator",
       "source_file": "src/ros2/arm_controller/arm_controller/kinematics.py",
       "source_location": "L405"
+    },
+    {
+      "id": "web_domain_contracts_pickandplacetargetpayload",
+      "label": "PickAndPlaceTargetPayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "pickandplacetargetpayload",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L275"
+    },
+    {
+      "id": "web_domain_contracts_posename",
+      "label": "PoseName",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "posename",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L57"
+    },
+    {
+      "id": "web_domain_contracts_robotstate",
+      "label": "RobotState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "robotstate",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L116"
+    },
+    {
+      "id": "web_domain_contracts_spawnobjectpayload",
+      "label": "SpawnObjectPayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "spawnobjectpayload",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L245"
+    },
+    {
+      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
+      "label": "OperatorToolbarProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbarprops",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_src_components_robotvisualizer_robotvisualizerprops",
+      "label": "RobotVisualizerProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "robotvisualizerprops",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L15"
     },
     {
       "id": "scripts_generate_domain_constantdef",
@@ -784,56 +784,17 @@
       "source_location": "L47"
     },
     {
-      "id": "web_domain_contracts_commandtype",
-      "label": "CommandType",
+      "id": "src_edge_node_kinematics_waypointstep",
+      "label": "WaypointStep",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 213,
-      "community_name": "TeleopClient.test.tsx",
+      "community": 211,
+      "community_name": "WaypointStep",
       "file_type": "code",
-      "norm_label": "commandtype",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L87"
-    },
-    {
-      "id": "web_domain_contracts_errorframe",
-      "label": "ErrorFrame",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 213,
-      "community_name": "TeleopClient.test.tsx",
-      "file_type": "code",
-      "norm_label": "errorframe",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L319"
-    },
-    {
-      "id": "web_domain_contracts_robottelemetryevent",
-      "label": "RobotTelemetryEvent",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 213,
-      "community_name": "TeleopClient.test.tsx",
-      "file_type": "code",
-      "norm_label": "robottelemetryevent",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L354"
-    },
-    {
-      "id": "web_src_components_teleopclient_logentry",
-      "label": "LogEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 213,
-      "community_name": "TeleopClient.test.tsx",
-      "file_type": "code",
-      "norm_label": "logentry",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L29"
+      "norm_label": "waypointstep",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L352"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_jointsinusoidconfig",
@@ -979,6 +940,45 @@
       "source_location": "L204"
     },
     {
+      "id": "web_domain_contracts_ur5ejoint",
+      "label": "UR5eJoint",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "ur5ejoint",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L151"
+    },
+    {
+      "id": "web_domain_contracts_commandtype",
+      "label": "CommandType",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "commandtype",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L87"
+    },
+    {
+      "id": "web_domain_contracts_errorframe",
+      "label": "ErrorFrame",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "errorframe",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L319"
+    },
+    {
       "id": "web_domain_contracts_palmaction",
       "label": "PalmAction",
       "_callable": true,
@@ -990,32 +990,6 @@
       "norm_label": "palmaction",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L42"
-    },
-    {
-      "id": "web_domain_contracts_pickandplacetargetpayload",
-      "label": "PickAndPlaceTargetPayload",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "pickandplacetargetpayload",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L275"
-    },
-    {
-      "id": "web_domain_contracts_posename",
-      "label": "PoseName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "posename",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L57"
     },
     {
       "id": "web_domain_contracts_robotcommand",
@@ -1031,43 +1005,17 @@
       "source_location": "L336"
     },
     {
-      "id": "web_domain_contracts_spawnobjectpayload",
-      "label": "SpawnObjectPayload",
+      "id": "web_domain_contracts_robottelemetryevent",
+      "label": "RobotTelemetryEvent",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 89,
       "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "spawnobjectpayload",
+      "norm_label": "robottelemetryevent",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L245"
-    },
-    {
-      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
-      "label": "OperatorToolbarProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbarprops",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L3"
-    },
-    {
-      "id": "web_src_components_robotvisualizer_robotvisualizerprops",
-      "label": "RobotVisualizerProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "robotvisualizerprops",
-      "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L15"
+      "source_location": "L354"
     },
     {
       "id": "web_src_components_teleopclient_connectionstate",
@@ -1081,6 +1029,19 @@
       "norm_label": "connectionstate",
       "source_file": "web/src/components/TeleopClient.tsx",
       "source_location": "L27"
+    },
+    {
+      "id": "web_src_components_teleopclient_logentry",
+      "label": "LogEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "logentry",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L29"
     },
     {
       "id": "web_src_components_teleopclient_teleopclientprops",
@@ -1102,7 +1063,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "clearworkspacepayload",
       "source_file": "src/domain/domain.py",
@@ -1115,7 +1076,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "emergencystoppayload",
       "source_file": "src/domain/domain.py",
@@ -1128,11 +1089,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "inferencemetrics",
       "source_file": "src/domain/domain.py",
       "source_location": "L159"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_palmaction",
+      "label": "PalmAction",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "palmaction",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L9"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_palmactuatepayload",
@@ -1141,7 +1115,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "palmactuatepayload",
       "source_file": "src/domain/domain.py",
@@ -1154,11 +1128,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "pickandplacetargetpayload",
       "source_file": "src/domain/domain.py",
       "source_location": "L138"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_posename",
+      "label": "PoseName",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "posename",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L16"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_resetfaultpayload",
@@ -1167,11 +1154,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "resetfaultpayload",
       "source_file": "src/domain/domain.py",
       "source_location": "L113"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_spawnobjecttype",
+      "label": "SpawnObjectType",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "spawnobjecttype",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L24"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_trajectoryexecutepayload",
@@ -1180,7 +1180,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "trajectoryexecutepayload",
       "source_file": "src/domain/domain.py",
@@ -1533,6 +1533,54 @@
       "norm_label": "seconds_to_duration()",
       "source_file": "src/ros2/arm_controller/arm_controller/arm_controller_node.py",
       "source_location": "L46"
+    },
+    {
+      "id": "tests_test_domain_test_robot_command_ping_serialization_round_trip",
+      "label": "test_robot_command_ping_serialization_round_trip()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "test_robot_command_ping_serialization_round_trip()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L31"
+    },
+    {
+      "id": "tests_test_domain_test_robot_telemetry_event_malformed_fails",
+      "label": "test_robot_telemetry_event_malformed_fails()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "test_robot_telemetry_event_malformed_fails()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L90"
+    },
+    {
+      "id": "tests_test_domain_test_robot_telemetry_event_palm_state",
+      "label": "test_robot_telemetry_event_palm_state()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "test_robot_telemetry_event_palm_state()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L293"
+    },
+    {
+      "id": "tests_test_domain_test_robot_telemetry_event_serialization_round_trip",
+      "label": "test_robot_telemetry_event_serialization_round_trip()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "EdgeNode",
+      "file_type": "code",
+      "norm_label": "test_robot_telemetry_event_serialization_round_trip()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L58"
     },
     {
       "id": "tests_test_edge_node_test_edge_node_canned_trajectory_execution",
@@ -2025,18 +2073,6 @@
       "norm_label": "normalize_angle()",
       "source_file": "src/edge_node/kinematics.py",
       "source_location": "L60"
-    },
-    {
-      "id": "src_edge_node_kinematics_waypointstep_suction_on",
-      "label": ".suction_on()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 144,
-      "community_name": "node.py",
-      "file_type": "code",
-      "norm_label": ".suction_on()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L369"
     },
     {
       "id": "src_edge_node_main_main",
@@ -2795,6 +2831,18 @@
       "source_location": "L85"
     },
     {
+      "id": "src_edge_node_workcell_workcellstate_emit",
+      "label": ".emit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".emit()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L166"
+    },
+    {
       "id": "src_edge_node_workcell_workcellstate_has_active_gear",
       "label": ".has_active_gear()",
       "_callable": true,
@@ -2855,6 +2903,18 @@
       "source_location": "L93"
     },
     {
+      "id": "src_edge_node_workcell_workcellstate_publish_workpiece_spawned",
+      "label": ".publish_workpiece_spawned()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".publish_workpiece_spawned()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L173"
+    },
+    {
       "id": "src_edge_node_workcell_workcellstate_record_placed_gear",
       "label": ".record_placed_gear()",
       "_callable": true,
@@ -2865,6 +2925,78 @@
       "norm_label": ".record_placed_gear()",
       "source_file": "src/edge_node/workcell.py",
       "source_location": "L136"
+    },
+    {
+      "id": "src_edge_node_workcell_workcellstate_spawn_pick_and_place",
+      "label": ".spawn_pick_and_place()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".spawn_pick_and_place()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L177"
+    },
+    {
+      "id": "src_edge_node_workcell_workcellstate_subscribe",
+      "label": ".subscribe()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".subscribe()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L148"
+    },
+    {
+      "id": "src_edge_node_workcell_workcellstate_unsubscribe",
+      "label": ".unsubscribe()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".unsubscribe()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L160"
+    },
+    {
+      "id": "src_edge_node_workcell_workpiecespawnedevent_drop",
+      "label": ".drop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".drop()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L58"
+    },
+    {
+      "id": "src_edge_node_workcell_workpiecespawnedevent_pick",
+      "label": ".pick()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".pick()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L53"
+    },
+    {
+      "id": "src_edge_node_workcell_workpiecespawnedevent_post_init",
+      "label": ".__post_init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": ".__post_init__()",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L38"
     },
     {
       "id": "tests_test_edge_node_test_workcell_state_domain_unit",
@@ -2879,60 +3011,12 @@
       "source_location": "L359"
     },
     {
-      "id": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
-      "label": "parse_robot_topic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "parse_robot_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L222"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robot_command_topic",
-      "label": "robot_command_topic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "robot_command_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L210"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
-      "label": "robot_telemetry_topic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "robot_telemetry_topic()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L216"
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain_validate_robot_id",
-      "label": "_validate_robot_id()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "_validate_robot_id()",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L205"
-    },
-    {
       "id": "src_edge_node_node_edgenode_init",
       "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
       "community": 168,
-      "community_name": "domain.py",
+      "community_name": ".__init__",
       "file_type": "code",
       "norm_label": ".__init__()",
       "source_file": "src/edge_node/node.py",
@@ -2944,59 +3028,35 @@
       "_callable": true,
       "_origin": "ast",
       "community": 168,
-      "community_name": "domain.py",
+      "community_name": ".__init__",
       "file_type": "code",
       "norm_label": "._init_zenoh()",
       "source_file": "src/edge_node/node.py",
       "source_location": "L143"
     },
     {
-      "id": "tests_test_domain_test_datafabric_key_expressions",
-      "label": "test_datafabric_key_expressions()",
+      "id": "src_edge_node_node_edgenode_on_joint_state",
+      "label": ".on_joint_state()",
       "_callable": true,
       "_origin": "ast",
       "community": 168,
-      "community_name": "domain.py",
+      "community_name": ".__init__",
       "file_type": "code",
-      "norm_label": "test_datafabric_key_expressions()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L158"
+      "norm_label": ".on_joint_state()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L169"
     },
     {
-      "id": "src_edge_node_kinematics_dh_matrix",
-      "label": "_dh_matrix()",
+      "id": "src_edge_node_node_edgenode_on_zenoh_sample",
+      "label": "._on_zenoh_sample()",
       "_callable": true,
       "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
+      "community": 168,
+      "community_name": ".__init__",
       "file_type": "code",
-      "norm_label": "_dh_matrix()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L65"
-    },
-    {
-      "id": "src_edge_node_kinematics_invert_rigid_transform",
-      "label": "_invert_rigid_transform()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "code",
-      "norm_label": "_invert_rigid_transform()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L79"
-    },
-    {
-      "id": "src_edge_node_kinematics_matmul_4x4",
-      "label": "_matmul_4x4()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "code",
-      "norm_label": "_matmul_4x4()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L95"
+      "norm_label": "._on_zenoh_sample()",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L159"
     },
     {
       "id": "src_edge_node_kinematics_pickandplacetrajectorygenerator_init",
@@ -3033,30 +3093,6 @@
       "norm_label": ".check_reachability()",
       "source_file": "src/edge_node/kinematics.py",
       "source_location": "L156"
-    },
-    {
-      "id": "src_edge_node_kinematics_ur5ekinematics_forward_kinematics",
-      "label": ".forward_kinematics()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "code",
-      "norm_label": ".forward_kinematics()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L118"
-    },
-    {
-      "id": "src_edge_node_kinematics_ur5ekinematics_forward_kinematics_position",
-      "label": ".forward_kinematics_position()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "code",
-      "norm_label": ".forward_kinematics_position()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L149"
     },
     {
       "id": "src_edge_node_kinematics_ur5ekinematics_init",
@@ -3107,18 +3143,6 @@
       "source_location": "L292"
     },
     {
-      "id": "src_edge_node_kinematics_ur5ekinematics_solve_ik_matrix",
-      "label": ".solve_ik_matrix()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "code",
-      "norm_label": ".solve_ik_matrix()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L181"
-    },
-    {
       "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_generate_launch_description",
       "label": "generate_launch_description()",
       "_callable": true,
@@ -3128,19 +3152,7 @@
       "file_type": "code",
       "norm_label": "generate_launch_description()",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L200"
-    },
-    {
-      "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_get_default_controllers_file",
-      "label": "get_default_controllers_file()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "code",
-      "norm_label": "get_default_controllers_file()",
-      "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L56"
+      "source_location": "L185"
     },
     {
       "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_launch_setup",
@@ -3152,7 +3164,7 @@
       "file_type": "code",
       "norm_label": "launch_setup()",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L72"
+      "source_location": "L57"
     },
     {
       "id": "tests_test_robot_nodes_launch_generate_test_description",
@@ -3164,7 +3176,7 @@
       "file_type": "code",
       "norm_label": "generate_test_description()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L55"
+      "source_location": "L56"
     },
     {
       "id": "tests_test_robot_nodes_launch_testrobotnodesbringup_setup",
@@ -3176,7 +3188,7 @@
       "file_type": "code",
       "norm_label": ".setup()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L101"
+      "source_location": "L115"
     },
     {
       "id": "tests_test_robot_nodes_launch_testrobotnodesbringup_setupclass",
@@ -3188,7 +3200,7 @@
       "file_type": "code",
       "norm_label": ".setupclass()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L90"
+      "source_location": "L104"
     },
     {
       "id": "tests_test_robot_nodes_launch_testrobotnodesbringup_teardown",
@@ -3200,7 +3212,7 @@
       "file_type": "code",
       "norm_label": ".teardown()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L105"
+      "source_location": "L119"
     },
     {
       "id": "tests_test_robot_nodes_launch_testrobotnodesbringup_teardownclass",
@@ -3212,7 +3224,7 @@
       "file_type": "code",
       "norm_label": ".teardownclass()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L96"
+      "source_location": "L110"
     },
     {
       "id": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_controllers_and_action_servers_ready",
@@ -3224,7 +3236,7 @@
       "file_type": "code",
       "norm_label": ".test_controllers_and_action_servers_ready()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L140"
+      "source_location": "L154"
     },
     {
       "id": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_joint_states_500hz_frequency",
@@ -3236,7 +3248,7 @@
       "file_type": "code",
       "norm_label": ".test_joint_states_500hz_frequency()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L168"
+      "source_location": "L182"
     },
     {
       "id": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_nodes_and_services_active",
@@ -3248,7 +3260,7 @@
       "file_type": "code",
       "norm_label": ".test_nodes_and_services_active()",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L109"
+      "source_location": "L123"
     },
     {
       "id": "src_ros2_arm_controller_arm_controller_kinematics_normalize_angle",
@@ -3321,18 +3333,6 @@
       "norm_label": ".spawn_gear()",
       "source_file": "src/edge_node/workcell.py",
       "source_location": "L235"
-    },
-    {
-      "id": "src_edge_node_kinematics_pickandplacetrajectorygenerator_generate_trajectory",
-      "label": ".generate_trajectory()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 186,
-      "community_name": "PickAndPlaceTrajectoryGenerator",
-      "file_type": "code",
-      "norm_label": ".generate_trajectory()",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L380"
     },
     {
       "id": "tests_test_kinematics_testpickandplacetrajectorygenerator_test_10_step_sequence_generation",
@@ -3719,124 +3719,76 @@
       "source_location": "L122"
     },
     {
-      "id": "src_edge_node_workcell_workcellstate_emit",
-      "label": ".emit()",
+      "id": "src_edge_node_kinematics_dh_matrix",
+      "label": "_dh_matrix()",
       "_callable": true,
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "code",
-      "norm_label": ".emit()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L166"
+      "norm_label": "_dh_matrix()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L65"
     },
     {
-      "id": "src_edge_node_workcell_workcellstate_publish_workpiece_spawned",
-      "label": ".publish_workpiece_spawned()",
+      "id": "src_edge_node_kinematics_invert_rigid_transform",
+      "label": "_invert_rigid_transform()",
       "_callable": true,
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "code",
-      "norm_label": ".publish_workpiece_spawned()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L173"
+      "norm_label": "_invert_rigid_transform()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L79"
     },
     {
-      "id": "src_edge_node_workcell_workcellstate_spawn_pick_and_place",
-      "label": ".spawn_pick_and_place()",
+      "id": "src_edge_node_kinematics_matmul_4x4",
+      "label": "_matmul_4x4()",
       "_callable": true,
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "code",
-      "norm_label": ".spawn_pick_and_place()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L177"
+      "norm_label": "_matmul_4x4()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L95"
     },
     {
-      "id": "src_edge_node_workcell_workcellstate_subscribe",
-      "label": ".subscribe()",
+      "id": "src_edge_node_kinematics_ur5ekinematics_forward_kinematics",
+      "label": ".forward_kinematics()",
       "_callable": true,
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "code",
-      "norm_label": ".subscribe()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L148"
+      "norm_label": ".forward_kinematics()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L118"
     },
     {
-      "id": "src_edge_node_workcell_workcellstate_unsubscribe",
-      "label": ".unsubscribe()",
+      "id": "src_edge_node_kinematics_ur5ekinematics_forward_kinematics_position",
+      "label": ".forward_kinematics_position()",
       "_callable": true,
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "code",
-      "norm_label": ".unsubscribe()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L160"
+      "norm_label": ".forward_kinematics_position()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L149"
     },
     {
-      "id": "src_edge_node_workcell_workpiecespawnedevent_drop",
-      "label": ".drop()",
+      "id": "src_edge_node_kinematics_ur5ekinematics_solve_ik_matrix",
+      "label": ".solve_ik_matrix()",
       "_callable": true,
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "code",
-      "norm_label": ".drop()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L58"
-    },
-    {
-      "id": "src_edge_node_workcell_workpiecespawnedevent_pick",
-      "label": ".pick()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
-      "file_type": "code",
-      "norm_label": ".pick()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L53"
-    },
-    {
-      "id": "src_edge_node_workcell_workpiecespawnedevent_post_init",
-      "label": ".__post_init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
-      "file_type": "code",
-      "norm_label": ".__post_init__()",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L38"
-    },
-    {
-      "id": "src_edge_node_node_edgenode_on_joint_state",
-      "label": ".on_joint_state()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 201,
-      "community_name": ".on_joint_state",
-      "file_type": "code",
-      "norm_label": ".on_joint_state()",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L169"
-    },
-    {
-      "id": "src_edge_node_node_edgenode_on_zenoh_sample",
-      "label": "._on_zenoh_sample()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 201,
-      "community_name": ".on_joint_state",
-      "file_type": "code",
-      "norm_label": "._on_zenoh_sample()",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L159"
+      "norm_label": ".solve_ik_matrix()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L181"
     },
     {
       "id": "src_edge_node_node_edgenode_close",
@@ -4031,6 +3983,18 @@
       "source_location": "L526"
     },
     {
+      "id": "web_src_components_operatortoolbar_operatortoolbar",
+      "label": "OperatorToolbar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbar()",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L16"
+    },
+    {
       "id": "scripts_generate_domain_emit_python",
       "label": "emit_python()",
       "_callable": true,
@@ -4137,6 +4101,30 @@
       "norm_label": "_ts_field_to_zod()",
       "source_file": "scripts/generate_domain.py",
       "source_location": "L757"
+    },
+    {
+      "id": "src_edge_node_kinematics_pickandplacetrajectorygenerator_generate_trajectory",
+      "label": ".generate_trajectory()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 211,
+      "community_name": "WaypointStep",
+      "file_type": "code",
+      "norm_label": ".generate_trajectory()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L380"
+    },
+    {
+      "id": "src_edge_node_kinematics_waypointstep_suction_on",
+      "label": ".suction_on()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 211,
+      "community_name": "WaypointStep",
+      "file_type": "code",
+      "norm_label": ".suction_on()",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L369"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_build_arg_parser",
@@ -5399,18 +5387,6 @@
       "source_location": "L19"
     },
     {
-      "id": "web_src_components_operatortoolbar_operatortoolbar",
-      "label": "OperatorToolbar()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbar()",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L16"
-    },
-    {
       "id": "web_src_components_teleopclient_teleopclient",
       "label": "TeleopClient()",
       "_callable": true,
@@ -5531,12 +5507,60 @@
       "source_location": "L194"
     },
     {
+      "id": "src_domain_domain_py_src_domain_domain_parse_robot_topic",
+      "label": "parse_robot_topic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "parse_robot_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L222"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robot_command_topic",
+      "label": "robot_command_topic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "robot_command_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L210"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_robot_telemetry_topic",
+      "label": "robot_telemetry_topic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "robot_telemetry_topic()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L216"
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain_validate_robot_id",
+      "label": "_validate_robot_id()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "_validate_robot_id()",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L205"
+    },
+    {
       "id": "tests_test_domain_test_canonical_joint_constants",
       "label": "test_canonical_joint_constants()",
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_canonical_joint_constants()",
       "source_file": "tests/test_domain.py",
@@ -5548,7 +5572,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_canonical_json_schemas()",
       "source_file": "tests/test_domain.py",
@@ -5560,11 +5584,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_clear_workspace_payload_serialization()",
       "source_file": "tests/test_domain.py",
       "source_location": "L364"
+    },
+    {
+      "id": "tests_test_domain_test_datafabric_key_expressions",
+      "label": "test_datafabric_key_expressions()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "test_datafabric_key_expressions()",
+      "source_file": "tests/test_domain.py",
+      "source_location": "L158"
     },
     {
       "id": "tests_test_domain_test_emergency_stop_and_reset_fault_payload_serialization",
@@ -5572,7 +5608,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_emergency_stop_and_reset_fault_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -5584,7 +5620,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_error_frame_serialization_round_trip()",
       "source_file": "tests/test_domain.py",
@@ -5596,7 +5632,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_palm_actuate_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -5608,7 +5644,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_pick_and_place_target_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -5620,59 +5656,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_robot_command_malformed_fails_validation()",
       "source_file": "tests/test_domain.py",
       "source_location": "L46"
-    },
-    {
-      "id": "tests_test_domain_test_robot_command_ping_serialization_round_trip",
-      "label": "test_robot_command_ping_serialization_round_trip()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_command_ping_serialization_round_trip()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L31"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_malformed_fails",
-      "label": "test_robot_telemetry_event_malformed_fails()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_malformed_fails()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L90"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_palm_state",
-      "label": "test_robot_telemetry_event_palm_state()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_palm_state()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L293"
-    },
-    {
-      "id": "tests_test_domain_test_robot_telemetry_event_serialization_round_trip",
-      "label": "test_robot_telemetry_event_serialization_round_trip()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 97,
-      "community_name": "test_domain.py",
-      "file_type": "code",
-      "norm_label": "test_robot_telemetry_event_serialization_round_trip()",
-      "source_file": "tests/test_domain.py",
-      "source_location": "L58"
     },
     {
       "id": "tests_test_domain_test_spawn_object_payload_serialization",
@@ -5680,7 +5668,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_spawn_object_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -5692,7 +5680,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_trajectory_execute_payload_serialization()",
       "source_file": "tests/test_domain.py",
@@ -6878,17 +6866,6 @@
       "norm_label": "zod",
       "source_file": "web/package.json",
       "source_location": "L19"
-    },
-    {
-      "id": "web_domain_contracts_ur5e_joints",
-      "label": "UR5E_JOINTS",
-      "_origin": "ast",
-      "community": 102,
-      "community_name": "RobotVisualizer.tsx",
-      "file_type": "code",
-      "norm_label": "ur5e_joints",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L137"
     },
     {
       "id": "web_src_components_robotvisualizer",
@@ -10602,6 +10579,17 @@
       "source_location": "L1"
     },
     {
+      "id": "schemas_robot_command_schema_defs_trajectory_execute_payload",
+      "label": "trajectory_execute_payload",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "trajectory_execute_payload",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L36"
+    },
+    {
       "id": "schemas_robot_command_schema_items_description",
       "label": "description",
       "_origin": "ast",
@@ -10668,6 +10656,61 @@
       "source_location": "L56"
     },
     {
+      "id": "schemas_robot_command_schema_pose_name_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L49"
+    },
+    {
+      "id": "schemas_robot_command_schema_pose_name_enum",
+      "label": "enum",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L44"
+    },
+    {
+      "id": "schemas_robot_command_schema_pose_name_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L43"
+    },
+    {
+      "id": "schemas_robot_command_schema_pose_name_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L42"
+    },
+    {
+      "id": "schemas_robot_command_schema_properties_pose_name",
+      "label": "pose_name",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "pose_name",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L41"
+    },
+    {
       "id": "schemas_robot_command_schema_properties_waypoints",
       "label": "waypoints",
       "_origin": "ast",
@@ -10677,6 +10720,61 @@
       "norm_label": "waypoints",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L51"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_additionalproperties",
+      "label": "additionalProperties",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "additionalproperties",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L67"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L39"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_properties",
+      "label": "properties",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "properties",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L37"
     },
     {
       "id": "schemas_robot_command_schema_waypoints_description",
@@ -10723,6 +10821,39 @@
       "source_location": "L52"
     },
     {
+      "id": "ref_home",
+      "label": "HOME",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "concept",
+      "norm_label": "home",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L44"
+    },
+    {
+      "id": "ref_inspect_pose",
+      "label": "INSPECT_POSE",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "concept",
+      "norm_label": "inspect_pose",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L44"
+    },
+    {
+      "id": "ref_ready",
+      "label": "READY",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "concept",
+      "norm_label": "ready",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L44"
+    },
+    {
       "id": "schemas_robot_command_schema_defs_spawn_object_payload",
       "label": "spawn_object_payload",
       "_origin": "ast",
@@ -10732,94 +10863,6 @@
       "norm_label": "spawn_object_payload",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L88"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L117"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_enum",
-      "label": "enum",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L114"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L113"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L112"
-    },
-    {
-      "id": "schemas_robot_command_schema_properties_object_type",
-      "label": "object_type",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "object_type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L111"
-    },
-    {
-      "id": "schemas_robot_command_schema_properties_x",
-      "label": "x",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "x",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L99"
-    },
-    {
-      "id": "schemas_robot_command_schema_properties_y",
-      "label": "y",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "y",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L103"
-    },
-    {
-      "id": "schemas_robot_command_schema_properties_z",
-      "label": "z",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "z",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L107"
     },
     {
       "id": "schemas_robot_command_schema_spawn_object_payload_additionalproperties",
@@ -10842,17 +10885,6 @@
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L91"
-    },
-    {
-      "id": "schemas_robot_command_schema_spawn_object_payload_properties",
-      "label": "properties",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "properties",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L98"
     },
     {
       "id": "schemas_robot_command_schema_spawn_object_payload_required",
@@ -10886,83 +10918,6 @@
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L89"
-    },
-    {
-      "id": "schemas_robot_command_schema_x_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L101"
-    },
-    {
-      "id": "schemas_robot_command_schema_x_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L100"
-    },
-    {
-      "id": "schemas_robot_command_schema_y_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L105"
-    },
-    {
-      "id": "schemas_robot_command_schema_y_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L104"
-    },
-    {
-      "id": "schemas_robot_command_schema_z_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L109"
-    },
-    {
-      "id": "schemas_robot_command_schema_z_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L108"
-    },
-    {
-      "id": "ref_gear",
-      "label": "GEAR",
-      "_origin": "ast",
-      "community": 142,
-      "community_name": "spawn_object_payload",
-      "file_type": "concept",
-      "norm_label": "gear",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L114"
     },
     {
       "id": "ref_object_type",
@@ -11268,28 +11223,6 @@
       "norm_label": "analytical ur5e inverse kinematics solver and waypoint planner. implements...",
       "source_file": "src/edge_node/kinematics.py",
       "source_location": "L1"
-    },
-    {
-      "id": "src_edge_node_kinematics_rationale_353",
-      "label": "Single discrete step in the pick-and-place waypoint sequence. Note for\u2026",
-      "_origin": "ast",
-      "community": 144,
-      "community_name": "node.py",
-      "file_type": "rationale",
-      "norm_label": "single discrete step in the pick-and-place waypoint sequence. note for...",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L353"
-    },
-    {
-      "id": "src_edge_node_kinematics_rationale_370",
-      "label": "Alias indicating whether end-effector suction is active.",
-      "_origin": "ast",
-      "community": 144,
-      "community_name": "node.py",
-      "file_type": "rationale",
-      "norm_label": "alias indicating whether end-effector suction is active.",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L370"
     },
     {
       "id": "src_edge_node_kinematics_rationale_46",
@@ -12683,6 +12616,17 @@
       "source_location": "L10"
     },
     {
+      "id": "pickandplacetargetpayload",
+      "label": "PickAndPlaceTargetPayload",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "code",
+      "norm_label": "pickandplacetargetpayload",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "src_domain_domain_rationale_121",
       "label": "Typed payload for SPAWN_OBJECT command",
       "_origin": "ast",
@@ -12749,6 +12693,50 @@
       "source_location": "L144"
     },
     {
+      "id": "src_edge_node_workcell_rationale_151",
+      "label": "Subscribes an event listener to WorkpieceSpawnedEvents. Returns an unsubscribe\u2026",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "rationale",
+      "norm_label": "subscribes an event listener to workpiecespawnedevents. returns an unsubscribe...",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L151"
+    },
+    {
+      "id": "src_edge_node_workcell_rationale_161",
+      "label": "Unsubscribes an event listener.",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "rationale",
+      "norm_label": "unsubscribes an event listener.",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L161"
+    },
+    {
+      "id": "src_edge_node_workcell_rationale_167",
+      "label": "Emits a WorkpieceSpawnedEvent to all subscribed listeners.",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "rationale",
+      "norm_label": "emits a workpiecespawnedevent to all subscribed listeners.",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L167"
+    },
+    {
+      "id": "src_edge_node_workcell_rationale_183",
+      "label": "Registers active workpiece and emits WorkpieceSpawnedEvent.",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "rationale",
+      "norm_label": "registers active workpiece and emits workpiecespawnedevent.",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L183"
+    },
+    {
       "id": "src_edge_node_workcell_rationale_280",
       "label": "Resets active gear presence, coordinates, and SpindleTower inventory.",
       "_origin": "ast",
@@ -12758,6 +12746,39 @@
       "norm_label": "resets active gear presence, coordinates, and spindletower inventory.",
       "source_file": "src/edge_node/workcell.py",
       "source_location": "L280"
+    },
+    {
+      "id": "src_edge_node_workcell_rationale_31",
+      "label": "Domain event emitted when a workpiece pick-and-place target is registered.",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "rationale",
+      "norm_label": "domain event emitted when a workpiece pick-and-place target is registered.",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L31"
+    },
+    {
+      "id": "src_edge_node_workcell_rationale_54",
+      "label": "Alias returning (x, y, z) pick coordinates.",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "rationale",
+      "norm_label": "alias returning (x, y, z) pick coordinates.",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L54"
+    },
+    {
+      "id": "src_edge_node_workcell_rationale_59",
+      "label": "Alias returning (x, y, z) drop coordinates.",
+      "_origin": "ast",
+      "community": 158,
+      "community_name": "WorkcellState",
+      "file_type": "rationale",
+      "norm_label": "alias returning (x, y, z) drop coordinates.",
+      "source_file": "src/edge_node/workcell.py",
+      "source_location": "L59"
     },
     {
       "id": "src_edge_node_workcell_rationale_64",
@@ -13681,114 +13702,37 @@
       "source_location": "L19"
     },
     {
-      "id": "src_domain_domain_py_enum",
-      "label": "Enum",
+      "id": "src_edge_node_node_py_any",
+      "label": "Any",
       "_origin": "ast",
       "community": 168,
-      "community_name": "domain.py",
+      "community_name": ".__init__",
       "file_type": "code",
-      "norm_label": "enum",
+      "norm_label": "any",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "src_domain_domain_py_src_domain_domain",
-      "label": "domain.py",
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "domain.py",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "src_domain_domain_py_str",
-      "label": "str",
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "str",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_domain_domain_rationale_10",
-      "label": "Actuation action to execute on dexterous palm",
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "actuation action to execute on dexterous palm",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L10"
     },
     {
       "id": "src_domain_domain_rationale_152",
       "label": "End-effector dexterous palm pneumatic actuation and grasp status",
       "_origin": "ast",
       "community": 168,
-      "community_name": "domain.py",
+      "community_name": ".__init__",
       "file_type": "rationale",
       "norm_label": "end-effector dexterous palm pneumatic actuation and grasp status",
       "source_file": "src/domain/domain.py",
       "source_location": "L152"
     },
     {
-      "id": "src_domain_domain_rationale_17",
-      "label": "Pre-defined canonical UR5e posture",
+      "id": "src_edge_node_node_rationale_170",
+      "label": "Ingests a JointState ROS2 message and updates canonical joint positions. Args:\u2026",
       "_origin": "ast",
       "community": 168,
-      "community_name": "domain.py",
+      "community_name": ".__init__",
       "file_type": "rationale",
-      "norm_label": "pre-defined canonical ur5e posture",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L17"
-    },
-    {
-      "id": "src_domain_domain_rationale_211",
-      "label": "Returns the locked DataFabric command key expression for a robot.",
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "returns the locked datafabric command key expression for a robot.",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L211"
-    },
-    {
-      "id": "src_domain_domain_rationale_217",
-      "label": "Returns the locked DataFabric telemetry key expression for a robot.",
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "returns the locked datafabric telemetry key expression for a robot.",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L217"
-    },
-    {
-      "id": "src_domain_domain_rationale_223",
-      "label": "Parses a DataFabric key expression into (robot_id, channel) or returns None if\u2026",
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "parses a datafabric key expression into (robot_id, channel) or returns none if...",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L223"
-    },
-    {
-      "id": "src_domain_domain_rationale_25",
-      "label": "Type of object to spawn",
-      "_origin": "ast",
-      "community": 168,
-      "community_name": "domain.py",
-      "file_type": "rationale",
-      "norm_label": "type of object to spawn",
-      "source_file": "src/domain/domain.py",
-      "source_location": "L25"
+      "norm_label": "ingests a jointstate ros2 message and updates canonical joint positions. args:...",
+      "source_file": "src/edge_node/node.py",
+      "source_location": "L170"
     },
     {
       "id": "beans_hand_sim_4igp_unit_61_analytical_ur5e_inverse_kinematics_solver",
@@ -14481,28 +14425,6 @@
       "source_location": "L104"
     },
     {
-      "id": "src_edge_node_kinematics_rationale_121",
-      "label": "Computes 4x4 homogeneous transformation matrix from robot base to tool0 or TCP.",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "rationale",
-      "norm_label": "computes 4x4 homogeneous transformation matrix from robot base to tool0 or tcp.",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L121"
-    },
-    {
-      "id": "src_edge_node_kinematics_rationale_152",
-      "label": "Returns Cartesian coordinates (x, y, z) of the tool center point or flange.",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "rationale",
-      "norm_label": "returns cartesian coordinates (x, y, z) of the tool center point or flange.",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L152"
-    },
-    {
       "id": "src_edge_node_kinematics_rationale_157",
       "label": "Validates that Cartesian coordinates fall within the robot's physical reach.",
       "_origin": "ast",
@@ -14512,17 +14434,6 @@
       "norm_label": "validates that cartesian coordinates fall within the robot's physical reach.",
       "source_file": "src/edge_node/kinematics.py",
       "source_location": "L157"
-    },
-    {
-      "id": "src_edge_node_kinematics_rationale_182",
-      "label": "Closed-form analytical solution of UR5e 8 kinematic branches for a target tool0\u2026",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "rationale",
-      "norm_label": "closed-form analytical solution of ur5e 8 kinematic branches for a target tool0...",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L182"
     },
     {
       "id": "src_edge_node_kinematics_rationale_262",
@@ -14567,39 +14478,6 @@
       "norm_label": "solves ik for cartesian target and selects branch with minimal angular...",
       "source_file": "src/edge_node/kinematics.py",
       "source_location": "L330"
-    },
-    {
-      "id": "src_edge_node_kinematics_rationale_66",
-      "label": "Computes standard Denavit-Hartenberg 4x4 homogeneous transformation matrix.",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "rationale",
-      "norm_label": "computes standard denavit-hartenberg 4x4 homogeneous transformation matrix.",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L66"
-    },
-    {
-      "id": "src_edge_node_kinematics_rationale_80",
-      "label": "Inverts an orthonormal 4x4 rigid transformation matrix: [R, p]^-1 = [R^T, -R^T\u2026",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "rationale",
-      "norm_label": "inverts an orthonormal 4x4 rigid transformation matrix: [r, p]^-1 = [r^t, -r^t...",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L80"
-    },
-    {
-      "id": "src_edge_node_kinematics_rationale_96",
-      "label": "Multiplies two 4x4 matrices in pure Python.",
-      "_origin": "ast",
-      "community": 177,
-      "community_name": "UR5eKinematics",
-      "file_type": "rationale",
-      "norm_label": "multiplies two 4x4 matrices in pure python.",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L96"
     },
     {
       "id": "launch_test",
@@ -14668,7 +14546,7 @@
       "source_location": "L1"
     },
     {
-      "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_201",
+      "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_186",
       "label": "Generate launch description with arguments and opaque launcher.",
       "_origin": "ast",
       "community": 178,
@@ -14676,21 +14554,10 @@
       "file_type": "rationale",
       "norm_label": "generate launch description with arguments and opaque launcher.",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L201"
+      "source_location": "L186"
     },
     {
-      "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_57",
-      "label": "Return path to ur_controllers.yaml in share or local workspace.",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "rationale",
-      "norm_label": "return path to ur_controllers.yaml in share or local workspace.",
-      "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L57"
-    },
-    {
-      "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_75",
+      "id": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_60",
       "label": "Evaluate launch configurations and build ROS2 node graph.",
       "_origin": "ast",
       "community": 178,
@@ -14698,76 +14565,10 @@
       "file_type": "rationale",
       "norm_label": "evaluate launch configurations and build ros2 node graph.",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L75"
+      "source_location": "L60"
     },
     {
-      "id": "tests_test_robot_nodes_launch_rationale_102",
-      "label": "Create monitor test node.",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "rationale",
-      "norm_label": "create monitor test node.",
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L102"
-    },
-    {
-      "id": "tests_test_robot_nodes_launch_rationale_106",
-      "label": "Destroy monitor test node.",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "rationale",
-      "norm_label": "destroy monitor test node.",
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L106"
-    },
-    {
-      "id": "tests_test_robot_nodes_launch_rationale_110",
-      "label": "Assert all expected nodes and services are active.",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "rationale",
-      "norm_label": "assert all expected nodes and services are active.",
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L110"
-    },
-    {
-      "id": "tests_test_robot_nodes_launch_rationale_141",
-      "label": "Assert controllers and action servers are ready.",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "rationale",
-      "norm_label": "assert controllers and action servers are ready.",
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L141"
-    },
-    {
-      "id": "tests_test_robot_nodes_launch_rationale_169",
-      "label": "Assert /joint_states streams at 500 Hz (~2ms RTDE loop).",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "rationale",
-      "norm_label": "assert /joint_states streams at 500 hz (~2ms rtde loop).",
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L169"
-    },
-    {
-      "id": "tests_test_robot_nodes_launch_rationale_56",
-      "label": "Generate launch description for testing robot bringup.",
-      "_origin": "ast",
-      "community": 178,
-      "community_name": "TestRobotNodesBringup",
-      "file_type": "rationale",
-      "norm_label": "generate launch description for testing robot bringup.",
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L56"
-    },
-    {
-      "id": "tests_test_robot_nodes_launch_rationale_87",
+      "id": "tests_test_robot_nodes_launch_rationale_101",
       "label": "Integration test suite verifying robot_bringup node graph.",
       "_origin": "ast",
       "community": 178,
@@ -14775,10 +14576,10 @@
       "file_type": "rationale",
       "norm_label": "integration test suite verifying robot_bringup node graph.",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L87"
+      "source_location": "L101"
     },
     {
-      "id": "tests_test_robot_nodes_launch_rationale_91",
+      "id": "tests_test_robot_nodes_launch_rationale_105",
       "label": "Initialize ROS2 context.",
       "_origin": "ast",
       "community": 178,
@@ -14786,10 +14587,10 @@
       "file_type": "rationale",
       "norm_label": "initialize ros2 context.",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L91"
+      "source_location": "L105"
     },
     {
-      "id": "tests_test_robot_nodes_launch_rationale_97",
+      "id": "tests_test_robot_nodes_launch_rationale_111",
       "label": "Shutdown ROS2 context.",
       "_origin": "ast",
       "community": 178,
@@ -14797,7 +14598,73 @@
       "file_type": "rationale",
       "norm_label": "shutdown ros2 context.",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L97"
+      "source_location": "L111"
+    },
+    {
+      "id": "tests_test_robot_nodes_launch_rationale_116",
+      "label": "Create monitor test node.",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "TestRobotNodesBringup",
+      "file_type": "rationale",
+      "norm_label": "create monitor test node.",
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L116"
+    },
+    {
+      "id": "tests_test_robot_nodes_launch_rationale_120",
+      "label": "Destroy monitor test node.",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "TestRobotNodesBringup",
+      "file_type": "rationale",
+      "norm_label": "destroy monitor test node.",
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L120"
+    },
+    {
+      "id": "tests_test_robot_nodes_launch_rationale_124",
+      "label": "Assert all expected nodes and services are active.",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "TestRobotNodesBringup",
+      "file_type": "rationale",
+      "norm_label": "assert all expected nodes and services are active.",
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L124"
+    },
+    {
+      "id": "tests_test_robot_nodes_launch_rationale_155",
+      "label": "Assert controllers and action servers are ready.",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "TestRobotNodesBringup",
+      "file_type": "rationale",
+      "norm_label": "assert controllers and action servers are ready.",
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L155"
+    },
+    {
+      "id": "tests_test_robot_nodes_launch_rationale_183",
+      "label": "Assert /joint_states streams at 500 Hz (~2ms RTDE loop).",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "TestRobotNodesBringup",
+      "file_type": "rationale",
+      "norm_label": "assert /joint_states streams at 500 hz (~2ms rtde loop).",
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L183"
+    },
+    {
+      "id": "tests_test_robot_nodes_launch_rationale_57",
+      "label": "Generate launch description for testing robot bringup.",
+      "_origin": "ast",
+      "community": 178,
+      "community_name": "TestRobotNodesBringup",
+      "file_type": "rationale",
+      "norm_label": "generate launch description for testing robot bringup.",
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L57"
     },
     {
       "id": "support_files_specs_unit6_overview",
@@ -15538,17 +15405,6 @@
       "source_location": "L375"
     },
     {
-      "id": "src_edge_node_kinematics_rationale_387",
-      "label": "Generates standard 10-step pick-and-place waypoint sequence. Sequence: 1.\u2026",
-      "_origin": "ast",
-      "community": 186,
-      "community_name": "PickAndPlaceTrajectoryGenerator",
-      "file_type": "rationale",
-      "norm_label": "generates standard 10-step pick-and-place waypoint sequence. sequence: 1....",
-      "source_file": "src/edge_node/kinematics.py",
-      "source_location": "L387"
-    },
-    {
       "id": "tests_test_kinematics_rationale_325",
       "label": "Asserts each Cartesian waypoint produces FK within <1mm of target position.",
       "_origin": "ast",
@@ -15978,10 +15834,10 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Refactor-A.3: Robotics Bringup Launch Configuration &amp; Controller Manager",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
         "created_at": "2026-09-17T12:32:35Z",
-        "updated_at": "2026-09-17T12:32:35Z",
+        "updated_at": "2026-09-17T16:11:35Z",
         "parent": "hand-sim-wt44"
       },
       "node_kind": "page",
@@ -16024,6 +15880,18 @@
       "norm_label": "parent",
       "source_file": ".beans/hand-sim-bjcw--refactor-a3-robotics-bringup-launch-configuration.md",
       "source_location": "L16"
+    },
+    {
+      "id": "beans_hand_sim_bjcw_refactor_a3_robotics_bringup_launch_configuration_summary_of_changes",
+      "label": "Summary of Changes",
+      "_origin": "ast",
+      "community": 190,
+      "community_name": "hand-sim-bjcw--refactor-a3-robotics-bringup-launch-configuration.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "summary of changes",
+      "source_file": ".beans/hand-sim-bjcw--refactor-a3-robotics-bringup-launch-configuration.md",
+      "source_location": "L37"
     },
     {
       "id": "beans_hand_sim_bjcw_refactor_a3_robotics_bringup_launch_configuration_what_to_build",
@@ -17106,114 +16974,180 @@
       "source_location": "L31"
     },
     {
-      "id": "pickandplacetargetpayload",
-      "label": "PickAndPlaceTargetPayload",
+      "id": "src_edge_node_kinematics_rationale_121",
+      "label": "Computes 4x4 homogeneous transformation matrix from robot base to tool0 or TCP.",
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
-      "file_type": "code",
-      "norm_label": "pickandplacetargetpayload",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "src_edge_node_workcell_rationale_151",
-      "label": "Subscribes an event listener to WorkpieceSpawnedEvents. Returns an unsubscribe\u2026",
-      "_origin": "ast",
-      "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "rationale",
-      "norm_label": "subscribes an event listener to workpiecespawnedevents. returns an unsubscribe...",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L151"
+      "norm_label": "computes 4x4 homogeneous transformation matrix from robot base to tool0 or tcp.",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L121"
     },
     {
-      "id": "src_edge_node_workcell_rationale_161",
-      "label": "Unsubscribes an event listener.",
+      "id": "src_edge_node_kinematics_rationale_152",
+      "label": "Returns Cartesian coordinates (x, y, z) of the tool center point or flange.",
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "rationale",
-      "norm_label": "unsubscribes an event listener.",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L161"
+      "norm_label": "returns cartesian coordinates (x, y, z) of the tool center point or flange.",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L152"
     },
     {
-      "id": "src_edge_node_workcell_rationale_167",
-      "label": "Emits a WorkpieceSpawnedEvent to all subscribed listeners.",
+      "id": "src_edge_node_kinematics_rationale_182",
+      "label": "Closed-form analytical solution of UR5e 8 kinematic branches for a target tool0\u2026",
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "rationale",
-      "norm_label": "emits a workpiecespawnedevent to all subscribed listeners.",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L167"
+      "norm_label": "closed-form analytical solution of ur5e 8 kinematic branches for a target tool0...",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L182"
     },
     {
-      "id": "src_edge_node_workcell_rationale_183",
-      "label": "Registers active workpiece and emits WorkpieceSpawnedEvent.",
+      "id": "src_edge_node_kinematics_rationale_66",
+      "label": "Computes standard Denavit-Hartenberg 4x4 homogeneous transformation matrix.",
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "rationale",
-      "norm_label": "registers active workpiece and emits workpiecespawnedevent.",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L183"
+      "norm_label": "computes standard denavit-hartenberg 4x4 homogeneous transformation matrix.",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L66"
     },
     {
-      "id": "src_edge_node_workcell_rationale_31",
-      "label": "Domain event emitted when a workpiece pick-and-place target is registered.",
+      "id": "src_edge_node_kinematics_rationale_80",
+      "label": "Inverts an orthonormal 4x4 rigid transformation matrix: [R, p]^-1 = [R^T, -R^T\u2026",
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "rationale",
-      "norm_label": "domain event emitted when a workpiece pick-and-place target is registered.",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L31"
+      "norm_label": "inverts an orthonormal 4x4 rigid transformation matrix: [r, p]^-1 = [r^t, -r^t...",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L80"
     },
     {
-      "id": "src_edge_node_workcell_rationale_54",
-      "label": "Alias returning (x, y, z) pick coordinates.",
+      "id": "src_edge_node_kinematics_rationale_96",
+      "label": "Multiplies two 4x4 matrices in pure Python.",
       "_origin": "ast",
       "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
+      "community_name": ".solve_ik_matrix",
       "file_type": "rationale",
-      "norm_label": "alias returning (x, y, z) pick coordinates.",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L54"
+      "norm_label": "multiplies two 4x4 matrices in pure python.",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L96"
     },
     {
-      "id": "src_edge_node_workcell_rationale_59",
-      "label": "Alias returning (x, y, z) drop coordinates.",
-      "_origin": "ast",
-      "community": 200,
-      "community_name": "WorkpieceSpawnedEvent",
-      "file_type": "rationale",
-      "norm_label": "alias returning (x, y, z) drop coordinates.",
-      "source_file": "src/edge_node/workcell.py",
-      "source_location": "L59"
-    },
-    {
-      "id": "src_edge_node_node_py_any",
-      "label": "Any",
+      "id": "schemas_robot_command_schema_properties_x",
+      "label": "x",
       "_origin": "ast",
       "community": 201,
-      "community_name": ".on_joint_state",
+      "community_name": "properties",
       "file_type": "code",
-      "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "x",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L99"
     },
     {
-      "id": "src_edge_node_node_rationale_170",
-      "label": "Ingests a JointState ROS2 message and updates canonical joint positions. Args:\u2026",
+      "id": "schemas_robot_command_schema_properties_y",
+      "label": "y",
       "_origin": "ast",
       "community": 201,
-      "community_name": ".on_joint_state",
-      "file_type": "rationale",
-      "norm_label": "ingests a jointstate ros2 message and updates canonical joint positions. args:...",
-      "source_file": "src/edge_node/node.py",
-      "source_location": "L170"
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "y",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L103"
+    },
+    {
+      "id": "schemas_robot_command_schema_properties_z",
+      "label": "z",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "z",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L107"
+    },
+    {
+      "id": "schemas_robot_command_schema_spawn_object_payload_properties",
+      "label": "properties",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "properties",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L98"
+    },
+    {
+      "id": "schemas_robot_command_schema_x_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L101"
+    },
+    {
+      "id": "schemas_robot_command_schema_x_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L100"
+    },
+    {
+      "id": "schemas_robot_command_schema_y_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L105"
+    },
+    {
+      "id": "schemas_robot_command_schema_y_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L104"
+    },
+    {
+      "id": "schemas_robot_command_schema_z_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L109"
+    },
+    {
+      "id": "schemas_robot_command_schema_z_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 201,
+      "community_name": "properties",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L108"
     },
     {
       "id": "src_edge_node_node_rationale_700",
@@ -17458,103 +17392,81 @@
       "source_location": "L527"
     },
     {
-      "id": "schemas_robot_command_schema_pose_name_description",
+      "id": "web_src_components_operatortoolbar",
+      "label": "OperatorToolbar.tsx",
+      "_origin": "ast",
+      "community": 208,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbar.tsx",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_description",
       "label": "description",
       "_origin": "ast",
       "community": 209,
-      "community_name": "pose_name",
+      "community_name": "object_type",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L49"
+      "source_location": "L117"
     },
     {
-      "id": "schemas_robot_command_schema_pose_name_enum",
+      "id": "schemas_robot_command_schema_object_type_enum",
       "label": "enum",
       "_origin": "ast",
       "community": 209,
-      "community_name": "pose_name",
+      "community_name": "object_type",
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
+      "source_location": "L114"
     },
     {
-      "id": "schemas_robot_command_schema_pose_name_title",
+      "id": "schemas_robot_command_schema_object_type_title",
       "label": "title",
       "_origin": "ast",
       "community": 209,
-      "community_name": "pose_name",
+      "community_name": "object_type",
       "file_type": "code",
       "norm_label": "title",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L43"
+      "source_location": "L113"
     },
     {
-      "id": "schemas_robot_command_schema_pose_name_type",
+      "id": "schemas_robot_command_schema_object_type_type",
       "label": "type",
       "_origin": "ast",
       "community": 209,
-      "community_name": "pose_name",
+      "community_name": "object_type",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L42"
+      "source_location": "L112"
     },
     {
-      "id": "schemas_robot_command_schema_properties_pose_name",
-      "label": "pose_name",
+      "id": "schemas_robot_command_schema_properties_object_type",
+      "label": "object_type",
       "_origin": "ast",
       "community": 209,
-      "community_name": "pose_name",
+      "community_name": "object_type",
       "file_type": "code",
-      "norm_label": "pose_name",
+      "norm_label": "object_type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L41"
+      "source_location": "L111"
     },
     {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_properties",
-      "label": "properties",
+      "id": "ref_gear",
+      "label": "GEAR",
       "_origin": "ast",
       "community": 209,
-      "community_name": "pose_name",
-      "file_type": "code",
-      "norm_label": "properties",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L40"
-    },
-    {
-      "id": "ref_home",
-      "label": "HOME",
-      "_origin": "ast",
-      "community": 209,
-      "community_name": "pose_name",
+      "community_name": "object_type",
       "file_type": "concept",
-      "norm_label": "home",
+      "norm_label": "gear",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
-    },
-    {
-      "id": "ref_inspect_pose",
-      "label": "INSPECT_POSE",
-      "_origin": "ast",
-      "community": 209,
-      "community_name": "pose_name",
-      "file_type": "concept",
-      "norm_label": "inspect_pose",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
-    },
-    {
-      "id": "ref_ready",
-      "label": "READY",
-      "_origin": "ast",
-      "community": 209,
-      "community_name": "pose_name",
-      "file_type": "concept",
-      "norm_label": "ready",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
+      "source_location": "L114"
     },
     {
       "id": "scripts_generate_domain",
@@ -17590,70 +17502,37 @@
       "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_defs_trajectory_execute_payload",
-      "label": "trajectory_execute_payload",
+      "id": "src_edge_node_kinematics_rationale_353",
+      "label": "Single discrete step in the pick-and-place waypoint sequence. Note for\u2026",
       "_origin": "ast",
-      "community": 212,
-      "community_name": "trajectory_execute_payload",
-      "file_type": "code",
-      "norm_label": "trajectory_execute_payload",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L36"
+      "community": 211,
+      "community_name": "WaypointStep",
+      "file_type": "rationale",
+      "norm_label": "single discrete step in the pick-and-place waypoint sequence. note for...",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L353"
     },
     {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_additionalproperties",
-      "label": "additionalProperties",
+      "id": "src_edge_node_kinematics_rationale_370",
+      "label": "Alias indicating whether end-effector suction is active.",
       "_origin": "ast",
-      "community": 212,
-      "community_name": "trajectory_execute_payload",
-      "file_type": "code",
-      "norm_label": "additionalproperties",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L67"
+      "community": 211,
+      "community_name": "WaypointStep",
+      "file_type": "rationale",
+      "norm_label": "alias indicating whether end-effector suction is active.",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L370"
     },
     {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_description",
-      "label": "description",
+      "id": "src_edge_node_kinematics_rationale_387",
+      "label": "Generates standard 10-step pick-and-place waypoint sequence. Sequence: 1.\u2026",
       "_origin": "ast",
-      "community": 212,
-      "community_name": "trajectory_execute_payload",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L39"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 212,
-      "community_name": "trajectory_execute_payload",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L38"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 212,
-      "community_name": "trajectory_execute_payload",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L37"
-    },
-    {
-      "id": "web_tests_unit_teleopclient_test",
-      "label": "TeleopClient.test.tsx",
-      "_origin": "ast",
-      "community": 213,
-      "community_name": "TeleopClient.test.tsx",
-      "file_type": "code",
-      "norm_label": "teleopclient.test.tsx",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L1"
+      "community": 211,
+      "community_name": "WaypointStep",
+      "file_type": "rationale",
+      "norm_label": "generates standard 10-step pick-and-place waypoint sequence. sequence: 1....",
+      "source_file": "src/edge_node/kinematics.py",
+      "source_location": "L387"
     },
     {
       "id": "agents_skills_to_questionnaire_skill",
@@ -24720,6 +24599,17 @@
       "source_location": "L202"
     },
     {
+      "id": "web_domain_contracts_ur5e_joints",
+      "label": "UR5E_JOINTS",
+      "_origin": "ast",
+      "community": 84,
+      "community_name": "contracts.ts",
+      "file_type": "code",
+      "norm_label": "ur5e_joints",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L137"
+    },
+    {
       "id": "web_domain_contracts_ur5ejointschema",
       "label": "ur5eJointSchema",
       "_origin": "ast",
@@ -25618,17 +25508,6 @@
       "source_location": "L1"
     },
     {
-      "id": "web_src_components_operatortoolbar",
-      "label": "OperatorToolbar.tsx",
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbar.tsx",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "web_src_components_teleopclient",
       "label": "TeleopClient.tsx",
       "_origin": "ast",
@@ -25637,6 +25516,17 @@
       "file_type": "code",
       "norm_label": "teleopclient.tsx",
       "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test",
+      "label": "TeleopClient.test.tsx",
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "teleopclient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
       "source_location": "L1"
     },
     {
@@ -26389,9 +26279,42 @@
       "label": "BaseModel",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "basemodel",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_domain_domain_py_enum",
+      "label": "Enum",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "src_domain_domain_py_src_domain_domain",
+      "label": "domain.py",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "domain.py",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_domain_domain_py_str",
+      "label": "str",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "code",
+      "norm_label": "str",
       "source_file": "",
       "source_location": ""
     },
@@ -26400,18 +26323,29 @@
       "label": "test_domain.py",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "code",
       "norm_label": "test_domain.py",
       "source_file": "tests/test_domain.py",
       "source_location": "L1"
     },
     {
+      "id": "src_domain_domain_rationale_10",
+      "label": "Actuation action to execute on dexterous palm",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "actuation action to execute on dexterous palm",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L10"
+    },
+    {
       "id": "src_domain_domain_rationale_106",
       "label": "Typed payload for EMERGENCY_STOP command",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for emergency_stop command",
       "source_file": "src/domain/domain.py",
@@ -26422,7 +26356,7 @@
       "label": "Typed payload for RESET_FAULT command",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for reset_fault command",
       "source_file": "src/domain/domain.py",
@@ -26433,7 +26367,7 @@
       "label": "Typed payload for CLEAR_WORKSPACE command",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for clear_workspace command",
       "source_file": "src/domain/domain.py",
@@ -26444,7 +26378,7 @@
       "label": "Typed payload for PICK_AND_PLACE_TARGET command",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for pick_and_place_target command",
       "source_file": "src/domain/domain.py",
@@ -26455,18 +26389,73 @@
       "label": "Edge AI inference latency and object classification metrics",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "edge ai inference latency and object classification metrics",
       "source_file": "src/domain/domain.py",
       "source_location": "L160"
     },
     {
+      "id": "src_domain_domain_rationale_17",
+      "label": "Pre-defined canonical UR5e posture",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "pre-defined canonical ur5e posture",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_domain_domain_rationale_211",
+      "label": "Returns the locked DataFabric command key expression for a robot.",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "returns the locked datafabric command key expression for a robot.",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L211"
+    },
+    {
+      "id": "src_domain_domain_rationale_217",
+      "label": "Returns the locked DataFabric telemetry key expression for a robot.",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "returns the locked datafabric telemetry key expression for a robot.",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L217"
+    },
+    {
+      "id": "src_domain_domain_rationale_223",
+      "label": "Parses a DataFabric key expression into (robot_id, channel) or returns None if\u2026",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "parses a datafabric key expression into (robot_id, channel) or returns none if...",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L223"
+    },
+    {
+      "id": "src_domain_domain_rationale_25",
+      "label": "Type of object to spawn",
+      "_origin": "ast",
+      "community": 97,
+      "community_name": "domain.py",
+      "file_type": "rationale",
+      "norm_label": "type of object to spawn",
+      "source_file": "src/domain/domain.py",
+      "source_location": "L25"
+    },
+    {
       "id": "src_domain_domain_rationale_89",
       "label": "Typed payload for PALM_ACTUATE command to toggle suction or grasp status",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for palm_actuate command to toggle suction or grasp status",
       "source_file": "src/domain/domain.py",
@@ -26477,7 +26466,7 @@
       "label": "Typed payload for TRAJECTORY_EXECUTE command dispatching canned or custom\u2026",
       "_origin": "ast",
       "community": 97,
-      "community_name": "test_domain.py",
+      "community_name": "domain.py",
       "file_type": "rationale",
       "norm_label": "typed payload for trajectory_execute command dispatching canned or custom...",
       "source_file": "src/domain/domain.py",
@@ -28587,18 +28576,6 @@
     },
     {
       "source": "src_ros2_robot_bringup_launch_robot_nodes_launch_generate_launch_description",
-      "target": "src_ros2_robot_bringup_launch_robot_nodes_launch_get_default_controllers_file",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L223",
-      "weight": 1.0
-    },
-    {
-      "source": "src_ros2_robot_bringup_launch_robot_nodes_launch_generate_launch_description",
       "target": "launchdescription",
       "relation": "calls",
       "_origin": "ast",
@@ -28606,7 +28583,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L228",
+      "source_location": "L221",
       "weight": 1.0
     },
     {
@@ -29818,7 +29795,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L54",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -31330,7 +31307,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L72",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -35795,7 +35772,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L72",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -40833,6 +40810,17 @@
       "confidence_score": 1.0,
       "source_file": ".beans/hand-sim-bjcw--refactor-a3-robotics-bringup-launch-configuration.md",
       "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "beans_hand_sim_bjcw_refactor_a3_robotics_bringup_launch_configuration",
+      "target": "beans_hand_sim_bjcw_refactor_a3_robotics_bringup_launch_configuration_summary_of_changes",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".beans/hand-sim-bjcw--refactor-a3-robotics-bringup-launch-configuration.md",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -47179,18 +47167,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L200",
-      "weight": 1.0
-    },
-    {
-      "source": "src_ros2_robot_bringup_launch_robot_nodes_launch",
-      "target": "src_ros2_robot_bringup_launch_robot_nodes_launch_get_default_controllers_file",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L56",
+      "source_location": "L185",
       "weight": 1.0
     },
     {
@@ -47201,7 +47178,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L72",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -49626,24 +49603,24 @@
     },
     {
       "source": "tests_test_robot_nodes_launch",
-      "target": "tests_test_robot_nodes_launch_generate_test_description",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L55",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch",
       "target": "tests_test_robot_nodes_launch_testrobotnodesbringup",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L86",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch",
+      "target": "tests_test_robot_nodes_launch_generate_test_description",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L56",
       "weight": 1.0
     },
     {
@@ -54350,68 +54327,13 @@
     },
     {
       "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_setup",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L101",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_teardown",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L105",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_nodes_and_services_active",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L109",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_controllers_and_action_servers_ready",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L140",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_joint_states_500hz_frequency",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L168",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
       "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_setupclass",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L90",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -54422,7 +54344,62 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L96",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_setup",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_teardown",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L119",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_nodes_and_services_active",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_controllers_and_action_servers_ready",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L154",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_testrobotnodesbringup",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_joint_states_500hz_frequency",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L182",
       "weight": 1.0
     },
     {
@@ -56560,36 +56537,25 @@
       "weight": 1.0
     },
     {
-      "source": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_201",
+      "source": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_186",
       "target": "src_ros2_robot_bringup_launch_robot_nodes_launch_generate_launch_description",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L201",
+      "source_location": "L186",
       "weight": 1.0
     },
     {
-      "source": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_57",
-      "target": "src_ros2_robot_bringup_launch_robot_nodes_launch_get_default_controllers_file",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L57",
-      "weight": 1.0
-    },
-    {
-      "source": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_75",
+      "source": "src_ros2_robot_bringup_launch_robot_nodes_launch_rationale_60",
       "target": "src_ros2_robot_bringup_launch_robot_nodes_launch_launch_setup",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L75",
+      "source_location": "L60",
       "weight": 1.0
     },
     {
@@ -56978,102 +56944,102 @@
       "weight": 1.0
     },
     {
-      "source": "tests_test_robot_nodes_launch_rationale_102",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_setup",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L102",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_rationale_106",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_teardown",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L106",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_rationale_110",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_nodes_and_services_active",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L110",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_rationale_141",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_controllers_and_action_servers_ready",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L141",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_rationale_169",
-      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_joint_states_500hz_frequency",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L169",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_rationale_56",
-      "target": "tests_test_robot_nodes_launch_generate_test_description",
-      "relation": "rationale_for",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L56",
-      "weight": 1.0
-    },
-    {
-      "source": "tests_test_robot_nodes_launch_rationale_87",
+      "source": "tests_test_robot_nodes_launch_rationale_101",
       "target": "tests_test_robot_nodes_launch_testrobotnodesbringup",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L87",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
-      "source": "tests_test_robot_nodes_launch_rationale_91",
+      "source": "tests_test_robot_nodes_launch_rationale_105",
       "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_setupclass",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L91",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
-      "source": "tests_test_robot_nodes_launch_rationale_97",
+      "source": "tests_test_robot_nodes_launch_rationale_111",
       "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_teardownclass",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_robot_nodes_launch.py",
-      "source_location": "L97",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_rationale_116",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_setup",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L116",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_rationale_120",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_teardown",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_rationale_124",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_nodes_and_services_active",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L124",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_rationale_155",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_controllers_and_action_servers_ready",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_rationale_183",
+      "target": "tests_test_robot_nodes_launch_testrobotnodesbringup_test_joint_states_500hz_frequency",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_robot_nodes_launch_rationale_57",
+      "target": "tests_test_robot_nodes_launch_generate_test_description",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_robot_nodes_launch.py",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -57470,7 +57436,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/ros2/robot_bringup/launch/robot_nodes.launch.py",
-      "source_location": "L229",
+      "source_location": "L222",
       "weight": 1.0
     },
     {
@@ -57722,7 +57688,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "src/ros2/robot_bringup/test/test_robot_nodes_launch.py",
-      "source_location": "L73",
+      "source_location": "L87",
       "weight": 1.0
     },
     {

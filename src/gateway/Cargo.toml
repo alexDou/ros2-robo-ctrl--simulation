@@ -38,3 +38,7 @@ path = "tests/domain_contract_test.rs"
 [[test]]
 name = "ws_gateway_test"
 path = "tests/ws_gateway_test.rs"
+
+[[test]]
+name = "throttler_action_test"
+path = "tests/throttler_action_test.rs"

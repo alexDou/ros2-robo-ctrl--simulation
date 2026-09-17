@@ -108,12 +108,20 @@ pub async fn teleop_ws(
     // 2. Perform WebSocket handshake
     let (res, mut session, mut msg_stream) = actix_ws::handle(&req, stream)?;
 
-    // 3. Subscribe to DataFabric telemetry for this robot
+    // 3. Subscribe to DataFabric telemetry and action feedback for this robot
     let mut telemetry_rx = match fabric.subscribe_telemetry(&robot_id) {
         Ok(rx) => rx,
         Err(err) => {
             error!("Failed to subscribe to telemetry for robot '{robot_id}': {err}");
             return Ok(HttpResponse::InternalServerError().body("Failed to subscribe to telemetry fabric"));
+        }
+    };
+
+    let mut action_feedback_rx = match fabric.subscribe_action_feedback(&robot_id) {
+        Ok(rx) => Some(rx),
+        Err(err) => {
+            warn!("Failed to subscribe to action feedback for robot '{robot_id}': {err}");
+            None
         }
     };
 
@@ -166,6 +174,31 @@ pub async fn teleop_ws(
                                         } else {
                                             last_command_time = Some(std::time::Instant::now());
                                         }
+
+                                        if command.r#type == crate::domain::CommandType::PickAndPlaceTarget {
+                                            use serde::Deserialize;
+                                            if let Ok(payload) = crate::domain::PickAndPlaceTargetPayload::deserialize(&command.payload) {
+                                                let use_custom_drop = payload.drop_x.is_some() && payload.drop_y.is_some() && payload.drop_z.is_some();
+                                                let goal = crate::action::PickAndPlaceGoal {
+                                                    pick_coords: crate::action::ActionPoint::new(
+                                                        payload.pick_x,
+                                                        payload.pick_y,
+                                                        payload.pick_z,
+                                                    ),
+                                                    drop_coords: crate::action::ActionPoint::new(
+                                                        payload.drop_x.unwrap_or(0.40),
+                                                        payload.drop_y.unwrap_or(-0.30),
+                                                        payload.drop_z.unwrap_or(0.0),
+                                                    ),
+                                                    use_custom_drop,
+                                                    command_id: command.command_id.clone(),
+                                                };
+                                                if let Err(err) = fabric_for_task.publish_action_goal(&robot_id_for_task, &goal).await {
+                                                    error!("Failed to forward PickAndPlace action goal: {err}");
+                                                }
+                                            }
+                                        }
+
                                         if let Err(err) = fabric_for_task.publish_command(&robot_id_for_task, &command).await {
                                             error!("Failed to forward command to DataFabric: {err}");
                                         }
@@ -218,6 +251,31 @@ pub async fn teleop_ws(
                         Err(tokio::sync::broadcast::error::RecvError::Closed) => {
                             info!("Telemetry stream closed for robot {robot_id_for_task}");
                             break;
+                        }
+                    }
+                }
+
+                // Inbound Action feedback frames forwarded to TeleopClient
+                feedback_res = async {
+                    match action_feedback_rx.as_mut() {
+                        Some(rx) => rx.recv().await,
+                        None => std::future::pending().await,
+                    }
+                } => {
+                    match feedback_res {
+                        Ok(fb_frame) => {
+                            if let Ok(fb_json) = serde_json::to_string(&fb_frame) {
+                                if session.text(fb_json).await.is_err() {
+                                    break;
+                                }
+                            }
+                        }
+                        Err(tokio::sync::broadcast::error::RecvError::Lagged(missed)) => {
+                            warn!("Action feedback receiver lagged by {missed} frames for robot {robot_id_for_task}");
+                        }
+                        Err(tokio::sync::broadcast::error::RecvError::Closed) => {
+                            info!("Action feedback stream closed for robot {robot_id_for_task}; dropping feedback receiver");
+                            action_feedback_rx = None;
                         }
                     }
                 }
