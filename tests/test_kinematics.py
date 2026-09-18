@@ -322,19 +322,22 @@ class TestPickAndPlaceTrajectoryGenerator:
             )
 
     def test_waypoint_fk_accuracy(self) -> None:
-        """Asserts each Cartesian waypoint produces FK within <1mm of target position."""
+        """Asserts each Cartesian waypoint produces FK within <1mm of target position in base_link."""
         generator = PickAndPlaceTrajectoryGenerator()
         pick = (0.38, 0.20, 0.0)
         drop = (0.40, -0.30, 0.04)
         steps = generator.generate_trajectory(pick_coords=pick, drop_coords=drop)
 
         # For the Cartesian motion steps (1, 2, 4, 5, 6, 8):
+        # UR5e URDF base_link is rotated by pi around Z relative to DH frame (base_link_inertia).
+        # T_tcp in base_link has (x, y) = (-T_tcp_dh[0], -T_tcp_dh[1]).
         cartesian_step_indices = [0, 1, 3, 4, 5, 7]
         for idx in cartesian_step_indices:
             step = steps[idx]
             T_tcp = generator.solver.forward_kinematics(step.joint_positions, with_tcp=True)
-            dx = T_tcp[0][3] - step.cartesian_position[0]
-            dy = T_tcp[1][3] - step.cartesian_position[1]
+            dx = (-T_tcp[0][3]) - step.cartesian_position[0]
+            dy = (-T_tcp[1][3]) - step.cartesian_position[1]
             dz = T_tcp[2][3] - step.cartesian_position[2]
             err = math.sqrt(dx * dx + dy * dy + dz * dz)
             assert err < 0.001, f"Step {step.name} FK error {err*1000:.3f}mm exceeds 1mm limit"
+

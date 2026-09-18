@@ -168,6 +168,20 @@ def test_10_step_waypoint_sequence_and_action_phases():
     assert steps[6].is_grasped is False and steps[6].pause_duration_s == 0.2 # release
     assert steps[8].is_grasped is False and steps[8].name == "home"
 
+    # Verify URDF forward kinematics matches positive X workcell coordinate frame (+X forward)
+    # Forward kinematics in DH frame gives (-x, -y, z), which in base_link (URDF) is (+x, +y, z)
+    T_dh_pick = gen.solver.forward_kinematics(steps[1].joint_positions, with_tcp=True)
+    urdf_pick_xyz = (-T_dh_pick[0][3], -T_dh_pick[1][3], T_dh_pick[2][3])
+    assert abs(urdf_pick_xyz[0] - pick[0]) < 1e-3
+    assert abs(urdf_pick_xyz[1] - pick[1]) < 1e-3
+    assert abs(urdf_pick_xyz[2] - pick[2]) < 1e-3
+
+    T_dh_drop = gen.solver.forward_kinematics(steps[5].joint_positions, with_tcp=True)
+    urdf_drop_xyz = (-T_dh_drop[0][3], -T_dh_drop[1][3], T_dh_drop[2][3])
+    assert abs(urdf_drop_xyz[0] - drop[0]) < 1e-3
+    assert abs(urdf_drop_xyz[1] - drop[1]) < 1e-3
+    assert abs(urdf_drop_xyz[2] - drop[2]) < 1e-3
+
 
 # ============================================================================
 # ArmControllerNode ROS2 Service and Action Server Tests

@@ -2885,7 +2885,7 @@
       "file_type": "code",
       "norm_label": "test_angular_unwrapping_continuity()",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L526"
+      "source_location": "L540"
     },
     {
       "id": "tests_test_kinematics_testpickandplacetrajectorygenerator_test_10_step_sequence_generation",
@@ -3053,7 +3053,7 @@
       "file_type": "code",
       "norm_label": "test_arm_controller_action_lifecycle_and_feedback_stream()",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L315"
+      "source_location": "L329"
     },
     {
       "id": "tests_test_arm_controller_test_arm_controller_goal_cancellation_and_safe_stop",
@@ -3065,7 +3065,7 @@
       "file_type": "code",
       "norm_label": "test_arm_controller_goal_cancellation_and_safe_stop()",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L418"
+      "source_location": "L432"
     },
     {
       "id": "tests_test_arm_controller_test_arm_controller_mutual_exclusion",
@@ -3077,7 +3077,7 @@
       "file_type": "code",
       "norm_label": "test_arm_controller_mutual_exclusion()",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L544"
+      "source_location": "L558"
     },
     {
       "id": "tests_test_arm_controller_test_arm_controller_out_of_reach_goal_aborts",
@@ -3089,7 +3089,7 @@
       "file_type": "code",
       "norm_label": "test_arm_controller_out_of_reach_goal_aborts()",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L201"
+      "source_location": "L215"
     },
     {
       "id": "tests_test_arm_controller_test_arm_controller_queries_workcell_drop_slot",
@@ -3101,7 +3101,7 @@
       "file_type": "code",
       "norm_label": "test_arm_controller_queries_workcell_drop_slot()",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L250"
+      "source_location": "L264"
     },
     {
       "id": "tests_test_arm_controller_test_downward_orientation_and_tcp_offset",
@@ -3125,7 +3125,7 @@
       "file_type": "code",
       "norm_label": "test_joint_state_subscriber_updates_canonical_joints()",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L177"
+      "source_location": "L191"
     },
     {
       "id": "tests_test_arm_controller_test_reachability_boundary_enforcement",
@@ -15746,7 +15746,7 @@
       "source_location": "L140"
     },
     {
-      "id": "tests_test_arm_controller_rationale_527",
+      "id": "tests_test_arm_controller_rationale_541",
       "label": "Asserts consecutive waypoints do not suffer multi-revolution S^1 -> R boundary\u2026",
       "_origin": "ast",
       "community": 186,
@@ -15754,16 +15754,16 @@
       "file_type": "rationale",
       "norm_label": "asserts consecutive waypoints do not suffer multi-revolution s^1 -> r boundary...",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L527"
+      "source_location": "L541"
     },
     {
       "id": "tests_test_kinematics_rationale_325",
-      "label": "Asserts each Cartesian waypoint produces FK within <1mm of target position.",
+      "label": "Asserts each Cartesian waypoint produces FK within <1mm of target position in\u2026",
       "_origin": "ast",
       "community": 186,
       "community_name": "PickAndPlaceTrajectoryGenerator",
       "file_type": "rationale",
-      "norm_label": "asserts each cartesian waypoint produces fk within <1mm of target position.",
+      "norm_label": "asserts each cartesian waypoint produces fk within <1mm of target position in...",
       "source_file": "tests/test_kinematics.py",
       "source_location": "L325"
     },
@@ -16003,7 +16003,7 @@
       "source_location": "L123"
     },
     {
-      "id": "tests_test_arm_controller_rationale_178",
+      "id": "tests_test_arm_controller_rationale_192",
       "label": "Asserts /joint_states updates canonical joint positions regardless of incoming\u2026",
       "_origin": "ast",
       "community": 188,
@@ -16011,10 +16011,10 @@
       "file_type": "rationale",
       "norm_label": "asserts /joint_states updates canonical joint positions regardless of incoming...",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L178"
+      "source_location": "L192"
     },
     {
-      "id": "tests_test_arm_controller_rationale_202",
+      "id": "tests_test_arm_controller_rationale_216",
       "label": "Asserts out-of-reach pick coordinates reject/abort goal with structured error\u2026",
       "_origin": "ast",
       "community": 188,
@@ -16022,10 +16022,10 @@
       "file_type": "rationale",
       "norm_label": "asserts out-of-reach pick coordinates reject/abort goal with structured error...",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L202"
+      "source_location": "L216"
     },
     {
-      "id": "tests_test_arm_controller_rationale_251",
+      "id": "tests_test_arm_controller_rationale_265",
       "label": "Asserts goal with use_custom_drop=False queries /workcell/get_drop_slot.",
       "_origin": "ast",
       "community": 188,
@@ -16033,10 +16033,10 @@
       "file_type": "rationale",
       "norm_label": "asserts goal with use_custom_drop=false queries /workcell/get_drop_slot.",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L251"
+      "source_location": "L265"
     },
     {
-      "id": "tests_test_arm_controller_rationale_316",
+      "id": "tests_test_arm_controller_rationale_330",
       "label": "Asserts action server streams all 10 feedback phases and executes trajectory\u2026",
       "_origin": "ast",
       "community": 188,
@@ -16044,10 +16044,10 @@
       "file_type": "rationale",
       "norm_label": "asserts action server streams all 10 feedback phases and executes trajectory...",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L316"
+      "source_location": "L330"
     },
     {
-      "id": "tests_test_arm_controller_rationale_419",
+      "id": "tests_test_arm_controller_rationale_433",
       "label": "Asserts goal cancellation aborts active trajectory and commands safe stop.",
       "_origin": "ast",
       "community": 188,
@@ -16055,10 +16055,10 @@
       "file_type": "rationale",
       "norm_label": "asserts goal cancellation aborts active trajectory and commands safe stop.",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L419"
+      "source_location": "L433"
     },
     {
-      "id": "tests_test_arm_controller_rationale_545",
+      "id": "tests_test_arm_controller_rationale_559",
       "label": "Asserts second concurrent PickAndPlace goal is rejected while another is\u2026",
       "_origin": "ast",
       "community": 188,
@@ -16066,7 +16066,7 @@
       "file_type": "rationale",
       "norm_label": "asserts second concurrent pickandplace goal is rejected while another is...",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L545"
+      "source_location": "L559"
     },
     {
       "id": "tests_test_arm_controller_rationale_65",
@@ -29025,7 +29025,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/ros2/arm_controller/arm_controller/kinematics.py",
-      "source_location": "L461",
+      "source_location": "L479",
       "weight": 1.0
     },
     {
@@ -29037,7 +29037,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "src/ros2/arm_controller/arm_controller/kinematics.py",
-      "source_location": "L530",
+      "source_location": "L553",
       "weight": 1.0
     },
     {
@@ -29325,7 +29325,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L528",
+      "source_location": "L542",
       "weight": 1.0
     },
     {
@@ -29337,7 +29337,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L335",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -29349,7 +29349,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L464",
+      "source_location": "L478",
       "weight": 1.0
     },
     {
@@ -29361,7 +29361,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L546",
+      "source_location": "L560",
       "weight": 1.0
     },
     {
@@ -29373,7 +29373,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L203",
+      "source_location": "L217",
       "weight": 1.0
     },
     {
@@ -29385,7 +29385,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L264",
+      "source_location": "L278",
       "weight": 1.0
     },
     {
@@ -29397,7 +29397,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L179",
+      "source_location": "L193",
       "weight": 1.0
     },
     {
@@ -52113,7 +52113,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L177",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -52124,7 +52124,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L201",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -52135,7 +52135,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L250",
+      "source_location": "L264",
       "weight": 1.0
     },
     {
@@ -52146,7 +52146,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L315",
+      "source_location": "L329",
       "weight": 1.0
     },
     {
@@ -52157,7 +52157,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L418",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -52179,7 +52179,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L526",
+      "source_location": "L540",
       "weight": 1.0
     },
     {
@@ -52190,7 +52190,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L544",
+      "source_location": "L558",
       "weight": 1.0
     },
     {
@@ -60438,80 +60438,80 @@
       "weight": 1.0
     },
     {
-      "source": "tests_test_arm_controller_rationale_178",
+      "source": "tests_test_arm_controller_rationale_192",
       "target": "tests_test_arm_controller_test_joint_state_subscriber_updates_canonical_joints",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L178",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
-      "source": "tests_test_arm_controller_rationale_202",
+      "source": "tests_test_arm_controller_rationale_216",
       "target": "tests_test_arm_controller_test_arm_controller_out_of_reach_goal_aborts",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L202",
+      "source_location": "L216",
       "weight": 1.0
     },
     {
-      "source": "tests_test_arm_controller_rationale_251",
+      "source": "tests_test_arm_controller_rationale_265",
       "target": "tests_test_arm_controller_test_arm_controller_queries_workcell_drop_slot",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L251",
+      "source_location": "L265",
       "weight": 1.0
     },
     {
-      "source": "tests_test_arm_controller_rationale_316",
+      "source": "tests_test_arm_controller_rationale_330",
       "target": "tests_test_arm_controller_test_arm_controller_action_lifecycle_and_feedback_stream",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L316",
+      "source_location": "L330",
       "weight": 1.0
     },
     {
-      "source": "tests_test_arm_controller_rationale_419",
+      "source": "tests_test_arm_controller_rationale_433",
       "target": "tests_test_arm_controller_test_arm_controller_goal_cancellation_and_safe_stop",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L419",
+      "source_location": "L433",
       "weight": 1.0
     },
     {
-      "source": "tests_test_arm_controller_rationale_527",
+      "source": "tests_test_arm_controller_rationale_541",
       "target": "tests_test_arm_controller_test_angular_unwrapping_continuity",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L527",
+      "source_location": "L541",
       "weight": 1.0
     },
     {
-      "source": "tests_test_arm_controller_rationale_545",
+      "source": "tests_test_arm_controller_rationale_559",
       "target": "tests_test_arm_controller_test_arm_controller_mutual_exclusion",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "tests/test_arm_controller.py",
-      "source_location": "L545",
+      "source_location": "L559",
       "weight": 1.0
     },
     {
@@ -61305,7 +61305,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "src/ros2/arm_controller/test/test_arm_controller.py",
-      "source_location": "L461",
+      "source_location": "L475",
       "weight": 1.0
     },
     {
@@ -62662,5 +62662,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ba95f19f07f1cf1bf656b04de0646016872c67dc"
+  "built_at_commit": "00394225b86ad3fdcc72f4107ad38c56c025cbcc"
 }
