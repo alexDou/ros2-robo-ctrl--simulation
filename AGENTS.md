@@ -34,6 +34,7 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
 - **Tests**: Keep all test files strictly in dedicated `tests/` directories (never colocated with source implementation files). Web tests live in `web/tests/` (`web/tests/unit/` and `web/tests/e2e/`).
 - **Utilities**: Keep shared helpers and utilities in `utils/` directories (e.g. `web/src/utils/`).
 - **Components**: Keep all UI views/components in `components/` directories (e.g. `web/src/components/`).
+- **ROS2 Tooling Discipline**: Always use native ROS2 CLI tools directly (`ros2 launch`, `ros2 run`, `ros2 topic`, `ros2 service`, `ros2 action`, `colcon build`). Never create bespoke bash scripts or wrappers around native ROS2 launch files or commands.
 
 ## Agent Skills & Tracking
 
