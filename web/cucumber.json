@@ -9,6 +9,20 @@
       "summary",
       "progress"
     ],
+    "tags": "not @live",
+    "parallel": 1
+  },
+  "live": {
+    "paths": ["tests/e2e/features/**/*.feature"],
+    "import": [
+      "tests/e2e/support/**/*.ts",
+      "tests/e2e/steps/**/*.ts"
+    ],
+    "format": [
+      "summary",
+      "progress"
+    ],
+    "tags": "@live",
     "parallel": 1
   }
 }
