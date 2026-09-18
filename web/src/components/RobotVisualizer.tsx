@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { URDFRobot } from 'urdf-loader';
 import { UR5E_JOINTS, type SpawnObjectPayload, type PickAndPlaceTargetPayload, type RobotState } from '@contracts';
 import * as robotLoader from '@utils/robotLoader';
+import { isTestEnv } from '@utils/env';
 
 export const REACHABILITY_MIN_RADIUS = 0.40;
 export const REACHABILITY_MAX_RADIUS = 0.75;
@@ -55,13 +56,21 @@ function getLatestPositions(
   return null;
 }
 
+function isDisposable(value: unknown): value is { dispose: () => void } {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'dispose' in value &&
+    typeof (value as { dispose: unknown }).dispose === 'function'
+  );
+}
+
 function disposeMaterial(mat: THREE.Material) {
   if (!mat) return;
   mat.dispose();
-  for (const key of Object.keys(mat)) {
-    const prop = (mat as unknown as Record<string, unknown>)[key];
-    if (prop && typeof (prop as { dispose?: unknown }).dispose === 'function') {
-      (prop as { dispose: () => void }).dispose();
+  for (const value of Object.values(mat)) {
+    if (isDisposable(value)) {
+      value.dispose();
     }
   }
 }
@@ -577,11 +586,7 @@ export function RobotVisualizer({
       }
     } catch (err: unknown) {
       const error = err as Error;
-      const isTest =
-        (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') ||
-        (typeof import.meta !== 'undefined' &&
-          (import.meta as { env?: { MODE?: string } }).env?.MODE === 'test');
-      if (!isTest) {
+      if (!isTestEnv()) {
         console.error('RobotVisualizer: WebGL context creation failed:', error);
       }
       setErrorInfo({
@@ -706,13 +711,9 @@ export function RobotVisualizer({
         }
       })
       .catch((err) => {
-        const isTest =
-          (typeof process !== 'undefined' && process.env?.NODE_ENV === 'test') ||
-          (typeof import.meta !== 'undefined' &&
-            (import.meta as { env?: { MODE?: string } }).env?.MODE === 'test');
         if (!isDisposed) {
-          if (!isTest) {
-            console.warn('RobotVisualizer failed to load URDF:', err);
+          if (!isTestEnv()) {
+            console.error('RobotVisualizer failed to load URDF:', err);
           }
           setErrorInfo({
             title: 'Failed to Load Robot URDF',
@@ -1118,7 +1119,7 @@ export function RobotVisualizer({
     };
 
     if (typeof window !== 'undefined') {
-      (window as unknown as { __robot_visualizer?: unknown }).__robot_visualizer = visualizerHandle;
+      window.__robot_visualizer = visualizerHandle;
     }
 
     // 9. ResizeObserver
@@ -1304,7 +1305,7 @@ export function RobotVisualizer({
       cancelAnimationFrame(animId);
 
       if (typeof window !== 'undefined') {
-        (window as unknown as { __robot_visualizer?: unknown }).__robot_visualizer = {
+        window.__robot_visualizer = {
           ...visualizerHandle,
           isLoaded: () => false,
           isDisposed: () => true,

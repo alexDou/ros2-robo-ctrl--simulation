@@ -82,7 +82,7 @@ export class TeleopPage {
 
   async injectRawFrame(payload: string): Promise<void> {
     await this.page.evaluate((raw) => {
-      const ws = (window as unknown as { __teleop_ws?: WebSocket }).__teleop_ws;
+      const ws = window.__teleop_ws;
       if (!ws) throw new Error('Active WebSocket instance not found on window.__teleop_ws');
       ws.send(raw);
     }, payload);
@@ -149,10 +149,7 @@ export class TeleopPage {
       .poll(
         async () => {
           return await this.page.evaluate(() => {
-            const handle = (window as unknown as {
-              __robot_visualizer?: { isLoaded: () => boolean };
-            }).__robot_visualizer;
-            return handle ? handle.isLoaded() : false;
+            return window.__robot_visualizer ? window.__robot_visualizer.isLoaded() : false;
           });
         },
         {
@@ -165,10 +162,7 @@ export class TeleopPage {
 
   async getRobotJointValues(): Promise<Record<string, number>> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: { getJointValues: () => Record<string, number> };
-      }).__robot_visualizer;
-      return handle ? handle.getJointValues() : {};
+      return window.__robot_visualizer ? window.__robot_visualizer.getJointValues() : {};
     });
   }
 
@@ -176,12 +170,7 @@ export class TeleopPage {
     linkName: string
   ): Promise<{ x: number; y: number; z: number } | null> {
     return await this.page.evaluate((name) => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: {
-          getLinkWorldPosition: (n: string) => { x: number; y: number; z: number } | null;
-        };
-      }).__robot_visualizer;
-      return handle ? handle.getLinkWorldPosition(name) : null;
+      return window.__robot_visualizer ? window.__robot_visualizer.getLinkWorldPosition(name) : null;
     }, linkName);
   }
 
@@ -248,9 +237,7 @@ export class TeleopPage {
       .poll(
         async () => {
           return await this.page.evaluate((joints) => {
-            const handle = (window as unknown as {
-              __robot_visualizer?: { getJointValues: () => Record<string, number> };
-            }).__robot_visualizer;
+            const handle = window.__robot_visualizer;
             const vizVals = handle ? handle.getJointValues() : null;
             if (!vizVals) return 999;
 
@@ -279,14 +266,7 @@ export class TeleopPage {
 
   async getRendererMemoryInfo(): Promise<{ geometries: number; textures: number; calls: number } | null> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: {
-          getRendererInfo: () => {
-            memory: { geometries: number; textures: number };
-            render: { calls: number };
-          } | null;
-        };
-      }).__robot_visualizer;
+      const handle = window.__robot_visualizer;
       const info = handle?.getRendererInfo();
       return info
         ? {
@@ -300,10 +280,7 @@ export class TeleopPage {
 
   async expectCleanVisualizerDisposal(): Promise<void> {
     const isDisposed = await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: { isDisposed: () => boolean };
-      }).__robot_visualizer;
-      return handle ? handle.isDisposed() : true;
+      return window.__robot_visualizer ? window.__robot_visualizer.isDisposed() : true;
     });
     expect(isDisposed).toBe(true);
   }
@@ -386,16 +363,7 @@ export class TeleopPage {
       .poll(
         async () => {
           return await this.page.evaluate(() => {
-            const handle = (window as unknown as {
-              __robot_visualizer?: {
-                getPalmNozzleState?: () => {
-                  isGrasped: boolean;
-                  emissiveHex: number;
-                  emissiveIntensity: number;
-                } | null;
-              };
-            }).__robot_visualizer;
-            const state = handle?.getPalmNozzleState?.();
+            const state = window.__robot_visualizer?.getPalmNozzleState();
             if (!state) return null;
             return state.isGrasped;
           });
@@ -433,10 +401,7 @@ export class TeleopPage {
       .poll(
         async () => {
           return await this.page.evaluate(() => {
-            const handle = (window as unknown as {
-              __robot_visualizer?: { getTableMesh: () => unknown };
-            }).__robot_visualizer;
-            return Boolean(handle && handle.getTableMesh());
+            return Boolean(window.__robot_visualizer && window.__robot_visualizer.getTableMesh());
           });
         },
         { timeout, message: 'WorkcellTable slab mesh failed to mount in 3D scene' }
@@ -446,10 +411,7 @@ export class TeleopPage {
 
   async hasActiveGear(): Promise<boolean> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: { hasActiveGear: () => boolean };
-      }).__robot_visualizer;
-      return handle ? handle.hasActiveGear() : false;
+      return window.__robot_visualizer ? window.__robot_visualizer.hasActiveGear() : false;
     });
   }
 
@@ -466,10 +428,7 @@ export class TeleopPage {
 
   async getGearPosition(): Promise<{ x: number; y: number; z: number } | null> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: { getGearPosition: () => { x: number; y: number; z: number } | null };
-      }).__robot_visualizer;
-      return handle ? handle.getGearPosition() : null;
+      return window.__robot_visualizer ? window.__robot_visualizer.getGearPosition() : null;
     });
   }
 
@@ -501,10 +460,7 @@ export class TeleopPage {
       .poll(
         async () => {
           return await this.page.evaluate(() => {
-            const handle = (window as unknown as {
-              __robot_visualizer?: { isLockedOut: () => boolean };
-            }).__robot_visualizer;
-            return handle ? handle.isLockedOut() : false;
+            return window.__robot_visualizer ? window.__robot_visualizer.isLockedOut() : false;
           });
         },
         { timeout, message: `Expected visualizer isLockedOut to be ${lockedOut}` }
@@ -515,12 +471,7 @@ export class TeleopPage {
   async clickWorkcellTable(x: number, y: number): Promise<void> {
     const coords = await this.page.evaluate(
       ({ targetX, targetY }) => {
-        const handle = (window as unknown as {
-          __robot_visualizer?: {
-            getTableScreenCoords?: (x: number, y: number) => { clientX: number; clientY: number } | null;
-          };
-        }).__robot_visualizer;
-        return handle?.getTableScreenCoords?.(targetX, targetY) ?? null;
+        return window.__robot_visualizer?.getTableScreenCoords(targetX, targetY) ?? null;
       },
       { targetX: x, targetY: y }
     );
@@ -530,12 +481,7 @@ export class TeleopPage {
     } else {
       await this.page.evaluate(
         ({ targetX, targetY }) => {
-          const handle = (window as unknown as {
-            __robot_visualizer?: {
-              simulateClick?: (x: number, y: number) => boolean;
-            };
-          }).__robot_visualizer;
-          handle?.simulateClick?.(targetX, targetY);
+          window.__robot_visualizer?.simulateClick(targetX, targetY);
         },
         { targetX: x, targetY: y }
       );
@@ -545,12 +491,7 @@ export class TeleopPage {
   async hoverWorkcellTable(x: number, y: number): Promise<void> {
     const coords = await this.page.evaluate(
       ({ targetX, targetY }) => {
-        const handle = (window as unknown as {
-          __robot_visualizer?: {
-            getTableScreenCoords?: (x: number, y: number) => { clientX: number; clientY: number } | null;
-          };
-        }).__robot_visualizer;
-        return handle?.getTableScreenCoords?.(targetX, targetY) ?? null;
+        return window.__robot_visualizer?.getTableScreenCoords(targetX, targetY) ?? null;
       },
       { targetX: x, targetY: y }
     );
@@ -560,12 +501,7 @@ export class TeleopPage {
     } else {
       await this.page.evaluate(
         ({ targetX, targetY }) => {
-          const handle = (window as unknown as {
-            __robot_visualizer?: {
-              simulatePointerMove?: (x: number, y: number) => void;
-            };
-          }).__robot_visualizer;
-          handle?.simulatePointerMove?.(targetX, targetY);
+          window.__robot_visualizer?.simulatePointerMove(targetX, targetY);
         },
         { targetX: x, targetY: y }
       );
@@ -574,12 +510,7 @@ export class TeleopPage {
 
   async isReticleVisible(): Promise<boolean> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: {
-          getReticleMesh?: () => { visible: boolean } | null;
-        };
-      }).__robot_visualizer;
-      const reticle = handle?.getReticleMesh?.();
+      const reticle = window.__robot_visualizer?.getReticleMesh() as { visible: boolean } | null;
       return reticle ? reticle.visible : false;
     });
   }
@@ -633,9 +564,7 @@ export class TeleopPage {
 
   async isGearAttached(): Promise<boolean> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: { isGearAttached: () => boolean; wasGearEverAttached?: () => boolean };
-      }).__robot_visualizer;
+      const handle = window.__robot_visualizer;
       if (!handle) return false;
       return Boolean(handle.wasGearEverAttached ? handle.wasGearEverAttached() : handle.isGearAttached());
     });
@@ -657,10 +586,7 @@ export class TeleopPage {
       .poll(
         async () => {
           return await this.page.evaluate(() => {
-            const handle = (window as unknown as {
-              __robot_visualizer?: { getSpindleTowerMesh: () => unknown };
-            }).__robot_visualizer;
-            return Boolean(handle && handle.getSpindleTowerMesh());
+            return Boolean(window.__robot_visualizer && window.__robot_visualizer.getSpindleTowerMesh());
           });
         },
         { timeout, message: 'SpindleTower fixture mesh failed to mount in 3D scene' }
@@ -670,10 +596,7 @@ export class TeleopPage {
 
   async getTowerGearCount(): Promise<number> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: { getTowerGearCount: () => number };
-      }).__robot_visualizer;
-      return handle ? handle.getTowerGearCount() : 0;
+      return window.__robot_visualizer ? window.__robot_visualizer.getTowerGearCount() : 0;
     });
   }
 
@@ -690,11 +613,9 @@ export class TeleopPage {
 
   async getTowerTopGearHeight(): Promise<number | null> {
     return await this.page.evaluate(() => {
-      const handle = (window as unknown as {
-        __robot_visualizer?: { getTowerGears: () => Array<{ position: { z: number } }> };
-      }).__robot_visualizer;
+      const handle = window.__robot_visualizer;
       if (!handle) return null;
-      const gears = handle.getTowerGears();
+      const gears = handle.getTowerGears() as Array<{ position: { z: number } }>;
       if (!gears || gears.length === 0) return null;
       return gears[gears.length - 1].position.z;
     });
