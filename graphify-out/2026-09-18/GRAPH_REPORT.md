@@ -1,16 +1,16 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-18)
 
 ## Corpus Check
-- 243 files · ~152,707 words
+- 250 files · ~153,192 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2404 nodes · 3305 edges · 229 communities (161 shown, 38 thin omitted)
+- 2435 nodes · 3368 edges · 231 communities (163 shown, 38 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 231 edges (avg confidence: 0.94)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1a000d35`
+- Built from commit: `096d5c4b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -85,7 +85,7 @@
 - scripts
 - hand-sim-8n0g--phase-2-frame-aggregation-continuous-6-dof-telemet.md
 - domain.rs
-- TeleopClient.tsx
+- useTeleopSession.ts
 - MockGateway
 - hand-sim-1o1z--unit-21-edgenode-robust-jointstate-extraction-hybr.md
 - hand-sim-6vku--unit-23-teleopclient-telemetrymonitor-showcase-dir.md
@@ -99,7 +99,7 @@
 - JointStateMapper
 - dependencies
 - RobotVisualizer.tsx
-- TelemetryMonitor.test.tsx
+- RobotState
 - palm_state
 - unit3/implementation_wireframe.md
 - properties
@@ -136,7 +136,7 @@
 - unit2/overview.md
 - unit3/overview.md
 - unit4/overview.md
-- pose_name
+- items
 - spawn_object_payload
 - hand-sim-7w33--unit-5-interactive-3d-workcell-click-to-place-gear.md
 - node.py
@@ -155,8 +155,8 @@
 - harness.ts
 - WorkcellState
 - clear_workspace_payload
-- emergency_stop_payload
 - $defs
+- reset_fault_payload
 - hand-sim-24sn--unit-52-edgenode-workcellstate-server-side-lockout.md
 - hand-sim-366j--unit-51-3d-workcell-table-raycaster-procedural-gea.md
 - hand-sim-3hb6--unit-54-teleopclient-operator-toolbar-clear-worksp.md
@@ -207,13 +207,15 @@
 - jsdom
 - mock_gateway.ts
 - ActiveGear
-- items
+- TeleopClient.tsx
 - .on_joint_state
 - oxlint
 - postcss
 - vitest
 - .close
 - mock_ros_node
+- required
+- global.d.ts
 
 ## God Nodes (most connected - your core abstractions)
 1. `TeleopPage` - 64 edges
@@ -242,7 +244,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (229 total, 38 thin omitted)
+## Communities (231 total, 38 thin omitted)
 
 ### Community 0 - "Triage"
 Cohesion: 0.06
@@ -290,7 +292,7 @@ Nodes (17): ask(), ask_secret(), banner(), _clear(), _existing(), finish(), note
 
 ### Community 11 - "FabricError"
 Cohesion: 0.06
-Nodes (38): ActionFeedbackFrame, Box, Debug, Deref, DerefMut, FnOnce, Formatter, HashMap (+30 more)
+Nodes (39): ActionFeedbackFrame, Box, Debug, Deref, DerefMut, FnOnce, Formatter, HashMap (+31 more)
 
 ### Community 12 - "Diagnosing Bugs"
 Cohesion: 0.13
@@ -454,7 +456,7 @@ Nodes (10): BOOTING, EXECUTING, FAULT, IDLE, PROCESSING, robot_state, descriptio
 
 ### Community 81 - "MockMotionPublisher"
 Cohesion: 0.08
-Nodes (26): ArgumentParser, build_arg_parser(), JointSinusoidConfig, main(), MockMotionPublisher, Any, RobotTelemetryEvent, Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.… (+18 more)
+Nodes (28): ArgumentParser, build_arg_parser(), JointSinusoidConfig, main(), MockMotionPublisher, Any, RobotTelemetryEvent, Standalone continuous 30 Hz sinusoidal mock motion publisher for UR5e.… (+20 more)
 
 ### Community 82 - "error_frame.schema.json"
 Cohesion: 0.07
@@ -462,7 +464,7 @@ Nodes (28): error_code, message, additionalProperties, description, description,
 
 ### Community 84 - "contracts.ts"
 Cohesion: 0.05
-Nodes (64): armJointPositionsSchema, ClearWorkspacePayload, clearWorkspacePayloadSchema, commandTypeSchema, EmergencyStopPayload, emergencyStopPayloadSchema, errorFrameSchema, InferenceMetrics (+56 more)
+Nodes (63): armJointPositionsSchema, ClearWorkspacePayload, clearWorkspacePayloadSchema, commandTypeSchema, EmergencyStopPayload, emergencyStopPayloadSchema, errorFrameSchema, InferenceMetrics (+55 more)
 
 ### Community 86 - "scripts"
 Cohesion: 0.25
@@ -474,11 +476,11 @@ Nodes (7): Further Notes, Implementation Decisions, Out of Scope, Problem Statem
 
 ### Community 88 - "domain.rs"
 Cohesion: 0.06
-Nodes (35): D, canonical_pose(), deserialize_finite_joints(), DomainError, Error, Into, Option, Result (+27 more)
+Nodes (34): D, canonical_pose(), deserialize_finite_joints(), DomainError, Error, Into, Option, Result (+26 more)
 
-### Community 89 - "TeleopClient.tsx"
-Cohesion: 0.23
-Nodes (21): isErrorFrame(), PalmAction, PickAndPlaceTargetPayload, serializeCommand(), SpawnObjectPayload, ActionFeedbackFrame, createClearWorkspaceCommand(), createEmergencyStopCommand() (+13 more)
+### Community 89 - "useTeleopSession.ts"
+Cohesion: 0.22
+Nodes (21): isErrorFrame(), PalmAction, PickAndPlaceTargetPayload, RobotCommand, serializeCommand(), SpawnObjectPayload, ActionFeedbackFrame, createClearWorkspaceCommand() (+13 more)
 
 ### Community 91 - "hand-sim-1o1z--unit-21-edgenode-robust-jointstate-extraction-hybr.md"
 Cohesion: 0.40
@@ -526,11 +528,11 @@ Nodes (9): preact, three, urdf-loader, dependencies, preact, three, urdf-loader,
 
 ### Community 102 - "RobotVisualizer.tsx"
 Cohesion: 0.07
-Nodes (37): ADR-0001, UR5E_JOINTS, UR5eJoint, createDexterousPalm(), createProceduralGearwheel(), createRobotPedestal(), createSpindleTower(), createWorkcellTable() (+29 more)
+Nodes (38): ADR-0001, UR5E_JOINTS, UR5eJoint, createDexterousPalm(), createProceduralGearwheel(), createRobotPedestal(), createSpindleTower(), createWorkcellTable() (+30 more)
 
-### Community 103 - "TelemetryMonitor.test.tsx"
-Cohesion: 0.23
-Nodes (9): ArmJointPositions, CANONICAL_UR5E_JOINTS, isRobotTelemetryEvent(), TelemetryMonitor(), TelemetryMonitorProps, TelemetryBuffer, useTelemetryStream(), ActiveTrajectory (+1 more)
+### Community 103 - "RobotState"
+Cohesion: 0.18
+Nodes (12): CANONICAL_UR5E_JOINTS, isRobotTelemetryEvent(), PoseName, RobotState, OperatorToolbar(), OperatorToolbarProps, TelemetryMonitor(), TelemetryMonitorProps (+4 more)
 
 ### Community 104 - "palm_state"
 Cohesion: 0.22
@@ -561,16 +563,16 @@ Cohesion: 0.33
 Nodes (5): 0001. Defer Gazebo Physics to Phase 4 in Favor of Dynamic Mock Telemetry for Phase 3 3D Spatial Mapping, Consequences, Context, Decision, Status
 
 ### Community 116 - "EdgeNode"
-Cohesion: 0.14
-Nodes (45): CommandType, ErrorFrame, RobotCommand, RobotState, RobotTelemetryEvent, Canonical schema for structured error frames returned by Gateway over WebSocket, Canonical schema for inbound commands sent to EdgeNode over WebSocket or…, Canonical schema for outbound telemetry events emitted by EdgeNode over… (+37 more)
+Cohesion: 0.15
+Nodes (44): CommandType, ErrorFrame, RobotCommand, RobotState, RobotTelemetryEvent, Canonical schema for structured error frames returned by Gateway over WebSocket, Canonical schema for inbound commands sent to EdgeNode over WebSocket or…, Canonical schema for outbound telemetry events emitted by EdgeNode over… (+36 more)
 
 ### Community 117 - "hand-sim-liyi--phase-3-3d-visualization-dynamic-kinematic-sync.md"
 Cohesion: 0.25
 Nodes (7): Further Notes, Implementation Decisions, Out of Scope, Problem Statement, Solution, Testing Decisions, User Stories
 
 ### Community 118 - "main.tsx"
-Cohesion: 0.26
-Nodes (6): DEFAULT_ROBOT_ID, App(), root, isBrowser(), getAllParams(), getParam()
+Cohesion: 0.29
+Nodes (7): App(), root, isBrowser(), isTestEnv(), getAllParams(), getParam(), resolveGatewayWsUrl()
 
 ### Community 119 - "hand-sim-2lcq--unit-32-teleopclient-threejs-robotvisualizer-canva.md"
 Cohesion: 0.40
@@ -640,9 +642,9 @@ Nodes (5): Acceptance criteria, Blocked by, Parent, Summary of Changes, What to 
 Cohesion: 0.25
 Nodes (8): GRASP, RELEASE, description, enum, title, type, properties, action
 
-### Community 141 - "pose_name"
-Cohesion: 0.15
-Nodes (13): HOME, INSPECT_POSE, READY, description, enum, title, type, pose_name (+5 more)
+### Community 141 - "items"
+Cohesion: 0.08
+Nodes (25): HOME, INSPECT_POSE, READY, trajectory_execute_payload, description, items, maxItems, minItems (+17 more)
 
 ### Community 142 - "spawn_object_payload"
 Cohesion: 0.20
@@ -704,13 +706,13 @@ Nodes (14): SpawnObjectPayload, Typed payload for SPAWN_OBJECT command, Calculat
 Cohesion: 0.33
 Nodes (6): additionalProperties, description, properties, title, type, clear_workspace_payload
 
-### Community 160 - "emergency_stop_payload"
-Cohesion: 0.22
-Nodes (9): emergency_stop_payload, additionalProperties, description, properties, title, type, reason, description (+1 more)
+### Community 160 - "$defs"
+Cohesion: 0.20
+Nodes (10): $defs, emergency_stop_payload, additionalProperties, description, properties, title, type, reason (+2 more)
 
-### Community 161 - "$defs"
-Cohesion: 0.17
-Nodes (12): $defs, reset_fault_payload, trajectory_execute_payload, additionalProperties, description, properties, title, type (+4 more)
+### Community 161 - "reset_fault_payload"
+Cohesion: 0.33
+Nodes (6): reset_fault_payload, additionalProperties, description, properties, title, type
 
 ### Community 162 - "hand-sim-24sn--unit-52-edgenode-workcellstate-server-side-lockout.md"
 Cohesion: 0.33
@@ -837,8 +839,8 @@ Cohesion: 0.12
 Nodes (15): fixture, Unit tests for ArmControllerNode, AnalyticalInverseKinematics, and Action…, Asserts downward tool orientation and 0.108m TCP offset., Asserts out-of-reach coordinates raise OutOfReachError., Asserts /joint_states updates canonical joint positions regardless of incoming…, Asserts action server streams all 10 feedback phases and executes trajectory…, Asserts second concurrent PickAndPlace goal is rejected while another is…, Asserts AnalyticalInverseKinematics solves in <0.2ms with <1mm Cartesian… (+7 more)
 
 ### Community 200 - "domain.py"
-Cohesion: 0.14
-Nodes (19): Enum, PalmAction, PalmState, parse_robot_topic(), PoseName, robot_command_topic(), robot_telemetry_topic(), SpawnObjectType (+11 more)
+Cohesion: 0.15
+Nodes (18): Enum, PalmAction, PalmState, parse_robot_topic(), PoseName, robot_command_topic(), robot_telemetry_topic(), SpawnObjectType (+10 more)
 
 ### Community 201 - "package.json"
 Cohesion: 0.40
@@ -849,8 +851,8 @@ Cohesion: 0.06
 Nodes (34): elbow_joint, joint_positions, palm_state, robot_state, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint (+26 more)
 
 ### Community 203 - "robot_command.schema.json"
-Cohesion: 0.14
-Nodes (13): command_id, payload, sender_id, additionalProperties, description, $id, timestamp_ns, type (+5 more)
+Cohesion: 0.25
+Nodes (7): additionalProperties, description, $id, $schema, title, type, x-datafabric-channel
 
 ### Community 205 - "seconds_to_duration"
 Cohesion: 0.13
@@ -877,30 +879,38 @@ Cohesion: 0.40
 Nodes (4): Acceptance criteria, Blocked by, Parent, What to build
 
 ### Community 215 - "mock_gateway.ts"
-Cohesion: 0.15
-Nodes (14): CANONICAL_POSES, CommandType, ErrorFrame, PoseName, robotCommandSchema, RobotState, RobotTelemetryEvent, OperatorToolbar() (+6 more)
+Cohesion: 0.13
+Nodes (13): ArmJointPositions, CANONICAL_POSES, DEFAULT_ROBOT_ID, ErrorFrame, robotCommandSchema, RobotTelemetryEvent, ErrorLogEntry, TelemetryLogEntry (+5 more)
 
 ### Community 216 - "ActiveGear"
 Cohesion: 0.25
 Nodes (6): SpawnObjectPayload, SpawnObjectType, ActiveGear, Active gear workpiece placed in the workcell., Records active gear presence and coordinates. Raises: WorkcellOccupiedError: If…, Returns the active gear workpiece or None.
 
-### Community 217 - "items"
+### Community 217 - "TeleopClient.tsx"
+Cohesion: 0.14
+Nodes (16): CommandType, ActionProgressBar(), ActionProgressBarProps, ConflictBanner(), ConflictBannerProps, ConnectionBadge(), ConnectionBadgeProps, getBadgeColor() (+8 more)
+
+### Community 229 - "required"
 Cohesion: 0.33
-Nodes (7): description, items, maxItems, minItems, title, type, items
+Nodes (6): command_id, payload, sender_id, timestamp_ns, type, required
+
+### Community 230 - "global.d.ts"
+Cohesion: 0.33
+Nodes (5): RobotVisualizerGlobalHandle, VisualizerNozzleState, VisualizerRaycastResult, VisualizerRendererInfo, Window
 
 ## Knowledge Gaps
-- **965 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+960 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1379 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **971 isolated node(s):** `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema`, `$id`, `title` (+966 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1385 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `EdgeNode` connect `EdgeNode` to `._execute_pick_and_place_sequence`, `test_domain.py`, `JointStateMapper`, `domain.py`, `.on_joint_state`, `node.py`, `WorkpieceSpawnedEvent`, `PickAndPlaceTrajectoryGenerator`, `WorkcellState`, `.close`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+  _High betweenness centrality (0.041) - this node is a cross-community bridge._
 - **Why does `DataFabricPort` connect `FabricError` to `teleop_ws`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
-- **Why does `$defs` connect `$defs` to `emergency_stop_payload`, `robot_command.schema.json`, `spawn_object_payload`, `palm_actuate_payload`, `pick_and_place_target_payload`, `clear_workspace_payload`?**
+  _High betweenness centrality (0.029) - this node is a cross-community bridge._
+- **Why does `$defs` connect `$defs` to `reset_fault_payload`, `robot_command.schema.json`, `items`, `spawn_object_payload`, `palm_actuate_payload`, `pick_and_place_target_payload`, `clear_workspace_payload`?**
   _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Are the 42 inferred relationships involving `EdgeNode` (e.g. with `ClearWorkspacePayload` and `CommandType`) actually correct?**
   _`EdgeNode` has 42 INFERRED edges - model-reasoned connections that need verification._
@@ -909,4 +919,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **Are the 28 inferred relationships involving `RobotCommand` (e.g. with `EdgeNode` and `test_clear_workspace_payload_serialization()`) actually correct?**
   _`RobotCommand` has 28 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `rust_feedback.sh script`, `ros2-robot-controller-simulation`, `$schema` to the rest of the system?**
-  _965 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _971 weakly-connected nodes found - possible documentation gaps or missing edges._

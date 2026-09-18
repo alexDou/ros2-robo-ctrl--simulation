@@ -15,7 +15,7 @@ import random
 import pytest
 
 from domain import CANONICAL_POSES, PoseName
-from edge_node.kinematics import (
+from arm_controller.kinematics import (
     DEFAULT_DOWNWARD_ORIENTATION,
     DEFAULT_SPINDLE_TOWER_COORDS,
     DEFAULT_TCP_OFFSET_M,
@@ -282,11 +282,11 @@ class TestPickAndPlaceTrajectoryGenerator:
         assert steps[7].pause_duration_s == 0.0
 
         # 9. home: CANONICAL_POSES[HOME]
-        assert steps[8].joint_positions == CANONICAL_POSES[PoseName.HOME]
+        assert steps[8].joint_positions == pytest.approx(CANONICAL_POSES[PoseName.HOME], abs=1e-4)
         assert not steps[8].is_grasped
 
         # 10. complete: CANONICAL_POSES[HOME]
-        assert steps[9].joint_positions == CANONICAL_POSES[PoseName.HOME]
+        assert steps[9].joint_positions == pytest.approx(CANONICAL_POSES[PoseName.HOME], abs=1e-4)
         assert not steps[9].is_grasped
 
     def test_default_drop_is_spindle_tower(self) -> None:

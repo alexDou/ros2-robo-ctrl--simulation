@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "pyproject.toml": {
-    "mtime": 1789662028.117104,
-    "seen": 1789662124.0169585,
-    "ast_hash": "981968bed851b70e56c68ade0d995037",
+    "mtime": 1789739038.2518773,
+    "seen": 1789739249.3293612,
+    "ast_hash": "12978d2b69aab727e64b7b3dcbebe9fd",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789337895.9086611,
-    "seen": 1789338005.1141682,
-    "ast_hash": "7e410a47040c9be65b1798a764919424",
+    "mtime": 1789739045.6488297,
+    "seen": 1789739249.3375034,
+    "ast_hash": "09824ea39dea73697614b1c3e14a88ba",
     "semantic_hash": ""
   },
   "CONTEXT.md": {
@@ -767,12 +767,6 @@
     "ast_hash": "f5cf2d453c06d19654baa5a68b3334e7",
     "semantic_hash": ""
   },
-  "src/edge_node/__init__.py": {
-    "mtime": 1789683496.315154,
-    "seen": 1789684153.3759263,
-    "ast_hash": "2841616f04a3dec01af1c9eb9fadde09",
-    "semantic_hash": ""
-  },
   "src/gateway/tests/domain_contract_test.rs": {
     "mtime": 1789680415.942543,
     "seen": 1789684153.3762226,
@@ -783,18 +777,6 @@
     "mtime": 1789636839.1782784,
     "seen": 1789637259.3567069,
     "ast_hash": "14dba028172a239e2f550cbf3eb3afed",
-    "semantic_hash": ""
-  },
-  "src/edge_node/main.py": {
-    "mtime": 1789683496.3153703,
-    "seen": 1789684153.3759608,
-    "ast_hash": "2a317dffbacfc165083e66744c611987",
-    "semantic_hash": ""
-  },
-  "src/edge_node/node.py": {
-    "mtime": 1789683496.3157046,
-    "seen": 1789684153.3760223,
-    "ast_hash": "ffed7848e656dde09299e802dfafaf47",
     "semantic_hash": ""
   },
   "src/gateway/src/fabric.rs": {
@@ -821,28 +803,22 @@
     "ast_hash": "536c5eb3107b28cf5178df3f8b50ab8e",
     "semantic_hash": ""
   },
-  "tests/test_edge_node.py": {
-    "mtime": 1789683496.3191779,
-    "seen": 1789684153.3767383,
-    "ast_hash": "c33f80b4f911097aea1915c1b37702b2",
-    "semantic_hash": ""
-  },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789728890.4693305,
-    "seen": 1789729122.1830485,
-    "ast_hash": "416519fac0fda02710c6a6c9e3baea02",
+    "mtime": 1789730029.5743976,
+    "seen": 1789730374.4075487,
+    "ast_hash": "0dc6d749c3929763b8b490a8925523a9",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
-    "mtime": 1788980352.0131688,
-    "seen": 1788982056.4712427,
-    "ast_hash": "e6299c51acae0eacbe10d736a54e5b1a",
+    "mtime": 1789730092.7159746,
+    "seen": 1789730374.4076135,
+    "ast_hash": "1caaa510ab5102d92eb4334c78f53fa2",
     "semantic_hash": ""
   },
   "web/src/utils/url.ts": {
-    "mtime": 1789132580.2915947,
-    "seen": 1789132591.6665475,
-    "ast_hash": "6816f5ceb9a042677e2377ff1cba88c7",
+    "mtime": 1789729930.2960622,
+    "seen": 1789730374.4076493,
+    "ast_hash": "12405d0ddc8a393e510b742dcb609490",
     "semantic_hash": ""
   },
   "web/tests/unit/TeleopClient.test.tsx": {
@@ -858,15 +834,15 @@
     "semantic_hash": ""
   },
   "web/tests/unit/env.test.ts": {
-    "mtime": 1788980846.5945566,
-    "seen": 1788982056.471252,
-    "ast_hash": "5131fae6b34b9118baff738f01a84617",
+    "mtime": 1789730099.8789265,
+    "seen": 1789730374.4080303,
+    "ast_hash": "9f074730a84a49a638e2e35225bfdb77",
     "semantic_hash": ""
   },
   "web/tests/unit/url.test.ts": {
-    "mtime": 1788980855.739704,
-    "seen": 1788982056.4712539,
-    "ast_hash": "68306671e9e6d36211379719e7a14802",
+    "mtime": 1789730052.7182426,
+    "seen": 1789730374.4081833,
+    "ast_hash": "b18122cf4123e6084153c570b3ab8b0e",
     "semantic_hash": ""
   },
   ".agents/rules/structure.md": {
@@ -882,9 +858,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1789729054.7058043,
-    "seen": 1789729122.1831923,
-    "ast_hash": "9721a4213543d9e61d66ad4c98b949c7",
+    "mtime": 1789730316.7304726,
+    "seen": 1789730374.40765,
+    "ast_hash": "03de1de802cd817b61a969c562db390e",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
@@ -894,9 +870,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789727679.4909172,
-    "seen": 1789727926.811991,
-    "ast_hash": "82f0aa358a1d2b4a711c33eb7f4f1789",
+    "mtime": 1789739013.104039,
+    "seen": 1789739249.3325632,
+    "ast_hash": "ff99aa7efb53b238018952ec91cc3446",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
@@ -906,9 +882,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/world.ts": {
-    "mtime": 1788983653.6877398,
-    "seen": 1788983762.2719631,
-    "ast_hash": "a2509077e6f22f4c765e4f4ea8ad39d0",
+    "mtime": 1789730325.887411,
+    "seen": 1789730374.4079375,
+    "ast_hash": "082331b837632eea23d35986aa2a6be6",
     "semantic_hash": ""
   },
   "scripts/generate_domain.py": {
@@ -995,18 +971,6 @@
     "ast_hash": "495ea32394b3fcc6ff6fc8847c15ec46",
     "semantic_hash": ""
   },
-  "src/edge_node/mapper.py": {
-    "mtime": 1789401762.0294988,
-    "seen": 1789405389.6305733,
-    "ast_hash": "74fd12364f9df19b9c10930dcde06323",
-    "semantic_hash": ""
-  },
-  "src/edge_node/mock_publisher.py": {
-    "mtime": 1789683496.3153703,
-    "seen": 1789684153.3760214,
-    "ast_hash": "71e9c75648f2483ed008bb539f165c4c",
-    "semantic_hash": ""
-  },
   "web/src/components/TelemetryMonitor.tsx": {
     "mtime": 1789399420.6334207,
     "seen": 1789400058.655526,
@@ -1085,28 +1049,16 @@
     "ast_hash": "49ff3e833ba8f440aefbc0b734ec4342",
     "semantic_hash": ""
   },
-  "src/edge_node/mock_motion_publisher.py": {
-    "mtime": 1789416986.8922615,
-    "seen": 1789417122.125644,
-    "ast_hash": "6101ed94f5bad5718af7c3d135568a5b",
-    "semantic_hash": ""
-  },
-  "tests/test_mock_motion_publisher.py": {
-    "mtime": 1789417021.3673663,
-    "seen": 1789417122.1265967,
-    "ast_hash": "f66fd531b68362fd0e3d33e948aee3b3",
-    "semantic_hash": ""
-  },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789728971.7931218,
-    "seen": 1789729122.1830163,
-    "ast_hash": "1a0f53446303a0a75c0a23335faded4e",
+    "mtime": 1789730191.87831,
+    "seen": 1789730374.4075177,
+    "ast_hash": "491b3e38df31b020225791002f0aa01e",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
-    "mtime": 1789645692.1622458,
-    "seen": 1789645839.8723752,
-    "ast_hash": "1f344e0c9b31544d1be7ade746260031",
+    "mtime": 1789730349.3232539,
+    "seen": 1789730374.4079382,
+    "ast_hash": "a9c4e0d108156f710fb2eda936d213ca",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/dynamic_motion.steps.ts": {
@@ -1230,9 +1182,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/closed_loop.steps.ts": {
-    "mtime": 1789683496.3204098,
-    "seen": 1789684153.377277,
-    "ast_hash": "581417b7d6cc30f88393e8e370fcf35b",
+    "mtime": 1789730336.193342,
+    "seen": 1789730374.4076507,
+    "ast_hash": "af3cd37d24546affe2c23ea4267939e0",
     "semantic_hash": ""
   },
   ".beans/hand-sim-24sn--unit-52-edgenode-workcellstate-server-side-lockout.md": {
@@ -1295,12 +1247,6 @@
     "ast_hash": "c65985244626c6902b89f4391136f49c",
     "semantic_hash": ""
   },
-  "src/edge_node/workcell.py": {
-    "mtime": 1789640340.3997471,
-    "seen": 1789640667.9660594,
-    "ast_hash": "a56eff7f00ed5c440be28b86d6ea0c63",
-    "semantic_hash": ""
-  },
   "web/tests/e2e/steps/workcell.steps.ts": {
     "mtime": 1789562217.2665637,
     "seen": 1789562278.514597,
@@ -1361,16 +1307,10 @@
     "ast_hash": "2d6cbb9a47aee4b0af0dd0a8cfead0df",
     "semantic_hash": ""
   },
-  "src/edge_node/kinematics.py": {
-    "mtime": 1789639044.4568,
-    "seen": 1789639091.1369774,
-    "ast_hash": "dff927d75c49f9266abc7303ddd833eb",
-    "semantic_hash": ""
-  },
   "tests/test_kinematics.py": {
-    "mtime": 1789639053.3116813,
-    "seen": 1789639091.1375198,
-    "ast_hash": "b29ba40b9928ef1aff3b02a879761a5e",
+    "mtime": 1789738956.9693997,
+    "seen": 1789739249.3312004,
+    "ast_hash": "3544eed3d4f534e06281d882250c4cf5",
     "semantic_hash": ""
   },
   ".beans/hand-sim-wt44--unit-65-refactoring-real-robot-native-ros2-archite.md": {
@@ -1530,15 +1470,15 @@
     "semantic_hash": ""
   },
   "src/ros2/robot_bringup/test/test_robot_nodes_launch.py": {
-    "mtime": 1789662020.647148,
-    "seen": 1789662124.0195208,
-    "ast_hash": "9184febac94b2c316947556176f608a7",
+    "mtime": 1789738987.5542033,
+    "seen": 1789739249.3309412,
+    "ast_hash": "dc3eec8c50db3d39b52ebe350155afd7",
     "semantic_hash": ""
   },
   "tests/test_robot_nodes_launch.py": {
-    "mtime": 1789662020.647148,
-    "seen": 1789662124.02081,
-    "ast_hash": "9184febac94b2c316947556176f608a7",
+    "mtime": 1789738987.5542033,
+    "seen": 1789739249.3312376,
+    "ast_hash": "dc3eec8c50db3d39b52ebe350155afd7",
     "semantic_hash": ""
   },
   "src/ros2/robot_bringup/config/ur_controllers.yaml": {
@@ -1572,9 +1512,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-84vj--refactor-a7-legacy-prototype-retirement-full-syste.md": {
-    "mtime": 1789684142.2993853,
-    "seen": 1789684153.3815556,
-    "ast_hash": "df302f03bdc5037981512a719ac22035",
+    "mtime": 1789739215.195739,
+    "seen": 1789739249.3363476,
+    "ast_hash": "c397378f405502e4a6111a614cb07eb0",
     "semantic_hash": ""
   },
   ".beans/hand-sim-nxx6--refactor-a6-pick-and-place-spindletower-stacking-u.md": {
@@ -1617,6 +1557,48 @@
     "mtime": 1789728933.9373047,
     "seen": 1789729122.1836278,
     "ast_hash": "dedd818d6fd685b93170ad48c95bc1ec",
+    "semantic_hash": ""
+  },
+  "web/src/components/ActionProgressBar.tsx": {
+    "mtime": 1789729998.7086043,
+    "seen": 1789730374.4074583,
+    "ast_hash": "7771cd484752953bb8fca3e4e250a6b1",
+    "semantic_hash": ""
+  },
+  "web/src/components/ConflictBanner.tsx": {
+    "mtime": 1789729971.2197883,
+    "seen": 1789730374.4074738,
+    "ast_hash": "b3f72c7a29252b547acaa23389233e60",
+    "semantic_hash": ""
+  },
+  "web/src/components/ConnectionBadge.tsx": {
+    "mtime": 1789729962.8668442,
+    "seen": 1789730374.407476,
+    "ast_hash": "744ecf5725a7c74acc5a57d1610596b2",
+    "semantic_hash": ""
+  },
+  "web/src/components/EventLog.tsx": {
+    "mtime": 1789730017.131481,
+    "seen": 1789730374.4074771,
+    "ast_hash": "af50c151a6d423a0dc8e123a7d4ff929",
+    "semantic_hash": ""
+  },
+  "web/src/hooks/useIsDesktop.ts": {
+    "mtime": 1789729939.592,
+    "seen": 1789730374.4075496,
+    "ast_hash": "2ceaecf60a22b4f187ec21c76114190b",
+    "semantic_hash": ""
+  },
+  "web/src/hooks/useTeleopSession.ts": {
+    "mtime": 1789730010.7735236,
+    "seen": 1789730374.4075856,
+    "ast_hash": "dab1889281ef61e457c5c0467bac99d5",
+    "semantic_hash": ""
+  },
+  "web/src/types/global.d.ts": {
+    "mtime": 1789730087.5640092,
+    "seen": 1789730374.4076123,
+    "ast_hash": "e1382c76ab4b5ffe7a6bcf6af87ea22d",
     "semantic_hash": ""
   }
 }
