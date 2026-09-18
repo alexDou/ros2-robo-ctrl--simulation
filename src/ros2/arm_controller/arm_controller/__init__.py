@@ -28,12 +28,14 @@ from arm_controller.arm_controller_node import (
     ArmControllerNode,
     seconds_to_duration,
 )
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 
 __all__ = [
     "APPROACH_LIFT_OFFSET_M",
     "ActionPhase",
     "AnalyticalInverseKinematics",
     "ArmControllerNode",
+    "EdgeBridgeNode",
     "CANONICAL_UR5E_JOINTS",
     "DEFAULT_DOWNWARD_ORIENTATION",
     "DEFAULT_SPINDLE_TOWER_COORDS",

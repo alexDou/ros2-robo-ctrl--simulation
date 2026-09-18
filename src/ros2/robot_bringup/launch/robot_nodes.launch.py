@@ -63,6 +63,7 @@ def launch_setup(
     ur_type = LaunchConfiguration('ur_type').perform(context)
     robot_ip = LaunchConfiguration('robot_ip').perform(context)
     controllers_file = LaunchConfiguration('controllers_file').perform(context)
+    robot_id = LaunchConfiguration('robot_id').perform(context)
 
     entities: List[LaunchDescriptionEntity] = []
 
@@ -179,6 +180,16 @@ def launch_setup(
     )
     entities.append(arm_controller_node)
 
+    # 7. Edge Bridge Node (Zenoh DataFabric command bridge)
+    edge_bridge_node = Node(
+        package='arm_controller',
+        executable='edge_bridge_node',
+        name='edge_bridge_node',
+        output='both',
+        parameters=[{'robot_id': robot_id}],
+    )
+    entities.append(edge_bridge_node)
+
     return entities
 
 
@@ -205,6 +216,11 @@ def generate_launch_description() -> LaunchDescription:
             'ur_type',
             default_value='ur5e',
             description='Type of UR robot (ur3, ur5, ur5e, ur10, ur10e)',
+        ),
+        DeclareLaunchArgument(
+            'robot_id',
+            default_value='arm-ur5',
+            description='Unique robotic identifier for DataFabric topics and sessions',
         ),
         DeclareLaunchArgument(
             'robot_ip',
