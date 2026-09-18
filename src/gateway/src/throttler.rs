@@ -43,11 +43,45 @@ struct RawJointStateMsgRef<'a> {
     timestamp_ns: Option<u64>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Deserialize)]
+struct CdrTimeMsg {
+    sec: i32,
+    nanosec: u32,
+}
+
+#[derive(Debug, Deserialize)]
+struct CdrHeaderMsg {
+    stamp: CdrTimeMsg,
+    #[allow(dead_code)]
+    frame_id: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct CdrJointStateMsg {
+    header: CdrHeaderMsg,
+    name: Vec<String>,
+    position: Vec<f64>,
+}
+
+#[derive(Debug)]
 struct ThrottlerState {
     pending: Option<RobotTelemetryEvent>,
     latest: Option<RobotTelemetryEvent>,
     cached_indices: Option<[usize; 6]>,
+    current_robot_state: RobotState,
+    current_palm_state: crate::domain::PalmState,
+}
+
+impl Default for ThrottlerState {
+    fn default() -> Self {
+        Self {
+            pending: None,
+            latest: None,
+            cached_indices: None,
+            current_robot_state: RobotState::Idle,
+            current_palm_state: crate::domain::PalmState::default(),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -139,20 +173,119 @@ impl TelemetryThrottler {
         Self { inner }
     }
 
+    /// Dynamically sets the manipulator lifecycle state (e.g. Idle, Executing, Fault).
+    pub fn set_robot_state(&self, state: RobotState) {
+        let mut guard = self.inner.state.lock().expect("lock throttler state");
+        guard.current_robot_state = state;
+        if let Some(ref mut latest) = guard.latest {
+            latest.robot_state = state;
+        }
+        if let Some(ref mut pending) = guard.pending {
+            pending.robot_state = state;
+        } else if let Some(ref latest) = guard.latest {
+            guard.pending = Some(latest.clone());
+        }
+    }
+
+    /// Dynamically sets the end-effector palm actuation and grasp status.
+    pub fn set_palm_state(&self, state: crate::domain::PalmState) {
+        let mut guard = self.inner.state.lock().expect("lock throttler state");
+        guard.current_palm_state = state.clone();
+        if let Some(ref mut latest) = guard.latest {
+            latest.palm_state = state.clone();
+        }
+        if let Some(ref mut pending) = guard.pending {
+            pending.palm_state = state;
+        } else if let Some(ref latest) = guard.latest {
+            guard.pending = Some(latest.clone());
+        }
+    }
+
+    /// Gets current robot lifecycle state.
+    #[must_use]
+    pub fn robot_state(&self) -> RobotState {
+        let guard = self.inner.state.lock().expect("lock throttler state");
+        guard.current_robot_state
+    }
+
+    /// Gets current palm grasp state.
+    #[must_use]
+    pub fn palm_state(&self) -> crate::domain::PalmState {
+        let guard = self.inner.state.lock().expect("lock throttler state");
+        guard.current_palm_state.clone()
+    }
+
     /// Pushes a typed `RobotTelemetryEvent` into the throttler in a non-blocking O(1) step.
     pub fn push_event(&self, event: RobotTelemetryEvent) {
         self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);
         let mut guard = self.inner.state.lock().expect("lock throttler state");
+        guard.current_robot_state = event.robot_state;
+        guard.current_palm_state = event.palm_state.clone();
         guard.latest = Some(event.clone());
         guard.pending = Some(event);
     }
 
-    /// Pushes a raw byte slice into the throttler, parsing either `RobotTelemetryEvent`
-    /// or `sensor_msgs/msg/JointState` into canonical UR5e joint state with zero heap allocation.
+    /// Pushes a raw byte slice into the throttler, parsing `RobotTelemetryEvent` (JSON),
+    /// binary OMG-CDR `sensor_msgs/msg/JointState`, or JSON `sensor_msgs/msg/JointState`
+    /// into canonical UR5e joint state. Routes directly by packet header byte without
+    /// trial-and-error overhead on high-frequency streams.
     ///
     /// # Errors
-    /// Returns error string if the payload cannot be deserialized as either format.
+    /// Returns error string if the payload cannot be deserialized as any supported format.
     pub fn push_bytes(&self, bytes: &[u8]) -> Result<(), String> {
+        // Fast dispatch: OMG-CDR begins with 4-byte encapsulation header [0x00, 0x01/0x00, 0x00, 0x00]
+        if bytes.len() >= 4 && bytes[0] == 0 && (bytes[1] == 1 || bytes[1] == 0) {
+            if let Ok(cdr_msg) = cdr::deserialize::<CdrJointStateMsg>(bytes) {
+                let timestamp_ns = if cdr_msg.header.stamp.sec > 0 || cdr_msg.header.stamp.nanosec > 0 {
+                    (u64::try_from(cdr_msg.header.stamp.sec.max(0)).unwrap_or(0)) * 1_000_000_000
+                        + u64::from(cdr_msg.header.stamp.nanosec)
+                } else {
+                    current_time_ns()
+                };
+
+                let mut positions = [0.0; 6];
+                let mut guard = self.inner.state.lock().expect("lock throttler state");
+                let indices = if let Some(idx) = guard.cached_indices {
+                    idx
+                } else {
+                    let mut idx = [usize::MAX; 6];
+                    for (i, &name) in UR5E_JOINTS.iter().enumerate() {
+                        if let Some(p) = cdr_msg.name.iter().position(|n| n == name) {
+                            idx[i] = p;
+                        }
+                    }
+                    if !idx.contains(&usize::MAX) {
+                        guard.cached_indices = Some(idx);
+                    }
+                    idx
+                };
+
+                for (i, &pos_idx) in indices.iter().enumerate() {
+                    if pos_idx != usize::MAX {
+                        positions[i] = cdr_msg.position.get(pos_idx).copied().unwrap_or(0.0);
+                    }
+                }
+
+                let event = RobotTelemetryEvent {
+                    timestamp_ns,
+                    robot_state: guard.current_robot_state,
+                    joint_positions: positions,
+                    palm_state: guard.current_palm_state.clone(),
+                    inference_metrics: None,
+                    command_id: None,
+                };
+
+                self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);
+                guard.latest = Some(event.clone());
+                guard.pending = Some(event);
+                drop(guard);
+                return Ok(());
+            }
+
+            return Err("Failed to deserialize binary payload as CDR JointState".to_string());
+        }
+
+        // JSON dispatch path
         if let Ok(event) = serde_json::from_slice::<RobotTelemetryEvent>(bytes) {
             self.push_event(event);
             return Ok(());
@@ -161,12 +294,13 @@ impl TelemetryThrottler {
         if let Ok(raw) = serde_json::from_slice::<RawJointStateMsgRef>(bytes) {
             let timestamp_ns = if let Some(ref h) = raw.header {
                 if let Some(ref s) = h.stamp {
-                    (u64::try_from(s.sec.max(0)).unwrap_or(0)) * 1_000_000_000 + u64::from(s.nanosec)
+                    let computed = (u64::try_from(s.sec.max(0)).unwrap_or(0)) * 1_000_000_000 + u64::from(s.nanosec);
+                    if computed > 0 { computed } else { current_time_ns() }
                 } else {
-                    raw.timestamp_ns.unwrap_or_else(current_time_ns)
+                    raw.timestamp_ns.filter(|&t| t > 0).unwrap_or_else(current_time_ns)
                 }
             } else {
-                raw.timestamp_ns.unwrap_or_else(current_time_ns)
+                raw.timestamp_ns.filter(|&t| t > 0).unwrap_or_else(current_time_ns)
             };
 
             let mut positions = [0.0; 6];
@@ -180,7 +314,9 @@ impl TelemetryThrottler {
                         idx[i] = p;
                     }
                 }
-                guard.cached_indices = Some(idx);
+                if !idx.contains(&usize::MAX) {
+                    guard.cached_indices = Some(idx);
+                }
                 idx
             };
 
@@ -192,9 +328,9 @@ impl TelemetryThrottler {
 
             let event = RobotTelemetryEvent {
                 timestamp_ns,
-                robot_state: RobotState::Executing,
+                robot_state: guard.current_robot_state,
                 joint_positions: positions,
-                palm_state: crate::domain::PalmState::default(),
+                palm_state: guard.current_palm_state.clone(),
                 inference_metrics: None,
                 command_id: None,
             };
@@ -206,7 +342,7 @@ impl TelemetryThrottler {
             return Ok(());
         }
 
-        Err("Failed to parse payload as RobotTelemetryEvent or JointState".to_string())
+        Err("Failed to parse payload as RobotTelemetryEvent, CDR JointState, or JSON JointState".to_string())
     }
 
     /// Pushes a raw JSON string into the throttler.

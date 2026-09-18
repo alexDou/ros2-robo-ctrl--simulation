@@ -54,9 +54,9 @@
     "semantic_hash": ""
   },
   "src/gateway/Cargo.toml": {
-    "mtime": 1789663172.6002479,
-    "seen": 1789664600.1215506,
-    "ast_hash": "b925fb575add3570420b828d8b09cfd6",
+    "mtime": 1789743165.940616,
+    "seen": 1789744318.320379,
+    "ast_hash": "312f8ff7e7fe2acae6280040bc6017c3",
     "semantic_hash": ""
   },
   "src/gateway/src/lib.rs": {
@@ -678,9 +678,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1789739045.6488297,
-    "seen": 1789739249.3375034,
-    "ast_hash": "09824ea39dea73697614b1c3e14a88ba",
+    "mtime": 1789740211.1772738,
+    "seen": 1789744318.3332145,
+    "ast_hash": "eca08c4d9b660cbe519b6c085ec280b5",
     "semantic_hash": ""
   },
   "CONTEXT.md": {
@@ -1500,15 +1500,15 @@
     "semantic_hash": ""
   },
   "src/gateway/src/throttler.rs": {
-    "mtime": 1789683496.318019,
-    "seen": 1789684153.3762212,
-    "ast_hash": "6c1c8e4f5e381e0a7a699ad187f17959",
+    "mtime": 1789744239.3974845,
+    "seen": 1789744318.3205545,
+    "ast_hash": "94c1748389f9be6782a639653bf3fd0e",
     "semantic_hash": ""
   },
   "src/gateway/tests/throttler_action_test.rs": {
-    "mtime": 1789683496.3186102,
-    "seen": 1789684153.3762236,
-    "ast_hash": "47820c27dcea7dc40b552e13eedd1316",
+    "mtime": 1789744261.0706704,
+    "seen": 1789744318.3206158,
+    "ast_hash": "501a528341cc2ebd16806a3afa4029cc",
     "semantic_hash": ""
   },
   ".beans/hand-sim-84vj--refactor-a7-legacy-prototype-retirement-full-syste.md": {
@@ -1599,6 +1599,48 @@
     "mtime": 1789730087.5640092,
     "seen": 1789730374.4076123,
     "ast_hash": "e1382c76ab4b5ffe7a6bcf6af87ea22d",
+    "semantic_hash": ""
+  },
+  "scripts/launch_ros2.sh": {
+    "mtime": 1789740314.1206076,
+    "seen": 1789744318.3201933,
+    "ast_hash": "d90d1b2c50c4fe5d7849700582235d27",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-1h63--unit-65-bugfix22-ros2-edgebridge-node-pick-and-pla.md": {
+    "mtime": 1789743609.0776978,
+    "seen": 1789744318.3315456,
+    "ast_hash": "3c7e2a747d8741c4e3eedc6fa8c03d71",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-8izv--unit-65-bugfix1-gateway-500-hz-cdr-ingestion-dynam.md": {
+    "mtime": 1789743728.231059,
+    "seen": 1789744318.332051,
+    "ast_hash": "2585c22ee97b467a571c7c2d0a98798d",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-hd13--unit-65-bugfix4-live-multi-service-integration-sui.md": {
+    "mtime": 1789743621.549967,
+    "seen": 1789744318.3325994,
+    "ast_hash": "b5be7482f15bf419a3b36235617e62c7",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-o5es--unit-65-bugfix21-ros2-edgebridge-node-core-telemet.md": {
+    "mtime": 1789743606.663645,
+    "seen": 1789744318.3329132,
+    "ast_hash": "4f5fe25092394e352bf2fc0a7a71f543",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-r6xx--unit-65-bugfix3-web-visualizer-unit-5-6-lifecycle.md": {
+    "mtime": 1789743614.7898219,
+    "seen": 1789744318.332973,
+    "ast_hash": "6617db44d45b91809de6b2e4e5d0ecb2",
+    "semantic_hash": ""
+  },
+  ".beans/hand-sim-s0tn--unit-65-bugfix-production-architecture-integration.md": {
+    "mtime": 1789743594.105367,
+    "seen": 1789744318.3329744,
+    "ast_hash": "ad25d12eaf2a0f403c865fe6cefc302d",
     "semantic_hash": ""
   }
 }
