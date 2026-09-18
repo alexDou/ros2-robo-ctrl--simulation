@@ -1,7 +1,7 @@
 # Graph Report - ros2-robo-ctrl--simulation  (2026-09-18)
 
 ## Corpus Check
-- 252 files · ~154,189 words
+- 252 files · ~154,527 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ba95f19f`
+- Built from commit: `00394225`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -754,7 +754,7 @@ Nodes (9): 1. Objectives, 2. Core Architecture Specifications, 3. Phased Impleme
 
 ### Community 186 - "PickAndPlaceTrajectoryGenerator"
 Cohesion: 0.22
-Nodes (8): PickAndPlaceTrajectoryGenerator, Generates deterministic 10-step Cartesian and joint waypoint trajectories., Asserts 10-step trajectory generation with proper phases and percent_complete., Asserts consecutive waypoints do not suffer multi-revolution S^1 -> R boundary…, test_10_step_waypoint_sequence_and_action_phases(), test_angular_unwrapping_continuity(), Asserts each Cartesian waypoint produces FK within <1mm of target position., TestPickAndPlaceTrajectoryGenerator
+Nodes (8): PickAndPlaceTrajectoryGenerator, Generates deterministic 10-step Cartesian and joint waypoint trajectories., Asserts 10-step trajectory generation with proper phases and percent_complete., Asserts consecutive waypoints do not suffer multi-revolution S^1 -> R boundary…, test_10_step_waypoint_sequence_and_action_phases(), test_angular_unwrapping_continuity(), Asserts each Cartesian waypoint produces FK within <1mm of target position in…, TestPickAndPlaceTrajectoryGenerator
 
 ### Community 187 - "hand-sim-6bdr--refactor-a1-standalone-workcell-node-inventory-lif.md"
 Cohesion: 0.33

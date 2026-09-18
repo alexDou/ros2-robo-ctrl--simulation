@@ -449,25 +449,44 @@ class PickAndPlaceTrajectoryGenerator:
             else list(HOME_JOINT_POSITIONS)
         )
 
+        # Coordinate frame transformation: UR5e URDF base_link is REP-103 (+X forward),
+        # but base_link_inertia is rotated by pi around Z (UR controller / DH convention).
+        # To reach target (x, y, z) in base_link, DH solver solves for (-x, -y, z).
+        # Similarly, downward tool orientation in DH frame is rotated by pi around Z:
+        # R_dh = R_z(pi) @ R_workcell = [[0, -1, 0], [-1, 0, 0], [0, 0, -1]].
+        ik_rot = (
+            rotation_matrix
+            if rotation_matrix is not None
+            else [
+                [0.0, -1.0, 0.0],
+                [-1.0, 0.0, 0.0],
+                [0.0, 0.0, -1.0],
+            ]
+        )
+        x_pick_dh, y_pick_dh = -x_pick, -y_pick
+        x_drop_dh, y_drop_dh = -x_drop, -y_drop
+
         # 1. Approach pick
         pos_app_pick = (x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
+        pos_app_pick_dh = (x_pick_dh, y_pick_dh, z_pick + APPROACH_LIFT_OFFSET_M)
         q_app_pick_raw = self.solver.solve_ik(
-            pos_app_pick[0],
-            pos_app_pick[1],
-            pos_app_pick[2],
+            pos_app_pick_dh[0],
+            pos_app_pick_dh[1],
+            pos_app_pick_dh[2],
             current_joints=q_ref,
-            rotation_matrix=rotation_matrix,
+            rotation_matrix=ik_rot,
         )
         q_app_pick = unwrap_joint_angles(q_app_pick_raw, q_ref)
 
         # 2. Pick
         pos_pick = (x_pick, y_pick, z_pick)
+        pos_pick_dh = (x_pick_dh, y_pick_dh, z_pick)
         q_pick_raw = self.solver.solve_ik(
-            pos_pick[0],
-            pos_pick[1],
-            pos_pick[2],
+            pos_pick_dh[0],
+            pos_pick_dh[1],
+            pos_pick_dh[2],
             current_joints=q_app_pick,
-            rotation_matrix=rotation_matrix,
+            rotation_matrix=ik_rot,
         )
         q_pick = unwrap_joint_angles(q_pick_raw, q_app_pick)
 
@@ -476,34 +495,37 @@ class PickAndPlaceTrajectoryGenerator:
 
         # 4. Lift
         pos_lift = (x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
+        pos_lift_dh = (x_pick_dh, y_pick_dh, z_pick + APPROACH_LIFT_OFFSET_M)
         q_lift_raw = self.solver.solve_ik(
-            pos_lift[0],
-            pos_lift[1],
-            pos_lift[2],
+            pos_lift_dh[0],
+            pos_lift_dh[1],
+            pos_lift_dh[2],
             current_joints=q_grasp,
-            rotation_matrix=rotation_matrix,
+            rotation_matrix=ik_rot,
         )
         q_lift = unwrap_joint_angles(q_lift_raw, q_grasp)
 
         # 5. Tower approach / transfer
         pos_app_drop = (x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
+        pos_app_drop_dh = (x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M)
         q_app_drop_raw = self.solver.solve_ik(
-            pos_app_drop[0],
-            pos_app_drop[1],
-            pos_app_drop[2],
+            pos_app_drop_dh[0],
+            pos_app_drop_dh[1],
+            pos_app_drop_dh[2],
             current_joints=q_lift,
-            rotation_matrix=rotation_matrix,
+            rotation_matrix=ik_rot,
         )
         q_app_drop = unwrap_joint_angles(q_app_drop_raw, q_lift)
 
         # 6. Tower drop
         pos_drop = (x_drop, y_drop, z_drop)
+        pos_drop_dh = (x_drop_dh, y_drop_dh, z_drop)
         q_drop_raw = self.solver.solve_ik(
-            pos_drop[0],
-            pos_drop[1],
-            pos_drop[2],
+            pos_drop_dh[0],
+            pos_drop_dh[1],
+            pos_drop_dh[2],
             current_joints=q_app_drop,
-            rotation_matrix=rotation_matrix,
+            rotation_matrix=ik_rot,
         )
         q_drop = unwrap_joint_angles(q_drop_raw, q_app_drop)
 
@@ -512,12 +534,13 @@ class PickAndPlaceTrajectoryGenerator:
 
         # 8. Tower retreat
         pos_retreat = (x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
+        pos_retreat_dh = (x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M)
         q_retreat_raw = self.solver.solve_ik(
-            pos_retreat[0],
-            pos_retreat[1],
-            pos_retreat[2],
+            pos_retreat_dh[0],
+            pos_retreat_dh[1],
+            pos_retreat_dh[2],
             current_joints=q_release,
-            rotation_matrix=rotation_matrix,
+            rotation_matrix=ik_rot,
         )
         q_retreat = unwrap_joint_angles(q_retreat_raw, q_release)
 
