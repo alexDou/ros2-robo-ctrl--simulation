@@ -37,21 +37,25 @@ Before(async function (this: CustomWorld, scenario) {
   this.browser = sharedBrowser;
   this.harness.reset();
 
-  const isClosedLoop = scenario.pickle.tags.some(
-    (t) => t.name === '@closed-loop' || t.name === '@workcell' || t.name === '@pick-and-place'
-  );
-  if (isClosedLoop) {
-    if (this.harness.isMockPublisherRunning()) {
-      await this.harness.stopMockPublisher();
+  // Live mode: TeleopClient talks to real ROS2 + Gateway.
+  // Never touch the mock publisher; telemetry comes from the 500 Hz DDS loop.
+  if (!sharedHarness.isLive) {
+    const isClosedLoop = scenario.pickle.tags.some(
+      (t) => t.name === '@closed-loop' || t.name === '@workcell' || t.name === '@pick-and-place'
+    );
+    if (isClosedLoop) {
+      if (this.harness.isMockPublisherRunning()) {
+        await this.harness.stopMockPublisher();
+      }
+    } else {
+      if (!this.harness.isMockPublisherRunning()) {
+        await this.harness.startMockPublisher();
+      }
     }
-  } else {
-    if (!this.harness.isMockPublisherRunning()) {
-      await this.harness.startMockPublisher();
-    }
-  }
 
-  const isWorkcell = scenario.pickle.tags.some((t) => t.name === '@workcell');
-  this.harness.setAutoExecutePickAndPlace(!isWorkcell);
+    const isWorkcell = scenario.pickle.tags.some((t) => t.name === '@workcell');
+    this.harness.setAutoExecutePickAndPlace(!isWorkcell);
+  }
 
   this.context = await sharedBrowser.newContext();
   this.page = await this.context.newPage();
