@@ -35,7 +35,7 @@ export class ServiceHarness {
     this.publisherScript =
       config.publisherScript ??
       process.env.E2E_PUBLISHER_SCRIPT ??
-      'src/edge_node/mock_motion_publisher.py';
+      'mock';
     this.publishRateHz = config.publishRateHz ?? 30.0;
     this.baseUrl = `http://127.0.0.1:${this.webPort}/?robot_id=${this.robotId}&gateway_port=${this.gatewayPort}`;
   }

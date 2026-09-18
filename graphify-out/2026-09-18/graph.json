@@ -40,7 +40,7 @@
       "file_type": "code",
       "norm_label": "gearwheelproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L341"
+      "source_location": "L350"
     },
     {
       "id": "web_src_components_robotvisualizer_palmproceduralassets",
@@ -53,7 +53,7 @@
       "file_type": "code",
       "norm_label": "palmproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L69"
+      "source_location": "L78"
     },
     {
       "id": "web_src_components_robotvisualizer_pedestalproceduralassets",
@@ -66,7 +66,7 @@
       "file_type": "code",
       "norm_label": "pedestalproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L132"
+      "source_location": "L141"
     },
     {
       "id": "web_src_components_robotvisualizer_spindletowerproceduralassets",
@@ -79,7 +79,7 @@
       "file_type": "code",
       "norm_label": "spindletowerproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L413"
+      "source_location": "L422"
     },
     {
       "id": "web_src_components_robotvisualizer_tableproceduralassets",
@@ -92,7 +92,7 @@
       "file_type": "code",
       "norm_label": "tableproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L216"
+      "source_location": "L225"
     },
     {
       "id": "web_src_utils_robotloader_robotloaderoptions",
@@ -108,17 +108,43 @@
       "source_location": "L21"
     },
     {
-      "id": "web_domain_contracts_armjointpositions",
-      "label": "ArmJointPositions",
+      "id": "web_domain_contracts_posename",
+      "label": "PoseName",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
-      "norm_label": "armjointpositions",
+      "norm_label": "posename",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L157"
+      "source_location": "L57"
+    },
+    {
+      "id": "web_domain_contracts_robotstate",
+      "label": "RobotState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "robotstate",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L116"
+    },
+    {
+      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
+      "label": "OperatorToolbarProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbarprops",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L3"
     },
     {
       "id": "web_src_components_telemetrymonitor_telemetrymonitorprops",
@@ -127,7 +153,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "telemetrymonitorprops",
       "source_file": "web/src/components/TelemetryMonitor.tsx",
@@ -140,24 +166,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "telemetrybuffer",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
       "source_location": "L8"
     },
     {
-      "id": "web_tests_e2e_support_mock_gateway_activetrajectory",
-      "label": "ActiveTrajectory",
+      "id": "web_src_hooks_useteleopsession_useteleopsessionoptions",
+      "label": "UseTeleopSessionOptions",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
-      "norm_label": "activetrajectory",
-      "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L41"
+      "norm_label": "useteleopsessionoptions",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L53"
     },
     {
       "id": "web_tests_e2e_support_kinematics_actionphase",
@@ -794,7 +820,7 @@
       "file_type": "code",
       "norm_label": "customworld",
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L18"
+      "source_location": "L19"
     },
     {
       "id": "web_tests_e2e_support_world_icustomworld",
@@ -810,17 +836,17 @@
       "source_location": "L6"
     },
     {
-      "id": "web_domain_contracts_commandtype",
-      "label": "CommandType",
+      "id": "web_domain_contracts_armjointpositions",
+      "label": "ArmJointPositions",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 215,
       "community_name": "mock_gateway.ts",
       "file_type": "code",
-      "norm_label": "commandtype",
+      "norm_label": "armjointpositions",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L87"
+      "source_location": "L157"
     },
     {
       "id": "web_domain_contracts_errorframe",
@@ -836,32 +862,6 @@
       "source_location": "L319"
     },
     {
-      "id": "web_domain_contracts_posename",
-      "label": "PoseName",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
-      "file_type": "code",
-      "norm_label": "posename",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L57"
-    },
-    {
-      "id": "web_domain_contracts_robotstate",
-      "label": "RobotState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
-      "file_type": "code",
-      "norm_label": "robotstate",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L116"
-    },
-    {
       "id": "web_domain_contracts_robottelemetryevent",
       "label": "RobotTelemetryEvent",
       "_callable": true,
@@ -875,30 +875,30 @@
       "source_location": "L354"
     },
     {
-      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
-      "label": "OperatorToolbarProps",
+      "id": "web_src_hooks_useteleopsession_errorlogentry",
+      "label": "ErrorLogEntry",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 215,
       "community_name": "mock_gateway.ts",
       "file_type": "code",
-      "norm_label": "operatortoolbarprops",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L3"
+      "norm_label": "errorlogentry",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L33"
     },
     {
-      "id": "web_src_components_teleopclient_logentry",
-      "label": "LogEntry",
+      "id": "web_src_hooks_useteleopsession_telemetrylogentry",
+      "label": "TelemetryLogEntry",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 215,
       "community_name": "mock_gateway.ts",
       "file_type": "code",
-      "norm_label": "logentry",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L30"
+      "norm_label": "telemetrylogentry",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L26"
     },
     {
       "id": "web_tests_e2e_support_kinematics_waypointstep",
@@ -912,6 +912,19 @@
       "norm_label": "waypointstep",
       "source_file": "web/tests/e2e/support/kinematics.ts",
       "source_location": "L46"
+    },
+    {
+      "id": "web_tests_e2e_support_mock_gateway_activetrajectory",
+      "label": "ActiveTrajectory",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 215,
+      "community_name": "mock_gateway.ts",
+      "file_type": "code",
+      "norm_label": "activetrajectory",
+      "source_file": "web/tests/e2e/support/mock_gateway.ts",
+      "source_location": "L41"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_jointsinusoid",
@@ -951,6 +964,188 @@
       "norm_label": "activegear",
       "source_file": "src/edge_node/workcell.py",
       "source_location": "L20"
+    },
+    {
+      "id": "web_domain_contracts_commandtype",
+      "label": "CommandType",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "commandtype",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L87"
+    },
+    {
+      "id": "web_src_components_actionprogressbar_actionprogressbarprops",
+      "label": "ActionProgressBarProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "actionprogressbarprops",
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_src_components_conflictbanner_conflictbannerprops",
+      "label": "ConflictBannerProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "conflictbannerprops",
+      "source_file": "web/src/components/ConflictBanner.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_src_components_connectionbadge_connectionbadgeprops",
+      "label": "ConnectionBadgeProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "connectionbadgeprops",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_src_components_eventlog_eventlogprops",
+      "label": "EventLogProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "eventlogprops",
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_src_components_teleopclient_teleopclientprops",
+      "label": "TeleopClientProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "teleopclientprops",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "web_src_hooks_useteleopsession_actionprogress",
+      "label": "ActionProgress",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "actionprogress",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L42"
+    },
+    {
+      "id": "web_src_hooks_useteleopsession_connectionstate",
+      "label": "ConnectionState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "connectionstate",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L24"
+    },
+    {
+      "id": "web_src_hooks_useteleopsession_logentry",
+      "label": "LogEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "logentry",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L40"
+    },
+    {
+      "id": "web_src_types_global_d_robotvisualizerglobalhandle",
+      "label": "RobotVisualizerGlobalHandle",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 230,
+      "community_name": "global.d.ts",
+      "file_type": "code",
+      "norm_label": "robotvisualizerglobalhandle",
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L30"
+    },
+    {
+      "id": "web_src_types_global_d_visualizernozzlestate",
+      "label": "VisualizerNozzleState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 230,
+      "community_name": "global.d.ts",
+      "file_type": "code",
+      "norm_label": "visualizernozzlestate",
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L24"
+    },
+    {
+      "id": "web_src_types_global_d_visualizerraycastresult",
+      "label": "VisualizerRaycastResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 230,
+      "community_name": "global.d.ts",
+      "file_type": "code",
+      "norm_label": "visualizerraycastresult",
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "web_src_types_global_d_visualizerrendererinfo",
+      "label": "VisualizerRendererInfo",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 230,
+      "community_name": "global.d.ts",
+      "file_type": "code",
+      "norm_label": "visualizerrendererinfo",
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_src_types_global_d_window",
+      "label": "Window",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 230,
+      "community_name": "global.d.ts",
+      "file_type": "code",
+      "norm_label": "window",
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L67"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_jointsinusoidconfig",
@@ -1070,19 +1265,6 @@
       "source_location": "L229"
     },
     {
-      "id": "web_domain_contracts_robotcommand",
-      "label": "RobotCommand",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "robotcommand",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L336"
-    },
-    {
       "id": "web_domain_contracts_spawnobjecttype",
       "label": "SpawnObjectType",
       "_callable": true,
@@ -1115,7 +1297,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "palmaction",
       "source_file": "web/domain/contracts.ts",
@@ -1128,11 +1310,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "pickandplacetargetpayload",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L275"
+    },
+    {
+      "id": "web_domain_contracts_robotcommand",
+      "label": "RobotCommand",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "useTeleopSession.ts",
+      "file_type": "code",
+      "norm_label": "robotcommand",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L336"
     },
     {
       "id": "web_domain_contracts_spawnobjectpayload",
@@ -1141,7 +1336,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "spawnobjectpayload",
       "source_file": "web/domain/contracts.ts",
@@ -1154,7 +1349,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "actionfeedbackframe",
       "source_file": "web/domain/parsers.ts",
@@ -1167,37 +1362,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "robotvisualizerprops",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
-      "id": "web_src_components_teleopclient_connectionstate",
-      "label": "ConnectionState",
+      "id": "web_src_hooks_useteleopsession_errorbannerinfo",
+      "label": "ErrorBannerInfo",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
-      "norm_label": "connectionstate",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L28"
-    },
-    {
-      "id": "web_src_components_teleopclient_teleopclientprops",
-      "label": "TeleopClientProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 89,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "teleopclientprops",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L37"
+      "norm_label": "errorbannerinfo",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L48"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway",
@@ -1361,7 +1543,7 @@
       "file_type": "code",
       "norm_label": "createdexterouspalm()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L75"
+      "source_location": "L84"
     },
     {
       "id": "web_src_components_robotvisualizer_createproceduralgearwheel",
@@ -1373,7 +1555,7 @@
       "file_type": "code",
       "norm_label": "createproceduralgearwheel()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L346"
+      "source_location": "L355"
     },
     {
       "id": "web_src_components_robotvisualizer_createrobotpedestal",
@@ -1385,7 +1567,7 @@
       "file_type": "code",
       "norm_label": "createrobotpedestal()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L137"
+      "source_location": "L146"
     },
     {
       "id": "web_src_components_robotvisualizer_createspindletower",
@@ -1397,7 +1579,7 @@
       "file_type": "code",
       "norm_label": "createspindletower()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L420"
+      "source_location": "L429"
     },
     {
       "id": "web_src_components_robotvisualizer_createworkcelltable",
@@ -1409,7 +1591,7 @@
       "file_type": "code",
       "norm_label": "createworkcelltable()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L226"
+      "source_location": "L235"
     },
     {
       "id": "web_src_components_robotvisualizer_disposematerial",
@@ -1421,7 +1603,7 @@
       "file_type": "code",
       "norm_label": "disposematerial()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L58"
+      "source_location": "L68"
     },
     {
       "id": "web_src_components_robotvisualizer_getlatestpositions",
@@ -1433,7 +1615,19 @@
       "file_type": "code",
       "norm_label": "getlatestpositions()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L42"
+      "source_location": "L43"
+    },
+    {
+      "id": "web_src_components_robotvisualizer_isdisposable",
+      "label": "isDisposable()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "RobotVisualizer.tsx",
+      "file_type": "code",
+      "norm_label": "isdisposable()",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L59"
     },
     {
       "id": "web_src_components_robotvisualizer_robotvisualizer",
@@ -1445,7 +1639,7 @@
       "file_type": "code",
       "norm_label": "robotvisualizer()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L465"
+      "source_location": "L474"
     },
     {
       "id": "web_src_utils_robotloader_applyjointpositions",
@@ -1573,11 +1767,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "isrobottelemetryevent()",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L461"
+    },
+    {
+      "id": "web_src_components_operatortoolbar_operatortoolbar",
+      "label": "OperatorToolbar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbar()",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L16"
     },
     {
       "id": "web_src_components_telemetrymonitor_telemetrymonitor",
@@ -1585,7 +1791,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "telemetrymonitor()",
       "source_file": "web/src/components/TelemetryMonitor.tsx",
@@ -1597,23 +1803,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "usetelemetrystream()",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
       "source_location": "L19"
     },
     {
-      "id": "web_tests_e2e_support_mock_gateway_mockgateway_getjointpositions",
-      "label": ".getJointPositions()",
+      "id": "web_tests_e2e_support_mock_gateway_mockgateway_getrobotstate",
+      "label": ".getRobotState()",
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
-      "norm_label": ".getjointpositions()",
+      "norm_label": ".getrobotstate()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L156"
+      "source_location": "L148"
     },
     {
       "id": "web_tests_unit_telemetrymonitor_test_testcomponent",
@@ -1621,7 +1827,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "testcomponent()",
       "source_file": "web/tests/unit/TelemetryMonitor.test.tsx",
@@ -1633,7 +1839,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "triggerraf()",
       "source_file": "web/tests/unit/TelemetryMonitor.test.tsx",
@@ -1645,7 +1851,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "wrapper()",
       "source_file": "web/tests/unit/TelemetryMonitor.test.tsx",
@@ -2204,18 +2410,6 @@
       "source_location": "L530"
     },
     {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
-      "label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 116,
-      "community_name": "EdgeNode",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L99"
-    },
-    {
       "id": "web_src_main_app",
       "label": "App()",
       "_callable": true,
@@ -2240,6 +2434,18 @@
       "source_location": "L8"
     },
     {
+      "id": "web_src_utils_env_istestenv",
+      "label": "isTestEnv()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 118,
+      "community_name": "main.tsx",
+      "file_type": "code",
+      "norm_label": "istestenv()",
+      "source_file": "web/src/utils/env.ts",
+      "source_location": "L15"
+    },
+    {
       "id": "web_src_utils_url_getallparams",
       "label": "getAllParams()",
       "_callable": true,
@@ -2262,6 +2468,18 @@
       "norm_label": "getparam()",
       "source_file": "web/src/utils/url.ts",
       "source_location": "L39"
+    },
+    {
+      "id": "web_src_utils_url_resolvegatewaywsurl",
+      "label": "resolveGatewayWsUrl()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 118,
+      "community_name": "main.tsx",
+      "file_type": "code",
+      "norm_label": "resolvegatewaywsurl()",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L63"
     },
     {
       "id": "web_tests_unit_url_test_setwindowsearch",
@@ -3029,7 +3247,7 @@
       "file_type": "code",
       "norm_label": ".constructor()",
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L29"
+      "source_location": "L31"
     },
     {
       "id": "src_edge_node_workcell_workcellstate_calculate_drop_coords",
@@ -3980,18 +4198,6 @@
       "source_location": "L158"
     },
     {
-      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_zenoh_and_ros_publication",
-      "label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 200,
-      "community_name": "domain.py",
-      "file_type": "code",
-      "norm_label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
-      "source_file": "tests/test_mock_motion_publisher.py",
-      "source_location": "L144"
-    },
-    {
       "id": "tests_test_robot_control_interfaces_test_import_robot_control_interfaces",
       "label": "test_import_robot_control_interfaces()",
       "_callable": true,
@@ -4376,28 +4582,16 @@
       "source_location": "L757"
     },
     {
-      "id": "web_src_components_operatortoolbar_operatortoolbar",
-      "label": "OperatorToolbar()",
+      "id": "web_tests_e2e_support_mock_gateway_mockgateway_getjointpositions",
+      "label": ".getJointPositions()",
       "_callable": true,
       "_origin": "ast",
       "community": 215,
       "community_name": "mock_gateway.ts",
       "file_type": "code",
-      "norm_label": "operatortoolbar()",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L16"
-    },
-    {
-      "id": "web_tests_e2e_support_mock_gateway_mockgateway_getrobotstate",
-      "label": ".getRobotState()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
-      "file_type": "code",
-      "norm_label": ".getrobotstate()",
+      "norm_label": ".getjointpositions()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L148"
+      "source_location": "L156"
     },
     {
       "id": "src_edge_node_workcell_workcellstate_active_gear",
@@ -4422,6 +4616,90 @@
       "norm_label": ".spawn_gear()",
       "source_file": "src/edge_node/workcell.py",
       "source_location": "L235"
+    },
+    {
+      "id": "web_src_components_actionprogressbar_actionprogressbar",
+      "label": "ActionProgressBar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "actionprogressbar()",
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "web_src_components_conflictbanner_conflictbanner",
+      "label": "ConflictBanner()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "conflictbanner()",
+      "source_file": "web/src/components/ConflictBanner.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "web_src_components_connectionbadge_connectionbadge",
+      "label": "ConnectionBadge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "connectionbadge()",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "web_src_components_connectionbadge_getbadgecolor",
+      "label": "getBadgeColor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "getbadgecolor()",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "web_src_components_eventlog_eventlog",
+      "label": "EventLog()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "eventlog()",
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "web_src_components_teleopclient_teleopclient",
+      "label": "TeleopClient()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "teleopclient()",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L26"
+    },
+    {
+      "id": "web_src_hooks_useisdesktop_useisdesktop",
+      "label": "useIsDesktop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "useisdesktop()",
+      "source_file": "web/src/hooks/useIsDesktop.ts",
+      "source_location": "L9"
     },
     {
       "id": "src_edge_node_node_edgenode_on_joint_state",
@@ -4457,7 +4735,7 @@
       "file_type": "code",
       "norm_label": ".expectjointsoscillating()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L200"
+      "source_location": "L189"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectrobotatpose",
@@ -4469,7 +4747,7 @@
       "file_type": "code",
       "norm_label": ".expectrobotatpose()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L408"
+      "source_location": "L376"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getrobotjointvalues",
@@ -4481,7 +4759,7 @@
       "file_type": "code",
       "norm_label": ".getrobotjointvalues()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L166"
+      "source_location": "L163"
     },
     {
       "id": "src_edge_node_node_edgenode_close",
@@ -4517,7 +4795,7 @@
       "file_type": "code",
       "norm_label": ".expectactivegear()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L456"
+      "source_location": "L418"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_hasactivegear",
@@ -4529,7 +4807,7 @@
       "file_type": "code",
       "norm_label": ".hasactivegear()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L447"
+      "source_location": "L412"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectgearwheelatposition",
@@ -4541,7 +4819,7 @@
       "file_type": "code",
       "norm_label": ".expectgearwheelatposition()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L476"
+      "source_location": "L435"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getgearposition",
@@ -4553,7 +4831,7 @@
       "file_type": "code",
       "norm_label": ".getgearposition()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L467"
+      "source_location": "L429"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectlinkcoordinatesmoving",
@@ -4565,7 +4843,7 @@
       "file_type": "code",
       "norm_label": ".expectlinkcoordinatesmoving()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L231"
+      "source_location": "L220"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getlinkworldposition",
@@ -4577,7 +4855,7 @@
       "file_type": "code",
       "norm_label": ".getlinkworldposition()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L175"
+      "source_location": "L169"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecttowergearcount",
@@ -4589,7 +4867,7 @@
       "file_type": "code",
       "norm_label": ".expecttowergearcount()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L679"
+      "source_location": "L603"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_gettowergearcount",
@@ -4601,7 +4879,7 @@
       "file_type": "code",
       "norm_label": ".gettowergearcount()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L670"
+      "source_location": "L597"
     },
     {
       "id": "src_edge_node_mock_motion_publisher_build_arg_parser",
@@ -4808,6 +5086,18 @@
       "source_location": "L59"
     },
     {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_telemetry_event_schema",
+      "label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_telemetry_event_schema()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L99"
+    },
+    {
       "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_trajectory_generation",
       "label": "test_mock_motion_publisher_trajectory_generation()",
       "_callable": true,
@@ -4820,6 +5110,18 @@
       "source_location": "L31"
     },
     {
+      "id": "tests_test_mock_motion_publisher_test_mock_motion_publisher_zenoh_and_ros_publication",
+      "label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "MockMotionPublisher",
+      "file_type": "code",
+      "norm_label": "test_mock_motion_publisher_zenoh_and_ros_publication()",
+      "source_file": "tests/test_mock_motion_publisher.py",
+      "source_location": "L144"
+    },
+    {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickcannedpose",
       "label": ".clickCannedPose()",
       "_callable": true,
@@ -4829,7 +5131,7 @@
       "file_type": "code",
       "norm_label": ".clickcannedpose()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L311"
+      "source_location": "L288"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickclearworkspace",
@@ -4841,7 +5143,7 @@
       "file_type": "code",
       "norm_label": ".clickclearworkspace()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L332"
+      "source_location": "L309"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickemergencystop",
@@ -4853,7 +5155,7 @@
       "file_type": "code",
       "norm_label": ".clickemergencystop()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L327"
+      "source_location": "L304"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickpalmtoggle",
@@ -4865,7 +5167,7 @@
       "file_type": "code",
       "norm_label": ".clickpalmtoggle()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L322"
+      "source_location": "L299"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickping",
@@ -4889,7 +5191,7 @@
       "file_type": "code",
       "norm_label": ".clickresetfault()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L345"
+      "source_location": "L322"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_clickworkcelltable",
@@ -4901,7 +5203,7 @@
       "file_type": "code",
       "norm_label": ".clickworkcelltable()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L515"
+      "source_location": "L471"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_constructor",
@@ -4925,7 +5227,7 @@
       "file_type": "code",
       "norm_label": ".expectactionbuttonsdisabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L350"
+      "source_location": "L327"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsenabled",
@@ -4937,7 +5239,7 @@
       "file_type": "code",
       "norm_label": ".expectactionbuttonsenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L357"
+      "source_location": "L334"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactioncompleted",
@@ -4949,7 +5251,7 @@
       "file_type": "code",
       "norm_label": ".expectactioncompleted()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L622"
+      "source_location": "L553"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionpercentatleast",
@@ -4961,7 +5263,7 @@
       "file_type": "code",
       "norm_label": ".expectactionpercentatleast()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L610"
+      "source_location": "L541"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionphase",
@@ -4973,7 +5275,7 @@
       "file_type": "code",
       "norm_label": ".expectactionphase()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L606"
+      "source_location": "L537"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionprogressvisible",
@@ -4985,7 +5287,7 @@
       "file_type": "code",
       "norm_label": ".expectactionprogressvisible()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L598"
+      "source_location": "L529"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectcanonicaljointsdisplayed",
@@ -5009,7 +5311,7 @@
       "file_type": "code",
       "norm_label": ".expectcleanvisualizerdisposal()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L301"
+      "source_location": "L281"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttondisabled",
@@ -5021,7 +5323,7 @@
       "file_type": "code",
       "norm_label": ".expectclearworkspacebuttondisabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L341"
+      "source_location": "L318"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttonenabled",
@@ -5033,7 +5335,7 @@
       "file_type": "code",
       "norm_label": ".expectclearworkspacebuttonenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L337"
+      "source_location": "L314"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectclicklockedout",
@@ -5045,7 +5347,7 @@
       "file_type": "code",
       "norm_label": ".expectclicklockedout()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L499"
+      "source_location": "L458"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectconflictbanner",
@@ -5081,7 +5383,7 @@
       "file_type": "code",
       "norm_label": ".expectemergencystopbuttonenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L372"
+      "source_location": "L349"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecterrordiagnostic",
@@ -5117,7 +5419,7 @@
       "file_type": "code",
       "norm_label": ".expectgearattached()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L643"
+      "source_location": "L573"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmbuttontext",
@@ -5129,7 +5431,7 @@
       "file_type": "code",
       "norm_label": ".expectpalmbuttontext()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L380"
+      "source_location": "L357"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmnozzlehighlighted",
@@ -5141,7 +5443,7 @@
       "file_type": "code",
       "norm_label": ".expectpalmnozzlehighlighted()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L384"
+      "source_location": "L361"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectpalmstatus",
@@ -5153,7 +5455,7 @@
       "file_type": "code",
       "norm_label": ".expectpalmstatus()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L376"
+      "source_location": "L353"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttondisabled",
@@ -5165,7 +5467,7 @@
       "file_type": "code",
       "norm_label": ".expectresetfaultbuttondisabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L364"
+      "source_location": "L341"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectresetfaultbuttonenabled",
@@ -5177,7 +5479,7 @@
       "file_type": "code",
       "norm_label": ".expectresetfaultbuttonenabled()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L368"
+      "source_location": "L345"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectreticlevisible",
@@ -5189,7 +5491,7 @@
       "file_type": "code",
       "norm_label": ".expectreticlevisible()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L587"
+      "source_location": "L518"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectsidebarinsyncwithvisualizer",
@@ -5201,7 +5503,7 @@
       "file_type": "code",
       "norm_label": ".expectsidebarinsyncwithvisualizer()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L246"
+      "source_location": "L235"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectspindletowerloaded",
@@ -5213,7 +5515,7 @@
       "file_type": "code",
       "norm_label": ".expectspindletowerloaded()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L654"
+      "source_location": "L584"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expecttelemetryfrequencyrange",
@@ -5249,7 +5551,7 @@
       "file_type": "code",
       "norm_label": ".expecttowertopgearheight()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L702"
+      "source_location": "L624"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectverifyconnectioncontrolsremoved",
@@ -5273,7 +5575,7 @@
       "file_type": "code",
       "norm_label": ".expectworkcelltableloaded()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L431"
+      "source_location": "L399"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getrenderermemoryinfo",
@@ -5285,7 +5587,7 @@
       "file_type": "code",
       "norm_label": ".getrenderermemoryinfo()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L280"
+      "source_location": "L267"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_getsidebarjointvalues",
@@ -5297,7 +5599,7 @@
       "file_type": "code",
       "norm_label": ".getsidebarjointvalues()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L188"
+      "source_location": "L177"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_gettowertopgearheight",
@@ -5309,7 +5611,7 @@
       "file_type": "code",
       "norm_label": ".gettowertopgearheight()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L690"
+      "source_location": "L614"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_goto",
@@ -5333,7 +5635,7 @@
       "file_type": "code",
       "norm_label": ".hoverworkcelltable()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L545"
+      "source_location": "L491"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_injectrawframe",
@@ -5357,7 +5659,7 @@
       "file_type": "code",
       "norm_label": ".isgearattached()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L634"
+      "source_location": "L565"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_isreticlevisible",
@@ -5369,7 +5671,7 @@
       "file_type": "code",
       "norm_label": ".isreticlevisible()",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L575"
+      "source_location": "L511"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_waitforrobotloaded",
@@ -5701,7 +6003,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "iserrorframe()",
       "source_file": "web/domain/contracts.ts",
@@ -5713,7 +6015,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "serializecommand()",
       "source_file": "web/domain/contracts.ts",
@@ -5725,7 +6027,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createclearworkspacecommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5737,7 +6039,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createemergencystopcommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5749,7 +6051,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createpalmactuatecommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5761,7 +6063,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createpickandplacetargetcommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5773,7 +6075,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createpingcommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5785,7 +6087,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createresetfaultcommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5797,7 +6099,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createspawnobjectcommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5809,7 +6111,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "createtrajectoryexecutecommand()",
       "source_file": "web/domain/parsers.ts",
@@ -5821,7 +6123,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "generatecommandid()",
       "source_file": "web/domain/parsers.ts",
@@ -5833,7 +6135,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "gettimestampns()",
       "source_file": "web/domain/parsers.ts",
@@ -5845,23 +6147,23 @@
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "isactionfeedbackframe()",
       "source_file": "web/domain/parsers.ts",
       "source_location": "L220"
     },
     {
-      "id": "web_src_components_teleopclient_teleopclient",
-      "label": "TeleopClient()",
+      "id": "web_src_hooks_useteleopsession_useteleopsession",
+      "label": "useTeleopSession()",
       "_callable": true,
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
-      "norm_label": "teleopclient()",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L47"
+      "norm_label": "useteleopsession()",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L61"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_broadcastraw",
@@ -5873,7 +6175,7 @@
       "file_type": "code",
       "norm_label": ".broadcastraw()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L443"
+      "source_location": "L446"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_canceltrajectory",
@@ -5945,7 +6247,7 @@
       "file_type": "code",
       "norm_label": ".executepickandplacesequence()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L453"
+      "source_location": "L456"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_getcapturedlogs",
@@ -6077,7 +6379,7 @@
       "file_type": "code",
       "norm_label": ".sendtelemetry()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L579"
+      "source_location": "L582"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_sendtelemetrytoall",
@@ -6089,7 +6391,7 @@
       "file_type": "code",
       "norm_label": ".sendtelemetrytoall()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L571"
+      "source_location": "L574"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_setautoexecutepickandplace",
@@ -6149,7 +6451,7 @@
       "file_type": "code",
       "norm_label": ".starttickloop()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L518"
+      "source_location": "L521"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_tick",
@@ -6161,7 +6463,7 @@
       "file_type": "code",
       "norm_label": ".tick()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L525"
+      "source_location": "L528"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_updatedynamicjoints",
@@ -6173,7 +6475,7 @@
       "file_type": "code",
       "norm_label": ".updatedynamicjoints()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L545"
+      "source_location": "L548"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_updatetrajectory",
@@ -6185,7 +6487,7 @@
       "file_type": "code",
       "norm_label": ".updatetrajectory()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L554"
+      "source_location": "L557"
     },
     {
       "id": "src_edge_node_node_edgenode_create_telemetry_event",
@@ -7675,7 +7977,7 @@
       "file_type": "code",
       "norm_label": "gear_stack_height_step",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L11"
+      "source_location": "L12"
     },
     {
       "id": "web_src_components_robotvisualizer_grasp_proximity_threshold_m",
@@ -7686,7 +7988,7 @@
       "file_type": "code",
       "norm_label": "grasp_proximity_threshold_m",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "web_src_components_robotvisualizer_max_tower_stack_capacity",
@@ -7697,7 +7999,7 @@
       "file_type": "code",
       "norm_label": "max_tower_stack_capacity",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L12"
+      "source_location": "L13"
     },
     {
       "id": "web_src_components_robotvisualizer_reachability_max_radius",
@@ -7708,7 +8010,7 @@
       "file_type": "code",
       "norm_label": "reachability_max_radius",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L9"
+      "source_location": "L10"
     },
     {
       "id": "web_src_components_robotvisualizer_reachability_min_radius",
@@ -7719,7 +8021,7 @@
       "file_type": "code",
       "norm_label": "reachability_min_radius",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L8"
+      "source_location": "L9"
     },
     {
       "id": "web_src_components_robotvisualizer_spindle_tower_coords",
@@ -7730,7 +8032,7 @@
       "file_type": "code",
       "norm_label": "spindle_tower_coords",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L10"
+      "source_location": "L11"
     },
     {
       "id": "web_src_utils_robotloader",
@@ -7858,18 +8160,29 @@
       "label": "CANONICAL_UR5E_JOINTS",
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "canonical_ur5e_joints",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L146"
     },
     {
+      "id": "web_src_components_operatortoolbar",
+      "label": "OperatorToolbar.tsx",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbar.tsx",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "web_src_components_telemetrymonitor",
       "label": "TelemetryMonitor.tsx",
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "telemetrymonitor.tsx",
       "source_file": "web/src/components/TelemetryMonitor.tsx",
@@ -7880,7 +8193,7 @@
       "label": "useTelemetryStream.ts",
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "usetelemetrystream.ts",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
@@ -7891,7 +8204,7 @@
       "label": "TelemetryMonitor.test.tsx",
       "_origin": "ast",
       "community": 103,
-      "community_name": "TelemetryMonitor.test.tsx",
+      "community_name": "RobotState",
       "file_type": "code",
       "norm_label": "telemetrymonitor.test.tsx",
       "source_file": "web/tests/unit/TelemetryMonitor.test.tsx",
@@ -8488,6 +8801,17 @@
       "norm_label": "send",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "src_domain_domain_rs_src_domain_domain_robot_telemetry_topic",
+      "label": "robot_telemetry_topic()",
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "FabricError",
+      "file_type": "code",
+      "norm_label": "robot_telemetry_topic()",
+      "source_file": "src/domain/domain.rs",
+      "source_location": "L268"
     },
     {
       "id": "src_gateway_src_action",
@@ -9293,6 +9617,17 @@
       "source_location": "L244"
     },
     {
+      "id": "src_gateway_src_lib",
+      "label": "lib.rs",
+      "_origin": "ast",
+      "community": 11,
+      "community_name": "FabricError",
+      "file_type": "code",
+      "norm_label": "lib.rs",
+      "source_file": "src/gateway/src/lib.rs",
+      "source_location": "L1"
+    },
+    {
       "id": "src_gateway_tests_throttler_action_test",
       "label": "throttler_action_test.rs",
       "_origin": "ast",
@@ -9876,17 +10211,6 @@
       "source_location": "L28"
     },
     {
-      "id": "web_domain_contracts_default_robot_id",
-      "label": "DEFAULT_ROBOT_ID",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "default_robot_id",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L154"
-    },
-    {
       "id": "web_src_main",
       "label": "main.tsx",
       "_origin": "ast",
@@ -9939,17 +10263,6 @@
       "file_type": "code",
       "norm_label": "env.test.ts",
       "source_file": "web/tests/unit/env.test.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_tests_unit_mockgateway_test",
-      "label": "mockGateway.test.ts",
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "mockgateway.test.ts",
-      "source_file": "web/tests/unit/mockGateway.test.ts",
       "source_location": "L1"
     },
     {
@@ -11928,11 +12241,88 @@
       "source_location": "L1"
     },
     {
+      "id": "schemas_robot_command_schema_defs_trajectory_execute_payload",
+      "label": "trajectory_execute_payload",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "trajectory_execute_payload",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L36"
+    },
+    {
+      "id": "schemas_robot_command_schema_items_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L58"
+    },
+    {
+      "id": "schemas_robot_command_schema_items_items",
+      "label": "items",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "items",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L59"
+    },
+    {
+      "id": "schemas_robot_command_schema_items_maxitems",
+      "label": "maxItems",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "maxitems",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L63"
+    },
+    {
+      "id": "schemas_robot_command_schema_items_minitems",
+      "label": "minItems",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "minitems",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L62"
+    },
+    {
+      "id": "schemas_robot_command_schema_items_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L57"
+    },
+    {
+      "id": "schemas_robot_command_schema_items_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L56"
+    },
+    {
       "id": "schemas_robot_command_schema_pose_name_description",
       "label": "description",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
@@ -11943,7 +12333,7 @@
       "label": "enum",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "enum",
       "source_file": "schemas/robot_command.schema.json",
@@ -11954,7 +12344,7 @@
       "label": "title",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "title",
       "source_file": "schemas/robot_command.schema.json",
@@ -11965,7 +12355,7 @@
       "label": "type",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
@@ -11976,7 +12366,7 @@
       "label": "pose_name",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "pose_name",
       "source_file": "schemas/robot_command.schema.json",
@@ -11987,40 +12377,95 @@
       "label": "waypoints",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "waypoints",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L51"
     },
     {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_additionalproperties",
+      "label": "additionalProperties",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "additionalproperties",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L67"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L39"
+    },
+    {
       "id": "schemas_robot_command_schema_trajectory_execute_payload_properties",
       "label": "properties",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "properties",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L40"
     },
     {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L37"
+    },
+    {
       "id": "schemas_robot_command_schema_waypoints_description",
       "label": "description",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L54"
     },
     {
+      "id": "schemas_robot_command_schema_waypoints_items",
+      "label": "items",
+      "_origin": "ast",
+      "community": 141,
+      "community_name": "items",
+      "file_type": "code",
+      "norm_label": "items",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L55"
+    },
+    {
       "id": "schemas_robot_command_schema_waypoints_title",
       "label": "title",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "title",
       "source_file": "schemas/robot_command.schema.json",
@@ -12031,7 +12476,7 @@
       "label": "type",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
@@ -12042,7 +12487,7 @@
       "label": "HOME",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "concept",
       "norm_label": "home",
       "source_file": "schemas/robot_command.schema.json",
@@ -12053,7 +12498,7 @@
       "label": "INSPECT_POSE",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "concept",
       "norm_label": "inspect_pose",
       "source_file": "schemas/robot_command.schema.json",
@@ -12064,7 +12509,7 @@
       "label": "READY",
       "_origin": "ast",
       "community": 141,
-      "community_name": "pose_name",
+      "community_name": "items",
       "file_type": "concept",
       "norm_label": "ready",
       "source_file": "schemas/robot_command.schema.json",
@@ -14158,11 +14603,22 @@
       "source_location": "L118"
     },
     {
+      "id": "schemas_robot_command_schema_defs",
+      "label": "$defs",
+      "_origin": "ast",
+      "community": 160,
+      "community_name": "$defs",
+      "file_type": "code",
+      "norm_label": "$defs",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L15"
+    },
+    {
       "id": "schemas_robot_command_schema_defs_emergency_stop_payload",
       "label": "emergency_stop_payload",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "emergency_stop_payload",
       "source_file": "schemas/robot_command.schema.json",
@@ -14173,7 +14629,7 @@
       "label": "additionalProperties",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "additionalproperties",
       "source_file": "schemas/robot_command.schema.json",
@@ -14184,7 +14640,7 @@
       "label": "description",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
@@ -14195,7 +14651,7 @@
       "label": "properties",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "properties",
       "source_file": "schemas/robot_command.schema.json",
@@ -14206,7 +14662,7 @@
       "label": "title",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "title",
       "source_file": "schemas/robot_command.schema.json",
@@ -14217,7 +14673,7 @@
       "label": "type",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
@@ -14228,7 +14684,7 @@
       "label": "reason",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "reason",
       "source_file": "schemas/robot_command.schema.json",
@@ -14239,7 +14695,7 @@
       "label": "description",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
@@ -14250,51 +14706,29 @@
       "label": "type",
       "_origin": "ast",
       "community": 160,
-      "community_name": "emergency_stop_payload",
+      "community_name": "$defs",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L75"
     },
     {
-      "id": "schemas_robot_command_schema_defs",
-      "label": "$defs",
-      "_origin": "ast",
-      "community": 161,
-      "community_name": "$defs",
-      "file_type": "code",
-      "norm_label": "$defs",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L15"
-    },
-    {
       "id": "schemas_robot_command_schema_defs_reset_fault_payload",
       "label": "reset_fault_payload",
       "_origin": "ast",
       "community": 161,
-      "community_name": "$defs",
+      "community_name": "reset_fault_payload",
       "file_type": "code",
       "norm_label": "reset_fault_payload",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L81"
     },
     {
-      "id": "schemas_robot_command_schema_defs_trajectory_execute_payload",
-      "label": "trajectory_execute_payload",
-      "_origin": "ast",
-      "community": 161,
-      "community_name": "$defs",
-      "file_type": "code",
-      "norm_label": "trajectory_execute_payload",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L36"
-    },
-    {
       "id": "schemas_robot_command_schema_reset_fault_payload_additionalproperties",
       "label": "additionalProperties",
       "_origin": "ast",
       "community": 161,
-      "community_name": "$defs",
+      "community_name": "reset_fault_payload",
       "file_type": "code",
       "norm_label": "additionalproperties",
       "source_file": "schemas/robot_command.schema.json",
@@ -14305,7 +14739,7 @@
       "label": "description",
       "_origin": "ast",
       "community": 161,
-      "community_name": "$defs",
+      "community_name": "reset_fault_payload",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
@@ -14316,7 +14750,7 @@
       "label": "properties",
       "_origin": "ast",
       "community": 161,
-      "community_name": "$defs",
+      "community_name": "reset_fault_payload",
       "file_type": "code",
       "norm_label": "properties",
       "source_file": "schemas/robot_command.schema.json",
@@ -14327,7 +14761,7 @@
       "label": "title",
       "_origin": "ast",
       "community": 161,
-      "community_name": "$defs",
+      "community_name": "reset_fault_payload",
       "file_type": "code",
       "norm_label": "title",
       "source_file": "schemas/robot_command.schema.json",
@@ -14338,55 +14772,11 @@
       "label": "type",
       "_origin": "ast",
       "community": 161,
-      "community_name": "$defs",
+      "community_name": "reset_fault_payload",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L82"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_additionalproperties",
-      "label": "additionalProperties",
-      "_origin": "ast",
-      "community": 161,
-      "community_name": "$defs",
-      "file_type": "code",
-      "norm_label": "additionalproperties",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L67"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 161,
-      "community_name": "$defs",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L39"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 161,
-      "community_name": "$defs",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L38"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 161,
-      "community_name": "$defs",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L37"
     },
     {
       "id": "beans_hand_sim_24sn_unit_52_edgenode_workcellstate_server_side_lockout",
@@ -19082,17 +19472,6 @@
       "source_location": "L3"
     },
     {
-      "id": "schemas_robot_command_schema_required",
-      "label": "required",
-      "_origin": "ast",
-      "community": 203,
-      "community_name": "robot_command.schema.json",
-      "file_type": "code",
-      "norm_label": "required",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L8"
-    },
-    {
       "id": "schemas_robot_command_schema_schema",
       "label": "$schema",
       "_origin": "ast",
@@ -19135,61 +19514,6 @@
       "norm_label": "x-datafabric-channel",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L5"
-    },
-    {
-      "id": "ref_command_id",
-      "label": "command_id",
-      "_origin": "ast",
-      "community": 203,
-      "community_name": "robot_command.schema.json",
-      "file_type": "concept",
-      "norm_label": "command_id",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "ref_payload",
-      "label": "payload",
-      "_origin": "ast",
-      "community": 203,
-      "community_name": "robot_command.schema.json",
-      "file_type": "concept",
-      "norm_label": "payload",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "ref_sender_id",
-      "label": "sender_id",
-      "_origin": "ast",
-      "community": 203,
-      "community_name": "robot_command.schema.json",
-      "file_type": "concept",
-      "norm_label": "sender_id",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "schemas_robot_command_schema_json_ref_timestamp_ns",
-      "label": "timestamp_ns",
-      "_origin": "ast",
-      "community": 203,
-      "community_name": "robot_command.schema.json",
-      "file_type": "concept",
-      "norm_label": "timestamp_ns",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "schemas_robot_command_schema_json_ref_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 203,
-      "community_name": "robot_command.schema.json",
-      "file_type": "concept",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L8"
     },
     {
       "id": "tests_test_robot_control_interfaces",
@@ -19764,10 +20088,10 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Refactor-A.6: Pick-and-Place &amp; SpindleTower Stacking UI E2E Feature",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
         "created_at": "2026-09-17T22:28:57Z",
-        "updated_at": "2026-09-17T22:28:57Z",
+        "updated_at": "2026-09-18T10:39:00Z",
         "parent": "hand-sim-wt44"
       },
       "node_kind": "page",
@@ -19857,6 +20181,17 @@
       "source_location": "L172"
     },
     {
+      "id": "web_domain_contracts_default_robot_id",
+      "label": "DEFAULT_ROBOT_ID",
+      "_origin": "ast",
+      "community": 215,
+      "community_name": "mock_gateway.ts",
+      "file_type": "code",
+      "norm_label": "default_robot_id",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L154"
+    },
+    {
       "id": "web_domain_contracts_robotcommandschema",
       "label": "robotCommandSchema",
       "_origin": "ast",
@@ -19866,17 +20201,6 @@
       "norm_label": "robotcommandschema",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L334"
-    },
-    {
-      "id": "web_src_components_operatortoolbar",
-      "label": "OperatorToolbar.tsx",
-      "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
-      "file_type": "code",
-      "norm_label": "operatortoolbar.tsx",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L1"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway",
@@ -19901,14 +20225,14 @@
       "source_location": "L32"
     },
     {
-      "id": "web_tests_unit_teleopclient_test",
-      "label": "TeleopClient.test.tsx",
+      "id": "web_tests_unit_mockgateway_test",
+      "label": "mockGateway.test.ts",
       "_origin": "ast",
       "community": 215,
       "community_name": "mock_gateway.ts",
       "file_type": "code",
-      "norm_label": "teleopclient.test.tsx",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "norm_label": "mockgateway.test.ts",
+      "source_file": "web/tests/unit/mockGateway.test.ts",
       "source_location": "L1"
     },
     {
@@ -19967,81 +20291,81 @@
       "source_location": "L80"
     },
     {
-      "id": "schemas_robot_command_schema_items_description",
-      "label": "description",
+      "id": "web_src_components_actionprogressbar",
+      "label": "ActionProgressBar.tsx",
       "_origin": "ast",
       "community": 217,
-      "community_name": "items",
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L58"
+      "norm_label": "actionprogressbar.tsx",
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_items_items",
-      "label": "items",
+      "id": "web_src_components_conflictbanner",
+      "label": "ConflictBanner.tsx",
       "_origin": "ast",
       "community": 217,
-      "community_name": "items",
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "items",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L59"
+      "norm_label": "conflictbanner.tsx",
+      "source_file": "web/src/components/ConflictBanner.tsx",
+      "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_items_maxitems",
-      "label": "maxItems",
+      "id": "web_src_components_connectionbadge",
+      "label": "ConnectionBadge.tsx",
       "_origin": "ast",
       "community": 217,
-      "community_name": "items",
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "maxitems",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L63"
+      "norm_label": "connectionbadge.tsx",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_items_minitems",
-      "label": "minItems",
+      "id": "web_src_components_eventlog",
+      "label": "EventLog.tsx",
       "_origin": "ast",
       "community": 217,
-      "community_name": "items",
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "minitems",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L62"
+      "norm_label": "eventlog.tsx",
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_items_title",
-      "label": "title",
+      "id": "web_src_components_teleopclient",
+      "label": "TeleopClient.tsx",
       "_origin": "ast",
       "community": 217,
-      "community_name": "items",
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L57"
+      "norm_label": "teleopclient.tsx",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_items_type",
-      "label": "type",
+      "id": "web_src_hooks_useisdesktop",
+      "label": "useIsDesktop.ts",
       "_origin": "ast",
       "community": 217,
-      "community_name": "items",
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L56"
+      "norm_label": "useisdesktop.ts",
+      "source_file": "web/src/hooks/useIsDesktop.ts",
+      "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_waypoints_items",
-      "label": "items",
+      "id": "web_tests_unit_teleopclient_test",
+      "label": "TeleopClient.test.tsx",
       "_origin": "ast",
       "community": 217,
-      "community_name": "items",
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "items",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L55"
+      "norm_label": "teleopclient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L1"
     },
     {
       "id": "src_edge_node_node_py_any",
@@ -20255,6 +20579,72 @@
       "source_location": ""
     },
     {
+      "id": "schemas_robot_command_schema_required",
+      "label": "required",
+      "_origin": "ast",
+      "community": 229,
+      "community_name": "required",
+      "file_type": "code",
+      "norm_label": "required",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "ref_command_id",
+      "label": "command_id",
+      "_origin": "ast",
+      "community": 229,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "command_id",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "ref_payload",
+      "label": "payload",
+      "_origin": "ast",
+      "community": 229,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "payload",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "ref_sender_id",
+      "label": "sender_id",
+      "_origin": "ast",
+      "community": 229,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "sender_id",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "schemas_robot_command_schema_json_ref_timestamp_ns",
+      "label": "timestamp_ns",
+      "_origin": "ast",
+      "community": 229,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "timestamp_ns",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "schemas_robot_command_schema_json_ref_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 229,
+      "community_name": "required",
+      "file_type": "concept",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L8"
+    },
+    {
       "id": "beans_hand_sim_e8n5_phase_1_distributed_telemetry_streaming_3d_teleope",
       "label": "hand-sim-e8n5--phase-1-distributed-telemetry-streaming-3d-teleope.md",
       "_origin": "ast",
@@ -20368,6 +20758,17 @@
       "norm_label": "user stories",
       "source_file": ".beans/hand-sim-e8n5--phase-1-distributed-telemetry-streaming-3d-teleope.md",
       "source_location": "L23"
+    },
+    {
+      "id": "web_src_types_global_d",
+      "label": "global.d.ts",
+      "_origin": "ast",
+      "community": 230,
+      "community_name": "global.d.ts",
+      "file_type": "code",
+      "norm_label": "global.d.ts",
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L1"
     },
     {
       "id": "agents_skills_skill_creator_skill",
@@ -25037,17 +25438,6 @@
       "source_location": ""
     },
     {
-      "id": "src_gateway_src_lib",
-      "label": "lib.rs",
-      "_origin": "ast",
-      "community": 77,
-      "community_name": "teleop_ws",
-      "file_type": "code",
-      "norm_label": "lib.rs",
-      "source_file": "src/gateway/src/lib.rs",
-      "source_location": "L1"
-    },
-    {
       "id": "src_gateway_src_main",
       "label": "main.rs",
       "_origin": "ast",
@@ -26932,17 +27322,6 @@
       "source_location": "L149"
     },
     {
-      "id": "web_domain_index",
-      "label": "index.ts",
-      "_origin": "ast",
-      "community": 84,
-      "community_name": "contracts.ts",
-      "file_type": "code",
-      "norm_label": "index.ts",
-      "source_file": "web/domain/index.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "web_tests_unit_contracts_test",
       "label": "contracts.test.ts",
       "_origin": "ast",
@@ -27445,17 +27824,6 @@
       "source_location": "L259"
     },
     {
-      "id": "src_domain_domain_rs_src_domain_domain_robot_telemetry_topic",
-      "label": "robot_telemetry_topic()",
-      "_origin": "ast",
-      "community": 88,
-      "community_name": "domain.rs",
-      "file_type": "code",
-      "norm_label": "robot_telemetry_topic()",
-      "source_file": "src/domain/domain.rs",
-      "source_location": "L268"
-    },
-    {
       "id": "src_domain_domain_rs_src_domain_domain_robotcommand",
       "label": "RobotCommand",
       "_origin": "ast",
@@ -27753,25 +28121,36 @@
       "source_location": ""
     },
     {
+      "id": "web_domain_index",
+      "label": "index.ts",
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "useTeleopSession.ts",
+      "file_type": "code",
+      "norm_label": "index.ts",
+      "source_file": "web/domain/index.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "web_domain_parsers",
       "label": "parsers.ts",
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
       "norm_label": "parsers.ts",
       "source_file": "web/domain/parsers.ts",
       "source_location": "L1"
     },
     {
-      "id": "web_src_components_teleopclient",
-      "label": "TeleopClient.tsx",
+      "id": "web_src_hooks_useteleopsession",
+      "label": "useTeleopSession.ts",
       "_origin": "ast",
       "community": 89,
-      "community_name": "TeleopClient.tsx",
+      "community_name": "useTeleopSession.ts",
       "file_type": "code",
-      "norm_label": "teleopclient.tsx",
-      "source_file": "web/src/components/TeleopClient.tsx",
+      "norm_label": "useteleopsession.ts",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
       "source_location": "L1"
     },
     {
@@ -31462,6 +31841,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_connectionbadge_connectionbadge",
+      "target": "web_src_components_connectionbadge_getbadgecolor",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_robotvisualizer_createdexterouspalm",
       "target": "web_src_components_robotvisualizer_disposematerial",
       "relation": "calls",
@@ -31470,7 +31861,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L122",
+      "source_location": "L131",
       "weight": 1.0
     },
     {
@@ -31482,7 +31873,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L403",
+      "source_location": "L412",
       "weight": 1.0
     },
     {
@@ -31494,7 +31885,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L204",
+      "source_location": "L213",
       "weight": 1.0
     },
     {
@@ -31506,7 +31897,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L457",
+      "source_location": "L466",
       "weight": 1.0
     },
     {
@@ -31518,7 +31909,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L327",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer_disposematerial",
+      "target": "web_src_components_robotvisualizer_isdisposable",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -31530,7 +31933,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L1149",
+      "source_location": "L1154",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer_robotvisualizer",
+      "target": "web_src_utils_env_istestenv",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L589",
       "weight": 1.0
     },
     {
@@ -31542,7 +31957,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L654",
+      "source_location": "L660",
       "weight": 1.0
     },
     {
@@ -31554,7 +31969,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L658",
+      "source_location": "L664",
       "weight": 1.0
     },
     {
@@ -31566,7 +31981,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L665",
+      "source_location": "L671",
       "weight": 1.0
     },
     {
@@ -31578,7 +31993,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L669",
+      "source_location": "L675",
       "weight": 1.0
     },
     {
@@ -31590,7 +32005,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L670",
+      "source_location": "L676",
       "weight": 1.0
     },
     {
@@ -31602,7 +32017,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L697",
+      "source_location": "L703",
       "weight": 1.0
     },
     {
@@ -31614,7 +32029,31 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L734",
+      "source_location": "L736",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient_teleopclient",
+      "target": "web_src_utils_url_resolvegatewaywsurl",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient_teleopclient",
+      "target": "web_src_hooks_useisdesktop_useisdesktop",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -31626,139 +32065,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L131",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_isactionfeedbackframe",
+      "target": "web_src_hooks_useteleopsession_useteleopsession",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L172",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_contracts_iserrorframe",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L178",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_createtrajectoryexecutecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L247",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_contracts_serializecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L248",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_createpalmactuatecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L254",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_createemergencystopcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L261",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_createresetfaultcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L271",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_createpickandplacetargetcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L281",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_createclearworkspacecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L294",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_domain_parsers_createpingcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L301",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_teleopclient",
-      "target": "web_src_utils_env_isbrowser",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L57",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -31771,6 +32090,138 @@
       "context": "call",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
       "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_isactionfeedbackframe",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_contracts_iserrorframe",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createtrajectoryexecutecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L198",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_contracts_serializecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L199",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createpalmactuatecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L205",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createemergencystopcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L212",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createresetfaultcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createpickandplacetargetcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L232",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createclearworkspacecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L245",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createpingcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_src_utils_env_isbrowser",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -31810,6 +32261,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_utils_url_resolvegatewaywsurl",
+      "target": "web_src_utils_env_isbrowser",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage_expectactivegear",
       "target": "web_tests_e2e_pages_teleoppage_teleoppage_hasactivegear",
       "relation": "calls",
@@ -31818,7 +32281,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L460",
+      "source_location": "L422",
       "weight": 1.0
     },
     {
@@ -31830,7 +32293,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L647",
+      "source_location": "L577",
       "weight": 1.0
     },
     {
@@ -31842,7 +32305,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L485",
+      "source_location": "L444",
       "weight": 1.0
     },
     {
@@ -31854,7 +32317,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L201",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -31866,7 +32329,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L236",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -31878,7 +32341,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L591",
+      "source_location": "L522",
       "weight": 1.0
     },
     {
@@ -31890,7 +32353,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L416",
+      "source_location": "L384",
       "weight": 1.0
     },
     {
@@ -31902,7 +32365,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L683",
+      "source_location": "L607",
       "weight": 1.0
     },
     {
@@ -31914,7 +32377,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L706",
+      "source_location": "L628",
       "weight": 1.0
     },
     {
@@ -32214,7 +32677,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L461",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -32226,7 +32689,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L462",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -32238,7 +32701,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L499",
+      "source_location": "L502",
       "weight": 1.0
     },
     {
@@ -32310,7 +32773,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L574",
+      "source_location": "L577",
       "weight": 1.0
     },
     {
@@ -32346,7 +32809,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L521",
+      "source_location": "L524",
       "weight": 1.0
     },
     {
@@ -32358,7 +32821,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L528",
+      "source_location": "L531",
       "weight": 1.0
     },
     {
@@ -32370,7 +32833,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L538",
+      "source_location": "L541",
       "weight": 1.0
     },
     {
@@ -32382,7 +32845,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L540",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -32394,7 +32857,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L31",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -32611,6 +33074,18 @@
       "context": "export",
       "source_file": "web/domain/parsers.ts",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_hooks_useteleopsession",
+      "relation": "re_exports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "export",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -33154,6 +33629,42 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_actionprogressbar_actionprogressbarprops",
+      "target": "web_src_hooks_useteleopsession_actionprogress",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_connectionbadge_connectionbadgeprops",
+      "target": "web_src_hooks_useteleopsession_connectionstate",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_eventlog_eventlogprops",
+      "target": "web_src_hooks_useteleopsession_logentry",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_operatortoolbar_operatortoolbarprops",
       "target": "web_domain_contracts_robotstate",
       "relation": "references",
@@ -33186,7 +33697,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -33198,7 +33709,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -33210,7 +33721,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -33223,30 +33734,6 @@
       "context": "field",
       "source_file": "web/src/components/TelemetryMonitor.tsx",
       "source_location": "L6",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_logentry",
-      "target": "web_domain_contracts_errorframe",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L34",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient_logentry",
-      "target": "web_domain_contracts_robottelemetryevent",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "field",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -33271,6 +33758,42 @@
       "context": "field",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
       "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_errorlogentry",
+      "target": "web_domain_contracts_errorframe",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_telemetrylogentry",
+      "target": "web_domain_contracts_robottelemetryevent",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsessionoptions",
+      "target": "web_domain_contracts_robotstate",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L57",
       "weight": 1.0
     },
     {
@@ -33330,7 +33853,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -33342,7 +33865,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -36478,6 +37001,42 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_actionprogressbar",
+      "target": "web_src_hooks_useteleopsession_actionprogress",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_connectionbadge",
+      "target": "web_src_hooks_useteleopsession_connectionstate",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_eventlog",
+      "target": "web_src_hooks_useteleopsession_logentry",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_operatortoolbar",
       "target": "web_domain_contracts_posename",
       "relation": "imports",
@@ -36550,6 +37109,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_utils_env_istestenv",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_telemetrymonitor",
       "target": "web_domain_contracts_canonical_ur5e_joints",
       "relation": "imports",
@@ -36575,7 +37146,31 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_pickandplacetargetpayload",
+      "target": "web_src_utils_url_resolvegatewaywsurl",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_telemetrymonitor_telemetrymonitor",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_robotvisualizer_robotvisualizer",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -36587,115 +37182,19 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_serializecommand",
+      "target": "web_src_components_operatortoolbar_operatortoolbar",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_createclearworkspacecommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_createemergencystopcommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_createpalmactuatecommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_createpickandplacetargetcommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_createpingcommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_createresetfaultcommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_createtrajectoryexecutecommand",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers_isactionfeedbackframe",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L11",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_utils_env_isbrowser",
+      "target": "web_domain_contracts_default_robot_id",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -36714,115 +37213,103 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L23",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_telemetrymonitor_telemetrymonitor",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L24",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_robotvisualizer_robotvisualizer",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L25",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_operatortoolbar_operatortoolbar",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L26",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_default_robot_id",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
       "source_location": "L3",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_errorframe",
+      "target": "web_src_hooks_useteleopsession_connectionstate",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_iserrorframe",
+      "target": "web_src_hooks_useteleopsession_logentry",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_palmaction",
+      "target": "web_src_hooks_useteleopsession_useteleopsession",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_posename",
+      "target": "web_src_hooks_useisdesktop_useisdesktop",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_robottelemetryevent",
+      "target": "web_src_components_connectionbadge_connectionbadge",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L3",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_conflictbanner_conflictbanner",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_actionprogressbar_actionprogressbar",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_eventlog_eventlog",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -36859,6 +37346,210 @@
       "context": "import",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_pickandplacetargetpayload",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_serializecommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createclearworkspacecommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createemergencystopcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createpalmactuatecommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createpickandplacetargetcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createpingcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createresetfaultcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createtrajectoryexecutecommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_isactionfeedbackframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_utils_env_isbrowser",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_errorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_iserrorframe",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_palmaction",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_posename",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_robotstate",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_robottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -37846,6 +38537,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_tests_unit_env_test",
+      "target": "web_src_utils_env_istestenv",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/env.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
       "source": "web_tests_unit_kinematics_test",
       "target": "web_tests_e2e_support_kinematics_actionphase",
       "relation": "imports",
@@ -38208,6 +38911,18 @@
     {
       "source": "web_tests_unit_url_test",
       "target": "web_src_utils_url_getparam",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_unit_url_test",
+      "target": "web_src_utils_url_resolvegatewaywsurl",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38698,6 +39413,45 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_actionprogressbar",
+      "target": "web_src_hooks_useteleopsession",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L1",
+      "type_only": true,
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_connectionbadge",
+      "target": "web_src_hooks_useteleopsession",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L1",
+      "type_only": true,
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_eventlog",
+      "target": "web_src_hooks_useteleopsession",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L1",
+      "type_only": true,
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_operatortoolbar",
       "target": "web_domain_contracts",
       "relation": "imports_from",
@@ -38734,6 +39488,18 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_utils_env",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_telemetrymonitor",
       "target": "web_domain_contracts",
       "relation": "imports_from",
@@ -38760,7 +39526,31 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_parsers",
+      "target": "web_src_utils_url",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_telemetrymonitor",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_robotvisualizer",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38772,7 +39562,19 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_utils_env",
+      "target": "web_src_components_operatortoolbar",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_domain_contracts",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38791,55 +39593,67 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L23",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_telemetrymonitor",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L24",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_robotvisualizer",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L25",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_operatortoolbar",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L26",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
       "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_hooks_useisdesktop",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_connectionbadge",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_conflictbanner",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_actionprogressbar",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_components_eventlog",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -38852,6 +39666,42 @@
       "context": "import",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
       "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_utils_env",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -40903,7 +41753,7 @@
       "confidence_score": 1.0,
       "context": "type",
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -55922,6 +56772,105 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_components_actionprogressbar",
+      "target": "web_src_components_actionprogressbar_actionprogressbarprops",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_actionprogressbar",
+      "target": "web_src_components_actionprogressbar_actionprogressbar",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/ActionProgressBar.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_conflictbanner",
+      "target": "web_src_components_conflictbanner_conflictbannerprops",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/ConflictBanner.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_conflictbanner",
+      "target": "web_src_components_conflictbanner_conflictbanner",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/ConflictBanner.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_connectionbadge",
+      "target": "web_src_components_connectionbadge_connectionbadge",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_connectionbadge",
+      "target": "web_src_components_connectionbadge_connectionbadgeprops",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_connectionbadge",
+      "target": "web_src_components_connectionbadge_getbadgecolor",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_eventlog",
+      "target": "web_src_components_eventlog_eventlogprops",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_eventlog",
+      "target": "web_src_components_eventlog_eventlog",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/EventLog.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_components_operatortoolbar",
       "target": "web_src_components_operatortoolbar_operatortoolbar",
       "relation": "contains",
@@ -55945,7 +56894,7 @@
     },
     {
       "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_spindle_tower_coords",
+      "target": "web_src_components_robotvisualizer_reachability_max_radius",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -55956,7 +56905,7 @@
     },
     {
       "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_gear_stack_height_step",
+      "target": "web_src_components_robotvisualizer_spindle_tower_coords",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -55967,7 +56916,7 @@
     },
     {
       "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_max_tower_stack_capacity",
+      "target": "web_src_components_robotvisualizer_gear_stack_height_step",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -55978,7 +56927,7 @@
     },
     {
       "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_grasp_proximity_threshold_m",
+      "target": "web_src_components_robotvisualizer_max_tower_stack_capacity",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -55989,13 +56938,24 @@
     },
     {
       "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_grasp_proximity_threshold_m",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
       "target": "web_src_components_robotvisualizer_pedestalproceduralassets",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L132",
+      "source_location": "L141",
       "weight": 1.0
     },
     {
@@ -56006,7 +56966,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L137",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -56017,7 +56977,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -56028,7 +56988,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L216",
+      "source_location": "L225",
       "weight": 1.0
     },
     {
@@ -56039,7 +56999,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L226",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -56050,7 +57010,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L341",
+      "source_location": "L350",
       "weight": 1.0
     },
     {
@@ -56061,7 +57021,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L346",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -56072,18 +57032,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L413",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_getlatestpositions",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L42",
+      "source_location": "L422",
       "weight": 1.0
     },
     {
@@ -56094,7 +57043,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L420",
+      "source_location": "L429",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_getlatestpositions",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -56105,7 +57065,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L465",
+      "source_location": "L474",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_isdisposable",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -56116,7 +57087,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L58",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -56127,7 +57098,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L69",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -56138,23 +57109,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L75",
+      "source_location": "L84",
       "weight": 1.0
     },
     {
       "source": "web_src_components_robotvisualizer",
       "target": "web_src_components_robotvisualizer_reachability_min_radius",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L8",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_reachability_max_radius",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -56187,35 +57147,13 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_teleopclient_connectionstate",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L28",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_teleopclient_logentry",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L30",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
       "target": "web_src_components_teleopclient_teleopclientprops",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L37",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -56226,7 +57164,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L47",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useisdesktop",
+      "target": "web_src_hooks_useisdesktop_useisdesktop",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useIsDesktop.ts",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -56252,6 +57201,94 @@
       "weight": 1.0
     },
     {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_connectionstate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_telemetrylogentry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_errorlogentry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_logentry",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_actionprogress",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_errorbannerinfo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_useteleopsessionoptions",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_src_hooks_useteleopsession_useteleopsession",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
       "source": "web_src_main",
       "target": "web_src_main_root",
       "relation": "contains",
@@ -56271,6 +57308,72 @@
       "confidence_score": 1.0,
       "source_file": "web/src/main.tsx",
       "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_types_global_d",
+      "target": "web_src_types_global_d_visualizerraycastresult",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_types_global_d",
+      "target": "web_src_types_global_d_visualizernozzlestate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_types_global_d",
+      "target": "web_src_types_global_d_visualizerrendererinfo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_types_global_d",
+      "target": "web_src_types_global_d_robotvisualizerglobalhandle",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_types_global_d",
+      "target": "web_src_types_global_d_window",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/types/global.d.ts",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_utils_env",
+      "target": "web_src_utils_env_istestenv",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/utils/env.ts",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -56414,6 +57517,17 @@
       "confidence_score": 1.0,
       "source_file": "web/src/utils/url.ts",
       "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_utils_url",
+      "target": "web_src_utils_url_resolvegatewaywsurl",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -56765,7 +57879,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -60015,7 +61129,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L166",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -60026,7 +61140,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L175",
+      "source_location": "L169",
       "weight": 1.0
     },
     {
@@ -60037,7 +61151,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L188",
+      "source_location": "L177",
       "weight": 1.0
     },
     {
@@ -60048,7 +61162,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L200",
+      "source_location": "L189",
       "weight": 1.0
     },
     {
@@ -60059,7 +61173,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L231",
+      "source_location": "L220",
       "weight": 1.0
     },
     {
@@ -60070,7 +61184,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L246",
+      "source_location": "L235",
       "weight": 1.0
     },
     {
@@ -60081,7 +61195,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L280",
+      "source_location": "L267",
       "weight": 1.0
     },
     {
@@ -60092,7 +61206,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L301",
+      "source_location": "L281",
       "weight": 1.0
     },
     {
@@ -60103,7 +61217,62 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L311",
+      "source_location": "L288",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickpalmtoggle",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L299",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickemergencystop",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L304",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickclearworkspace",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L309",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttonenabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttondisabled",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L318",
       "weight": 1.0
     },
     {
@@ -60119,7 +61288,7 @@
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickpalmtoggle",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickresetfault",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60130,7 +61299,7 @@
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickemergencystop",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsdisabled",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -60141,68 +61310,13 @@
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickclearworkspace",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L332",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttonenabled",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L337",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectclearworkspacebuttondisabled",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L341",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickresetfault",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L345",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsdisabled",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L350",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
       "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionbuttonsenabled",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L357",
+      "source_location": "L334",
       "weight": 1.0
     },
     {
@@ -60213,7 +61327,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L364",
+      "source_location": "L341",
       "weight": 1.0
     },
     {
@@ -60224,7 +61338,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L368",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
@@ -60235,7 +61349,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L372",
+      "source_location": "L349",
       "weight": 1.0
     },
     {
@@ -60246,7 +61360,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L376",
+      "source_location": "L353",
       "weight": 1.0
     },
     {
@@ -60257,7 +61371,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L380",
+      "source_location": "L357",
       "weight": 1.0
     },
     {
@@ -60268,7 +61382,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L384",
+      "source_location": "L361",
       "weight": 1.0
     },
     {
@@ -60279,7 +61393,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L408",
+      "source_location": "L376",
       "weight": 1.0
     },
     {
@@ -60290,7 +61404,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L431",
+      "source_location": "L399",
       "weight": 1.0
     },
     {
@@ -60301,7 +61415,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L447",
+      "source_location": "L412",
       "weight": 1.0
     },
     {
@@ -60312,7 +61426,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L456",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
@@ -60323,7 +61437,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L467",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -60334,7 +61448,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L476",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
@@ -60345,7 +61459,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L499",
+      "source_location": "L458",
       "weight": 1.0
     },
     {
@@ -60356,7 +61470,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L515",
+      "source_location": "L471",
       "weight": 1.0
     },
     {
@@ -60367,7 +61481,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L545",
+      "source_location": "L491",
       "weight": 1.0
     },
     {
@@ -60378,7 +61492,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L575",
+      "source_location": "L511",
       "weight": 1.0
     },
     {
@@ -60389,7 +61503,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L587",
+      "source_location": "L518",
       "weight": 1.0
     },
     {
@@ -60400,7 +61514,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L598",
+      "source_location": "L529",
       "weight": 1.0
     },
     {
@@ -60411,7 +61525,84 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L606",
+      "source_location": "L537",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionpercentatleast",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L541",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactioncompleted",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L553",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_isgearattached",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L565",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectgearattached",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L573",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectspindletowerloaded",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L584",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_gettowergearcount",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L597",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecttowergearcount",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
+      "source_location": "L603",
       "weight": 1.0
     },
     {
@@ -60427,46 +61618,24 @@
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactionpercentatleast",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_gettowertopgearheight",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L610",
+      "source_location": "L614",
       "weight": 1.0
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectactioncompleted",
+      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecttowertopgearheight",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L622",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_isgearattached",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L634",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectgearattached",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L643",
+      "source_location": "L624",
       "weight": 1.0
     },
     {
@@ -60482,39 +61651,6 @@
     },
     {
       "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expectspindletowerloaded",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L654",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_gettowergearcount",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L670",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecttowergearcount",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L679",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
       "target": "web_tests_e2e_pages_teleoppage_teleoppage_clickping",
       "relation": "method",
       "_origin": "ast",
@@ -60522,28 +61658,6 @@
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/pages/TeleopPage.ts",
       "source_location": "L69",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_gettowertopgearheight",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L690",
-      "weight": 1.0
-    },
-    {
-      "source": "web_tests_e2e_pages_teleoppage_teleoppage",
-      "target": "web_tests_e2e_pages_teleoppage_teleoppage_expecttowertopgearheight",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/tests/e2e/pages/TeleopPage.ts",
-      "source_location": "L702",
       "weight": 1.0
     },
     {
@@ -61016,7 +62130,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L443",
+      "source_location": "L446",
       "weight": 1.0
     },
     {
@@ -61027,7 +62141,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L453",
+      "source_location": "L456",
       "weight": 1.0
     },
     {
@@ -61038,7 +62152,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L518",
+      "source_location": "L521",
       "weight": 1.0
     },
     {
@@ -61049,7 +62163,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L525",
+      "source_location": "L528",
       "weight": 1.0
     },
     {
@@ -61060,7 +62174,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L545",
+      "source_location": "L548",
       "weight": 1.0
     },
     {
@@ -61071,7 +62185,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L554",
+      "source_location": "L557",
       "weight": 1.0
     },
     {
@@ -61082,7 +62196,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L571",
+      "source_location": "L574",
       "weight": 1.0
     },
     {
@@ -61093,7 +62207,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L579",
+      "source_location": "L582",
       "weight": 1.0
     },
     {
@@ -61148,7 +62262,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/world.ts",
-      "source_location": "L29",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -63560,7 +64674,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L678",
+      "source_location": "L684",
       "weight": 1.0
     },
     {
@@ -66095,5 +67209,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1a000d3521a6e74ef302605b2fa0ca70b322aab2"
+  "built_at_commit": "096d5c4bb714b4a8e9044c0fb89660470361e78d"
 }
