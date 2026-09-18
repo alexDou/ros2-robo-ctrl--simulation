@@ -7,6 +7,7 @@ import {
   type RobotTelemetryEvent,
   type ErrorFrame,
   type RobotState,
+  type SpawnObjectPayload,
 } from '@contracts';
 import {
   createPingCommand,
@@ -15,6 +16,7 @@ import {
   createEmergencyStopCommand,
   createResetFaultCommand,
   createPickAndPlaceTargetCommand,
+  createSpawnObjectCommand,
   createClearWorkspaceCommand,
   serializeCommand,
   isActionFeedbackFrame,
@@ -75,7 +77,18 @@ export function useTeleopSession({
   const wsRef = useRef<WebSocket | null>(null);
   const isCleaningUp = useRef(false);
   const lastLoggedStateRef = useRef<string | null>(null);
+  const prevRobotStateRef = useRef<string | null>(null);
   const errorBannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const current = robotState ?? 'IDLE';
+    const prev = prevRobotStateRef.current;
+    if (prev === 'EXECUTING' && current === 'IDLE') {
+      setHasActiveGear(false);
+      setActionProgress(null);
+    }
+    prevRobotStateRef.current = current;
+  }, [robotState]);
 
   const connect = useCallback(() => {
     isCleaningUp.current = false;
@@ -106,7 +119,7 @@ export function useTeleopSession({
           const telem = parsed as RobotTelemetryEvent;
           const isFirst = lastLoggedStateRef.current === null;
           const stateChanged = lastLoggedStateRef.current !== telem.robot_state;
-          if (telem.robot_state === 'FAULT') {
+          if (telem.robot_state === 'FAULT' || telem.robot_state === 'IDLE') {
             setActionProgress(null);
           }
           if (telem.command_id || isFirst || stateChanged) {
@@ -236,15 +249,35 @@ export function useTeleopSession({
     [robotState]
   );
 
+  const spawnObject = useCallback(
+    (payload: SpawnObjectPayload) => {
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+      const currentRobotState = robotState ?? 'IDLE';
+      if (currentRobotState !== 'IDLE') return;
+      const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
+      wsRef.current.send(serializeCommand(cmd));
+      setHasActiveGear(true);
+    },
+    [robotState]
+  );
+
   const clearWorkspace = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     const currentRobotState = robotState ?? 'IDLE';
     if (currentRobotState !== 'IDLE') return;
-    if (!hasActiveGear) return;
+    const hasVisualizerGears =
+      typeof window !== 'undefined' &&
+      window.__robot_visualizer &&
+      ((window.__robot_visualizer.getTowerGearCount?.() ?? 0) > 0 ||
+        window.__robot_visualizer.hasActiveGear?.());
+    if (!hasActiveGear && !hasVisualizerGears) return;
     setActionProgress(null);
     const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));
     setHasActiveGear(false);
+    if (typeof window !== 'undefined' && window.__robot_visualizer?.clearWorkspace) {
+      window.__robot_visualizer.clearWorkspace();
+    }
   }, [robotState, hasActiveGear]);
 
   const sendPing = useCallback(() => {
@@ -266,6 +299,7 @@ export function useTeleopSession({
     emergencyStop,
     resetFault,
     pickAndPlaceTarget,
+    spawnObject,
     clearWorkspace,
     sendPing,
   };

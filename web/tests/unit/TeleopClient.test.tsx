@@ -612,6 +612,95 @@ describe('TeleopClient Component', () => {
       expect(secondCmd.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
       expect(secondCmd.payload.pick_x).toBeCloseTo(0.55, 2);
     });
+
+    it('auto-resets hasActiveGear to false and clears action progress when robot_state returns to IDLE after pick-and-place execution', () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // 1. Click table to trigger pick-and-place target
+      act(() => {
+        visualizer.simulateClick(0.5, 0.1);
+      });
+      expect(ws.sentMessages.length).toBe(1);
+
+      // 2. Simulate ACTION_FEEDBACK progress
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          type: 'ACTION_FEEDBACK',
+          command_id: 'cmd-pnp-1',
+          phase: 'APPROACHING',
+          percent_complete: 20.0,
+          timestamp_ns: '1700000000000000000',
+        }));
+      });
+      expect(screen.queryByTestId('action-progress-container')).not.toBeNull();
+
+      // 3. Robot state transitions to EXECUTING
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000100000000',
+          robot_state: RobotState.EXECUTING,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: true },
+        }));
+      });
+      expect(screen.queryByTestId('action-progress-container')).not.toBeNull();
+
+      // 4. Robot finishes sequence and transitions back to IDLE
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000200000000',
+          robot_state: RobotState.IDLE,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: false },
+        }));
+      });
+
+      // actionProgress must be cleared
+      expect(screen.queryByTestId('action-progress-container')).toBeNull();
+
+      // ClickLockout is lifted
+      expect(visualizer.isLockedOut()).toBe(false);
+
+      // Able to click again for next target
+      act(() => {
+        visualizer.simulateClick(0.55, -0.05);
+      });
+      expect(ws.sentMessages.length).toBe(2);
+    });
+
+    it('passes onSpawnObject callback prop to RobotVisualizer and invokes on table click', () => {
+      const onSpawnSpy = vi.fn();
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+          onSpawnObject={onSpawnSpy}
+        />
+      );
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      act(() => {
+        visualizer.simulateClick(0.5, 0.1);
+      });
+
+      expect(onSpawnSpy).toHaveBeenCalledWith({
+        x: expect.closeTo(0.5, 2),
+        y: expect.closeTo(0.1, 2),
+        z: 0.0,
+        object_type: 'GEAR',
+      });
+    });
   });
 
   describe('Unit 5.4: TeleopClient Operator Toolbar Clear Workspace', () => {

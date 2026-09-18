@@ -488,7 +488,6 @@ export class MockGateway {
 
       const step = steps[stepIdx];
       const isComplete = step.stepNumber === 10;
-      this.robotState = isComplete ? 'IDLE' : 'EXECUTING';
       this.currentJoints = [...step.jointPositions] as ArmJointPositions;
       this.palmState = { is_grasped: step.isGrasped };
 
@@ -502,14 +501,17 @@ export class MockGateway {
       this.broadcastRaw(JSON.stringify(fbFrame));
 
       if (isComplete) {
-        this.pnpExecuting = false;
         this.towerGearsCount = Math.min(this.towerGearsCount + 1, 10);
-        this.robotState = 'IDLE';
-        this.palmState = { is_grasped: false };
-        this.sendTelemetryToAll(commandId);
+        this.pnpTimeout = setTimeout(() => {
+          this.pnpExecuting = false;
+          this.robotState = 'IDLE';
+          this.palmState = { is_grasped: false };
+          this.sendTelemetryToAll(commandId);
+        }, 600);
         return;
       }
 
+      this.robotState = 'EXECUTING';
       this.sendTelemetryToAll(commandId);
       stepIdx++;
       this.pnpTimeout = setTimeout(executeNextStep, 70);

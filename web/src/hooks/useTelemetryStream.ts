@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback } from 'preact/hooks';
 import {
   isRobotTelemetryEvent,
+  CANONICAL_POSES,
   type ArmJointPositions,
   type RobotState,
 } from '@contracts';
@@ -18,7 +19,7 @@ export interface TelemetryBuffer {
 
 export function useTelemetryStream() {
   const bufferRef = useRef<TelemetryBuffer>({
-    jointPositions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    jointPositions: [...CANONICAL_POSES.HOME],
     timestampNs: 0n.toString(),
     robotState: 'IDLE' as RobotState,
     palmState: { is_grasped: false },
@@ -100,7 +101,7 @@ export function useTelemetryStream() {
     setPalmState({ is_grasped: false });
     frameTimestampsRef.current = [];
     bufferRef.current = {
-      jointPositions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      jointPositions: [...CANONICAL_POSES.HOME],
       timestampNs: 0n.toString(),
       robotState: 'IDLE' as RobotState,
       palmState: { is_grasped: false },

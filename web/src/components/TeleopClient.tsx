@@ -1,5 +1,6 @@
+import { useState, useCallback } from 'preact/hooks';
 import { resolveGatewayWsUrl } from '@utils/url';
-import { DEFAULT_ROBOT_ID } from '@contracts';
+import { DEFAULT_ROBOT_ID, type SpawnObjectPayload } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
@@ -21,6 +22,7 @@ export interface TeleopClientProps {
   rendererFactory?: (canvas: HTMLCanvasElement) => any;
   controlsFactory?: (camera: any, domElement: any) => any;
   jointPositionsRef?: { current: readonly number[] };
+  onSpawnObject?: (payload: SpawnObjectPayload) => void;
 }
 
 export function TeleopClient({
@@ -31,6 +33,7 @@ export function TeleopClient({
   rendererFactory,
   controlsFactory,
   jointPositionsRef,
+  onSpawnObject,
 }: TeleopClientProps) {
   const wsUrl = resolveGatewayWsUrl(robotId, gatewayWsUrl);
   const isDesktop = useIsDesktop();
@@ -66,6 +69,16 @@ export function TeleopClient({
     robotState,
     palmState,
   });
+
+  const [visualizerHasGears, setVisualizerHasGears] = useState(false);
+  const handleWorkspaceGearsChange = useCallback((hasGears: boolean, towerCount: number) => {
+    setVisualizerHasGears(hasGears || towerCount > 0);
+  }, []);
+
+  const handleClearWorkspace = useCallback(() => {
+    clearWorkspace();
+    setVisualizerHasGears(false);
+  }, [clearWorkspace]);
 
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '1.5rem', fontFamily: 'sans-serif' }}>
@@ -151,6 +164,8 @@ export function TeleopClient({
               jointPositionsRef={jointPositionsRef}
               robotState={robotState || 'IDLE'}
               hasActiveGear={hasActiveGear}
+              onSpawnObject={onSpawnObject}
+              onWorkspaceGearsChange={handleWorkspaceGearsChange}
               onPickAndPlaceTarget={pickAndPlaceTarget}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
@@ -161,12 +176,12 @@ export function TeleopClient({
           <OperatorToolbar
             robotState={robotState || 'IDLE'}
             isGrasped={!!palmState?.is_grasped}
-            hasActiveGear={hasActiveGear}
+            hasActiveGear={hasActiveGear || visualizerHasGears}
             onExecutePose={executePose}
             onTogglePalm={togglePalm}
             onEmergencyStop={emergencyStop}
             onResetFault={resetFault}
-            onClearWorkspace={clearWorkspace}
+            onClearWorkspace={handleClearWorkspace}
             errorBanner={errorBanner}
             disabled={connectionState !== 'CONNECTED'}
           />
