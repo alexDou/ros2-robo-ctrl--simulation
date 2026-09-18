@@ -20,6 +20,7 @@ setup(
     entry_points={
         "console_scripts": [
             "arm_controller_node = arm_controller.arm_controller_node:main",
+            "edge_bridge_node = arm_controller.edge_bridge_node:main",
         ],
     },
 )

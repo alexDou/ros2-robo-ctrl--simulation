@@ -1,0 +1,590 @@
+"""EdgeBridge Node bridging Zenoh DataFabric commands to ROS2 controllers.
+
+Per Unit 6.5-Bugfix.2.1 (hand-sim-o5es):
+- Runs rclpy MultiThreadedExecutor alongside Zenoh session subscriber on robot/{id}/command.
+- Subscribes to /joint_states with zero-alloc canonical joint mapping (UR5E_JOINTS).
+- Connects to ROS2 ActionClient /scaled_joint_trajectory_controller/follow_joint_trajectory.
+- Auto-commands HOME pose on controller startup.
+- Dispatches TRAJECTORY_EXECUTE for CANONICAL_POSES (HOME, READY, INSPECT_POSE) and custom waypoints.
+- Implements non-blocking EMERGENCY_STOP (cancels trajectory, sets FAULT) and RESET_FAULT handling.
+- Emits RobotTelemetryEvent and ErrorFrame over Zenoh on robot/{id}/telemetry.
+"""
+
+import threading
+import time
+from typing import Any, Optional
+
+from control_msgs.action import FollowJointTrajectory
+import rclpy
+from rclpy.action import ActionClient
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
+from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
+from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
+from sensor_msgs.msg import JointState
+from trajectory_msgs.msg import JointTrajectoryPoint
+
+from arm_controller.arm_controller_node import seconds_to_duration
+from domain import (
+    CANONICAL_POSES,
+    CANONICAL_UR5E_JOINTS,
+    DEFAULT_ROBOT_ID,
+    CommandType,
+    ErrorFrame,
+    PalmState,
+    PoseName,
+    RobotCommand,
+    RobotState,
+    RobotTelemetryEvent,
+    TrajectoryExecutePayload,
+    robot_command_topic,
+    robot_telemetry_topic,
+)
+
+
+class EdgeBridgeNode(Node):
+    """ROS2 node bridging Zenoh DataFabric commands to ROS2 trajectory action client."""
+
+    def __init__(
+        self,
+        node_name: str = "edge_bridge_node",
+        zenoh_session: Optional[Any] = None,
+        **kwargs,
+    ) -> None:
+        super().__init__(node_name, **kwargs)
+
+        self.declare_parameter("robot_id", DEFAULT_ROBOT_ID)
+        self.declare_parameter(
+            "controller_action_name",
+            "/scaled_joint_trajectory_controller/follow_joint_trajectory",
+        )
+        self.declare_parameter("joint_states_topic", "/joint_states")
+        self.declare_parameter("auto_home_on_startup", True)
+        self.declare_parameter("auto_connect_zenoh", True)
+        self.declare_parameter("traj_connect_timeout", 5.0)
+        self.declare_parameter("step_duration", 1.0)
+        self.declare_parameter("max_joint_velocity", 2.0)
+
+        self._robot_id = str(self.get_parameter("robot_id").value)
+        self._controller_action_name = str(self.get_parameter("controller_action_name").value)
+        self._joint_states_topic = str(self.get_parameter("joint_states_topic").value)
+        self._auto_home_on_startup = bool(self.get_parameter("auto_home_on_startup").value)
+        self._auto_connect_zenoh = bool(self.get_parameter("auto_connect_zenoh").value)
+        self._traj_connect_timeout = float(self.get_parameter("traj_connect_timeout").value)
+        self._step_duration = float(self.get_parameter("step_duration").value)
+        self._max_joint_velocity = float(self.get_parameter("max_joint_velocity").value)
+
+        self._lock = threading.RLock()
+        self._cb_group = ReentrantCallbackGroup()
+        self._telem_cb_group = MutuallyExclusiveCallbackGroup()
+
+        # State initialization
+        self._robot_state: RobotState = (
+            RobotState.BOOTING if self._auto_home_on_startup else RobotState.IDLE
+        )
+        self._is_grasped: bool = False
+        self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
+        self._active_traj_handle: Optional[Any] = None
+        self._homing_done_event = threading.Event()
+        self._startup_motion_event = threading.Event()
+
+        # Zero-alloc JointState parsing cache
+        self._cached_joint_names: Optional[list[str]] = None
+        self._cached_joint_indices: Optional[list[int]] = None
+
+        # ROS2 Subscriptions & Action Clients
+        self._joint_sub = self.create_subscription(
+            JointState,
+            self._joint_states_topic,
+            self._handle_joint_states,
+            qos_profile_sensor_data,
+            callback_group=self._telem_cb_group,
+        )
+
+        self._traj_client = ActionClient(
+            self,
+            FollowJointTrajectory,
+            self._controller_action_name,
+            callback_group=self._cb_group,
+        )
+
+        # Zenoh setup
+        self._zenoh_session = zenoh_session
+        self._owns_zenoh_session = False
+        self._zenoh_sub = None
+        self._zenoh_pub = None
+
+        self._command_topic = robot_command_topic(self._robot_id)
+        self._telemetry_topic = robot_telemetry_topic(self._robot_id)
+
+        self._init_zenoh()
+
+        # Startup homing thread
+        self._startup_thread: Optional[threading.Thread] = None
+        if self._auto_home_on_startup:
+            self._startup_thread = threading.Thread(
+                target=self._run_startup_homing,
+                name="edge_bridge_homing",
+                daemon=True,
+            )
+            self._startup_thread.start()
+        else:
+            self._homing_done_event.set()
+
+    @property
+    def robot_id(self) -> str:
+        return self._robot_id
+
+    @property
+    def robot_state(self) -> RobotState:
+        with self._lock:
+            return self._robot_state
+
+    @property
+    def current_joints(self) -> list[float]:
+        with self._lock:
+            return list(self._current_joints)
+
+    @property
+    def is_grasped(self) -> bool:
+        with self._lock:
+            return self._is_grasped
+
+    def _init_zenoh(self) -> None:
+        """Initializes Zenoh subscriber and publisher on DataFabric topics."""
+        if self._zenoh_session is None and self._auto_connect_zenoh:
+            try:
+                import zenoh
+
+                self._zenoh_session = zenoh.open(zenoh.Config())
+                self._owns_zenoh_session = True
+                self.get_logger().info("Connected to Eclipse Zenoh session.")
+            except Exception as e:
+                self.get_logger().warning(
+                    f"Failed to open Zenoh session ({e}); running in offline ROS2 mode."
+                )
+                self._zenoh_session = None
+
+        if self._zenoh_session is not None:
+            try:
+                self._zenoh_pub = self._zenoh_session.declare_publisher(self._telemetry_topic)
+                self._zenoh_sub = self._zenoh_session.declare_subscriber(
+                    self._command_topic,
+                    self._on_zenoh_command,
+                )
+                self.get_logger().info(
+                    f"EdgeBridge listening on Zenoh '{self._command_topic}', "
+                    f"publishing telemetry to '{self._telemetry_topic}'"
+                )
+            except Exception as e:
+                self.get_logger().error(f"Failed to declare Zenoh entities: {e}")
+
+    def _on_zenoh_command(self, sample: Any) -> None:
+        """Zenoh subscriber callback processing incoming samples from DataFabric."""
+        try:
+            raw_payload = sample.payload.to_bytes().decode("utf-8")
+        except Exception as e:
+            self.get_logger().error(f"Failed to decode Zenoh sample: {e}")
+            return
+
+        self.handle_command_payload(raw_payload)
+
+    def _handle_joint_states(self, msg: JointState) -> None:
+        """Parses /joint_states and maps positions to canonical UR5e joint order."""
+        with self._lock:
+            if msg.name != self._cached_joint_names:
+                try:
+                    indices = [msg.name.index(joint) for joint in CANONICAL_UR5E_JOINTS]
+                    self._cached_joint_indices = indices
+                    self._cached_joint_names = list(msg.name)
+                except ValueError:
+                    return
+
+            if self._cached_joint_indices is not None:
+                positions = msg.position
+                if all(idx < len(positions) for idx in self._cached_joint_indices):
+                    self._current_joints = [
+                        float(positions[idx]) for idx in self._cached_joint_indices
+                    ]
+
+    def _run_startup_homing(self) -> None:
+        """Runs startup homing to CANONICAL_POSES[HOME] in a background worker."""
+        self.get_logger().info(
+            f"Waiting up to {self._traj_connect_timeout}s for trajectory controller action server..."
+        )
+        server_ready = self._traj_client.wait_for_server(timeout_sec=self._traj_connect_timeout)
+
+        if not server_ready:
+            self.get_logger().warning(
+                "Trajectory controller action server not available for startup homing; setting IDLE"
+            )
+            with self._lock:
+                if self._robot_state == RobotState.BOOTING:
+                    self._robot_state = RobotState.IDLE
+            self._homing_done_event.set()
+            self.publish_telemetry()
+            return
+
+        self.get_logger().info("Executing startup auto-homing to CANONICAL_POSES[HOME]...")
+        home_target = CANONICAL_POSES[PoseName.HOME]
+
+        with self._lock:
+            if self._robot_state != RobotState.BOOTING:
+                self._homing_done_event.set()
+                return
+            self._robot_state = RobotState.EXECUTING
+
+        self._startup_motion_event.clear()
+        self._dispatch_trajectory_points(
+            [home_target],
+            command_id="startup-homing",
+            completion_event=self._startup_motion_event,
+        )
+
+        # Wait on completion event signaled by action result
+        wait_timeout = max(10.0, self._step_duration * 5.0)
+        self._startup_motion_event.wait(timeout=wait_timeout)
+
+        with self._lock:
+            if self._robot_state == RobotState.BOOTING or self._robot_state == RobotState.EXECUTING:
+                self._robot_state = RobotState.IDLE
+
+        self._homing_done_event.set()
+        self.publish_telemetry(command_id="startup-homing")
+        self.get_logger().info("Startup auto-homing complete; EdgeBridge state is IDLE.")
+
+    def wait_for_homing(self, timeout_sec: float = 5.0) -> bool:
+        """Blocks until startup homing has finished."""
+        return self._homing_done_event.wait(timeout=timeout_sec)
+
+    def handle_command_payload(self, raw_payload: str | bytes) -> Optional[RobotTelemetryEvent]:
+        """Validates JSON schema and dispatches inbound RobotCommand."""
+        if isinstance(raw_payload, bytes):
+            try:
+                raw_payload = raw_payload.decode("utf-8")
+            except Exception as e:
+                self._publish_error("MALFORMED_PAYLOAD", f"UTF-8 decode failed: {e}")
+                return None
+
+        try:
+            command = RobotCommand.model_validate_json(raw_payload)
+        except Exception as e:
+            self._publish_error("SCHEMA_VALIDATION_ERROR", f"Invalid RobotCommand schema: {e}")
+            return None
+
+        return self.handle_command(command)
+
+    def handle_command(self, command: RobotCommand) -> Optional[RobotTelemetryEvent]:
+        """Processes validated RobotCommand according to operational lifecycle."""
+        self.get_logger().info(
+            f"Received {command.type.value} command '{command.command_id}' from '{command.sender_id}'"
+        )
+
+        if command.type == CommandType.PING:
+            return self.publish_telemetry(command_id=command.command_id)
+
+        if command.type == CommandType.EMERGENCY_STOP:
+            return self.handle_emergency_stop(command_id=command.command_id)
+
+        if command.type == CommandType.RESET_FAULT:
+            return self.handle_reset_fault(command_id=command.command_id)
+
+        if command.type == CommandType.TRAJECTORY_EXECUTE:
+            with self._lock:
+                if self._robot_state == RobotState.FAULT:
+                    self._publish_error(
+                        "ROBOT_IN_FAULT",
+                        "Robot is in FAULT state; must RESET_FAULT before commanding trajectories",
+                    )
+                    return None
+                if self._robot_state != RobotState.IDLE:
+                    self._publish_error(
+                        "ROBOT_BUSY",
+                        f"Robot is currently {self._robot_state.value}; command rejected",
+                    )
+                    return None
+
+                # Non-blocking controller check
+                if not self._traj_client.server_is_ready():
+                    self._publish_error(
+                        "CONTROLLER_UNAVAILABLE",
+                        "FollowJointTrajectory action server is not available",
+                    )
+                    return None
+
+                try:
+                    payload = TrajectoryExecutePayload.model_validate(command.payload)
+                except Exception as e:
+                    self._publish_error("INVALID_PAYLOAD", f"TrajectoryExecute payload invalid: {e}")
+                    return None
+
+                waypoints_to_execute = []
+                if payload.pose_name is not None:
+                    if payload.pose_name not in CANONICAL_POSES:
+                        self._publish_error(
+                            "INVALID_POSE_NAME",
+                            f"Unknown pose name '{payload.pose_name}'",
+                        )
+                        return None
+                    waypoints_to_execute = [CANONICAL_POSES[payload.pose_name]]
+                elif payload.waypoints is not None and len(payload.waypoints) > 0:
+                    waypoints_to_execute = payload.waypoints
+                else:
+                    self._publish_error(
+                        "INVALID_PAYLOAD",
+                        "Neither pose_name nor waypoints provided in TRAJECTORY_EXECUTE payload",
+                    )
+                    return None
+
+                # Atomically transition state under lock to prevent TOCTOU race
+                self._robot_state = RobotState.EXECUTING
+
+            return self._dispatch_trajectory_points(
+                waypoints_to_execute, command_id=command.command_id
+            )
+
+        self.get_logger().warning(f"Unsupported command type: {command.type.value}")
+        self._publish_error(
+            "UNSUPPORTED_COMMAND",
+            f"Unsupported command type '{command.type.value}'",
+        )
+        return None
+
+    def _dispatch_trajectory_points(
+        self,
+        waypoints: list[list[float]],
+        command_id: Optional[str] = None,
+        completion_event: Optional[threading.Event] = None,
+    ) -> RobotTelemetryEvent:
+        """Builds multi-point trajectory with cumulative durations and dispatches to controller."""
+        with self._lock:
+            q_current = list(self._current_joints)
+
+        goal = FollowJointTrajectory.Goal()
+        goal.trajectory.joint_names = list(CANONICAL_UR5E_JOINTS)
+
+        cumulative_time = 0.0
+        prev_q = q_current
+        for wp in waypoints:
+            max_dq = max(abs(wp[i] - prev_q[i]) for i in range(6))
+            seg_dur = max(
+                self._step_duration,
+                max_dq / self._max_joint_velocity if self._max_joint_velocity > 0 else self._step_duration,
+            )
+            cumulative_time += seg_dur
+            prev_q = wp
+
+            pt = JointTrajectoryPoint()
+            pt.positions = [float(q) for q in wp]
+            pt.velocities = [0.0] * 6
+            pt.time_from_start = seconds_to_duration(cumulative_time)
+            goal.trajectory.points.append(pt)
+
+        event = self.publish_telemetry(command_id=command_id)
+
+        with self._lock:
+            if self._robot_state != RobotState.EXECUTING:
+                if completion_event is not None:
+                    completion_event.set()
+                return event
+
+            send_goal_future = self._traj_client.send_goal_async(goal)
+
+        def on_goal_response(future: Any) -> None:
+            try:
+                goal_handle = future.result()
+            except Exception as err:
+                self.get_logger().error(f"Error obtaining goal handle: {err}")
+                with self._lock:
+                    if self._robot_state == RobotState.EXECUTING:
+                        self._robot_state = RobotState.FAULT
+                self._publish_error("GOAL_ERROR", str(err))
+                self.publish_telemetry()
+                if completion_event is not None:
+                    completion_event.set()
+                return
+
+            if not goal_handle or not goal_handle.accepted:
+                self.get_logger().error("Trajectory goal rejected by controller")
+                with self._lock:
+                    if self._robot_state == RobotState.EXECUTING:
+                        self._robot_state = RobotState.FAULT
+                self._publish_error("GOAL_REJECTED", "Trajectory goal was rejected by controller")
+                self.publish_telemetry()
+                if completion_event is not None:
+                    completion_event.set()
+                return
+
+            with self._lock:
+                if self._robot_state == RobotState.EXECUTING:
+                    self._active_traj_handle = goal_handle
+                else:
+                    goal_handle.cancel_goal_async()
+                    if completion_event is not None:
+                        completion_event.set()
+                    return
+
+            res_future = goal_handle.get_result_async()
+
+            def on_result(r_future: Any) -> None:
+                should_publish_completion = False
+                with self._lock:
+                    self._active_traj_handle = None
+                    if self._robot_state == RobotState.EXECUTING:
+                        try:
+                            traj_res = r_future.result()
+                            if traj_res.result.error_code == FollowJointTrajectory.Result.SUCCESSFUL:
+                                self._robot_state = RobotState.IDLE
+                                should_publish_completion = True
+                            else:
+                                self.get_logger().error(
+                                    f"Trajectory failed with code {traj_res.result.error_code}"
+                                )
+                                self._robot_state = RobotState.FAULT
+                        except Exception as err:
+                            self.get_logger().error(f"Error reading trajectory result: {err}")
+                            self._robot_state = RobotState.FAULT
+
+                if completion_event is not None:
+                    completion_event.set()
+
+                if should_publish_completion:
+                    self.publish_telemetry(command_id=command_id)
+
+            res_future.add_done_callback(on_result)
+
+        send_goal_future.add_done_callback(on_goal_response)
+        return event
+
+    def handle_emergency_stop(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+        """Cancels active trajectory immediately and transitions to FAULT state."""
+        self.get_logger().warn(f"EMERGENCY STOP TRIGGERED (cmd={command_id})")
+
+        with self._lock:
+            self._robot_state = RobotState.FAULT
+            active_handle = self._active_traj_handle
+            self._active_traj_handle = None
+
+        if active_handle is not None:
+            try:
+                active_handle.cancel_goal_async()
+            except Exception as e:
+                self.get_logger().warning(f"Failed to cancel active trajectory: {e}")
+
+        return self.publish_telemetry(command_id=command_id)
+
+    def handle_reset_fault(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+        """Clears FAULT state and returns to IDLE."""
+        self.get_logger().info(f"RESET FAULT TRIGGERED (cmd={command_id})")
+        with self._lock:
+            if self._robot_state == RobotState.FAULT:
+                self._robot_state = RobotState.IDLE
+
+        return self.publish_telemetry(command_id=command_id)
+
+    def _publish_error(self, error_code: str, message: str) -> None:
+        """Publishes structured ErrorFrame over Zenoh on schema or state validation failures."""
+        err = ErrorFrame(
+            error_code=error_code,
+            message=message,
+            timestamp_ns=time.time_ns(),
+        )
+        self.get_logger().warning(f"ErrorFrame: [{error_code}] {message}")
+        if self._zenoh_pub is not None:
+            try:
+                self._zenoh_pub.put(err.model_dump_json())
+            except Exception as e:
+                self.get_logger().error(f"Failed to publish ErrorFrame to Zenoh: {e}")
+
+    def publish_telemetry(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+        """Emits RobotTelemetryEvent over Zenoh on robot/{id}/telemetry."""
+        with self._lock:
+            state = self._robot_state
+            joints = list(self._current_joints)
+            is_grasped = self._is_grasped
+
+        event = RobotTelemetryEvent(
+            timestamp_ns=time.time_ns(),
+            robot_state=state,
+            joint_positions=joints,
+            palm_state=PalmState(is_grasped=is_grasped),
+            command_id=command_id,
+        )
+
+        if self._zenoh_pub is not None:
+            try:
+                self._zenoh_pub.put(event.model_dump_json(exclude_none=True))
+            except Exception as e:
+                self.get_logger().error(f"Failed to publish telemetry to Zenoh: {e}")
+
+        return event
+
+    def close(self) -> None:
+        """Cleans up active goals, Zenoh subscriptions, and ROS2 resources."""
+        with self._lock:
+            if self._active_traj_handle is not None:
+                try:
+                    self._active_traj_handle.cancel_goal_async()
+                except Exception:
+                    pass
+                self._active_traj_handle = None
+
+        if self._startup_thread is not None and self._startup_thread.is_alive():
+            self._startup_thread.join(timeout=1.0)
+
+        if self._zenoh_sub is not None:
+            try:
+                self._zenoh_sub.undeclare()
+            except Exception:
+                pass
+            self._zenoh_sub = None
+
+        if self._zenoh_pub is not None:
+            try:
+                self._zenoh_pub.undeclare()
+            except Exception:
+                pass
+            self._zenoh_pub = None
+
+        if self._owns_zenoh_session and self._zenoh_session is not None:
+            try:
+                self._zenoh_session.close()
+            except Exception:
+                pass
+            self._zenoh_session = None
+
+        if self._joint_sub is not None:
+            try:
+                self.destroy_subscription(self._joint_sub)
+            except Exception:
+                pass
+            self._joint_sub = None
+
+        if self._traj_client is not None:
+            try:
+                self._traj_client.destroy()
+            except Exception:
+                pass
+            self._traj_client = None
+
+
+def main(args: list[str] | None = None) -> None:
+    """Entry point for standalone edge_bridge_node."""
+    rclpy.init(args=args)
+    node = EdgeBridgeNode()
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+
+    try:
+        executor.spin()
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
+    finally:
+        node.close()
+        node.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
+
+
+if __name__ == "__main__":
+    main()
