@@ -216,3 +216,39 @@ def test_workcell_node_ros_services_and_topic_integration():
         spin_thread.join(timeout=1.0)
         node.destroy_node()
         client_node.destroy_node()
+
+
+def test_workcell_spawn_object_service():
+    from robot_control_interfaces.srv import SpawnObject
+
+    node = WorkcellNode()
+    try:
+        assert node.has_active_workpiece is False
+
+        # First spawn succeeds
+        req = SpawnObject.Request(coords=Point(x=0.45, y=0.1, z=0.0), object_type="GEAR")
+        res = SpawnObject.Response()
+        out_res = node.handle_spawn_object(req, res)
+        assert out_res.success is True
+        assert node.has_active_workpiece is True
+        assert node.active_workpiece_coords == (0.45, 0.1, 0.0)
+
+        # Second spawn while active is rejected
+        req2 = SpawnObject.Request(coords=Point(x=0.55, y=0.15, z=0.0), object_type="GEAR")
+        res2 = SpawnObject.Response()
+        out_res2 = node.handle_spawn_object(req2, res2)
+        assert out_res2.success is False
+        assert "already active" in out_res2.message
+
+        # Clear workspace removes active workpiece
+        node.handle_clear_workspace(ClearWorkspace.Request(), ClearWorkspace.Response())
+        assert node.has_active_workpiece is False
+
+        # Spawn succeeds again after clear
+        res3 = SpawnObject.Response()
+        out_res3 = node.handle_spawn_object(req, res3)
+        assert out_res3.success is True
+        assert node.has_active_workpiece is True
+    finally:
+        node.destroy_node()
+

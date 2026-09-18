@@ -1380,15 +1380,15 @@
     "semantic_hash": ""
   },
   "tests/test_robot_control_interfaces.py": {
-    "mtime": 1789648891.3991272,
-    "seen": 1789648972.7465546,
-    "ast_hash": "f84f8bb5bb5ac2c91348268b50af107a",
+    "mtime": 1789746089.515746,
+    "seen": 1789746698.4479516,
+    "ast_hash": "cc9066767b6d0f6bdfe3dc53b2e93498",
     "semantic_hash": ""
   },
   "src/ros2/robot_control_interfaces/CMakeLists.txt": {
-    "mtime": 1789648906.1014814,
-    "seen": 1789648972.7532234,
-    "ast_hash": "988b10f8a4cec4bccabacc6878d07705",
+    "mtime": 1789746060.910389,
+    "seen": 1789746698.4562886,
+    "ast_hash": "6744294dd67c2eb7c1afd719570a6d33",
     "semantic_hash": ""
   },
   "src/ros2/workcell_manager/setup.py": {
@@ -1398,9 +1398,9 @@
     "semantic_hash": ""
   },
   "src/ros2/workcell_manager/test/test_workcell_node.py": {
-    "mtime": 1789658596.9321048,
-    "seen": 1789658843.1122737,
-    "ast_hash": "1ab30d5ce4a2123982a80edb4ea9a3d1",
+    "mtime": 1789746127.436937,
+    "seen": 1789746698.4476948,
+    "ast_hash": "3f7ca347b389beab8edc43d9082122b3",
     "semantic_hash": ""
   },
   "src/ros2/workcell_manager/workcell_manager/__init__.py": {
@@ -1410,15 +1410,15 @@
     "semantic_hash": ""
   },
   "src/ros2/workcell_manager/workcell_manager/workcell_node.py": {
-    "mtime": 1789683496.3188965,
-    "seen": 1789684153.3766618,
-    "ast_hash": "ee41a0538a9fb519fa1dff1de4b53ca9",
+    "mtime": 1789746110.8712847,
+    "seen": 1789746698.4477453,
+    "ast_hash": "ed06cdad4870fe6062ff7b340c4e2789",
     "semantic_hash": ""
   },
   "tests/test_workcell_node.py": {
-    "mtime": 1789658551.3405728,
-    "seen": 1789658843.1124625,
-    "ast_hash": "1ab30d5ce4a2123982a80edb4ea9a3d1",
+    "mtime": 1789746127.436937,
+    "seen": 1789746698.4480097,
+    "ast_hash": "3f7ca347b389beab8edc43d9082122b3",
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/arm_controller/__init__.py": {
@@ -1644,9 +1644,9 @@
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/arm_controller/edge_bridge_node.py": {
-    "mtime": 1789745570.8838236,
-    "seen": 1789745653.379713,
-    "ast_hash": "eab19d4031cdc0c4ca442b67a11b16a9",
+    "mtime": 1789746396.6693382,
+    "seen": 1789746698.447259,
+    "ast_hash": "b57e11b151604c2bb2c51fbd541a387e",
     "semantic_hash": ""
   },
   "src/ros2/arm_controller/test/test_edge_bridge_poses.py": {
@@ -1659,6 +1659,18 @@
     "mtime": 1789745608.6528926,
     "seen": 1789745653.3801072,
     "ast_hash": "aae840e89b152bf3550dd1a78648556c",
+    "semantic_hash": ""
+  },
+  "src/ros2/arm_controller/test/test_edge_bridge_actions.py": {
+    "mtime": 1789746423.3329709,
+    "seen": 1789746698.4474092,
+    "ast_hash": "9dce95ed201ae1fd3fd5679fcc1f05d9",
+    "semantic_hash": ""
+  },
+  "tests/test_edge_bridge_actions.py": {
+    "mtime": 1789746423.3329709,
+    "seen": 1789746698.4478528,
+    "ast_hash": "9dce95ed201ae1fd3fd5679fcc1f05d9",
     "semantic_hash": ""
   }
 }

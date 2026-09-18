@@ -63,3 +63,19 @@ def test_import_robot_control_interfaces():
     assert isinstance(clear_res.message, str)
     assert clear_res.message == "workspace reset"
 
+    # Test SpawnObject Request & Response
+    from robot_control_interfaces.srv import SpawnObject
+    spawn_req = SpawnObject.Request(coords=Point(x=0.5, y=0.1, z=0.0), object_type="GEAR")
+    assert hasattr(spawn_req, "coords")
+    assert hasattr(spawn_req, "object_type")
+    assert isinstance(spawn_req.coords, Point)
+    assert spawn_req.coords.x == 0.5
+    assert spawn_req.object_type == "GEAR"
+
+    spawn_res = SpawnObject.Response(success=True, message="Object spawned")
+    assert hasattr(spawn_res, "success")
+    assert hasattr(spawn_res, "message")
+    assert spawn_res.success is True
+    assert spawn_res.message == "Object spawned"
+
+

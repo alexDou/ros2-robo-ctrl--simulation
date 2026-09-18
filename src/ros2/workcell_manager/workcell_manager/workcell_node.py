@@ -9,7 +9,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Point
 from std_msgs.msg import Int32
 
-from robot_control_interfaces.srv import ClearWorkspace, GetDropSlot
+from robot_control_interfaces.srv import ClearWorkspace, GetDropSlot, SpawnObject
 
 DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.40, -0.30, 0.0)
 GEAR_STACK_HEIGHT_STEP_M: float = 0.02
@@ -41,12 +41,15 @@ class WorkcellNode(Node):
         # Publisher for inventory count updates
         self._inventory_pub = self.create_publisher(Int32, "workcell/inventory", 10)
 
-        # Service servers for drop slot calculation and workspace clearing
+        # Service servers for drop slot calculation, workpiece spawning, and workspace clearing
         self._get_drop_slot_srv = self.create_service(
             GetDropSlot, "workcell/get_drop_slot", self.handle_get_drop_slot
         )
         self._clear_workspace_srv = self.create_service(
             ClearWorkspace, "workcell/clear_workspace", self.handle_clear_workspace
+        )
+        self._spawn_object_srv = self.create_service(
+            SpawnObject, "workcell/spawn_object", self.handle_spawn_object
         )
 
         self.get_logger().info(
@@ -148,6 +151,30 @@ class WorkcellNode(Node):
         response.message = "Workspace reset"
         self.get_logger().info("Workspace reset: inventory cleared and active workpiece purged")
         return response
+
+    def handle_spawn_object(
+        self, request: SpawnObject.Request, response: SpawnObject.Response
+    ) -> SpawnObject.Response:
+        """Spawns workpiece on the table surface if workspace slot is vacant."""
+        with self._lock:
+            if self._active_workpiece is not None:
+                response.success = False
+                response.message = "Workpiece already active on table"
+                self.get_logger().warning("Rejecting spawn_object: workpiece already active")
+                return response
+            self._active_workpiece = (
+                float(request.coords.x),
+                float(request.coords.y),
+                float(request.coords.z),
+            )
+
+        response.success = True
+        response.message = "Object spawned"
+        self.get_logger().info(
+            f"Spawned workpiece at ({request.coords.x:.3f}, {request.coords.y:.3f}, {request.coords.z:.3f})"
+        )
+        return response
+
 
 
 def main(args: list[str] | None = None) -> None:
