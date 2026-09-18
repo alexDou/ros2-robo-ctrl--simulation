@@ -1,20 +1,26 @@
 """EdgeBridge Node bridging Zenoh DataFabric commands to ROS2 controllers.
 
-Per Unit 6.5-Bugfix.2.1 (hand-sim-o5es):
+Per Unit 6.5-Bugfix.2.1 (hand-sim-o5es) & Unit 6.5-Bugfix.2.2 (hand-sim-1h63):
 - Runs rclpy MultiThreadedExecutor alongside Zenoh session subscriber on robot/{id}/command.
 - Subscribes to /joint_states with zero-alloc canonical joint mapping (UR5E_JOINTS).
 - Connects to ROS2 ActionClient /scaled_joint_trajectory_controller/follow_joint_trajectory.
 - Auto-commands HOME pose on controller startup.
 - Dispatches TRAJECTORY_EXECUTE for CANONICAL_POSES (HOME, READY, INSPECT_POSE) and custom waypoints.
-- Implements non-blocking EMERGENCY_STOP (cancels trajectory, sets FAULT) and RESET_FAULT handling.
+- Bridges PICK_AND_PLACE_TARGET to ROS2 ActionClient /arm_controller/pick_and_place.
+- Streams ActionFeedbackFrame to Zenoh on rt/arm_controller/pick_and_place/_action/feedback.
+- Dynamically reflects gripper/palm state (is_grasped) during GRASPING and RELEASING phases.
+- Bridges SPAWN_OBJECT and CLEAR_WORKSPACE commands to /workcell/spawn_object and /workcell/clear_workspace services.
+- Implements non-blocking EMERGENCY_STOP (cancels trajectory & PickAndPlace, sets FAULT) and RESET_FAULT handling.
 - Emits RobotTelemetryEvent and ErrorFrame over Zenoh on robot/{id}/telemetry.
 """
 
+import json
 import threading
 import time
 from typing import Any, Optional
 
 from control_msgs.action import FollowJointTrajectory
+from geometry_msgs.msg import Point
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
@@ -29,21 +35,26 @@ from domain import (
     CANONICAL_POSES,
     CANONICAL_UR5E_JOINTS,
     DEFAULT_ROBOT_ID,
+    ClearWorkspacePayload,
     CommandType,
     ErrorFrame,
     PalmState,
+    PickAndPlaceTargetPayload,
     PoseName,
     RobotCommand,
     RobotState,
     RobotTelemetryEvent,
+    SpawnObjectPayload,
     TrajectoryExecutePayload,
     robot_command_topic,
     robot_telemetry_topic,
 )
+from robot_control_interfaces.action import PickAndPlace
+from robot_control_interfaces.srv import ClearWorkspace, SpawnObject
 
 
 class EdgeBridgeNode(Node):
-    """ROS2 node bridging Zenoh DataFabric commands to ROS2 trajectory action client."""
+    """ROS2 node bridging Zenoh DataFabric commands to ROS2 trajectory and pick-and-place action clients."""
 
     def __init__(
         self,
@@ -58,6 +69,22 @@ class EdgeBridgeNode(Node):
             "controller_action_name",
             "/scaled_joint_trajectory_controller/follow_joint_trajectory",
         )
+        self.declare_parameter(
+            "pick_and_place_action_name",
+            "/arm_controller/pick_and_place",
+        )
+        self.declare_parameter(
+            "spawn_object_service_name",
+            "/workcell/spawn_object",
+        )
+        self.declare_parameter(
+            "clear_workspace_service_name",
+            "/workcell/clear_workspace",
+        )
+        self.declare_parameter(
+            "action_feedback_topic",
+            "rt/arm_controller/pick_and_place/_action/feedback",
+        )
         self.declare_parameter("joint_states_topic", "/joint_states")
         self.declare_parameter("auto_home_on_startup", True)
         self.declare_parameter("auto_connect_zenoh", True)
@@ -67,6 +94,18 @@ class EdgeBridgeNode(Node):
 
         self._robot_id = str(self.get_parameter("robot_id").value)
         self._controller_action_name = str(self.get_parameter("controller_action_name").value)
+        self._pick_and_place_action_name = str(
+            self.get_parameter("pick_and_place_action_name").value
+        )
+        self._spawn_object_service_name = str(
+            self.get_parameter("spawn_object_service_name").value
+        )
+        self._clear_workspace_service_name = str(
+            self.get_parameter("clear_workspace_service_name").value
+        )
+        self._action_feedback_topic = str(
+            self.get_parameter("action_feedback_topic").value
+        )
         self._joint_states_topic = str(self.get_parameter("joint_states_topic").value)
         self._auto_home_on_startup = bool(self.get_parameter("auto_home_on_startup").value)
         self._auto_connect_zenoh = bool(self.get_parameter("auto_connect_zenoh").value)
@@ -85,6 +124,7 @@ class EdgeBridgeNode(Node):
         self._is_grasped: bool = False
         self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
         self._active_traj_handle: Optional[Any] = None
+        self._active_pnp_handle: Optional[Any] = None
         self._homing_done_event = threading.Event()
         self._startup_motion_event = threading.Event()
 
@@ -108,11 +148,31 @@ class EdgeBridgeNode(Node):
             callback_group=self._cb_group,
         )
 
+        self._pnp_client = ActionClient(
+            self,
+            PickAndPlace,
+            self._pick_and_place_action_name,
+            callback_group=self._cb_group,
+        )
+
+        self._spawn_object_client = self.create_client(
+            SpawnObject,
+            self._spawn_object_service_name,
+            callback_group=self._cb_group,
+        )
+
+        self._clear_workspace_client = self.create_client(
+            ClearWorkspace,
+            self._clear_workspace_service_name,
+            callback_group=self._cb_group,
+        )
+
         # Zenoh setup
         self._zenoh_session = zenoh_session
         self._owns_zenoh_session = False
         self._zenoh_sub = None
         self._zenoh_pub = None
+        self._zenoh_feedback_pub = None
 
         self._command_topic = robot_command_topic(self._robot_id)
         self._telemetry_topic = robot_telemetry_topic(self._robot_id)
@@ -168,16 +228,38 @@ class EdgeBridgeNode(Node):
         if self._zenoh_session is not None:
             try:
                 self._zenoh_pub = self._zenoh_session.declare_publisher(self._telemetry_topic)
+                self._zenoh_feedback_pub = self._zenoh_session.declare_publisher(
+                    self._action_feedback_topic
+                )
                 self._zenoh_sub = self._zenoh_session.declare_subscriber(
                     self._command_topic,
                     self._on_zenoh_command,
                 )
                 self.get_logger().info(
                     f"EdgeBridge listening on Zenoh '{self._command_topic}', "
-                    f"publishing telemetry to '{self._telemetry_topic}'"
+                    f"publishing telemetry to '{self._telemetry_topic}', "
+                    f"publishing action feedback to '{self._action_feedback_topic}'"
                 )
             except Exception as e:
                 self.get_logger().error(f"Failed to declare Zenoh entities: {e}")
+
+    def _publish_action_feedback(
+        self, command_id: str, phase: str, percent_complete: float
+    ) -> None:
+        """Publishes structured ActionFeedbackFrame over Zenoh on action_feedback_topic."""
+        frame = {
+            "type": "ACTION_FEEDBACK",
+            "command_id": command_id,
+            "phase": phase,
+            "percent_complete": float(percent_complete),
+            "timestamp_ns": time.time_ns(),
+        }
+        if self._zenoh_feedback_pub is not None:
+            try:
+                self._zenoh_feedback_pub.put(json.dumps(frame))
+            except Exception as e:
+                self.get_logger().error(f"Failed to publish ActionFeedbackFrame to Zenoh: {e}")
+
 
     def _on_zenoh_command(self, sample: Any) -> None:
         """Zenoh subscriber callback processing incoming samples from DataFabric."""
@@ -343,6 +425,126 @@ class EdgeBridgeNode(Node):
                 waypoints_to_execute, command_id=command.command_id
             )
 
+        if command.type == CommandType.SPAWN_OBJECT:
+            with self._lock:
+                if self._robot_state != RobotState.IDLE:
+                    self._publish_error(
+                        "ROBOT_BUSY",
+                        f"Robot is currently {self._robot_state.value}; cannot spawn object",
+                    )
+                    return None
+
+            try:
+                payload = SpawnObjectPayload.model_validate(command.payload)
+            except Exception as e:
+                self._publish_error("INVALID_PAYLOAD", f"SpawnObject payload invalid: {e}")
+                return None
+
+            if not self._spawn_object_client.wait_for_service(timeout_sec=1.0):
+                self._publish_error(
+                    "SERVICE_UNAVAILABLE",
+                    f"SpawnObject service not available at '{self._spawn_object_service_name}'",
+                )
+                return None
+
+            req = SpawnObject.Request()
+            req.coords = Point(x=float(payload.x), y=float(payload.y), z=float(payload.z))
+            req.object_type = payload.object_type.value
+
+            future = self._spawn_object_client.call_async(req)
+            start_t = time.time()
+            while not future.done() and time.time() - start_t < 2.0:
+                time.sleep(0.01)
+
+            if not future.done():
+                self._publish_error("SERVICE_TIMEOUT", "SpawnObject service call timed out")
+                return None
+
+            res = future.result()
+            if res is None or not res.success:
+                msg = res.message if res else "Unknown service failure"
+                self._publish_error("WORKCELL_OCCUPIED", msg)
+                return None
+
+            return self.publish_telemetry(command_id=command.command_id)
+
+        if command.type == CommandType.CLEAR_WORKSPACE:
+            with self._lock:
+                if self._robot_state == RobotState.EXECUTING:
+                    self._publish_error(
+                        "ROBOT_BUSY",
+                        f"Robot is currently {self._robot_state.value}; cannot clear workspace",
+                    )
+                    return None
+
+            try:
+                ClearWorkspacePayload.model_validate(command.payload)
+            except Exception as e:
+                self._publish_error("INVALID_PAYLOAD", f"ClearWorkspace payload invalid: {e}")
+                return None
+
+            if not self._clear_workspace_client.wait_for_service(timeout_sec=1.0):
+                self._publish_error(
+                    "SERVICE_UNAVAILABLE",
+                    f"ClearWorkspace service not available at '{self._clear_workspace_service_name}'",
+                )
+                return None
+
+            req = ClearWorkspace.Request()
+            future = self._clear_workspace_client.call_async(req)
+            start_t = time.time()
+            while not future.done() and time.time() - start_t < 2.0:
+                time.sleep(0.01)
+
+            if not future.done():
+                self._publish_error("SERVICE_TIMEOUT", "ClearWorkspace service call timed out")
+                return None
+
+            res = future.result()
+            if res is None or not res.success:
+                msg = res.message if res else "Unknown service failure"
+                self._publish_error("SERVICE_ERROR", msg)
+                return None
+
+            with self._lock:
+                self._is_grasped = False
+
+            return self.publish_telemetry(command_id=command.command_id)
+
+        if command.type == CommandType.PICK_AND_PLACE_TARGET:
+            with self._lock:
+                if self._robot_state == RobotState.FAULT:
+                    self._publish_error(
+                        "ROBOT_IN_FAULT",
+                        "Robot is in FAULT state; must RESET_FAULT before commanding pick and place",
+                    )
+                    return None
+                if self._robot_state != RobotState.IDLE:
+                    self._publish_error(
+                        "ROBOT_BUSY",
+                        f"Robot is currently {self._robot_state.value}; command rejected",
+                    )
+                    return None
+
+                if not self._pnp_client.server_is_ready():
+                    self._publish_error(
+                        "CONTROLLER_UNAVAILABLE",
+                        "PickAndPlace action server is not available",
+                    )
+                    return None
+
+                try:
+                    payload = PickAndPlaceTargetPayload.model_validate(command.payload)
+                except Exception as e:
+                    self._publish_error("INVALID_PAYLOAD", f"PickAndPlaceTarget payload invalid: {e}")
+                    return None
+
+                self._robot_state = RobotState.EXECUTING
+
+            return self._dispatch_pick_and_place_goal(
+                payload, command_id=command.command_id
+            )
+
         self.get_logger().warning(f"Unsupported command type: {command.type.value}")
         self._publish_error(
             "UNSUPPORTED_COMMAND",
@@ -456,20 +658,160 @@ class EdgeBridgeNode(Node):
         send_goal_future.add_done_callback(on_goal_response)
         return event
 
+    def _dispatch_pick_and_place_goal(
+        self,
+        payload: PickAndPlaceTargetPayload,
+        command_id: Optional[str] = None,
+        completion_event: Optional[threading.Event] = None,
+    ) -> RobotTelemetryEvent:
+        """Builds PickAndPlace goal and dispatches to action server, streaming feedback to Zenoh."""
+        goal = PickAndPlace.Goal()
+        goal.pick_coords = Point(
+            x=float(payload.pick_x),
+            y=float(payload.pick_y),
+            z=float(payload.pick_z),
+        )
+        if (
+            payload.drop_x is not None
+            and payload.drop_y is not None
+            and payload.drop_z is not None
+        ):
+            goal.drop_coords = Point(
+                x=float(payload.drop_x),
+                y=float(payload.drop_y),
+                z=float(payload.drop_z),
+            )
+            goal.use_custom_drop = True
+        else:
+            goal.drop_coords = Point(x=0.0, y=0.0, z=0.0)
+            goal.use_custom_drop = False
+        goal.command_id = command_id or ""
+
+        def on_feedback(feedback_msg: Any) -> None:
+            fb = feedback_msg.feedback
+            phase = fb.phase
+            pct = float(fb.percent_complete)
+            state_changed = False
+
+            with self._lock:
+                if phase == "GRASPING":
+                    if not self._is_grasped:
+                        self._is_grasped = True
+                        state_changed = True
+                elif phase == "RELEASING":
+                    if self._is_grasped:
+                        self._is_grasped = False
+                        state_changed = True
+
+            self._publish_action_feedback(goal.command_id, phase, pct)
+            if state_changed:
+                self.publish_telemetry(command_id=command_id)
+
+        event = self.publish_telemetry(command_id=command_id)
+
+        with self._lock:
+            if self._robot_state != RobotState.EXECUTING:
+                if completion_event is not None:
+                    completion_event.set()
+                return event
+
+            send_goal_future = self._pnp_client.send_goal_async(
+                goal, feedback_callback=on_feedback
+            )
+
+        def on_goal_response(future: Any) -> None:
+            try:
+                goal_handle = future.result()
+            except Exception as err:
+                self.get_logger().error(f"Error obtaining PickAndPlace goal handle: {err}")
+                with self._lock:
+                    if self._robot_state == RobotState.EXECUTING:
+                        self._robot_state = RobotState.FAULT
+                self._publish_error("GOAL_ERROR", str(err))
+                self.publish_telemetry()
+                if completion_event is not None:
+                    completion_event.set()
+                return
+
+            if not goal_handle or not goal_handle.accepted:
+                self.get_logger().error("PickAndPlace goal rejected by server")
+                with self._lock:
+                    if self._robot_state == RobotState.EXECUTING:
+                        self._robot_state = RobotState.FAULT
+                self._publish_error("GOAL_REJECTED", "PickAndPlace goal was rejected by action server")
+                self.publish_telemetry()
+                if completion_event is not None:
+                    completion_event.set()
+                return
+
+            with self._lock:
+                if self._robot_state == RobotState.EXECUTING:
+                    self._active_pnp_handle = goal_handle
+                else:
+                    goal_handle.cancel_goal_async()
+                    if completion_event is not None:
+                        completion_event.set()
+                    return
+
+            res_future = goal_handle.get_result_async()
+
+            def on_result(r_future: Any) -> None:
+                should_publish_completion = False
+                with self._lock:
+                    self._active_pnp_handle = None
+                    if self._robot_state == RobotState.EXECUTING:
+                        try:
+                            pnp_res = r_future.result()
+                            if pnp_res.result.success:
+                                self._robot_state = RobotState.IDLE
+                                self._is_grasped = False
+                                should_publish_completion = True
+                            else:
+                                self.get_logger().error(
+                                    f"PickAndPlace failed: {pnp_res.result.message}"
+                                )
+                                self._robot_state = RobotState.FAULT
+                                self._publish_error("ACTION_FAILED", pnp_res.result.message)
+                                should_publish_completion = True
+                        except Exception as err:
+                            self.get_logger().error(f"Error reading PickAndPlace result: {err}")
+                            self._robot_state = RobotState.FAULT
+                            self._publish_error("RESULT_ERROR", str(err))
+                            should_publish_completion = True
+
+                if completion_event is not None:
+                    completion_event.set()
+
+                if should_publish_completion:
+                    self.publish_telemetry(command_id=command_id)
+
+            res_future.add_done_callback(on_result)
+
+        send_goal_future.add_done_callback(on_goal_response)
+        return event
+
     def handle_emergency_stop(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
-        """Cancels active trajectory immediately and transitions to FAULT state."""
+        """Cancels active trajectory and PickAndPlace action immediately and transitions to FAULT state."""
         self.get_logger().warn(f"EMERGENCY STOP TRIGGERED (cmd={command_id})")
 
         with self._lock:
             self._robot_state = RobotState.FAULT
             active_handle = self._active_traj_handle
             self._active_traj_handle = None
+            active_pnp = self._active_pnp_handle
+            self._active_pnp_handle = None
 
         if active_handle is not None:
             try:
                 active_handle.cancel_goal_async()
             except Exception as e:
                 self.get_logger().warning(f"Failed to cancel active trajectory: {e}")
+
+        if active_pnp is not None:
+            try:
+                active_pnp.cancel_goal_async()
+            except Exception as e:
+                self.get_logger().warning(f"Failed to cancel active PickAndPlace: {e}")
 
         return self.publish_telemetry(command_id=command_id)
 
@@ -529,6 +871,13 @@ class EdgeBridgeNode(Node):
                     pass
                 self._active_traj_handle = None
 
+            if self._active_pnp_handle is not None:
+                try:
+                    self._active_pnp_handle.cancel_goal_async()
+                except Exception:
+                    pass
+                self._active_pnp_handle = None
+
         if self._startup_thread is not None and self._startup_thread.is_alive():
             self._startup_thread.join(timeout=1.0)
 
@@ -545,6 +894,13 @@ class EdgeBridgeNode(Node):
             except Exception:
                 pass
             self._zenoh_pub = None
+
+        if self._zenoh_feedback_pub is not None:
+            try:
+                self._zenoh_feedback_pub.undeclare()
+            except Exception:
+                pass
+            self._zenoh_feedback_pub = None
 
         if self._owns_zenoh_session and self._zenoh_session is not None:
             try:
@@ -566,6 +922,28 @@ class EdgeBridgeNode(Node):
             except Exception:
                 pass
             self._traj_client = None
+
+        if self._pnp_client is not None:
+            try:
+                self._pnp_client.destroy()
+            except Exception:
+                pass
+            self._pnp_client = None
+
+        if self._spawn_object_client is not None:
+            try:
+                self.destroy_client(self._spawn_object_client)
+            except Exception:
+                pass
+            self._spawn_object_client = None
+
+        if self._clear_workspace_client is not None:
+            try:
+                self.destroy_client(self._clear_workspace_client)
+            except Exception:
+                pass
+            self._clear_workspace_client = None
+
 
 
 def main(args: list[str] | None = None) -> None:

@@ -1,0 +1,5 @@
+geometry_msgs/Point coords
+string object_type
+---
+bool success
+string message
