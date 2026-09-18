@@ -1,13 +1,13 @@
 ---
 # hand-sim-yopr
 title: 'Refactor-A.5: Mock Gateway E2E Test Harness & UI Suite Migration'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-17T12:32:42Z
-updated_at: 2026-09-17T22:28:54Z
+updated_at: 2026-09-18T08:52:30Z
 parent: hand-sim-wt44
 blocked_by:
     - hand-sim-bjcw
@@ -24,11 +24,11 @@ Implement lightweight MockGateway in Node/TypeScript (web/tests/e2e/support/mock
 
 ## Acceptance criteria
 
-- [ ] scripts/launch_web.sh boots Vite dev server with signal trap cleanup
-- [ ] MockGateway implemented in web/tests/e2e/support/mock_gateway.ts supporting WS protocol, 409 conflict, 30 Hz telemetry stream, and command handling
-- [ ] web/tests/e2e/support/harness.ts and hooks.ts refactored to run hermetically against MockGateway without child processes
-- [ ] Existing E2E features (teleop, dynamic_motion, closed_loop, workcell) pass reliably in headless mode
-- [ ] Web test suite (npm --prefix web run test, test:e2e, lint, typecheck) passes 100% green in <5 seconds
+- [x] scripts/launch_web.sh boots Vite dev server with signal trap cleanup
+- [x] MockGateway implemented in web/tests/e2e/support/mock_gateway.ts supporting WS protocol, 409 conflict, 30 Hz telemetry stream, and command handling
+- [x] web/tests/e2e/support/harness.ts and hooks.ts refactored to run hermetically against MockGateway without child processes
+- [x] Existing E2E features (teleop, dynamic_motion, closed_loop, workcell) pass reliably in headless mode
+- [x] Web test suite (npm --prefix web run test, test:e2e, lint, typecheck) passes 100% green in <5 seconds
 
 ## Blocked by
 

@@ -72,9 +72,9 @@
     "semantic_hash": ""
   },
   "web/package.json": {
-    "mtime": 1789722792.3082297,
-    "seen": 1789723248.6341724,
-    "ast_hash": "1074098ab58be8839a516b8564770d35",
+    "mtime": 1789720119.997771,
+    "seen": 1789721521.1108148,
+    "ast_hash": "e54e791e8534653d464e5564dd192e1d",
     "semantic_hash": ""
   },
   "web/src/main.tsx": {
@@ -894,15 +894,15 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789723013.5295274,
-    "seen": 1789723248.6346526,
-    "ast_hash": "b1b555d87c2262a76c9d57ef44527ee5",
+    "mtime": 1789720537.0493152,
+    "seen": 1789721521.1112888,
+    "ast_hash": "e2b7d54ecd4ad731d32e1b9421896b23",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
-    "mtime": 1789723046.7606282,
-    "seen": 1789723248.6346533,
-    "ast_hash": "96664db94c72d33200c6d8c70983110e",
+    "mtime": 1789720649.8862073,
+    "seen": 1789721521.1112897,
+    "ast_hash": "0f2202ea5025dab266dc5249ba0790f0",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/world.ts": {
@@ -1428,9 +1428,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-yopr--refactor-a5-multi-service-integration-suite-protot.md": {
-    "mtime": 1789721564.360026,
-    "seen": 1789723248.6412666,
-    "ast_hash": "271b8bdad42058ef1e4e15b46950ae43",
+    "mtime": 1789684134.2114697,
+    "seen": 1789684153.3826623,
+    "ast_hash": "e02dcc9921b81d6ec84bf2826f750dde",
     "semantic_hash": ""
   },
   ".beans/hand-sim-z7uz--refactor-a2-standalone-arm-controller-action-serve.md": {
@@ -1584,21 +1584,21 @@
     "semantic_hash": ""
   },
   "scripts/launch_web.sh": {
-    "mtime": 1789723084.4077158,
-    "seen": 1789723248.6326425,
-    "ast_hash": "2676cfd41912aa175f4dd617c364bb90",
+    "mtime": 1789720181.198375,
+    "seen": 1789721521.1092343,
+    "ast_hash": "9b89f3ed545704db9574429f07324286",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/mock_gateway.ts": {
-    "mtime": 1789722891.59635,
-    "seen": 1789723248.6346545,
-    "ast_hash": "b476bf6a8d9603cea3a9124ac05f971a",
+    "mtime": 1789721163.3768675,
+    "seen": 1789721521.1112916,
+    "ast_hash": "a1da2c31c018bf23dd1624590e3a9628",
     "semantic_hash": ""
   },
   "web/tests/unit/mockGateway.test.ts": {
-    "mtime": 1789722946.9592538,
-    "seen": 1789723248.6348836,
-    "ast_hash": "f2a1231398275c6287b20da70c8c57fc",
+    "mtime": 1789721197.5777717,
+    "seen": 1789721521.1114979,
+    "ast_hash": "cc944d22d9a08c3639f32babf6f36fff",
     "semantic_hash": ""
   }
 }

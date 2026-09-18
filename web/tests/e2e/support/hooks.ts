@@ -15,15 +15,19 @@ BeforeAll(async function () {
 
   sharedBrowser = await chromium.launch({
     headless: process.env.HEADLESS !== 'false',
+    args: ['--use-gl=angle', '--no-sandbox', '--disable-setuid-sandbox'],
   });
 });
 
 AfterAll(async function () {
-  if (sharedBrowser) {
-    await sharedBrowser.close();
-  }
-  if (sharedHarness) {
-    await sharedHarness.stop();
+  try {
+    if (sharedBrowser) {
+      await sharedBrowser.close();
+    }
+  } finally {
+    if (sharedHarness) {
+      await sharedHarness.stop();
+    }
   }
 });
 
@@ -31,7 +35,7 @@ Before(async function (this: CustomWorld, scenario) {
   this.harness = sharedHarness;
   this.baseUrl = sharedHarness.baseUrl;
   this.browser = sharedBrowser;
-  this.harness.clearCapturedLogs();
+  this.harness.reset();
 
   const isClosedLoop = scenario.pickle.tags.some(
     (t) => t.name === '@closed-loop' || t.name === '@workcell'
