@@ -809,6 +809,116 @@ describe('TeleopClient Component', () => {
       expect(clearBtn.disabled).toBe(true);
     });
   });
+
+  describe('Unit 6.6: TeleopClient Action Feedback & Progress Bar', () => {
+    it('renders and updates action progress bar upon receiving ACTION_FEEDBACK frames', () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      // Initially, action progress bar is not rendered
+      expect(screen.queryByTestId('action-progress-container')).toBeNull();
+
+      // Ingest ACTION_FEEDBACK frame: APPROACHING 10%
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          type: 'ACTION_FEEDBACK',
+          command_id: 'cmd-pnp-1',
+          phase: 'APPROACHING',
+          percent_complete: 10.0,
+          timestamp_ns: '1700000000000000000',
+        }));
+      });
+
+      expect(screen.getByTestId('action-progress-container')).toBeDefined();
+      expect(screen.getByTestId('action-progress-phase').textContent).toContain('APPROACHING');
+      expect(screen.getByTestId('action-progress-percent').textContent).toContain('10%');
+
+      const progressBar = screen.getByTestId('action-progress-bar');
+      expect(progressBar.getAttribute('aria-valuenow')).toBe('10');
+
+      // Ingest ACTION_FEEDBACK frame: GRASPING 30%
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          type: 'ACTION_FEEDBACK',
+          command_id: 'cmd-pnp-1',
+          phase: 'GRASPING',
+          percent_complete: 30.0,
+          timestamp_ns: '1700000000100000000',
+        }));
+      });
+
+      expect(screen.getByTestId('action-progress-phase').textContent).toContain('GRASPING');
+      expect(screen.getByTestId('action-progress-percent').textContent).toContain('30%');
+      expect(progressBar.getAttribute('aria-valuenow')).toBe('30');
+
+      // Ingest ACTION_FEEDBACK frame: COMPLETED 100%
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          type: 'ACTION_FEEDBACK',
+          command_id: 'cmd-pnp-1',
+          phase: 'COMPLETED',
+          percent_complete: 100.0,
+          timestamp_ns: '1700000000900000000',
+        }));
+      });
+
+      expect(screen.getByTestId('action-progress-phase').textContent).toContain('COMPLETED');
+      expect(screen.getByTestId('action-progress-percent').textContent).toContain('100%');
+      expect(progressBar.getAttribute('aria-valuenow')).toBe('100');
+    });
+
+    it('clears action progress bar upon Emergency Stop or Clear Workspace', () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          type: 'ACTION_FEEDBACK',
+          command_id: 'cmd-pnp-1',
+          phase: 'TRANSFERRING',
+          percent_complete: 50.0,
+          timestamp_ns: '1700000000000000000',
+        }));
+      });
+      expect(screen.getByTestId('action-progress-container')).toBeDefined();
+
+      // Trigger Emergency Stop
+      const eStopBtn = screen.getByTestId('emergency-stop-button');
+      act(() => {
+        fireEvent.click(eStopBtn);
+      });
+
+      expect(screen.queryByTestId('action-progress-container')).toBeNull();
+
+      // Re-send action feedback and verify cleared upon error frame
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          type: 'ACTION_FEEDBACK',
+          command_id: 'cmd-pnp-2',
+          phase: 'APPROACHING',
+          percent_complete: 10.0,
+          timestamp_ns: '1700000000000000000',
+        }));
+      });
+      expect(screen.getByTestId('action-progress-container')).toBeDefined();
+
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          type: 'ERROR',
+          error_code: 'HARDWARE_FAULT',
+          message: 'Joint position limit exceeded',
+          timestamp_ns: '1700000000000000000',
+        }));
+      });
+      expect(screen.queryByTestId('action-progress-container')).toBeNull();
+    });
+  });
 });
 
 

@@ -38,7 +38,7 @@ Before(async function (this: CustomWorld, scenario) {
   this.harness.reset();
 
   const isClosedLoop = scenario.pickle.tags.some(
-    (t) => t.name === '@closed-loop' || t.name === '@workcell'
+    (t) => t.name === '@closed-loop' || t.name === '@workcell' || t.name === '@pick-and-place'
   );
   if (isClosedLoop) {
     if (this.harness.isMockPublisherRunning()) {
@@ -49,6 +49,9 @@ Before(async function (this: CustomWorld, scenario) {
       await this.harness.startMockPublisher();
     }
   }
+
+  const isWorkcell = scenario.pickle.tags.some((t) => t.name === '@workcell');
+  this.harness.setAutoExecutePickAndPlace(!isWorkcell);
 
   this.context = await sharedBrowser.newContext();
   this.page = await this.context.newPage();

@@ -72,9 +72,9 @@
     "semantic_hash": ""
   },
   "web/package.json": {
-    "mtime": 1789720119.997771,
-    "seen": 1789721521.1108148,
-    "ast_hash": "e54e791e8534653d464e5564dd192e1d",
+    "mtime": 1789722792.3082297,
+    "seen": 1789723248.6341724,
+    "ast_hash": "1074098ab58be8839a516b8564770d35",
     "semantic_hash": ""
   },
   "web/src/main.tsx": {
@@ -828,9 +828,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789645685.1638556,
-    "seen": 1789645839.871926,
-    "ast_hash": "af629612215cb8f0b7faa76ddb8201f7",
+    "mtime": 1789725820.7037287,
+    "seen": 1789727926.811362,
+    "ast_hash": "e6d48e051ea973c1b00f6ecc3c69121f",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/TeleopClient.test.tsx": {
-    "mtime": 1789645161.5682151,
-    "seen": 1789645839.8724113,
-    "ast_hash": "3cebca7057224213c397df5197cf1176",
+    "mtime": 1789725852.2874436,
+    "seen": 1789727926.8121731,
+    "ast_hash": "ce3ce96ce1c03797f0cd3d0c2f1f1773",
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
@@ -882,9 +882,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1789683496.3201911,
-    "seen": 1789684153.3772762,
-    "ast_hash": "4c318fec13d877bf159fff05404999dc",
+    "mtime": 1789725961.1674736,
+    "seen": 1789727926.8118005,
+    "ast_hash": "29ecdbe97cadc36aaf06fd45d729e0c7",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
@@ -894,15 +894,15 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789720537.0493152,
-    "seen": 1789721521.1112888,
-    "ast_hash": "e2b7d54ecd4ad731d32e1b9421896b23",
+    "mtime": 1789727679.4909172,
+    "seen": 1789727926.811991,
+    "ast_hash": "82f0aa358a1d2b4a711c33eb7f4f1789",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
-    "mtime": 1789720649.8862073,
-    "seen": 1789721521.1112897,
-    "ast_hash": "0f2202ea5025dab266dc5249ba0790f0",
+    "mtime": 1789727744.7322671,
+    "seen": 1789727926.8119922,
+    "ast_hash": "0289fb228dc5b797cacd3b811488feee",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/world.ts": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "web/domain/parsers.ts": {
-    "mtime": 1789637748.8640363,
-    "seen": 1789637764.3057978,
-    "ast_hash": "2ee7088d1a104efd11612688f8700579",
+    "mtime": 1789725530.163455,
+    "seen": 1789727926.8109522,
+    "ast_hash": "495ea32394b3fcc6ff6fc8847c15ec46",
     "semantic_hash": ""
   },
   "src/edge_node/mapper.py": {
@@ -1098,8 +1098,8 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789683496.319838,
-    "seen": 1789684153.3770592,
+    "mtime": 1789727259.0011084,
+    "seen": 1789727926.811093,
     "ast_hash": "e4bb53203ccb061d44b69494c0360740",
     "semantic_hash": ""
   },
@@ -1428,9 +1428,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-yopr--refactor-a5-multi-service-integration-suite-protot.md": {
-    "mtime": 1789684134.2114697,
-    "seen": 1789684153.3826623,
-    "ast_hash": "e02dcc9921b81d6ec84bf2826f750dde",
+    "mtime": 1789721564.360026,
+    "seen": 1789723248.6412666,
+    "ast_hash": "271b8bdad42058ef1e4e15b46950ae43",
     "semantic_hash": ""
   },
   ".beans/hand-sim-z7uz--refactor-a2-standalone-arm-controller-action-serve.md": {
@@ -1584,21 +1584,39 @@
     "semantic_hash": ""
   },
   "scripts/launch_web.sh": {
-    "mtime": 1789720181.198375,
-    "seen": 1789721521.1092343,
-    "ast_hash": "9b89f3ed545704db9574429f07324286",
+    "mtime": 1789723084.4077158,
+    "seen": 1789723248.6326425,
+    "ast_hash": "2676cfd41912aa175f4dd617c364bb90",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/mock_gateway.ts": {
-    "mtime": 1789721163.3768675,
-    "seen": 1789721521.1112916,
-    "ast_hash": "a1da2c31c018bf23dd1624590e3a9628",
+    "mtime": 1789727647.8622253,
+    "seen": 1789727926.811995,
+    "ast_hash": "ddb76c461ff56dedc5d71a8be30f3c60",
     "semantic_hash": ""
   },
   "web/tests/unit/mockGateway.test.ts": {
-    "mtime": 1789721197.5777717,
-    "seen": 1789721521.1114979,
-    "ast_hash": "cc944d22d9a08c3639f32babf6f36fff",
+    "mtime": 1789725462.7691221,
+    "seen": 1789727926.8122656,
+    "ast_hash": "b62f78b4b9f2ca18ff8931e123c4ba89",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/steps/pick_and_place.steps.ts": {
+    "mtime": 1789726068.4335344,
+    "seen": 1789727926.8119059,
+    "ast_hash": "fca2b85b40b565623e0faec767a85644",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/support/kinematics.ts": {
+    "mtime": 1789727223.3700957,
+    "seen": 1789727926.8119934,
+    "ast_hash": "834d85b5ff2fb30e10e834be85b7e9f5",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/kinematics.test.ts": {
+    "mtime": 1789724945.463898,
+    "seen": 1789727926.8122635,
+    "ast_hash": "8074ac13e579a2cd83cece4b4046fce4",
     "semantic_hash": ""
   }
 }

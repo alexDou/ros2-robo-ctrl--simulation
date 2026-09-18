@@ -537,6 +537,7 @@ export function RobotVisualizer({
     let mountLink: THREE.Object3D | null = null;
     let activeGearAssets: GearwheelProceduralAssets | null = null;
     let attachedGear: GearwheelProceduralAssets | null = null;
+    let wasGearAttachedInCycle = false;
     const towerGears: GearwheelProceduralAssets[] = [];
     let isLockedOut = false;
     let wasGrasped = false;
@@ -735,6 +736,7 @@ export function RobotVisualizer({
       gear.group.position.set(x, y, 0.004);
       robotGroup.add(gear.group);
       activeGearAssets = gear;
+      wasGearAttachedInCycle = false;
       isLockedOut = true;
       if (tableAssets) {
         tableAssets.reticleMesh.visible = false;
@@ -780,6 +782,7 @@ export function RobotVisualizer({
         gear.dispose();
       }
       towerGears.length = 0;
+      wasGearAttachedInCycle = false;
       isLockedOut = false;
       needsRender = true;
     };
@@ -1045,6 +1048,7 @@ export function RobotVisualizer({
       getTowerGears: () => towerGears.map((g) => g.group),
       getTowerGearCount: () => towerGears.length,
       isGearAttached: () => attachedGear !== null,
+      wasGearEverAttached: () => wasGearAttachedInCycle,
       getAttachedGearMesh: () => attachedGear?.group ?? null,
       getTableMesh: () => tableAssets?.tableMesh ?? null,
       getPedestalMesh: () => pedestalAssets?.group ?? null,
@@ -1227,6 +1231,7 @@ export function RobotVisualizer({
             mountLink.attach(activeGearAssets.group);
             attachedGear = activeGearAssets;
             activeGearAssets = null;
+            wasGearAttachedInCycle = true;
             needsRender = true;
           }
         }

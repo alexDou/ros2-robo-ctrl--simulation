@@ -24,6 +24,10 @@ export class TeleopPage {
   readonly emergencyStopButton: Locator;
   readonly clearWorkspaceButton: Locator;
   readonly toolbarErrorBanner: Locator;
+  readonly actionProgressContainer: Locator;
+  readonly actionProgressBar: Locator;
+  readonly actionProgressPhase: Locator;
+  readonly actionProgressPercent: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -48,6 +52,10 @@ export class TeleopPage {
     this.emergencyStopButton = page.getByTestId('emergency-stop-button');
     this.clearWorkspaceButton = page.getByTestId('clear-workspace-button');
     this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
+    this.actionProgressContainer = page.getByTestId('action-progress-container');
+    this.actionProgressBar = page.getByTestId('action-progress-bar');
+    this.actionProgressPhase = page.getByTestId('action-progress-phase');
+    this.actionProgressPercent = page.getByTestId('action-progress-percent');
   }
 
   async goto(url: string): Promise<void> {
@@ -585,5 +593,127 @@ export class TeleopPage {
         { timeout, message: `Expected reticle visibility to be ${visible}` }
       )
       .toBe(visible);
+  }
+
+  async expectActionProgressVisible(visible: boolean, timeout = 5000): Promise<void> {
+    if (visible) {
+      await expect(this.actionProgressContainer).toBeVisible({ timeout });
+    } else {
+      await expect(this.actionProgressContainer).not.toBeVisible({ timeout });
+    }
+  }
+
+  async expectActionPhase(phase: string | RegExp, timeout = 5000): Promise<void> {
+    await expect(this.actionProgressPhase).toHaveText(phase, { timeout });
+  }
+
+  async expectActionPercentAtLeast(minPercent: number, timeout = 5000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          const val = await this.actionProgressBar.getAttribute('aria-valuenow');
+          return val ? parseInt(val, 10) : 0;
+        },
+        { timeout, message: `Expected action progress bar to reach at least ${minPercent}%` }
+      )
+      .toBeGreaterThanOrEqual(minPercent);
+  }
+
+  async expectActionCompleted(timeout = 10000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          const val = await this.actionProgressBar.getAttribute('aria-valuenow');
+          return val ? parseInt(val, 10) : 0;
+        },
+        { timeout, message: 'Expected action progress bar to reach 100%' }
+      )
+      .toBe(100);
+  }
+
+  async isGearAttached(): Promise<boolean> {
+    return await this.page.evaluate(() => {
+      const handle = (window as unknown as {
+        __robot_visualizer?: { isGearAttached: () => boolean; wasGearEverAttached?: () => boolean };
+      }).__robot_visualizer;
+      if (!handle) return false;
+      return Boolean(handle.wasGearEverAttached ? handle.wasGearEverAttached() : handle.isGearAttached());
+    });
+  }
+
+  async expectGearAttached(attached: boolean, timeout = 10000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.isGearAttached();
+        },
+        { timeout, intervals: [30, 60, 100], message: `Expected gear attached to tool flange to be ${attached}` }
+      )
+      .toBe(attached);
+  }
+
+  async expectSpindleTowerLoaded(timeout = 10000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.page.evaluate(() => {
+            const handle = (window as unknown as {
+              __robot_visualizer?: { getSpindleTowerMesh: () => unknown };
+            }).__robot_visualizer;
+            return Boolean(handle && handle.getSpindleTowerMesh());
+          });
+        },
+        { timeout, message: 'SpindleTower fixture mesh failed to mount in 3D scene' }
+      )
+      .toBe(true);
+  }
+
+  async getTowerGearCount(): Promise<number> {
+    return await this.page.evaluate(() => {
+      const handle = (window as unknown as {
+        __robot_visualizer?: { getTowerGearCount: () => number };
+      }).__robot_visualizer;
+      return handle ? handle.getTowerGearCount() : 0;
+    });
+  }
+
+  async expectTowerGearCount(expectedCount: number, timeout = 10000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          return await this.getTowerGearCount();
+        },
+        { timeout, intervals: [50, 100, 200], message: `Expected ${expectedCount} gears stacked on SpindleTower` }
+      )
+      .toBe(expectedCount);
+  }
+
+  async getTowerTopGearHeight(): Promise<number | null> {
+    return await this.page.evaluate(() => {
+      const handle = (window as unknown as {
+        __robot_visualizer?: { getTowerGears: () => Array<{ position: { z: number } }> };
+      }).__robot_visualizer;
+      if (!handle) return null;
+      const gears = handle.getTowerGears();
+      if (!gears || gears.length === 0) return null;
+      return gears[gears.length - 1].position.z;
+    });
+  }
+
+  async expectTowerTopGearHeight(expectedZ: number, tolerance = 0.005, timeout = 10000): Promise<void> {
+    await expect
+      .poll(
+        async () => {
+          const z = await this.getTowerTopGearHeight();
+          if (z === null) return 999;
+          return Math.abs(z - expectedZ);
+        },
+        {
+          timeout,
+          intervals: [50, 100, 200],
+          message: `Expected top gear on SpindleTower to be at z=${expectedZ}m within ${tolerance}m`,
+        }
+      )
+      .toBeLessThanOrEqual(tolerance);
   }
 }

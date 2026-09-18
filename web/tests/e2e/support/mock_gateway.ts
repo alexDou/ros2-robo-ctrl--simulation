@@ -11,6 +11,10 @@ import {
   type RobotTelemetryEvent,
   type ErrorFrame,
 } from '../../../domain/contracts';
+import {
+  PickAndPlaceTrajectoryGenerator,
+  type WaypointStep,
+} from './kinematics';
 
 export interface MockGatewayOptions {
   port?: number;
@@ -62,6 +66,12 @@ export class MockGateway {
   private processingTimeout: NodeJS.Timeout | null = null;
   private palmTimeout: NodeJS.Timeout | null = null;
 
+  private trajectoryGenerator = new PickAndPlaceTrajectoryGenerator();
+  private towerGearsCount = 0;
+  private pnpExecuting = false;
+  private pnpTimeout: NodeJS.Timeout | null = null;
+  private autoExecutePickAndPlace = true;
+
   constructor(options: MockGatewayOptions = {}) {
     this.port = options.port ?? 8085;
     this.host = options.host ?? '127.0.0.1';
@@ -105,16 +115,34 @@ export class MockGateway {
     }
   }
 
+  public isAutoExecutePickAndPlace(): boolean {
+    return this.autoExecutePickAndPlace;
+  }
+
+  public setAutoExecutePickAndPlace(enabled: boolean): void {
+    this.autoExecutePickAndPlace = enabled;
+  }
+
   public reset(): void {
     this.cancelTrajectory();
     if (this.palmTimeout) {
       clearTimeout(this.palmTimeout);
       this.palmTimeout = null;
     }
+    this.towerGearsCount = 0;
+    this.autoExecutePickAndPlace = true;
     this.robotState = 'IDLE';
     this.palmState = { is_grasped: false };
     this.currentJoints = [...CANONICAL_POSES.HOME];
     this.clearCapturedLogs();
+  }
+
+  public getTowerGearsCount(): number {
+    return this.towerGearsCount;
+  }
+
+  public setTowerGearsCount(count: number): void {
+    this.towerGearsCount = count;
   }
 
   public getRobotState(): RobotState {
@@ -368,8 +396,14 @@ export class MockGateway {
         }
         const x = Number(cmd.payload?.pick_x ?? 0.5);
         const y = Number(cmd.payload?.pick_y ?? 0.0);
+        const z = Number(cmd.payload?.pick_z ?? 0.0);
         this.log(`[EDGE] Spawned GEAR at (${x.toFixed(3)}, ${y.toFixed(3)}, 0.000)`);
-        this.sendTelemetryToAll(cmd.command_id);
+        this.cancelTrajectory();
+        if (this.autoExecutePickAndPlace) {
+          this.executePickAndPlaceSequence(cmd.command_id, x, y, z);
+        } else {
+          this.sendTelemetryToAll(cmd.command_id);
+        }
         break;
       }
 
@@ -378,6 +412,8 @@ export class MockGateway {
           this.log('[EDGE] Clear workspace rejected: robot in FAULT state');
           break;
         }
+        this.towerGearsCount = 0;
+        this.cancelTrajectory();
         this.log(`[EDGE] Workspace cleared for command ${cmd.command_id || ''}`);
         this.sendTelemetryToAll(cmd.command_id);
         break;
@@ -396,7 +432,90 @@ export class MockGateway {
       clearTimeout(this.processingTimeout);
       this.processingTimeout = null;
     }
+    if (this.pnpTimeout) {
+      clearTimeout(this.pnpTimeout);
+      this.pnpTimeout = null;
+    }
+    this.pnpExecuting = false;
     this.activeTrajectory = null;
+    if (this.robotState !== 'FAULT') {
+      this.robotState = 'IDLE';
+    }
+  }
+
+  private broadcastRaw(msg: string): void {
+    for (const ws of this.activeSessions.values()) {
+      if (ws.readyState === WebSocket.OPEN) {
+        try {
+          ws.send(msg);
+        } catch {}
+      }
+    }
+  }
+
+  private executePickAndPlaceSequence(commandId: string | undefined, x: number, y: number, z: number): void {
+    const dropZ = Math.min(this.towerGearsCount, 9) * 0.02;
+    const dropCoords: [number, number, number] = [0.40, -0.30, dropZ];
+
+    let steps: WaypointStep[];
+    try {
+      steps = this.trajectoryGenerator.generateTrajectory([x, y, z], dropCoords, this.currentJoints);
+    } catch (err) {
+      this.log(`[EDGE] Trajectory generation failed: ${err}`);
+      this.sendTelemetryToAll(commandId);
+      return;
+    }
+
+    this.pnpExecuting = true;
+    this.robotState = 'PROCESSING';
+    this.sendTelemetryToAll(commandId);
+
+    let stepIdx = 0;
+    const executeNextStep = () => {
+      if (!this.pnpExecuting || this.robotState === 'FAULT') {
+        this.pnpExecuting = false;
+        return;
+      }
+
+      if (stepIdx >= steps.length) {
+        this.pnpExecuting = false;
+        this.towerGearsCount = Math.min(this.towerGearsCount + 1, 10);
+        this.robotState = 'IDLE';
+        this.palmState = { is_grasped: false };
+        this.sendTelemetryToAll(commandId);
+        return;
+      }
+
+      const step = steps[stepIdx];
+      const isComplete = step.stepNumber === 10;
+      this.robotState = isComplete ? 'IDLE' : 'EXECUTING';
+      this.currentJoints = [...step.jointPositions] as ArmJointPositions;
+      this.palmState = { is_grasped: step.isGrasped };
+
+      const fbFrame = {
+        type: 'ACTION_FEEDBACK',
+        command_id: commandId || '',
+        phase: step.phase,
+        percent_complete: step.percentComplete,
+        timestamp_ns: (BigInt(Date.now()) * 1_000_000n).toString(),
+      };
+      this.broadcastRaw(JSON.stringify(fbFrame));
+
+      if (isComplete) {
+        this.pnpExecuting = false;
+        this.towerGearsCount = Math.min(this.towerGearsCount + 1, 10);
+        this.robotState = 'IDLE';
+        this.palmState = { is_grasped: false };
+        this.sendTelemetryToAll(commandId);
+        return;
+      }
+
+      this.sendTelemetryToAll(commandId);
+      stepIdx++;
+      this.pnpTimeout = setTimeout(executeNextStep, 70);
+    };
+
+    this.pnpTimeout = setTimeout(executeNextStep, 50);
   }
 
   private startTickLoop(): void {
@@ -409,6 +528,11 @@ export class MockGateway {
   private tick(): void {
     if (this.robotState === 'FAULT') {
       // Safety invariant: all motion frozen in FAULT state
+      this.sendTelemetryToAll();
+      return;
+    }
+
+    if (this.pnpExecuting) {
       this.sendTelemetryToAll();
       return;
     }

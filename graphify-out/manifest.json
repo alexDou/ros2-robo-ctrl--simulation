@@ -828,9 +828,9 @@
     "semantic_hash": ""
   },
   "web/src/components/TeleopClient.tsx": {
-    "mtime": 1789645685.1638556,
-    "seen": 1789645839.871926,
-    "ast_hash": "af629612215cb8f0b7faa76ddb8201f7",
+    "mtime": 1789728890.4693305,
+    "seen": 1789729122.1830485,
+    "ast_hash": "416519fac0fda02710c6a6c9e3baea02",
     "semantic_hash": ""
   },
   "web/src/utils/env.ts": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "web/tests/unit/TeleopClient.test.tsx": {
-    "mtime": 1789645161.5682151,
-    "seen": 1789645839.8724113,
-    "ast_hash": "3cebca7057224213c397df5197cf1176",
+    "mtime": 1789728907.6676161,
+    "seen": 1789729122.1835682,
+    "ast_hash": "a82dfadf8239e5cca22ee2dbadca7b2d",
     "semantic_hash": ""
   },
   "web/tests/unit/contracts.test.ts": {
@@ -882,9 +882,9 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/pages/TeleopPage.ts": {
-    "mtime": 1789683496.3201911,
-    "seen": 1789684153.3772762,
-    "ast_hash": "4c318fec13d877bf159fff05404999dc",
+    "mtime": 1789729054.7058043,
+    "seen": 1789729122.1831923,
+    "ast_hash": "9721a4213543d9e61d66ad4c98b949c7",
     "semantic_hash": ""
   },
   "web/tests/e2e/steps/teleop.steps.ts": {
@@ -894,15 +894,15 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/harness.ts": {
-    "mtime": 1789723013.5295274,
-    "seen": 1789723248.6346526,
-    "ast_hash": "b1b555d87c2262a76c9d57ef44527ee5",
+    "mtime": 1789727679.4909172,
+    "seen": 1789727926.811991,
+    "ast_hash": "82f0aa358a1d2b4a711c33eb7f4f1789",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/hooks.ts": {
-    "mtime": 1789723046.7606282,
-    "seen": 1789723248.6346533,
-    "ast_hash": "96664db94c72d33200c6d8c70983110e",
+    "mtime": 1789727744.7322671,
+    "seen": 1789727926.8119922,
+    "ast_hash": "0289fb228dc5b797cacd3b811488feee",
     "semantic_hash": ""
   },
   "web/tests/e2e/support/world.ts": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "web/domain/parsers.ts": {
-    "mtime": 1789637748.8640363,
-    "seen": 1789637764.3057978,
-    "ast_hash": "2ee7088d1a104efd11612688f8700579",
+    "mtime": 1789725530.163455,
+    "seen": 1789727926.8109522,
+    "ast_hash": "495ea32394b3fcc6ff6fc8847c15ec46",
     "semantic_hash": ""
   },
   "src/edge_node/mapper.py": {
@@ -1098,9 +1098,9 @@
     "semantic_hash": ""
   },
   "web/src/components/RobotVisualizer.tsx": {
-    "mtime": 1789683496.319838,
-    "seen": 1789684153.3770592,
-    "ast_hash": "e4bb53203ccb061d44b69494c0360740",
+    "mtime": 1789728971.7931218,
+    "seen": 1789729122.1830163,
+    "ast_hash": "1a0f53446303a0a75c0a23335faded4e",
     "semantic_hash": ""
   },
   "web/tests/unit/RobotVisualizer.test.tsx": {
@@ -1578,9 +1578,9 @@
     "semantic_hash": ""
   },
   ".beans/hand-sim-nxx6--refactor-a6-pick-and-place-spindletower-stacking-u.md": {
-    "mtime": 1789684137.924431,
-    "seen": 1789684153.3823435,
-    "ast_hash": "e42589ba343bd17e336511fb3ba9c0ea",
+    "mtime": 1789727949.839156,
+    "seen": 1789729122.1874366,
+    "ast_hash": "b5c5f666da26d9b775644638e1f70b1b",
     "semantic_hash": ""
   },
   "scripts/launch_web.sh": {
@@ -1590,15 +1590,33 @@
     "semantic_hash": ""
   },
   "web/tests/e2e/support/mock_gateway.ts": {
-    "mtime": 1789722891.59635,
-    "seen": 1789723248.6346545,
-    "ast_hash": "b476bf6a8d9603cea3a9124ac05f971a",
+    "mtime": 1789728742.2975388,
+    "seen": 1789729122.183476,
+    "ast_hash": "6f8a5b59a3332409f4df16208f706f47",
     "semantic_hash": ""
   },
   "web/tests/unit/mockGateway.test.ts": {
-    "mtime": 1789722946.9592538,
-    "seen": 1789723248.6348836,
-    "ast_hash": "f2a1231398275c6287b20da70c8c57fc",
+    "mtime": 1789725462.7691221,
+    "seen": 1789727926.8122656,
+    "ast_hash": "b62f78b4b9f2ca18ff8931e123c4ba89",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/steps/pick_and_place.steps.ts": {
+    "mtime": 1789726068.4335344,
+    "seen": 1789727926.8119059,
+    "ast_hash": "fca2b85b40b565623e0faec767a85644",
+    "semantic_hash": ""
+  },
+  "web/tests/e2e/support/kinematics.ts": {
+    "mtime": 1789727223.3700957,
+    "seen": 1789727926.8119934,
+    "ast_hash": "834d85b5ff2fb30e10e834be85b7e9f5",
+    "semantic_hash": ""
+  },
+  "web/tests/unit/kinematics.test.ts": {
+    "mtime": 1789728933.9373047,
+    "seen": 1789729122.1836278,
+    "ast_hash": "dedd818d6fd685b93170ad48c95bc1ec",
     "semantic_hash": ""
   }
 }
