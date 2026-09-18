@@ -26,6 +26,7 @@ log.workspace = true
 env_logger.workspace = true
 thiserror.workspace = true
 futures-util.workspace = true
+cdr = "0.2.4"
 
 [dev-dependencies]
 actix-web = { workspace = true }
