@@ -1,12 +1,12 @@
 ---
 # hand-sim-r6xx
 title: 'Unit 6.5-Bugfix.3: Web Visualizer Unit 5 & 6 Lifecycle Harmonization'
-status: todo
+status: completed
 type: task
 tags:
     - ready-for-agent
 created_at: 2026-09-18T15:00:14Z
-updated_at: 2026-09-18T15:00:14Z
+updated_at: 2026-09-18T18:55:00Z
 parent: hand-sim-s0tn
 blocked_by:
     - hand-sim-1h63

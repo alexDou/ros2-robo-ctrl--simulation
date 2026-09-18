@@ -27,7 +27,7 @@
       "file_type": "code",
       "norm_label": "gearwheelproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L350"
+      "source_location": "L356"
     },
     {
       "id": "web_src_components_robotvisualizer_palmproceduralassets",
@@ -40,7 +40,7 @@
       "file_type": "code",
       "norm_label": "palmproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L78"
+      "source_location": "L84"
     },
     {
       "id": "web_src_components_robotvisualizer_pedestalproceduralassets",
@@ -53,7 +53,7 @@
       "file_type": "code",
       "norm_label": "pedestalproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L141"
+      "source_location": "L147"
     },
     {
       "id": "web_src_components_robotvisualizer_spindletowerproceduralassets",
@@ -66,7 +66,7 @@
       "file_type": "code",
       "norm_label": "spindletowerproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L422"
+      "source_location": "L428"
     },
     {
       "id": "web_src_components_robotvisualizer_tableproceduralassets",
@@ -79,7 +79,7 @@
       "file_type": "code",
       "norm_label": "tableproceduralassets",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L225"
+      "source_location": "L231"
     },
     {
       "id": "web_src_utils_robotloader_robotloaderoptions",
@@ -95,6 +95,19 @@
       "source_location": "L21"
     },
     {
+      "id": "web_domain_contracts_posename",
+      "label": "PoseName",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "posename",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L57"
+    },
+    {
       "id": "web_domain_contracts_robotstate",
       "label": "RobotState",
       "_callable": true,
@@ -106,6 +119,19 @@
       "norm_label": "robotstate",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L116"
+    },
+    {
+      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
+      "label": "OperatorToolbarProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbarprops",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L3"
     },
     {
       "id": "web_src_components_telemetrymonitor_telemetrymonitorprops",
@@ -131,7 +157,7 @@
       "file_type": "code",
       "norm_label": "telemetrybuffer",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L8"
+      "source_location": "L9"
     },
     {
       "id": "web_src_hooks_useteleopsession_useteleopsessionoptions",
@@ -144,7 +170,7 @@
       "file_type": "code",
       "norm_label": "useteleopsessionoptions",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L53"
+      "source_location": "L55"
     },
     {
       "id": "src_domain_domain_py_src_domain_domain_commandtype",
@@ -485,6 +511,32 @@
       "source_location": "L6"
     },
     {
+      "id": "web_src_components_connectionbadge_connectionbadgeprops",
+      "label": "ConnectionBadgeProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 206,
+      "community_name": "ConnectionBadge.tsx",
+      "file_type": "code",
+      "norm_label": "connectionbadgeprops",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_src_hooks_useteleopsession_connectionstate",
+      "label": "ConnectionState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 206,
+      "community_name": "ConnectionBadge.tsx",
+      "file_type": "code",
+      "norm_label": "connectionstate",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L26"
+    },
+    {
       "id": "scripts_generate_domain_constantdef",
       "label": "ConstantDef",
       "_callable": true,
@@ -589,19 +641,6 @@
       "source_location": "L157"
     },
     {
-      "id": "web_domain_contracts_commandtype",
-      "label": "CommandType",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
-      "file_type": "code",
-      "norm_label": "commandtype",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L87"
-    },
-    {
       "id": "web_domain_contracts_errorframe",
       "label": "ErrorFrame",
       "_callable": true,
@@ -638,7 +677,7 @@
       "file_type": "code",
       "norm_label": "errorlogentry",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L33"
+      "source_location": "L35"
     },
     {
       "id": "web_src_hooks_useteleopsession_telemetrylogentry",
@@ -651,7 +690,7 @@
       "file_type": "code",
       "norm_label": "telemetrylogentry",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L26"
+      "source_location": "L28"
     },
     {
       "id": "web_tests_e2e_support_kinematics_waypointstep",
@@ -706,17 +745,17 @@
       "source_location": "L19"
     },
     {
-      "id": "web_domain_contracts_posename",
-      "label": "PoseName",
+      "id": "web_domain_contracts_commandtype",
+      "label": "CommandType",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 217,
       "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "posename",
+      "norm_label": "commandtype",
       "source_file": "web/domain/contracts.ts",
-      "source_location": "L57"
+      "source_location": "L87"
     },
     {
       "id": "web_src_components_actionprogressbar_actionprogressbarprops",
@@ -745,19 +784,6 @@
       "source_location": "L1"
     },
     {
-      "id": "web_src_components_connectionbadge_connectionbadgeprops",
-      "label": "ConnectionBadgeProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "connectionbadgeprops",
-      "source_file": "web/src/components/ConnectionBadge.tsx",
-      "source_location": "L3"
-    },
-    {
       "id": "web_src_components_eventlog_eventlogprops",
       "label": "EventLogProps",
       "_callable": true,
@@ -771,32 +797,6 @@
       "source_location": "L3"
     },
     {
-      "id": "web_src_components_operatortoolbar_operatortoolbarprops",
-      "label": "OperatorToolbarProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbarprops",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L3"
-    },
-    {
-      "id": "web_src_components_teleopclient_teleopclientprops",
-      "label": "TeleopClientProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "teleopclientprops",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L16"
-    },
-    {
       "id": "web_src_hooks_useteleopsession_actionprogress",
       "label": "ActionProgress",
       "_callable": true,
@@ -807,20 +807,7 @@
       "file_type": "code",
       "norm_label": "actionprogress",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L42"
-    },
-    {
-      "id": "web_src_hooks_useteleopsession_connectionstate",
-      "label": "ConnectionState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "connectionstate",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L24"
+      "source_location": "L44"
     },
     {
       "id": "web_src_hooks_useteleopsession_logentry",
@@ -833,7 +820,7 @@
       "file_type": "code",
       "norm_label": "logentry",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L40"
+      "source_location": "L42"
     },
     {
       "id": "web_src_types_global_d_robotvisualizerglobalhandle",
@@ -1096,6 +1083,19 @@
       "source_location": "L16"
     },
     {
+      "id": "web_src_components_teleopclient_teleopclientprops",
+      "label": "TeleopClientProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 89,
+      "community_name": "useTeleopSession.ts",
+      "file_type": "code",
+      "norm_label": "teleopclientprops",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L17"
+    },
+    {
       "id": "web_src_hooks_useteleopsession_errorbannerinfo",
       "label": "ErrorBannerInfo",
       "_callable": true,
@@ -1106,7 +1106,7 @@
       "file_type": "code",
       "norm_label": "errorbannerinfo",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L48"
+      "source_location": "L50"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway",
@@ -1313,7 +1313,7 @@
       "file_type": "code",
       "norm_label": "createdexterouspalm()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L84"
+      "source_location": "L90"
     },
     {
       "id": "web_src_components_robotvisualizer_createproceduralgearwheel",
@@ -1325,7 +1325,7 @@
       "file_type": "code",
       "norm_label": "createproceduralgearwheel()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L355"
+      "source_location": "L361"
     },
     {
       "id": "web_src_components_robotvisualizer_createrobotpedestal",
@@ -1337,7 +1337,7 @@
       "file_type": "code",
       "norm_label": "createrobotpedestal()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L146"
+      "source_location": "L152"
     },
     {
       "id": "web_src_components_robotvisualizer_createspindletower",
@@ -1349,7 +1349,7 @@
       "file_type": "code",
       "norm_label": "createspindletower()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L429"
+      "source_location": "L435"
     },
     {
       "id": "web_src_components_robotvisualizer_createworkcelltable",
@@ -1361,7 +1361,7 @@
       "file_type": "code",
       "norm_label": "createworkcelltable()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L235"
+      "source_location": "L241"
     },
     {
       "id": "web_src_components_robotvisualizer_disposematerial",
@@ -1373,7 +1373,7 @@
       "file_type": "code",
       "norm_label": "disposematerial()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L68"
+      "source_location": "L74"
     },
     {
       "id": "web_src_components_robotvisualizer_getlatestpositions",
@@ -1385,7 +1385,7 @@
       "file_type": "code",
       "norm_label": "getlatestpositions()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L43"
+      "source_location": "L49"
     },
     {
       "id": "web_src_components_robotvisualizer_isdisposable",
@@ -1397,7 +1397,7 @@
       "file_type": "code",
       "norm_label": "isdisposable()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L59"
+      "source_location": "L65"
     },
     {
       "id": "web_src_components_robotvisualizer_robotvisualizer",
@@ -1409,7 +1409,7 @@
       "file_type": "code",
       "norm_label": "robotvisualizer()",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L474"
+      "source_location": "L480"
     },
     {
       "id": "web_src_utils_env_istestenv",
@@ -1556,6 +1556,18 @@
       "source_location": "L461"
     },
     {
+      "id": "web_src_components_operatortoolbar_operatortoolbar",
+      "label": "OperatorToolbar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbar()",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L16"
+    },
+    {
       "id": "web_src_components_telemetrymonitor_telemetrymonitor",
       "label": "TelemetryMonitor()",
       "_callable": true,
@@ -1577,7 +1589,19 @@
       "file_type": "code",
       "norm_label": "usetelemetrystream()",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L19"
+      "source_location": "L20"
+    },
+    {
+      "id": "web_tests_e2e_support_mock_gateway_mockgateway_getrobotstate",
+      "label": ".getRobotState()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": ".getrobotstate()",
+      "source_file": "web/tests/e2e/support/mock_gateway.ts",
+      "source_location": "L148"
     },
     {
       "id": "web_tests_unit_telemetrymonitor_test_testcomponent",
@@ -2058,78 +2082,6 @@
       "norm_label": ".solveikmatrix()",
       "source_file": "web/tests/e2e/support/kinematics.ts",
       "source_location": "L179"
-    },
-    {
-      "id": "web_src_main_app",
-      "label": "App()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "app()",
-      "source_file": "web/src/main.tsx",
-      "source_location": "L8"
-    },
-    {
-      "id": "web_src_utils_env_isbrowser",
-      "label": "isBrowser()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "isbrowser()",
-      "source_file": "web/src/utils/env.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "web_src_utils_url_getallparams",
-      "label": "getAllParams()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "getallparams()",
-      "source_file": "web/src/utils/url.ts",
-      "source_location": "L15"
-    },
-    {
-      "id": "web_src_utils_url_getparam",
-      "label": "getParam()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "getparam()",
-      "source_file": "web/src/utils/url.ts",
-      "source_location": "L39"
-    },
-    {
-      "id": "web_src_utils_url_resolvegatewaywsurl",
-      "label": "resolveGatewayWsUrl()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "resolvegatewaywsurl()",
-      "source_file": "web/src/utils/url.ts",
-      "source_location": "L63"
-    },
-    {
-      "id": "web_tests_unit_url_test_setwindowsearch",
-      "label": "setWindowSearch()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 118,
-      "community_name": "main.tsx",
-      "file_type": "code",
-      "norm_label": "setwindowsearch()",
-      "source_file": "web/tests/unit/url.test.ts",
-      "source_location": "L14"
     },
     {
       "id": "scripts_extract_urdf_assets_find_ros_package_share",
@@ -3692,6 +3644,30 @@
       "source_location": "L46"
     },
     {
+      "id": "web_src_components_connectionbadge_connectionbadge",
+      "label": "ConnectionBadge()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 206,
+      "community_name": "ConnectionBadge.tsx",
+      "file_type": "code",
+      "norm_label": "connectionbadge()",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L23"
+    },
+    {
+      "id": "web_src_components_connectionbadge_getbadgecolor",
+      "label": "getBadgeColor()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 206,
+      "community_name": "ConnectionBadge.tsx",
+      "file_type": "code",
+      "norm_label": "getbadgecolor()",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L9"
+    },
+    {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectjointsoscillating",
       "label": ".expectJointsOscillating()",
       "_callable": true,
@@ -3920,30 +3896,6 @@
       "source_location": "L5"
     },
     {
-      "id": "web_src_components_connectionbadge_connectionbadge",
-      "label": "ConnectionBadge()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "connectionbadge()",
-      "source_file": "web/src/components/ConnectionBadge.tsx",
-      "source_location": "L23"
-    },
-    {
-      "id": "web_src_components_connectionbadge_getbadgecolor",
-      "label": "getBadgeColor()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "getbadgecolor()",
-      "source_file": "web/src/components/ConnectionBadge.tsx",
-      "source_location": "L9"
-    },
-    {
       "id": "web_src_components_eventlog_eventlog",
       "label": "EventLog()",
       "_callable": true,
@@ -3956,18 +3908,6 @@
       "source_location": "L7"
     },
     {
-      "id": "web_src_components_operatortoolbar_operatortoolbar",
-      "label": "OperatorToolbar()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbar()",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
-      "source_location": "L16"
-    },
-    {
       "id": "web_src_components_teleopclient_teleopclient",
       "label": "TeleopClient()",
       "_callable": true,
@@ -3977,7 +3917,7 @@
       "file_type": "code",
       "norm_label": "teleopclient()",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L26"
+      "source_location": "L28"
     },
     {
       "id": "web_src_hooks_useisdesktop_useisdesktop",
@@ -3990,6 +3930,78 @@
       "norm_label": "useisdesktop()",
       "source_file": "web/src/hooks/useIsDesktop.ts",
       "source_location": "L9"
+    },
+    {
+      "id": "web_src_main_app",
+      "label": "App()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "app()",
+      "source_file": "web/src/main.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "web_src_utils_env_isbrowser",
+      "label": "isBrowser()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "isbrowser()",
+      "source_file": "web/src/utils/env.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "web_src_utils_url_getallparams",
+      "label": "getAllParams()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "getallparams()",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "web_src_utils_url_getparam",
+      "label": "getParam()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "getparam()",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L39"
+    },
+    {
+      "id": "web_src_utils_url_resolvegatewaywsurl",
+      "label": "resolveGatewayWsUrl()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "resolvegatewaywsurl()",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L63"
+    },
+    {
+      "id": "web_tests_unit_url_test_setwindowsearch",
+      "label": "setWindowSearch()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "setwindowsearch()",
+      "source_file": "web/tests/unit/url.test.ts",
+      "source_location": "L14"
     },
     {
       "id": "web_tests_e2e_pages_teleoppage_teleoppage_expectlinkcoordinatesmoving",
@@ -5081,7 +5093,7 @@
       "file_type": "code",
       "norm_label": "useteleopsession()",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L61"
+      "source_location": "L63"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_broadcastraw",
@@ -5192,18 +5204,6 @@
       "source_location": "L152"
     },
     {
-      "id": "web_tests_e2e_support_mock_gateway_mockgateway_getrobotstate",
-      "label": ".getRobotState()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 90,
-      "community_name": "MockGateway",
-      "file_type": "code",
-      "norm_label": ".getrobotstate()",
-      "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L148"
-    },
-    {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_gettowergearscount",
       "label": ".getTowerGearsCount()",
       "_callable": true,
@@ -5309,7 +5309,7 @@
       "file_type": "code",
       "norm_label": ".sendtelemetry()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L582"
+      "source_location": "L584"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_sendtelemetrytoall",
@@ -5321,7 +5321,7 @@
       "file_type": "code",
       "norm_label": ".sendtelemetrytoall()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L574"
+      "source_location": "L576"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_setautoexecutepickandplace",
@@ -5381,7 +5381,7 @@
       "file_type": "code",
       "norm_label": ".starttickloop()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L521"
+      "source_location": "L523"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_tick",
@@ -5393,7 +5393,7 @@
       "file_type": "code",
       "norm_label": ".tick()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L528"
+      "source_location": "L530"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_updatedynamicjoints",
@@ -5405,7 +5405,7 @@
       "file_type": "code",
       "norm_label": ".updatedynamicjoints()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L548"
+      "source_location": "L550"
     },
     {
       "id": "web_tests_e2e_support_mock_gateway_mockgateway_updatetrajectory",
@@ -5417,7 +5417,7 @@
       "file_type": "code",
       "norm_label": ".updatetrajectory()",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L557"
+      "source_location": "L559"
     },
     {
       "id": "src_ros2_arm_controller_arm_controller_edge_bridge_node_edgebridgenode_close",
@@ -6950,6 +6950,50 @@
       "source_location": "L9"
     },
     {
+      "id": "web_src_components_robotvisualizer_scratchtipoffset",
+      "label": "_scratchTipOffset",
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "RobotVisualizer.tsx",
+      "file_type": "code",
+      "norm_label": "_scratchtipoffset",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L47"
+    },
+    {
+      "id": "web_src_components_robotvisualizer_scratchvec1",
+      "label": "_scratchVec1",
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "RobotVisualizer.tsx",
+      "file_type": "code",
+      "norm_label": "_scratchvec1",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L44"
+    },
+    {
+      "id": "web_src_components_robotvisualizer_scratchvec2",
+      "label": "_scratchVec2",
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "RobotVisualizer.tsx",
+      "file_type": "code",
+      "norm_label": "_scratchvec2",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L45"
+    },
+    {
+      "id": "web_src_components_robotvisualizer_scratchvec3",
+      "label": "_scratchVec3",
+      "_origin": "ast",
+      "community": 102,
+      "community_name": "RobotVisualizer.tsx",
+      "file_type": "code",
+      "norm_label": "_scratchvec3",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L46"
+    },
+    {
       "id": "web_src_components_robotvisualizer_spindle_tower_coords",
       "label": "SPINDLE_TOWER_COORDS",
       "_origin": "ast",
@@ -7104,6 +7148,17 @@
       "source_location": "L8"
     },
     {
+      "id": "web_domain_contracts_canonical_poses",
+      "label": "CANONICAL_POSES",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "canonical_poses",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L172"
+    },
+    {
       "id": "web_domain_contracts_canonical_ur5e_joints",
       "label": "CANONICAL_UR5E_JOINTS",
       "_origin": "ast",
@@ -7113,6 +7168,17 @@
       "norm_label": "canonical_ur5e_joints",
       "source_file": "web/domain/contracts.ts",
       "source_location": "L146"
+    },
+    {
+      "id": "web_src_components_operatortoolbar",
+      "label": "OperatorToolbar.tsx",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "RobotState",
+      "file_type": "code",
+      "norm_label": "operatortoolbar.tsx",
+      "source_file": "web/src/components/OperatorToolbar.tsx",
+      "source_location": "L1"
     },
     {
       "id": "web_src_components_telemetrymonitor",
@@ -7443,114 +7509,103 @@
       "source_location": "L432"
     },
     {
-      "id": "schemas_robot_command_schema_defs_spawn_object_payload",
-      "label": "spawn_object_payload",
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "spawn_object_payload",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L88"
-    },
-    {
-      "id": "schemas_robot_command_schema_spawn_object_payload_additionalproperties",
-      "label": "additionalProperties",
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "spawn_object_payload",
-      "file_type": "code",
-      "norm_label": "additionalproperties",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L120"
-    },
-    {
-      "id": "schemas_robot_command_schema_spawn_object_payload_description",
+      "id": "schemas_robot_command_schema_pose_name_description",
       "label": "description",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
+      "community_name": "pose_name",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L91"
+      "source_location": "L49"
     },
     {
-      "id": "schemas_robot_command_schema_spawn_object_payload_required",
-      "label": "required",
+      "id": "schemas_robot_command_schema_pose_name_enum",
+      "label": "enum",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
+      "community_name": "pose_name",
       "file_type": "code",
-      "norm_label": "required",
+      "norm_label": "enum",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L92"
+      "source_location": "L44"
     },
     {
-      "id": "schemas_robot_command_schema_spawn_object_payload_title",
+      "id": "schemas_robot_command_schema_pose_name_title",
       "label": "title",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
+      "community_name": "pose_name",
       "file_type": "code",
       "norm_label": "title",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L90"
+      "source_location": "L43"
     },
     {
-      "id": "schemas_robot_command_schema_spawn_object_payload_type",
+      "id": "schemas_robot_command_schema_pose_name_type",
       "label": "type",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
+      "community_name": "pose_name",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L89"
+      "source_location": "L42"
     },
     {
-      "id": "ref_object_type",
-      "label": "object_type",
+      "id": "schemas_robot_command_schema_properties_pose_name",
+      "label": "pose_name",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
-      "file_type": "concept",
-      "norm_label": "object_type",
+      "community_name": "pose_name",
+      "file_type": "code",
+      "norm_label": "pose_name",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L92"
+      "source_location": "L41"
     },
     {
-      "id": "ref_x",
-      "label": "x",
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_properties",
+      "label": "properties",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
-      "file_type": "concept",
-      "norm_label": "x",
+      "community_name": "pose_name",
+      "file_type": "code",
+      "norm_label": "properties",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L92"
+      "source_location": "L40"
     },
     {
-      "id": "ref_y",
-      "label": "y",
+      "id": "ref_home",
+      "label": "HOME",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
+      "community_name": "pose_name",
       "file_type": "concept",
-      "norm_label": "y",
+      "norm_label": "home",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L92"
+      "source_location": "L44"
     },
     {
-      "id": "ref_z",
-      "label": "z",
+      "id": "ref_inspect_pose",
+      "label": "INSPECT_POSE",
       "_origin": "ast",
       "community": 107,
-      "community_name": "spawn_object_payload",
+      "community_name": "pose_name",
       "file_type": "concept",
-      "norm_label": "z",
+      "norm_label": "inspect_pose",
       "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L92"
+      "source_location": "L44"
+    },
+    {
+      "id": "ref_ready",
+      "label": "READY",
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "pose_name",
+      "file_type": "concept",
+      "norm_label": "ready",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L44"
     },
     {
       "id": "web_package_devdependencies_playwright_test",
@@ -9071,16 +9126,29 @@
       "file_type": "document",
       "frontmatter": {
         "title": "Unit 6.5-Bugfix.2.2: ROS2 EdgeBridge Node - Pick-and-Place Action Bridge &amp; Workcell Services",
-        "status": "todo",
+        "status": "completed",
         "type": "task",
+        "priority": "normal",
         "created_at": "2026-09-18T15:00:09Z",
-        "updated_at": "2026-09-18T15:00:09Z",
+        "updated_at": "2026-09-18T15:51:49Z",
         "parent": "hand-sim-s0tn"
       },
       "node_kind": "page",
       "norm_label": "hand-sim-1h63--unit-65-bugfix22-ros2-edgebridge-node-pick-and-pla.md",
       "source_file": ".beans/hand-sim-1h63--unit-65-bugfix22-ros2-edgebridge-node-pick-and-pla.md",
       "source_location": "L1"
+    },
+    {
+      "id": "beans_hand_sim_1h63_unit_65_bugfix22_ros2_edgebridge_node_pick_and_pla_summary_of_implementation",
+      "label": "Summary of Implementation",
+      "_origin": "ast",
+      "community": 116,
+      "community_name": "hand-sim-1h63--unit-65-bugfix22-ros2-edgebridge-node-pick-and-pla.md",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "summary of implementation",
+      "source_file": ".beans/hand-sim-1h63--unit-65-bugfix22-ros2-edgebridge-node-pick-and-pla.md",
+      "source_location": "L20"
     },
     {
       "id": "beans_hand_sim_liyi_phase_3_3d_visualization_dynamic_kinematic_sync",
@@ -9187,48 +9255,59 @@
       "source_location": "L28"
     },
     {
-      "id": "web_src_main",
-      "label": "main.tsx",
+      "id": "schemas_robot_command_schema_defs_trajectory_execute_payload",
+      "label": "trajectory_execute_payload",
       "_origin": "ast",
       "community": 118,
-      "community_name": "main.tsx",
+      "community_name": "trajectory_execute_payload",
       "file_type": "code",
-      "norm_label": "main.tsx",
-      "source_file": "web/src/main.tsx",
-      "source_location": "L1"
+      "norm_label": "trajectory_execute_payload",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L36"
     },
     {
-      "id": "web_src_main_root",
-      "label": "root",
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_additionalproperties",
+      "label": "additionalProperties",
       "_origin": "ast",
       "community": 118,
-      "community_name": "main.tsx",
+      "community_name": "trajectory_execute_payload",
       "file_type": "code",
-      "norm_label": "root",
-      "source_file": "web/src/main.tsx",
-      "source_location": "L19"
+      "norm_label": "additionalproperties",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L67"
     },
     {
-      "id": "web_src_utils_url",
-      "label": "url.ts",
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_description",
+      "label": "description",
       "_origin": "ast",
       "community": 118,
-      "community_name": "main.tsx",
+      "community_name": "trajectory_execute_payload",
       "file_type": "code",
-      "norm_label": "url.ts",
-      "source_file": "web/src/utils/url.ts",
-      "source_location": "L1"
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L39"
     },
     {
-      "id": "web_tests_unit_url_test",
-      "label": "url.test.ts",
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_title",
+      "label": "title",
       "_origin": "ast",
       "community": 118,
-      "community_name": "main.tsx",
+      "community_name": "trajectory_execute_payload",
       "file_type": "code",
-      "norm_label": "url.test.ts",
-      "source_file": "web/tests/unit/url.test.ts",
-      "source_location": "L1"
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "schemas_robot_command_schema_trajectory_execute_payload_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 118,
+      "community_name": "trajectory_execute_payload",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L37"
     },
     {
       "id": "beans_hand_sim_2lcq_unit_32_teleopclient_threejs_robotvisualizer_canva",
@@ -11135,17 +11214,6 @@
       "source_location": "L1"
     },
     {
-      "id": "schemas_robot_command_schema_defs_trajectory_execute_payload",
-      "label": "trajectory_execute_payload",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "trajectory_execute_payload",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L36"
-    },
-    {
       "id": "schemas_robot_command_schema_items_description",
       "label": "description",
       "_origin": "ast",
@@ -11212,61 +11280,6 @@
       "source_location": "L56"
     },
     {
-      "id": "schemas_robot_command_schema_pose_name_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L49"
-    },
-    {
-      "id": "schemas_robot_command_schema_pose_name_enum",
-      "label": "enum",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
-    },
-    {
-      "id": "schemas_robot_command_schema_pose_name_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L43"
-    },
-    {
-      "id": "schemas_robot_command_schema_pose_name_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L42"
-    },
-    {
-      "id": "schemas_robot_command_schema_properties_pose_name",
-      "label": "pose_name",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "pose_name",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L41"
-    },
-    {
       "id": "schemas_robot_command_schema_properties_waypoints",
       "label": "waypoints",
       "_origin": "ast",
@@ -11276,61 +11289,6 @@
       "norm_label": "waypoints",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L51"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_additionalproperties",
-      "label": "additionalProperties",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "additionalproperties",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L67"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_description",
-      "label": "description",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L39"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_properties",
-      "label": "properties",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "properties",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L40"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L38"
-    },
-    {
-      "id": "schemas_robot_command_schema_trajectory_execute_payload_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L37"
     },
     {
       "id": "schemas_robot_command_schema_waypoints_description",
@@ -11375,39 +11333,6 @@
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L52"
-    },
-    {
-      "id": "ref_home",
-      "label": "HOME",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "concept",
-      "norm_label": "home",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
-    },
-    {
-      "id": "ref_inspect_pose",
-      "label": "INSPECT_POSE",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "concept",
-      "norm_label": "inspect_pose",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
-    },
-    {
-      "id": "ref_ready",
-      "label": "READY",
-      "_origin": "ast",
-      "community": 141,
-      "community_name": "items",
-      "file_type": "concept",
-      "norm_label": "ready",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L44"
     },
     {
       "id": "beans_hand_sim_8izv_unit_65_bugfix1_gateway_500_hz_cdr_ingestion_dynam",
@@ -18331,70 +18256,15 @@
       "source_location": "L47"
     },
     {
-      "id": "schemas_robot_command_schema_object_type_description",
-      "label": "description",
+      "id": "web_src_components_connectionbadge",
+      "label": "ConnectionBadge.tsx",
       "_origin": "ast",
       "community": 206,
-      "community_name": "object_type",
+      "community_name": "ConnectionBadge.tsx",
       "file_type": "code",
-      "norm_label": "description",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L117"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_enum",
-      "label": "enum",
-      "_origin": "ast",
-      "community": 206,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "enum",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L114"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_title",
-      "label": "title",
-      "_origin": "ast",
-      "community": 206,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "title",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L113"
-    },
-    {
-      "id": "schemas_robot_command_schema_object_type_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 206,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L112"
-    },
-    {
-      "id": "schemas_robot_command_schema_properties_object_type",
-      "label": "object_type",
-      "_origin": "ast",
-      "community": 206,
-      "community_name": "object_type",
-      "file_type": "code",
-      "norm_label": "object_type",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L111"
-    },
-    {
-      "id": "ref_gear",
-      "label": "GEAR",
-      "_origin": "ast",
-      "community": 206,
-      "community_name": "object_type",
-      "file_type": "concept",
-      "norm_label": "gear",
-      "source_file": "schemas/robot_command.schema.json",
-      "source_location": "L114"
+      "norm_label": "connectionbadge.tsx",
+      "source_file": "web/src/components/ConnectionBadge.tsx",
+      "source_location": "L1"
     },
     {
       "id": "schemas_robot_telemetry_event_schema_confidence_description",
@@ -18688,28 +18558,6 @@
       "source_location": "L30"
     },
     {
-      "id": "web_domain_contracts_canonical_poses",
-      "label": "CANONICAL_POSES",
-      "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
-      "file_type": "code",
-      "norm_label": "canonical_poses",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L172"
-    },
-    {
-      "id": "web_domain_contracts_default_robot_id",
-      "label": "DEFAULT_ROBOT_ID",
-      "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
-      "file_type": "code",
-      "norm_label": "default_robot_id",
-      "source_file": "web/domain/contracts.ts",
-      "source_location": "L154"
-    },
-    {
       "id": "web_domain_contracts_robotcommandschema",
       "label": "robotCommandSchema",
       "_origin": "ast",
@@ -18754,15 +18602,15 @@
       "source_location": "L1"
     },
     {
-      "id": "web_tests_unit_teleopclient_test",
-      "label": "TeleopClient.test.tsx",
+      "id": "web_domain_contracts_default_robot_id",
+      "label": "DEFAULT_ROBOT_ID",
       "_origin": "ast",
-      "community": 215,
-      "community_name": "mock_gateway.ts",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
       "file_type": "code",
-      "norm_label": "teleopclient.test.tsx",
-      "source_file": "web/tests/unit/TeleopClient.test.tsx",
-      "source_location": "L1"
+      "norm_label": "default_robot_id",
+      "source_file": "web/domain/contracts.ts",
+      "source_location": "L154"
     },
     {
       "id": "web_src_components_actionprogressbar",
@@ -18787,17 +18635,6 @@
       "source_location": "L1"
     },
     {
-      "id": "web_src_components_connectionbadge",
-      "label": "ConnectionBadge.tsx",
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "connectionbadge.tsx",
-      "source_file": "web/src/components/ConnectionBadge.tsx",
-      "source_location": "L1"
-    },
-    {
       "id": "web_src_components_eventlog",
       "label": "EventLog.tsx",
       "_origin": "ast",
@@ -18806,17 +18643,6 @@
       "file_type": "code",
       "norm_label": "eventlog.tsx",
       "source_file": "web/src/components/EventLog.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "web_src_components_operatortoolbar",
-      "label": "OperatorToolbar.tsx",
-      "_origin": "ast",
-      "community": 217,
-      "community_name": "TeleopClient.tsx",
-      "file_type": "code",
-      "norm_label": "operatortoolbar.tsx",
-      "source_file": "web/src/components/OperatorToolbar.tsx",
       "source_location": "L1"
     },
     {
@@ -18839,6 +18665,61 @@
       "file_type": "code",
       "norm_label": "useisdesktop.ts",
       "source_file": "web/src/hooks/useIsDesktop.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_src_main",
+      "label": "main.tsx",
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "main.tsx",
+      "source_file": "web/src/main.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_src_main_root",
+      "label": "root",
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "root",
+      "source_file": "web/src/main.tsx",
+      "source_location": "L19"
+    },
+    {
+      "id": "web_src_utils_url",
+      "label": "url.ts",
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "url.ts",
+      "source_file": "web/src/utils/url.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_unit_teleopclient_test",
+      "label": "TeleopClient.test.tsx",
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "teleopclient.test.tsx",
+      "source_file": "web/tests/unit/TeleopClient.test.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tests_unit_url_test",
+      "label": "url.test.ts",
+      "_origin": "ast",
+      "community": 217,
+      "community_name": "TeleopClient.tsx",
+      "file_type": "code",
+      "norm_label": "url.test.ts",
+      "source_file": "web/tests/unit/url.test.ts",
       "source_location": "L1"
     },
     {
@@ -24927,11 +24808,77 @@
       "source_location": "L53"
     },
     {
+      "id": "schemas_robot_command_schema_defs_spawn_object_payload",
+      "label": "spawn_object_payload",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "spawn_object_payload",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L88"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L117"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_enum",
+      "label": "enum",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "enum",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L114"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L113"
+    },
+    {
+      "id": "schemas_robot_command_schema_object_type_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L112"
+    },
+    {
+      "id": "schemas_robot_command_schema_properties_object_type",
+      "label": "object_type",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "object_type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L111"
+    },
+    {
       "id": "schemas_robot_command_schema_properties_x",
       "label": "x",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "x",
       "source_file": "schemas/robot_command.schema.json",
@@ -24942,7 +24889,7 @@
       "label": "y",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "y",
       "source_file": "schemas/robot_command.schema.json",
@@ -24953,29 +24900,84 @@
       "label": "z",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "z",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L107"
     },
     {
+      "id": "schemas_robot_command_schema_spawn_object_payload_additionalproperties",
+      "label": "additionalProperties",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "additionalproperties",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L120"
+    },
+    {
+      "id": "schemas_robot_command_schema_spawn_object_payload_description",
+      "label": "description",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "description",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L91"
+    },
+    {
       "id": "schemas_robot_command_schema_spawn_object_payload_properties",
       "label": "properties",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "properties",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L98"
     },
     {
+      "id": "schemas_robot_command_schema_spawn_object_payload_required",
+      "label": "required",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "required",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L92"
+    },
+    {
+      "id": "schemas_robot_command_schema_spawn_object_payload_title",
+      "label": "title",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "title",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L90"
+    },
+    {
+      "id": "schemas_robot_command_schema_spawn_object_payload_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L89"
+    },
+    {
       "id": "schemas_robot_command_schema_x_description",
       "label": "description",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
@@ -24986,7 +24988,7 @@
       "label": "type",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
@@ -24997,7 +24999,7 @@
       "label": "description",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
@@ -25008,7 +25010,7 @@
       "label": "type",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
@@ -25019,7 +25021,7 @@
       "label": "description",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "description",
       "source_file": "schemas/robot_command.schema.json",
@@ -25030,11 +25032,66 @@
       "label": "type",
       "_origin": "ast",
       "community": 81,
-      "community_name": "properties",
+      "community_name": "spawn_object_payload",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "schemas/robot_command.schema.json",
       "source_location": "L108"
+    },
+    {
+      "id": "ref_gear",
+      "label": "GEAR",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "concept",
+      "norm_label": "gear",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L114"
+    },
+    {
+      "id": "ref_object_type",
+      "label": "object_type",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "concept",
+      "norm_label": "object_type",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L92"
+    },
+    {
+      "id": "ref_x",
+      "label": "x",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "concept",
+      "norm_label": "x",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L92"
+    },
+    {
+      "id": "ref_y",
+      "label": "y",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "concept",
+      "norm_label": "y",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L92"
+    },
+    {
+      "id": "ref_z",
+      "label": "z",
+      "_origin": "ast",
+      "community": 81,
+      "community_name": "spawn_object_payload",
+      "file_type": "concept",
+      "norm_label": "z",
+      "source_file": "schemas/robot_command.schema.json",
+      "source_location": "L92"
     },
     {
       "id": "schemas_error_frame_schema",
@@ -30048,7 +30105,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L131",
+      "source_location": "L137",
       "weight": 1.0
     },
     {
@@ -30060,7 +30117,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L412",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
@@ -30072,7 +30129,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L213",
+      "source_location": "L219",
       "weight": 1.0
     },
     {
@@ -30084,7 +30141,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L466",
+      "source_location": "L472",
       "weight": 1.0
     },
     {
@@ -30096,7 +30153,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L336",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -30108,7 +30165,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L72",
+      "source_location": "L78",
       "weight": 1.0
     },
     {
@@ -30120,7 +30177,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L1154",
+      "source_location": "L1211",
       "weight": 1.0
     },
     {
@@ -30132,7 +30189,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L589",
+      "source_location": "L601",
       "weight": 1.0
     },
     {
@@ -30144,7 +30201,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L660",
+      "source_location": "L672",
       "weight": 1.0
     },
     {
@@ -30156,7 +30213,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L664",
+      "source_location": "L676",
       "weight": 1.0
     },
     {
@@ -30168,7 +30225,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L671",
+      "source_location": "L683",
       "weight": 1.0
     },
     {
@@ -30180,7 +30237,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L675",
+      "source_location": "L687",
       "weight": 1.0
     },
     {
@@ -30192,7 +30249,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L676",
+      "source_location": "L688",
       "weight": 1.0
     },
     {
@@ -30204,7 +30261,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L703",
+      "source_location": "L735",
       "weight": 1.0
     },
     {
@@ -30216,7 +30273,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L736",
+      "source_location": "L768",
       "weight": 1.0
     },
     {
@@ -30228,7 +30285,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L35",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -30240,7 +30297,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L36",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -30252,7 +30309,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L45",
+      "source_location": "L48",
       "weight": 1.0
     },
     {
@@ -30264,7 +30321,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L62",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -30276,127 +30333,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L40",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_isactionfeedbackframe",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L122",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_contracts_iserrorframe",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L128",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_createtrajectoryexecutecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L198",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_contracts_serializecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L199",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_createpalmactuatecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L205",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_createemergencystopcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L212",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_createresetfaultcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L222",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_createpickandplacetargetcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L232",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_createclearworkspacecommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L245",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_hooks_useteleopsession_useteleopsession",
-      "target": "web_domain_parsers_createpingcommand",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L252",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -30408,7 +30345,139 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L90",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_isactionfeedbackframe",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_contracts_iserrorframe",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createtrajectoryexecutecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L211",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_contracts_serializecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L212",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createpalmactuatecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createemergencystopcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createresetfaultcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createpickandplacetargetcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L245",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createspawnobjectcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L257",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createclearworkspacecommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L275",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession_useteleopsession",
+      "target": "web_domain_parsers_createpingcommand",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L285",
       "weight": 1.0
     },
     {
@@ -30888,7 +30957,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L502",
+      "source_location": "L501",
       "weight": 1.0
     },
     {
@@ -30960,7 +31029,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L577",
+      "source_location": "L579",
       "weight": 1.0
     },
     {
@@ -30996,7 +31065,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L524",
+      "source_location": "L526",
       "weight": 1.0
     },
     {
@@ -31008,7 +31077,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L531",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -31020,7 +31089,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L541",
+      "source_location": "L543",
       "weight": 1.0
     },
     {
@@ -31032,7 +31101,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L543",
+      "source_location": "L545",
       "weight": 1.0
     },
     {
@@ -31224,7 +31293,7 @@
       "confidence_score": 1.0,
       "context": "export",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -31948,15 +32017,15 @@
       "weight": 1.0
     },
     {
-      "source": "web_src_hooks_usetelemetrystream_telemetrybuffer",
-      "target": "web_domain_contracts_robotstate",
+      "source": "web_src_components_teleopclient_teleopclientprops",
+      "target": "web_domain_contracts_spawnobjectpayload",
       "relation": "references",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "field",
-      "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L11",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -31968,7 +32037,19 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L9",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_usetelemetrystream_telemetrybuffer",
+      "target": "web_domain_contracts_robotstate",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "web/src/hooks/useTelemetryStream.ts",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -31980,7 +32061,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L37",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -31992,7 +32073,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L30",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -32004,7 +32085,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L57",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -34973,6 +35054,18 @@
     },
     {
       "source": "web_src_components_robotvisualizer",
+      "target": "web_domain_contracts_canonical_poses",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
       "target": "web_domain_contracts_pickandplacetargetpayload",
       "relation": "imports",
       "_origin": "ast",
@@ -35057,19 +35150,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_utils_url_resolvegatewaywsurl",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L1",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_telemetrymonitor_telemetrymonitor",
+      "target": "web_src_components_eventlog_eventlog",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35081,7 +35162,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_robotvisualizer_robotvisualizer",
+      "target": "web_src_components_telemetrymonitor_telemetrymonitor",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35093,7 +35174,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_operatortoolbar_operatortoolbar",
+      "target": "web_src_components_robotvisualizer_robotvisualizer",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35105,7 +35186,19 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts_default_robot_id",
+      "target": "web_src_components_operatortoolbar_operatortoolbar",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_utils_url_resolvegatewaywsurl",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35117,7 +35210,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_hooks_usetelemetrystream_usetelemetrystream",
+      "target": "web_domain_contracts_default_robot_id",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35129,43 +35222,31 @@
     },
     {
       "source": "web_src_components_teleopclient",
+      "target": "web_domain_contracts_spawnobjectpayload",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_hooks_usetelemetrystream_usetelemetrystream",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
       "target": "web_src_hooks_useteleopsession_connectionstate",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_hooks_useteleopsession_logentry",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_hooks_useteleopsession_useteleopsession",
-      "relation": "imports",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L4",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_hooks_useisdesktop_useisdesktop",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35177,7 +35258,31 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_connectionbadge_connectionbadge",
+      "target": "web_src_hooks_useteleopsession_logentry",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_hooks_useteleopsession_useteleopsession",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_hooks_useisdesktop_useisdesktop",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35189,7 +35294,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_conflictbanner_conflictbanner",
+      "target": "web_src_components_connectionbadge_connectionbadge",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35201,7 +35306,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_actionprogressbar_actionprogressbar",
+      "target": "web_src_components_conflictbanner_conflictbanner",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35213,7 +35318,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_eventlog_eventlog",
+      "target": "web_src_components_actionprogressbar_actionprogressbar",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35226,6 +35331,18 @@
     {
       "source": "web_src_hooks_usetelemetrystream",
       "target": "web_domain_contracts_armjointpositions",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTelemetryStream.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_usetelemetrystream",
+      "target": "web_domain_contracts_canonical_poses",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -35268,7 +35385,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35280,7 +35397,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35292,7 +35409,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35304,7 +35421,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35316,7 +35433,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35328,7 +35445,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35340,7 +35457,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35352,7 +35469,19 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_parsers_createspawnobjectcommand",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35364,7 +35493,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35376,7 +35505,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -35454,6 +35583,18 @@
     {
       "source": "web_src_hooks_useteleopsession",
       "target": "web_domain_contracts_robottelemetryevent",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/hooks/useTeleopSession.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_hooks_useteleopsession",
+      "target": "web_domain_contracts_spawnobjectpayload",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37305,19 +37446,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_utils_url",
-      "relation": "imports_from",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "import",
-      "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L1",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_teleopclient",
-      "target": "web_src_components_telemetrymonitor",
+      "target": "web_src_components_eventlog",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37329,7 +37458,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_robotvisualizer",
+      "target": "web_src_components_telemetrymonitor",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37341,7 +37470,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_operatortoolbar",
+      "target": "web_src_components_robotvisualizer",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37353,7 +37482,19 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_domain_contracts",
+      "target": "web_src_components_operatortoolbar",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "web/src/components/TeleopClient.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_teleopclient",
+      "target": "web_src_utils_url",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37365,7 +37506,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_hooks_usetelemetrystream",
+      "target": "web_domain_contracts",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37377,19 +37518,19 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_hooks_useisdesktop",
+      "target": "web_src_hooks_usetelemetrystream",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_connectionbadge",
+      "target": "web_src_hooks_useisdesktop",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37401,7 +37542,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_conflictbanner",
+      "target": "web_src_components_connectionbadge",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37413,7 +37554,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_actionprogressbar",
+      "target": "web_src_components_conflictbanner",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37425,7 +37566,7 @@
     },
     {
       "source": "web_src_components_teleopclient",
-      "target": "web_src_components_eventlog",
+      "target": "web_src_components_actionprogressbar",
       "relation": "imports_from",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37456,7 +37597,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0
     },
     {
@@ -43041,6 +43182,17 @@
       "confidence_score": 1.0,
       "source_file": ".agents/workflows/graphify.md",
       "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "beans_hand_sim_1h63_unit_65_bugfix22_ros2_edgebridge_node_pick_and_pla",
+      "target": "beans_hand_sim_1h63_unit_65_bugfix22_ros2_edgebridge_node_pick_and_pla_summary_of_implementation",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".beans/hand-sim-1h63--unit-65-bugfix22-ros2-edgebridge-node-pick-and-pla.md",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -54260,7 +54412,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L141",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -54271,7 +54423,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L146",
+      "source_location": "L152",
       "weight": 1.0
     },
     {
@@ -54293,7 +54445,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L225",
+      "source_location": "L231",
       "weight": 1.0
     },
     {
@@ -54304,7 +54456,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L235",
+      "source_location": "L241",
       "weight": 1.0
     },
     {
@@ -54315,7 +54467,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L350",
+      "source_location": "L356",
       "weight": 1.0
     },
     {
@@ -54326,7 +54478,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L355",
+      "source_location": "L361",
       "weight": 1.0
     },
     {
@@ -54337,7 +54489,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L422",
+      "source_location": "L428",
       "weight": 1.0
     },
     {
@@ -54348,18 +54500,51 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L429",
+      "source_location": "L435",
       "weight": 1.0
     },
     {
       "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_getlatestpositions",
+      "target": "web_src_components_robotvisualizer_scratchvec1",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L43",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_scratchvec2",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_scratchvec3",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_scratchtipoffset",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L47",
       "weight": 1.0
     },
     {
@@ -54370,7 +54555,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L474",
+      "source_location": "L480",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_getlatestpositions",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L49",
       "weight": 1.0
     },
     {
@@ -54381,7 +54577,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L59",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -54392,23 +54588,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L68",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
       "source": "web_src_components_robotvisualizer",
       "target": "web_src_components_robotvisualizer_palmproceduralassets",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L78",
-      "weight": 1.0
-    },
-    {
-      "source": "web_src_components_robotvisualizer",
-      "target": "web_src_components_robotvisualizer_createdexterouspalm",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -54426,6 +54611,17 @@
       "confidence_score": 1.0,
       "source_file": "web/src/components/RobotVisualizer.tsx",
       "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_src_components_robotvisualizer",
+      "target": "web_src_components_robotvisualizer_createdexterouspalm",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/components/RobotVisualizer.tsx",
+      "source_location": "L90",
       "weight": 1.0
     },
     {
@@ -54458,7 +54654,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -54469,7 +54665,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/components/TeleopClient.tsx",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -54491,7 +54687,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -54502,7 +54698,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTelemetryStream.ts",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -54513,7 +54709,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L24",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -54524,7 +54720,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -54535,7 +54731,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L33",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -54546,7 +54742,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L40",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -54557,7 +54753,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L42",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -54568,7 +54764,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L48",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -54579,7 +54775,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -54590,7 +54786,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/src/hooks/useTeleopSession.ts",
-      "source_location": "L61",
+      "source_location": "L63",
       "weight": 1.0
     },
     {
@@ -59017,7 +59213,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L521",
+      "source_location": "L523",
       "weight": 1.0
     },
     {
@@ -59028,7 +59224,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L528",
+      "source_location": "L530",
       "weight": 1.0
     },
     {
@@ -59039,7 +59235,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L548",
+      "source_location": "L550",
       "weight": 1.0
     },
     {
@@ -59050,7 +59246,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L557",
+      "source_location": "L559",
       "weight": 1.0
     },
     {
@@ -59061,7 +59257,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L574",
+      "source_location": "L576",
       "weight": 1.0
     },
     {
@@ -59072,7 +59268,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "web/tests/e2e/support/mock_gateway.ts",
-      "source_location": "L582",
+      "source_location": "L584",
       "weight": 1.0
     },
     {
@@ -61121,7 +61317,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "web/src/components/RobotVisualizer.tsx",
-      "source_location": "L684",
+      "source_location": "L696",
       "weight": 1.0
     },
     {
@@ -62466,5 +62662,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "0cc9bad7a42e31d2692d232a7f3aa7cbe1ca16ab"
+  "built_at_commit": "ba95f19f07f1cf1bf656b04de0646016872c67dc"
 }

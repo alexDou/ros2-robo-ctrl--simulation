@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { URDFRobot } from 'urdf-loader';
-import { UR5E_JOINTS, type SpawnObjectPayload, type PickAndPlaceTargetPayload, type RobotState } from '@contracts';
+import { UR5E_JOINTS, CANONICAL_POSES, type SpawnObjectPayload, type PickAndPlaceTargetPayload, type RobotState } from '@contracts';
 import * as robotLoader from '@utils/robotLoader';
 import { isTestEnv } from '@utils/env';
 
@@ -27,6 +27,7 @@ export interface RobotVisualizerProps {
   hasActiveGear?: boolean;
   onSpawnObject?: (payload: SpawnObjectPayload) => void;
   onPickAndPlaceTarget?: (payload: PickAndPlaceTargetPayload) => void;
+  onWorkspaceGearsChange?: (hasGears: boolean, towerCount: number) => void;
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,
@@ -39,6 +40,11 @@ export interface RobotVisualizerProps {
   className?: string;
   style?: Record<string, string | number>;
 }
+
+const _scratchVec1 = new THREE.Vector3();
+const _scratchVec2 = new THREE.Vector3();
+const _scratchVec3 = new THREE.Vector3();
+const _scratchTipOffset = new THREE.Vector3(0, 0, 0.108);
 
 function getLatestPositions(
   jointPositionsRef?: { current?: readonly number[] | null } | null,
@@ -480,6 +486,7 @@ export function RobotVisualizer({
   hasActiveGear,
   onSpawnObject,
   onPickAndPlaceTarget,
+  onWorkspaceGearsChange,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -527,9 +534,14 @@ export function RobotVisualizer({
   const onPickAndPlaceTargetRef = useRef(onPickAndPlaceTarget);
   onPickAndPlaceTargetRef.current = onPickAndPlaceTarget;
 
+  const onWorkspaceGearsChangeRef = useRef(onWorkspaceGearsChange);
+  onWorkspaceGearsChangeRef.current = onWorkspaceGearsChange;
+
   const clearWorkspaceRef = useRef<(() => void) | null>(null);
+  const clearActiveGearRef = useRef<(() => void) | null>(null);
   const depositPendingGearRef = useRef<(() => void) | null>(null);
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
+  const wasGearAttachedInCycleRef = useRef<boolean>(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -692,6 +704,26 @@ export function RobotVisualizer({
         loadedRobot = robot;
         robotGroup.add(robot);
 
+        if (!jointPositionsRefProp.current) {
+          // Initialize loadedRobot at CANONICAL_POSES.HOME joint angles instead of 0 rad flat pose on URDF load
+          const homePositions = CANONICAL_POSES.HOME;
+          for (let i = 0; i < UR5E_JOINTS.length; i++) {
+            const jointName = UR5E_JOINTS[i];
+            const pos = homePositions[i];
+            if (typeof robot.setJointValue === 'function') {
+              robot.setJointValue(jointName, pos);
+            } else if (
+              robot.joints &&
+              robot.joints[jointName] &&
+              typeof robot.joints[jointName].setJointValue === 'function'
+            ) {
+              robot.joints[jointName].setJointValue(pos);
+            }
+            lastRenderedPositions[i] = pos;
+          }
+          robot.updateMatrixWorld(true);
+        }
+
         // Mount Dexterous Palm to tool0 flange link with fallback chain
         mountLink =
           (robot.links && (robot.links['tool0'] || robot.links['flange'] || robot.links['wrist_3_link'])) ||
@@ -738,10 +770,12 @@ export function RobotVisualizer({
       robotGroup.add(gear.group);
       activeGearAssets = gear;
       wasGearAttachedInCycle = false;
+      wasGearAttachedInCycleRef.current = false;
       isLockedOut = true;
       if (tableAssets) {
         tableAssets.reticleMesh.visible = false;
       }
+      onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
       needsRender = true;
 
       if (onPickAndPlaceTargetRef.current) {
@@ -761,7 +795,7 @@ export function RobotVisualizer({
       }
     };
 
-    const clearWorkspace = () => {
+    const clearActiveGear = () => {
       if (activeGearAssets) {
         if (activeGearAssets.group.parent) {
           activeGearAssets.group.parent.remove(activeGearAssets.group);
@@ -776,6 +810,16 @@ export function RobotVisualizer({
         attachedGear.dispose();
         attachedGear = null;
       }
+      wasGearAttachedInCycle = false;
+      wasGearAttachedInCycleRef.current = false;
+      isLockedOut = false;
+      onWorkspaceGearsChangeRef.current?.(false, towerGears.length);
+      needsRender = true;
+    };
+    clearActiveGearRef.current = clearActiveGear;
+
+    const clearWorkspace = () => {
+      clearActiveGear();
       for (const gear of towerGears) {
         if (gear.group.parent) {
           gear.group.parent.remove(gear.group);
@@ -784,7 +828,9 @@ export function RobotVisualizer({
       }
       towerGears.length = 0;
       wasGearAttachedInCycle = false;
+      wasGearAttachedInCycleRef.current = false;
       isLockedOut = false;
+      onWorkspaceGearsChangeRef.current?.(false, 0);
       needsRender = true;
     };
     clearWorkspaceRef.current = clearWorkspace;
@@ -827,22 +873,33 @@ export function RobotVisualizer({
         );
         towerGears.push(gearToDeposit);
       }
+      onWorkspaceGearsChangeRef.current?.(activeGearAssets !== null || attachedGear !== null, towerGears.length);
     };
 
     const depositPendingGear = () => {
+      const isGraspedNow = Boolean(
+        telemetryBufferRefProp.current?.current?.palmState?.is_grasped
+      );
+      const wasAttached =
+        wasGearAttachedInCycleRef.current || wasGearAttachedInCycle || isGraspedNow;
       if (attachedGear) {
         const g = attachedGear;
         attachedGear = null;
         depositGearToTower(g);
+        wasGearAttachedInCycle = false;
+        wasGearAttachedInCycleRef.current = false;
         isLockedOut = false;
         needsRender = true;
-      } else if (activeGearAssets) {
+      } else if (activeGearAssets && wasAttached) {
         const g = activeGearAssets;
         activeGearAssets = null;
         depositGearToTower(g);
+        wasGearAttachedInCycle = false;
+        wasGearAttachedInCycleRef.current = false;
         isLockedOut = false;
         needsRender = true;
       }
+      onWorkspaceGearsChangeRef.current?.(activeGearAssets !== null || attachedGear !== null, towerGears.length);
     };
     depositPendingGearRef.current = depositPendingGear;
 
@@ -1049,7 +1106,7 @@ export function RobotVisualizer({
       getTowerGears: () => towerGears.map((g) => g.group),
       getTowerGearCount: () => towerGears.length,
       isGearAttached: () => attachedGear !== null,
-      wasGearEverAttached: () => wasGearAttachedInCycle,
+      wasGearEverAttached: () => wasGearAttachedInCycle || wasGearAttachedInCycleRef.current,
       getAttachedGearMesh: () => attachedGear?.group ?? null,
       getTableMesh: () => tableAssets?.tableMesh ?? null,
       getPedestalMesh: () => pedestalAssets?.group ?? null,
@@ -1190,6 +1247,10 @@ export function RobotVisualizer({
       const currentGrasped = Boolean(
         telemetryBufferRefProp.current?.current?.palmState?.is_grasped
       );
+      if (currentGrasped && activeGearAssets) {
+        wasGearAttachedInCycle = true;
+        wasGearAttachedInCycleRef.current = true;
+      }
       if (palmAssets && currentGrasped !== wasGrasped) {
         wasGrasped = currentGrasped;
         if (currentGrasped) {
@@ -1206,26 +1267,23 @@ export function RobotVisualizer({
       if (mountLink) {
         // Case 1: Grasping active table gear -> parent to tool0
         if (currentGrasped && !attachedGear && activeGearAssets) {
-          const gearWorldPos = new THREE.Vector3();
-          activeGearAssets.group.getWorldPosition(gearWorldPos);
-
-          const mountWorldPos = new THREE.Vector3();
-          mountLink.getWorldPosition(mountWorldPos);
+          activeGearAssets.group.getWorldPosition(_scratchVec1);
+          mountLink.getWorldPosition(_scratchVec2);
 
           let nozzleDist = Infinity;
           if (palmAssets?.nozzleMesh) {
-            const nozzleWorldPos = new THREE.Vector3();
-            palmAssets.nozzleMesh.getWorldPosition(nozzleWorldPos);
-            nozzleDist = nozzleWorldPos.distanceTo(gearWorldPos);
+            palmAssets.nozzleMesh.getWorldPosition(_scratchVec3);
+            nozzleDist = _scratchVec3.distanceTo(_scratchVec1);
           }
 
           let tipDist = Infinity;
           if (palmAssets?.group) {
-            const tipWorldPos = palmAssets.group.localToWorld(new THREE.Vector3(0, 0, 0.108));
-            tipDist = tipWorldPos.distanceTo(gearWorldPos);
+            _scratchVec3.copy(_scratchTipOffset);
+            palmAssets.group.localToWorld(_scratchVec3);
+            tipDist = _scratchVec3.distanceTo(_scratchVec1);
           }
 
-          const mountDist = mountWorldPos.distanceTo(gearWorldPos);
+          const mountDist = _scratchVec2.distanceTo(_scratchVec1);
           const minDist = Math.min(mountDist, nozzleDist, tipDist);
 
           if (minDist <= GRASP_PROXIMITY_THRESHOLD_M + 1e-4) {
@@ -1233,48 +1291,30 @@ export function RobotVisualizer({
             attachedGear = activeGearAssets;
             activeGearAssets = null;
             wasGearAttachedInCycle = true;
+            wasGearAttachedInCycleRef.current = true;
+            onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
             needsRender = true;
           }
         }
         // Case 2: Releasing grasped gear -> unparent to tower stack at z_k
         else if (!currentGrasped && attachedGear) {
           mountLink.remove(attachedGear.group);
-          robotGroup.add(attachedGear.group);
-          attachedGear.group.rotation.set(0, 0, 0);
-
-          if (towerGears.length < MAX_TOWER_STACK_CAPACITY) {
-            const k = towerGears.length;
-            attachedGear.group.position.set(
-              SPINDLE_TOWER_COORDS.x,
-              SPINDLE_TOWER_COORDS.y,
-              k * GEAR_STACK_HEIGHT_STEP
-            );
-            towerGears.push(attachedGear);
-          } else {
-            // Visual FIFO bottom-drop shift when tower exceeds 10 gears
-            const oldestGear = towerGears.shift()!;
-            if (oldestGear.group.parent) {
-              oldestGear.group.parent.remove(oldestGear.group);
-            }
-            oldestGear.dispose();
-
-            for (let i = 0; i < towerGears.length; i++) {
-              towerGears[i].group.position.set(
-                SPINDLE_TOWER_COORDS.x,
-                SPINDLE_TOWER_COORDS.y,
-                i * GEAR_STACK_HEIGHT_STEP
-              );
-            }
-
-            const topSlot = MAX_TOWER_STACK_CAPACITY - 1; // 9
-            attachedGear.group.position.set(
-              SPINDLE_TOWER_COORDS.x,
-              SPINDLE_TOWER_COORDS.y,
-              topSlot * GEAR_STACK_HEIGHT_STEP
-            );
-            towerGears.push(attachedGear);
-          }
-
+          depositGearToTower(attachedGear);
+          attachedGear = null;
+          isLockedOut = false;
+          needsRender = true;
+        }
+      } else {
+        // Fallback for mock/test environments without loaded URDF
+        if (currentGrasped && !attachedGear && activeGearAssets) {
+          attachedGear = activeGearAssets;
+          activeGearAssets = null;
+          wasGearAttachedInCycle = true;
+          wasGearAttachedInCycleRef.current = true;
+          onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
+          needsRender = true;
+        } else if (!currentGrasped && attachedGear) {
+          depositGearToTower(attachedGear);
           attachedGear = null;
           isLockedOut = false;
           needsRender = true;
@@ -1330,6 +1370,7 @@ export function RobotVisualizer({
       canvas.removeEventListener('pointerleave', onPointerLeave);
       canvas.removeEventListener('click', onCanvasClick);
       clearWorkspaceRef.current = null;
+      clearActiveGearRef.current = null;
 
       // Dispose all active and tower gears
       clearWorkspace();
@@ -1417,19 +1458,16 @@ export function RobotVisualizer({
   }, [urdfUrl, assetBaseUrl]);
 
   useEffect(() => {
-    if (hasActiveGear === false) {
-      clearWorkspaceRef.current?.();
-    }
-  }, [hasActiveGear]);
-
-  useEffect(() => {
     const currentState = robotState || 'IDLE';
     const prevState = prevRobotStateRef.current;
     if (prevState !== 'IDLE' && currentState === 'IDLE') {
       depositPendingGearRef.current?.();
     }
+    if (hasActiveGear === false) {
+      clearActiveGearRef.current?.();
+    }
     prevRobotStateRef.current = currentState;
-  }, [robotState]);
+  }, [robotState, hasActiveGear]);
   return (
     <div
       ref={containerRef}

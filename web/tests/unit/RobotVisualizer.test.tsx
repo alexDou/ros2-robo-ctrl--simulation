@@ -252,6 +252,43 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(fakeRobot.setJointValue).toHaveBeenCalledWith('wrist_3_joint', -0.6);
     });
 
+    it('initializes loadedRobot at CANONICAL_POSES.HOME joint angles instead of 0 rad flat pose on URDF load', async () => {
+      const fakeRobot = new THREE.Group() as any;
+      fakeRobot.isURDFRobot = true;
+      fakeRobot.joints = {};
+      fakeRobot.setJointValue = vi.fn();
+
+      vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot);
+
+      let robotLoadedResolve: () => void;
+      const robotLoadedPromise = new Promise<void>((resolve) => {
+        robotLoadedResolve = resolve;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => {
+              robotLoadedResolve();
+            }}
+          />
+        );
+      });
+
+      await act(async () => {
+        await robotLoadedPromise;
+      });
+
+      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('shoulder_pan_joint', 0.0);
+      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('shoulder_lift_joint', -1.5708);
+      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('elbow_joint', 0.0);
+      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('wrist_1_joint', -1.5708);
+      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('wrist_2_joint', 0.0);
+      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('wrist_3_joint', 0.0);
+    });
+
     it('skips WebGL draw calls when joint angles and camera position remain unchanged', async () => {
       const fakeRobot = new THREE.Group() as any;
       fakeRobot.isURDFRobot = true;
@@ -1720,6 +1757,92 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(visualizer.getTowerGears().length).toBe(0);
       expect(visualizer.getGearMesh()).toBeNull();
       expect(visualizer.isLockedOut()).toBe(false);
+    });
+
+    it('preserves stacked tower gears when hasActiveGear transitions to false and on table interaction', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      const { rerender } = render(
+        <RobotVisualizer
+          hasActiveGear={false}
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // 1. Place 1 gear onto tower
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+      const gear = visualizer.getGearMesh();
+      const gearWorldPos = new THREE.Vector3();
+      gear.getWorldPosition(gearWorldPos);
+      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
+      fakeRobot.updateMatrixWorld(true);
+
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      act(() => {
+        stepFrame();
+      });
+
+      expect(visualizer.getTowerGearCount()).toBe(1);
+
+      // 2. Rerender with hasActiveGear=true (in progress) then hasActiveGear=false (pick-and-place completed)
+      act(() => {
+        rerender(
+          <RobotVisualizer
+            hasActiveGear={true}
+            telemetryBufferRef={telemetryBufferRef}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+          />
+        );
+      });
+
+      act(() => {
+        rerender(
+          <RobotVisualizer
+            hasActiveGear={false}
+            telemetryBufferRef={telemetryBufferRef}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+          />
+        );
+      });
+
+      // Stacked tower gear MUST be preserved!
+      expect(visualizer.getTowerGearCount()).toBe(1);
+
+      // 3. Table interaction: click table again to spawn a 2nd gear
+      act(() => {
+        visualizer.simulateClick(0.55, 0.0);
+      });
+
+      // Tower gear is still preserved, and new active gear is present
+      expect(visualizer.getTowerGearCount()).toBe(1);
+      expect(visualizer.hasActiveGear()).toBe(true);
     });
 
     it('disposes SpindleTower geometries and materials on unmount', async () => {
