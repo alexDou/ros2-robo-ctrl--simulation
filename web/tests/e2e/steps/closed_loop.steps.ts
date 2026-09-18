@@ -135,14 +135,13 @@ Given('the robot is in {string} state', async function (this: CustomWorld, expec
 
 When('the operator clicks the "Reset Fault" button', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
-  (this as unknown as { _preResetJoints: Record<string, number> })._preResetJoints =
-    await this.teleopPage!.getRobotJointValues();
+  this._preResetJoints = await this.teleopPage!.getRobotJointValues();
   await this.teleopPage!.clickResetFault();
 });
 
 Then('the robot joint positions should remain unchanged', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
-  const pre = (this as unknown as { _preResetJoints?: Record<string, number> })._preResetJoints;
+  const pre = this._preResetJoints;
   expect(pre).toBeDefined();
   expect(Object.keys(pre!).length).toBe(6);
   await this.page!.waitForTimeout(300);

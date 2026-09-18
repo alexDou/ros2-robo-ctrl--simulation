@@ -13,6 +13,7 @@ export interface ICustomWorld extends World {
   secondTeleopPage?: TeleopPage;
   harness: ServiceHarness;
   baseUrl: string;
+  _preResetJoints?: Record<string, number>;
 }
 
 export class CustomWorld extends World implements ICustomWorld {
@@ -25,6 +26,7 @@ export class CustomWorld extends World implements ICustomWorld {
   secondTeleopPage?: TeleopPage;
   harness: ServiceHarness;
   baseUrl: string;
+  _preResetJoints?: Record<string, number>;
 
   constructor(options: IWorldOptions) {
     super(options);

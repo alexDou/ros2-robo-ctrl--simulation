@@ -162,7 +162,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
     expect(loadSpy).toHaveBeenCalled();
     expect(capturedScene).not.toBeNull();
-    const sceneNonNull = capturedScene as unknown as THREE.Scene;
+    const sceneNonNull = capturedScene!;
     const robotRoot = sceneNonNull.children.find((c: THREE.Object3D) => c.name === 'robot-root') as THREE.Group;
     expect(robotRoot).toBeDefined();
     // REP-103 rotation: -Math.PI / 2 on X

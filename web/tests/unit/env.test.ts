@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isBrowser } from '@utils/env';
+import { isBrowser, isTestEnv } from '@utils/env';
 
 describe('isBrowser utility', () => {
   it('returns true when window is defined in browser/jsdom environment', () => {
@@ -15,5 +15,11 @@ describe('isBrowser utility', () => {
     } finally {
       globalThis.window = originalWindow;
     }
+  });
+});
+
+describe('isTestEnv utility', () => {
+  it('returns true when executing within vitest test runner', () => {
+    expect(isTestEnv()).toBe(true);
   });
 });

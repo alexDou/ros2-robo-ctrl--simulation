@@ -53,3 +53,23 @@ export function getParam(name: string, search?: string): string {
 
   return value;
 }
+
+/**
+ * Resolves the Gateway WebSocket URL for a given robot ID.
+ *
+ * Honors explicit gatewayWsUrl override, falls back to window.location host/protocol
+ * and optional `gateway_port` query parameter (defaulting to 8080).
+ */
+export function resolveGatewayWsUrl(robotId: string, gatewayWsUrl?: string): string {
+  if (gatewayWsUrl) return gatewayWsUrl;
+  const defaultProto =
+    isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const defaultHost =
+    isBrowser() && window.location.hostname ? window.location.hostname : 'localhost';
+  const queryPort =
+    isBrowser() && window.location.search
+      ? new URLSearchParams(window.location.search).get('gateway_port')
+      : null;
+  const defaultPort = queryPort || '8080';
+  return `${defaultProto}//${defaultHost}:${defaultPort}/ws/teleop/robot/${robotId}`;
+}

@@ -1,38 +1,17 @@
-import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
-import { isBrowser } from '@utils/env';
-import {
-  DEFAULT_ROBOT_ID,
-  isErrorFrame,
-  PalmAction,
-  PoseName,
-  type RobotTelemetryEvent,
-  type ErrorFrame,
-} from '@contracts';
-import {
-  createPingCommand,
-  createTrajectoryExecuteCommand,
-  createPalmActuateCommand,
-  createEmergencyStopCommand,
-  createResetFaultCommand,
-  createPickAndPlaceTargetCommand,
-  createClearWorkspaceCommand,
-  serializeCommand,
-  isActionFeedbackFrame,
-  type PickAndPlaceTargetPayload,
-} from '@domain/parsers';
+import { resolveGatewayWsUrl } from '@utils/url';
+import { DEFAULT_ROBOT_ID } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
+import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
+import { useIsDesktop } from '@/hooks/useIsDesktop';
+import { ConnectionBadge } from '@components/ConnectionBadge';
+import { ConflictBanner } from '@components/ConflictBanner';
+import { ActionProgressBar } from '@components/ActionProgressBar';
+import { EventLog } from '@components/EventLog';
 import { TelemetryMonitor } from '@components/TelemetryMonitor';
 import { RobotVisualizer } from '@components/RobotVisualizer';
 import { OperatorToolbar } from '@components/OperatorToolbar';
 
-export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
-
-export interface LogEntry {
-  id: string;
-  type: 'telemetry' | 'error';
-  timestamp: string;
-  data: RobotTelemetryEvent | ErrorFrame;
-}
+export type { ConnectionState, LogEntry };
 
 export interface TeleopClientProps {
   robotId?: string;
@@ -53,73 +32,8 @@ export function TeleopClient({
   controlsFactory,
   jointPositionsRef,
 }: TeleopClientProps) {
-  const defaultProto =
-    isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const defaultHost =
-    isBrowser() && window.location.hostname ? window.location.hostname : 'localhost';
-  const queryPort =
-    isBrowser() && window.location.search
-      ? new URLSearchParams(window.location.search).get('gateway_port')
-      : null;
-  const defaultPort = queryPort || '8080';
-  const wsUrl =
-    gatewayWsUrl || `${defaultProto}//${defaultHost}:${defaultPort}/ws/teleop/robot/${robotId}`;
-
-  const [connectionState, setConnectionState] = useState<ConnectionState>('CONNECTING');
-  const [conflictReason, setConflictReason] = useState<string | null>(null);
-  const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [hasActiveGear, setHasActiveGear] = useState(false);
-  const [actionProgress, setActionProgress] = useState<{
-    phase: string;
-    percentComplete: number;
-    commandId?: string;
-  } | null>(null);
-  const [isDesktop, setIsDesktop] = useState(() => {
-    if (typeof window !== 'undefined') {
-      if (typeof window.matchMedia === 'function') {
-        return window.matchMedia('(min-width: 1024px)').matches;
-      }
-      if (typeof window.innerWidth === 'number') {
-        return window.innerWidth >= 1024;
-      }
-    }
-    return true;
-  });
-  const wsRef = useRef<WebSocket | null>(null);
-  const isCleaningUp = useRef(false);
-  const lastLoggedStateRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const handleResize = () => {
-      setIsDesktop(window.innerWidth >= 1024);
-    };
-
-    if (typeof window.matchMedia === 'function') {
-      const mql = window.matchMedia('(min-width: 1024px)');
-      setIsDesktop(mql.matches);
-      const handleChange = (e: MediaQueryListEvent) => {
-        setIsDesktop(e.matches);
-      };
-      if (typeof mql.addEventListener === 'function') {
-        mql.addEventListener('change', handleChange);
-      }
-      window.addEventListener('resize', handleResize);
-      return () => {
-        if (typeof mql.removeEventListener === 'function') {
-          mql.removeEventListener('change', handleChange);
-        }
-        window.removeEventListener('resize', handleResize);
-      };
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const [errorBanner, setErrorBanner] = useState<{ errorCode: string; message: string } | null>(null);
-  const errorBannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wsUrl = resolveGatewayWsUrl(robotId, gatewayWsUrl);
+  const isDesktop = useIsDesktop();
 
   const {
     bufferRef,
@@ -130,195 +44,28 @@ export function TeleopClient({
     resetStream,
   } = useTelemetryStream();
 
-  const connect = useCallback(() => {
-    isCleaningUp.current = false;
-    lastLoggedStateRef.current = null;
-    setConnectionState('CONNECTING');
-    setConflictReason(null);
-    setActionProgress(null);
-    resetStream();
-
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
-    if (isBrowser()) {
-      (window as unknown as { __teleop_ws?: WebSocket }).__teleop_ws = ws;
-    }
-
-    ws.onopen = () => {
-      if (isCleaningUp.current) return;
-      setConnectionState('CONNECTED');
-      setConflictReason(null);
-    };
-
-    ws.onmessage = (event: MessageEvent) => {
-      try {
-        const parsed = JSON.parse(event.data);
-
-        const handled = handleIncomingFrame(parsed);
-        if (handled) {
-          const telem = parsed as RobotTelemetryEvent;
-          const isFirst = lastLoggedStateRef.current === null;
-          const stateChanged = lastLoggedStateRef.current !== telem.robot_state;
-          if (telem.robot_state === 'FAULT') {
-            setActionProgress(null);
-          }
-          if (telem.command_id || isFirst || stateChanged) {
-            lastLoggedStateRef.current = telem.robot_state;
-            const entry: LogEntry = {
-              id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-              type: 'telemetry',
-              timestamp: new Date().toLocaleTimeString(),
-              data: telem,
-            };
-            setLogs((prev) => [entry, ...prev].slice(0, 100));
-          }
-        } else if (isActionFeedbackFrame(parsed)) {
-          setActionProgress({
-            phase: parsed.phase,
-            percentComplete: parsed.percent_complete,
-            commandId: parsed.command_id,
-          });
-        } else if (isErrorFrame(parsed)) {
-          setActionProgress(null);
-          if (errorBannerTimerRef.current) {
-            clearTimeout(errorBannerTimerRef.current);
-          }
-          setErrorBanner({ errorCode: parsed.error_code, message: parsed.message });
-          errorBannerTimerRef.current = setTimeout(() => {
-            setErrorBanner(null);
-            errorBannerTimerRef.current = null;
-          }, 2000);
-
-          const entry: LogEntry = {
-            id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-            type: 'error',
-            timestamp: new Date().toLocaleTimeString(),
-            data: parsed,
-          };
-          setLogs((prev) => [entry, ...prev].slice(0, 100));
-        }
-      } catch (err) {
-        console.warn('Failed to parse incoming WebSocket frame:', err);
-      }
-    };
-
-    ws.onerror = async () => {
-      // Check for 409 Conflict using HTTP probe
-      const httpUrl = wsUrl.replace(/^ws(s)?:/, 'http$1:');
-      try {
-        const res = await fetch(httpUrl);
-        if (res.status === 409) {
-          const txt = await res.text();
-          setConnectionState('CONFLICT');
-          setConflictReason(txt || 'Active session already exists for robot');
-          return;
-        }
-      } catch {
-        // Network failure
-      }
-    };
-
-    ws.onclose = (event: CloseEvent) => {
-      if (isCleaningUp.current) return;
-      resetStream();
-      if (event.code === 4409 || event.reason === 'Conflict') {
-        setConnectionState('CONFLICT');
-        setConflictReason('Active session already exists for robot');
-      } else {
-        setConnectionState((curr) => (curr === 'CONFLICT' ? 'CONFLICT' : 'DISCONNECTED'));
-      }
-    };
-  }, [wsUrl, handleIncomingFrame, resetStream]);
-
-  useEffect(() => {
-    connect();
-    return () => {
-      isCleaningUp.current = true;
-      if (errorBannerTimerRef.current) {
-        clearTimeout(errorBannerTimerRef.current);
-      }
-      if (isBrowser()) {
-        delete (window as unknown as { __teleop_ws?: WebSocket }).__teleop_ws;
-      }
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
-  }, [connect]);
-
-  const handleExecutePose = useCallback((poseName: PoseName) => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    const cmd = createTrajectoryExecuteCommand(poseName, { senderId: 'ui-client' });
-    wsRef.current.send(serializeCommand(cmd));
-  }, []);
-
-  const handleTogglePalm = useCallback(() => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    const action = palmState?.is_grasped ? PalmAction.RELEASE : PalmAction.GRASP;
-    const cmd = createPalmActuateCommand(action, { senderId: 'ui-client' });
-    wsRef.current.send(serializeCommand(cmd));
-  }, [palmState?.is_grasped]);
-
-  const handleEmergencyStop = useCallback(() => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    setActionProgress(null);
-    const cmd = createEmergencyStopCommand({
-      reason: 'Operator toolbar emergency stop triggered',
-      senderId: 'ui-client',
-    });
-    wsRef.current.send(serializeCommand(cmd));
-  }, []);
-
-  const handleResetFault = useCallback(() => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    setActionProgress(null);
-    const cmd = createResetFaultCommand({ senderId: 'ui-client' });
-    wsRef.current.send(serializeCommand(cmd));
-  }, []);
-
-  const handlePickAndPlaceTarget = useCallback(
-    (payload: PickAndPlaceTargetPayload) => {
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-      const currentRobotState = robotState ?? 'IDLE';
-      if (currentRobotState !== 'IDLE') return;
-      setActionProgress(null);
-      const cmd = createPickAndPlaceTargetCommand(payload, { senderId: 'ui-client' });
-      wsRef.current.send(serializeCommand(cmd));
-      setHasActiveGear(true);
-    },
-    [robotState]
-  );
-
-  const handleClearWorkspace = useCallback(() => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    const currentRobotState = robotState ?? 'IDLE';
-    if (currentRobotState !== 'IDLE') return;
-    if (!hasActiveGear) return;
-    setActionProgress(null);
-    const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
-    wsRef.current.send(serializeCommand(cmd));
-    setHasActiveGear(false);
-  }, [robotState, hasActiveGear]);
-
-  const handlePing = () => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    const pingCmd = createPingCommand({ senderId: 'ui-client' });
-    wsRef.current.send(serializeCommand(pingCmd));
-  };
-
-  const getBadgeColor = () => {
-    switch (connectionState) {
-      case 'CONNECTED':
-        return '#10b981';
-      case 'CONNECTING':
-        return '#f59e0b';
-      case 'CONFLICT':
-        return '#ef4444';
-      case 'DISCONNECTED':
-      default:
-        return '#6b7280';
-    }
-  };
+  const {
+    connectionState,
+    conflictReason,
+    logs,
+    hasActiveGear,
+    actionProgress,
+    errorBanner,
+    connect,
+    executePose,
+    togglePalm,
+    emergencyStop,
+    resetFault,
+    pickAndPlaceTarget,
+    clearWorkspace,
+    sendPing,
+  } = useTeleopSession({
+    wsUrl,
+    handleIncomingFrame,
+    resetStream,
+    robotState,
+    palmState,
+  });
 
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '1.5rem', fontFamily: 'sans-serif' }}>
@@ -360,50 +107,14 @@ export function TeleopClient({
           <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>Teleop Control — {robotId}</h1>
           <p style={{ margin: 0, color: '#6b7280', fontSize: '0.875rem' }}>Gateway: {wsUrl}</p>
         </div>
-        <div
-          data-testid="connection-badge"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '0.25rem 0.75rem',
-            borderRadius: '9999px',
-            fontSize: '0.875rem',
-            fontWeight: 600,
-            backgroundColor: `${getBadgeColor()}20`,
-            color: getBadgeColor(),
-            border: `1px solid ${getBadgeColor()}`,
-          }}
-        >
-          <span
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: getBadgeColor(),
-              marginRight: '0.5rem',
-            }}
-          />
-          {isStreaming && connectionState === 'CONNECTED'
-            ? `CONNECTED / ${robotState || 'IDLE'}`
-            : connectionState}
-        </div>
+        <ConnectionBadge
+          connectionState={connectionState}
+          isStreaming={isStreaming}
+          robotState={robotState}
+        />
       </header>
 
-      {connectionState === 'CONFLICT' && (
-        <div
-          data-testid="conflict-banner"
-          style={{
-            backgroundColor: '#fee2e2',
-            border: '1px solid #ef4444',
-            color: '#b91c1c',
-            padding: '1rem',
-            borderRadius: '0.375rem',
-            marginBottom: '1.5rem',
-          }}
-        >
-          <strong>Session Conflict:</strong> {conflictReason || 'Another active session already controls this robot.'}
-        </div>
-      )}
+      {connectionState === 'CONFLICT' && <ConflictBanner reason={conflictReason} />}
 
       <div
         data-testid="teleop-split-layout"
@@ -440,83 +151,22 @@ export function TeleopClient({
               jointPositionsRef={jointPositionsRef}
               robotState={robotState || 'IDLE'}
               hasActiveGear={hasActiveGear}
-              onPickAndPlaceTarget={handlePickAndPlaceTarget}
+              onPickAndPlaceTarget={pickAndPlaceTarget}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}
             />
-            {actionProgress && (
-              <div
-                data-testid="action-progress-container"
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  left: '1rem',
-                  right: '1rem',
-                  zIndex: 20,
-                  backgroundColor: 'rgba(31, 41, 55, 0.92)',
-                  backdropFilter: 'blur(4px)',
-                  borderRadius: '0.5rem',
-                  padding: '0.625rem 1rem',
-                  border: '1px solid #374151',
-                  boxSizing: 'border-box',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '0.375rem',
-                    fontSize: '0.8125rem',
-                    color: '#e5e7eb',
-                  }}
-                >
-                  <span>
-                    Action Phase:{' '}
-                    <strong data-testid="action-progress-phase">{actionProgress.phase}</strong>
-                  </span>
-                  <span data-testid="action-progress-percent" style={{ fontWeight: 600, color: '#60a5fa' }}>
-                    {Math.round(actionProgress.percentComplete)}%
-                  </span>
-                </div>
-                <div
-                  style={{
-                    width: '100%',
-                    height: '8px',
-                    backgroundColor: '#374151',
-                    borderRadius: '9999px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div
-                    data-testid="action-progress-bar"
-                    role="progressbar"
-                    aria-valuenow={Math.round(actionProgress.percentComplete)}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    style={{
-                      width: `${Math.round(actionProgress.percentComplete)}%`,
-                      height: '100%',
-                      backgroundColor: actionProgress.phase === 'COMPLETED' ? '#10b981' : '#3b82f6',
-                      borderRadius: '9999px',
-                      transition: 'width 0.15s ease',
-                    }}
-                  />
-                </div>
-              </div>
-            )}
+            {actionProgress && <ActionProgressBar progress={actionProgress} />}
           </div>
           <OperatorToolbar
             robotState={robotState || 'IDLE'}
             isGrasped={!!palmState?.is_grasped}
             hasActiveGear={hasActiveGear}
-            onExecutePose={handleExecutePose}
-            onTogglePalm={handleTogglePalm}
-            onEmergencyStop={handleEmergencyStop}
-            onResetFault={handleResetFault}
-            onClearWorkspace={handleClearWorkspace}
+            onExecutePose={executePose}
+            onTogglePalm={togglePalm}
+            onEmergencyStop={emergencyStop}
+            onResetFault={resetFault}
+            onClearWorkspace={clearWorkspace}
             errorBanner={errorBanner}
             disabled={connectionState !== 'CONNECTED'}
           />
@@ -545,7 +195,7 @@ export function TeleopClient({
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
           <button
             data-testid="verify-connection-button"
-            onClick={handlePing}
+            onClick={sendPing}
             disabled={connectionState !== 'CONNECTED'}
             style={{
               backgroundColor: connectionState === 'CONNECTED' ? '#2563eb' : '#9ca3af',
@@ -581,68 +231,7 @@ export function TeleopClient({
         </div>
       )}
 
-      <section>
-        <h2 style={{ fontSize: '1.125rem', marginBottom: '0.75rem' }}>Real-Time Event Log</h2>
-        <div
-          data-testid="event-log"
-          style={{
-            backgroundColor: '#1f2937',
-            color: '#f9fafb',
-            borderRadius: '0.5rem',
-            padding: '1rem',
-            height: '350px',
-            overflowY: 'auto',
-            fontFamily: 'monospace',
-            fontSize: '0.875rem',
-          }}
-        >
-          {logs.length === 0 ? (
-            <p style={{ color: '#9ca3af', fontStyle: 'italic', margin: 0 }}>No telemetry frames received yet.</p>
-          ) : (
-            logs.map((log) => {
-              if (log.type === 'error') {
-                const err = log.data as ErrorFrame;
-                return (
-                  <div
-                    key={log.id}
-                    data-testid="log-item-error"
-                    style={{
-                      borderLeft: '4px solid #ef4444',
-                      paddingLeft: '0.75rem',
-                      marginBottom: '0.75rem',
-                      color: '#fca5a5',
-                    }}
-                  >
-                    <div>
-                      [{log.timestamp}] <strong>[ERROR: {err.error_code}]</strong> {err.message}
-                    </div>
-                  </div>
-                );
-              }
-
-              const telem = log.data as RobotTelemetryEvent;
-              return (
-                <div
-                  key={log.id}
-                  style={{
-                    borderLeft: '4px solid #10b981',
-                    paddingLeft: '0.75rem',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  <div>
-                    [{log.timestamp}] <strong>[TELEMETRY]</strong> State: {telem.robot_state}
-                    {telem.command_id ? ` (Ack: ${telem.command_id})` : ''}
-                  </div>
-                  <div style={{ color: '#9ca3af', fontSize: '0.75rem', marginTop: '0.25rem' }}>
-                    Joints: [{telem.joint_positions.map((p) => p.toFixed(3)).join(', ')}]
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </section>
+      <EventLog logs={logs} />
     </div>
   );
 }
