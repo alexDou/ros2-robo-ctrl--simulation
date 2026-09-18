@@ -84,6 +84,10 @@ export class ServiceHarness {
     this.mockGateway?.setDynamicMotionEnabled(false);
   }
 
+  public setAutoExecutePickAndPlace(enabled: boolean): void {
+    this.mockGateway?.setAutoExecutePickAndPlace(enabled);
+  }
+
   public async stop(): Promise<void> {
     if (this.mockGateway) {
       await this.mockGateway.close();

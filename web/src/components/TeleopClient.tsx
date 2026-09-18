@@ -17,6 +17,7 @@ import {
   createPickAndPlaceTargetCommand,
   createClearWorkspaceCommand,
   serializeCommand,
+  isActionFeedbackFrame,
   type PickAndPlaceTargetPayload,
 } from '@domain/parsers';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
@@ -68,6 +69,11 @@ export function TeleopClient({
   const [conflictReason, setConflictReason] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [hasActiveGear, setHasActiveGear] = useState(false);
+  const [actionProgress, setActionProgress] = useState<{
+    phase: string;
+    percentComplete: number;
+    commandId?: string;
+  } | null>(null);
   const [isDesktop, setIsDesktop] = useState(() => {
     if (typeof window !== 'undefined') {
       if (typeof window.matchMedia === 'function') {
@@ -129,6 +135,7 @@ export function TeleopClient({
     lastLoggedStateRef.current = null;
     setConnectionState('CONNECTING');
     setConflictReason(null);
+    setActionProgress(null);
     resetStream();
 
     const ws = new WebSocket(wsUrl);
@@ -152,6 +159,9 @@ export function TeleopClient({
           const telem = parsed as RobotTelemetryEvent;
           const isFirst = lastLoggedStateRef.current === null;
           const stateChanged = lastLoggedStateRef.current !== telem.robot_state;
+          if (telem.robot_state === 'FAULT') {
+            setActionProgress(null);
+          }
           if (telem.command_id || isFirst || stateChanged) {
             lastLoggedStateRef.current = telem.robot_state;
             const entry: LogEntry = {
@@ -162,7 +172,14 @@ export function TeleopClient({
             };
             setLogs((prev) => [entry, ...prev].slice(0, 100));
           }
+        } else if (isActionFeedbackFrame(parsed)) {
+          setActionProgress({
+            phase: parsed.phase,
+            percentComplete: parsed.percent_complete,
+            commandId: parsed.command_id,
+          });
         } else if (isErrorFrame(parsed)) {
+          setActionProgress(null);
           if (errorBannerTimerRef.current) {
             clearTimeout(errorBannerTimerRef.current);
           }
@@ -244,6 +261,7 @@ export function TeleopClient({
 
   const handleEmergencyStop = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    setActionProgress(null);
     const cmd = createEmergencyStopCommand({
       reason: 'Operator toolbar emergency stop triggered',
       senderId: 'ui-client',
@@ -253,6 +271,7 @@ export function TeleopClient({
 
   const handleResetFault = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    setActionProgress(null);
     const cmd = createResetFaultCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));
   }, []);
@@ -262,6 +281,7 @@ export function TeleopClient({
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
       const currentRobotState = robotState ?? 'IDLE';
       if (currentRobotState !== 'IDLE') return;
+      setActionProgress(null);
       const cmd = createPickAndPlaceTargetCommand(payload, { senderId: 'ui-client' });
       wsRef.current.send(serializeCommand(cmd));
       setHasActiveGear(true);
@@ -274,6 +294,7 @@ export function TeleopClient({
     const currentRobotState = robotState ?? 'IDLE';
     if (currentRobotState !== 'IDLE') return;
     if (!hasActiveGear) return;
+    setActionProgress(null);
     const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));
     setHasActiveGear(false);
@@ -408,20 +429,85 @@ export function TeleopClient({
             boxSizing: 'border-box',
             display: 'flex',
             flexDirection: 'column',
+            position: 'relative',
           }}
         >
-          <RobotVisualizer
-            urdfUrl={urdfUrl}
-            assetBaseUrl={assetBaseUrl}
-            telemetryBufferRef={bufferRef}
-            jointPositionsRef={jointPositionsRef}
-            robotState={robotState || 'IDLE'}
-            hasActiveGear={hasActiveGear}
-            onPickAndPlaceTarget={handlePickAndPlaceTarget}
-            rendererFactory={rendererFactory}
-            controlsFactory={controlsFactory}
-            style={{ flex: 1, width: '100%', minHeight: '480px' }}
-          />
+          <div style={{ flex: 1, width: '100%', minHeight: '480px', position: 'relative', overflow: 'hidden' }}>
+            <RobotVisualizer
+              urdfUrl={urdfUrl}
+              assetBaseUrl={assetBaseUrl}
+              telemetryBufferRef={bufferRef}
+              jointPositionsRef={jointPositionsRef}
+              robotState={robotState || 'IDLE'}
+              hasActiveGear={hasActiveGear}
+              onPickAndPlaceTarget={handlePickAndPlaceTarget}
+              rendererFactory={rendererFactory}
+              controlsFactory={controlsFactory}
+              style={{ width: '100%', height: '100%' }}
+            />
+            {actionProgress && (
+              <div
+                data-testid="action-progress-container"
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  left: '1rem',
+                  right: '1rem',
+                  zIndex: 20,
+                  backgroundColor: 'rgba(31, 41, 55, 0.92)',
+                  backdropFilter: 'blur(4px)',
+                  borderRadius: '0.5rem',
+                  padding: '0.625rem 1rem',
+                  border: '1px solid #374151',
+                  boxSizing: 'border-box',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '0.375rem',
+                    fontSize: '0.8125rem',
+                    color: '#e5e7eb',
+                  }}
+                >
+                  <span>
+                    Action Phase:{' '}
+                    <strong data-testid="action-progress-phase">{actionProgress.phase}</strong>
+                  </span>
+                  <span data-testid="action-progress-percent" style={{ fontWeight: 600, color: '#60a5fa' }}>
+                    {Math.round(actionProgress.percentComplete)}%
+                  </span>
+                </div>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '8px',
+                    backgroundColor: '#374151',
+                    borderRadius: '9999px',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    data-testid="action-progress-bar"
+                    role="progressbar"
+                    aria-valuenow={Math.round(actionProgress.percentComplete)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    style={{
+                      width: `${Math.round(actionProgress.percentComplete)}%`,
+                      height: '100%',
+                      backgroundColor: actionProgress.phase === 'COMPLETED' ? '#10b981' : '#3b82f6',
+                      borderRadius: '9999px',
+                      transition: 'width 0.15s ease',
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
           <OperatorToolbar
             robotState={robotState || 'IDLE'}
             isGrasped={!!palmState?.is_grasped}

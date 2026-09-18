@@ -209,4 +209,21 @@ export function createPickAndPlaceTargetCommand(
   };
 }
 
+export interface ActionFeedbackFrame {
+  type: 'ACTION_FEEDBACK';
+  command_id: string;
+  phase: string;
+  percent_complete: number;
+  timestamp_ns: string | number | bigint;
+}
 
+export function isActionFeedbackFrame(data: unknown): data is ActionFeedbackFrame {
+  if (!data || typeof data !== 'object') return false;
+  const d = data as Record<string, unknown>;
+  return (
+    d.type === 'ACTION_FEEDBACK' &&
+    typeof d.command_id === 'string' &&
+    typeof d.phase === 'string' &&
+    typeof d.percent_complete === 'number'
+  );
+}

@@ -268,4 +268,70 @@ describe('MockGateway', () => {
 
     ws.close();
   });
+
+  it('simulates 10-step Action feedback phases and waypoint trajectory progression for PICK_AND_PLACE_TARGET', async () => {
+    gateway.setDynamicMotionEnabled(false);
+    const ws = new WebSocket(wsUrl);
+    await new Promise<void>((resolve, reject) => {
+      ws.on('open', resolve);
+      ws.on('error', reject);
+    });
+
+    const receivedFeedbacks: Array<{ phase: string; percent_complete: number }> = [];
+    const receivedStates: string[] = [];
+
+    ws.on('message', (data) => {
+      const parsed = JSON.parse(data.toString());
+      if (parsed.type === 'ACTION_FEEDBACK') {
+        receivedFeedbacks.push({
+          phase: parsed.phase,
+          percent_complete: parsed.percent_complete,
+        });
+      } else if (parsed.robot_state) {
+        if (!receivedStates.includes(parsed.robot_state)) {
+          receivedStates.push(parsed.robot_state);
+        }
+      }
+    });
+
+    expect(gateway.getTowerGearsCount()).toBe(0);
+
+    ws.send(JSON.stringify({
+      command_id: 'pnp-10-step',
+      sender_id: 'ui-test',
+      timestamp_ns: Date.now() * 1_000_000,
+      type: 'PICK_AND_PLACE_TARGET',
+      payload: { pick_x: 0.50, pick_y: 0.00, pick_z: 0.00 },
+    }));
+
+    // Wait for all 10 steps to complete (~800ms)
+    await new Promise<void>((resolve) => {
+      const check = setInterval(() => {
+        if (receivedFeedbacks.some((f) => f.phase === 'COMPLETED') && gateway.getRobotState() === 'IDLE') {
+          clearInterval(check);
+          resolve();
+        }
+      }, 50);
+    });
+
+    expect(receivedFeedbacks.length).toBeGreaterThanOrEqual(10);
+    const phases = receivedFeedbacks.map((f) => f.phase);
+    expect(phases).toContain('APPROACHING');
+    expect(phases).toContain('PICKING');
+    expect(phases).toContain('GRASPING');
+    expect(phases).toContain('LIFTING');
+    expect(phases).toContain('TRANSFERRING');
+    expect(phases).toContain('DROPPING');
+    expect(phases).toContain('RELEASING');
+    expect(phases).toContain('RETREATING');
+    expect(phases).toContain('HOMING');
+    expect(phases).toContain('COMPLETED');
+
+    expect(receivedStates).toContain('PROCESSING');
+    expect(receivedStates).toContain('EXECUTING');
+    expect(gateway.getRobotState()).toBe('IDLE');
+    expect(gateway.getTowerGearsCount()).toBe(1);
+
+    ws.close();
+  });
 });
