@@ -17,6 +17,7 @@ import threading
 import time
 import pytest
 
+from controller_manager_msgs.srv import SwitchController
 from geometry_msgs.msg import Point
 import rclpy
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
@@ -48,6 +49,22 @@ def ros_context():
     yield
     if rclpy.ok():
         rclpy.shutdown()
+
+
+_switch_counter = [0]
+
+def _add_fake_switch(executor, ok=True):
+    _switch_counter[0] += 1
+    srv_node = Node(f"fake_switch_actions_{_switch_counter[0]}")
+
+    def _cb(req, res):
+        res.ok = bool(ok)
+        res.message = "fake switch"
+        return res
+
+    srv_node.create_service(SwitchController, "/controller_manager/switch_controller", _cb)
+    executor.add_node(srv_node)
+    return srv_node
 
 
 def test_edge_bridge_pick_and_place_action_dispatch_and_feedback():
@@ -99,19 +116,31 @@ def test_edge_bridge_pick_and_place_action_dispatch_and_feedback():
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_arm)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
-        assert node.robot_state == RobotState.IDLE
+        assert node.robot_state == RobotState.STANDBY
         assert node.is_grasped is False
+
+        engage = RobotCommand(
+            command_id="engage-pnp-01",
+            sender_id="test-client",
+            timestamp_ns=time.time_ns(),
+            type=CommandType.ENGAGE,
+            payload={},
+        )
+        node.handle_command(engage)
+        assert node.robot_state == RobotState.IDLE
 
         cmd = RobotCommand(
             command_id="cmd-pnp-01",
@@ -151,6 +180,10 @@ def test_edge_bridge_pick_and_place_action_dispatch_and_feedback():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -183,17 +216,28 @@ def test_edge_bridge_pick_and_place_custom_drop_coords():
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place_custom"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_arm)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        node.handle_command(
+            RobotCommand(
+                command_id="engage-pnp-custom",
+                sender_id="test-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.ENGAGE,
+                payload={},
+            )
+        )
         cmd = RobotCommand(
             command_id="cmd-pnp-custom-drop",
             sender_id="test-client",
@@ -223,6 +267,10 @@ def test_edge_bridge_pick_and_place_custom_drop_coords():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -247,17 +295,28 @@ def test_edge_bridge_pick_and_place_goal_rejection_fault():
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place_reject"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_arm)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        node.handle_command(
+            RobotCommand(
+                command_id="engage-pnp-reject",
+                sender_id="test-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.ENGAGE,
+                payload={},
+            )
+        )
         cmd = RobotCommand(
             command_id="cmd-pnp-rejected",
             sender_id="test-client",
@@ -275,6 +334,10 @@ def test_edge_bridge_pick_and_place_goal_rejection_fault():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -316,17 +379,28 @@ def test_edge_bridge_pick_and_place_emergency_stop_cancel():
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place_estop"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_arm)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        node.handle_command(
+            RobotCommand(
+                command_id="engage-pnp-abort",
+                sender_id="test-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.ENGAGE,
+                payload={},
+            )
+        )
         cmd = RobotCommand(
             command_id="cmd-pnp-to-abort",
             sender_id="test-client",
@@ -353,6 +427,10 @@ def test_edge_bridge_pick_and_place_emergency_stop_cancel():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -390,17 +468,29 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services():
             Parameter("clear_workspace_service_name", Parameter.Type.STRING, "/test_workcell/clear_workspace"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_workcell)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        # Handshake: SPAWN/CLEAR rejected while STANDBY
+        node.handle_command(
+            RobotCommand(
+                command_id="engage-wc",
+                sender_id="ui-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.ENGAGE,
+                payload={},
+            )
+        )
         # 1. Valid SPAWN_OBJECT command
         cmd_spawn = RobotCommand(
             command_id="cmd-spawn-01",
@@ -446,6 +536,10 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         spawn_srv.destroy()
         clear_srv.destroy()
         mock_workcell.destroy_node()
@@ -460,6 +554,7 @@ def test_edge_bridge_spawn_object_rejected_when_not_idle():
             Parameter("robot_id", Parameter.Type.STRING, "test-spawn-busy"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
     try:
@@ -527,6 +622,7 @@ def test_edge_bridge_zenoh_action_feedback_streaming():
             Parameter("action_feedback_topic", Parameter.Type.STRING, feedback_topic),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ],
         zenoh_session=session,
     )
@@ -534,11 +630,21 @@ def test_edge_bridge_zenoh_action_feedback_streaming():
     executor = MultiThreadedExecutor()
     executor.add_node(mock_arm)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        node.handle_command(
+            RobotCommand(
+                command_id="engage-zenoh-fb",
+                sender_id="ui-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.ENGAGE,
+                payload={},
+            )
+        )
         cmd = RobotCommand(
             command_id="cmd-zenoh-pnp",
             sender_id="ui-client",
@@ -562,6 +668,10 @@ def test_edge_bridge_zenoh_action_feedback_streaming():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -577,10 +687,11 @@ def test_edge_bridge_actions_schema_validation_and_rejection():
             Parameter("robot_id", Parameter.Type.STRING, "test-arm-actions-err"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
     try:
-        # 1. Malformed PickAndPlaceTarget (missing pick_x)
+        # 1. Malformed PickAndPlaceTarget (missing pick_x) -> STANDBY gate fires first
         bad_pnp = RobotCommand(
             command_id="bad-pnp-1",
             sender_id="tester",
@@ -590,9 +701,9 @@ def test_edge_bridge_actions_schema_validation_and_rejection():
         )
         res1 = node.handle_command(bad_pnp)
         assert res1 is None
-        assert node.robot_state == RobotState.IDLE
+        assert node.robot_state == RobotState.STANDBY
 
-        # 2. Malformed SpawnObject (missing z)
+        # 2. Malformed SpawnObject (missing z) -> STANDBY gate fires first
         bad_spawn = RobotCommand(
             command_id="bad-spawn-1",
             sender_id="tester",
@@ -602,7 +713,7 @@ def test_edge_bridge_actions_schema_validation_and_rejection():
         )
         res2 = node.handle_command(bad_spawn)
         assert res2 is None
-        assert node.robot_state == RobotState.IDLE
+        assert node.robot_state == RobotState.STANDBY
 
         # 3. Fault state rejection
         node._robot_state = RobotState.FAULT

@@ -2,9 +2,9 @@
 
 Per Unit 6.5-Bugfix.2.1 (hand-sim-o5es) & Unit 6.5-Bugfix.2.2 (hand-sim-1h63):
 - Runs rclpy MultiThreadedExecutor alongside Zenoh session subscriber on robot/{id}/command.
-- Subscribes to /joint_states with zero-alloc canonical joint mapping (UR5E_JOINTS).
+- Subscribes to /joint_states lazily on ENGAGE with zero-alloc canonical joint mapping (UR5E_JOINTS).
 - Connects to ROS2 ActionClient /scaled_joint_trajectory_controller/follow_joint_trajectory.
-- Auto-commands HOME pose on controller startup.
+- Parks in STANDBY on startup; ENGAGE handshake (from Gateway on WS connect) subscribes joints + homes to CANONICAL_POSES[HOME]; STANDBY parks again.
 - Dispatches TRAJECTORY_EXECUTE for CANONICAL_POSES (HOME, READY, INSPECT_POSE) and custom waypoints.
 - Bridges PICK_AND_PLACE_TARGET to ROS2 ActionClient /arm_controller/pick_and_place.
 - Streams ActionFeedbackFrame to Zenoh on rt/arm_controller/pick_and_place/_action/feedback.
@@ -20,6 +20,7 @@ import time
 from typing import Any, Optional
 
 from control_msgs.action import FollowJointTrajectory
+from controller_manager_msgs.srv import SwitchController
 from geometry_msgs.msg import Point
 import rclpy
 from rclpy.action import ActionClient
@@ -91,6 +92,8 @@ class EdgeBridgeNode(Node):
         self.declare_parameter("traj_connect_timeout", 5.0)
         self.declare_parameter("step_duration", 1.0)
         self.declare_parameter("max_joint_velocity", 2.0)
+        self.declare_parameter("switch_service_name", "/controller_manager/switch_controller")
+        self.declare_parameter("switch_timeout", 5.0)
 
         self._robot_id = str(self.get_parameter("robot_id").value)
         self._controller_action_name = str(self.get_parameter("controller_action_name").value)
@@ -112,15 +115,16 @@ class EdgeBridgeNode(Node):
         self._traj_connect_timeout = float(self.get_parameter("traj_connect_timeout").value)
         self._step_duration = float(self.get_parameter("step_duration").value)
         self._max_joint_velocity = float(self.get_parameter("max_joint_velocity").value)
+        self._switch_service_name = str(self.get_parameter("switch_service_name").value)
+        self._switch_timeout = float(self.get_parameter("switch_timeout").value)
 
         self._lock = threading.RLock()
         self._cb_group = ReentrantCallbackGroup()
         self._telem_cb_group = MutuallyExclusiveCallbackGroup()
 
-        # State initialization
-        self._robot_state: RobotState = (
-            RobotState.BOOTING if self._auto_home_on_startup else RobotState.IDLE
-        )
+        # State initialization: STANDBY until ENGAGE handshake from Gateway.
+        # IDLE means engaged-ready; motion cmds rejected while STANDBY.
+        self._robot_state: RobotState = RobotState.STANDBY
         self._is_grasped: bool = False
         self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
         self._active_traj_handle: Optional[Any] = None
@@ -132,14 +136,8 @@ class EdgeBridgeNode(Node):
         self._cached_joint_names: Optional[list[str]] = None
         self._cached_joint_indices: Optional[list[int]] = None
 
-        # ROS2 Subscriptions & Action Clients
-        self._joint_sub = self.create_subscription(
-            JointState,
-            self._joint_states_topic,
-            self._handle_joint_states,
-            qos_profile_sensor_data,
-            callback_group=self._telem_cb_group,
-        )
+        # ROS2 Subscriptions & Action Clients (joint sub lazy: created on ENGAGE)
+        self._joint_sub = None
 
         self._traj_client = ActionClient(
             self,
@@ -167,6 +165,12 @@ class EdgeBridgeNode(Node):
             callback_group=self._cb_group,
         )
 
+        self._switch_client = self.create_client(
+            SwitchController,
+            self._switch_service_name,
+            callback_group=self._cb_group,
+        )
+
         # Zenoh setup
         self._zenoh_session = zenoh_session
         self._owns_zenoh_session = False
@@ -179,17 +183,9 @@ class EdgeBridgeNode(Node):
 
         self._init_zenoh()
 
-        # Startup homing thread
+        # No auto-homing on startup: homing deferred until ENGAGE handshake.
+        # _auto_home_on_startup now means "home on ENGAGE" (True) vs "IDLE on ENGAGE" (False).
         self._startup_thread: Optional[threading.Thread] = None
-        if self._auto_home_on_startup:
-            self._startup_thread = threading.Thread(
-                target=self._run_startup_homing,
-                name="edge_bridge_homing",
-                daemon=True,
-            )
-            self._startup_thread.start()
-        else:
-            self._homing_done_event.set()
 
     @property
     def robot_id(self) -> str:
@@ -339,6 +335,161 @@ class EdgeBridgeNode(Node):
         """Blocks until startup homing has finished."""
         return self._homing_done_event.wait(timeout=timeout_sec)
 
+    def _switch_controllers(
+        self, activate: list[str], deactivate: list[str]
+    ) -> bool:
+        """Activates/deactivates controllers via switch_controller (BEST_EFFORT).
+
+        Controllers spawn --inactive (parked: no /joint_states traffic).
+        ENGAGE activates both; STANDBY deactivates both. Returns False
+        (warning logged) when service missing — motion then fails loudly
+        at action-server wait instead of silently.
+        """
+        if not self._switch_client.wait_for_service(timeout_sec=self._switch_timeout):
+            self.get_logger().warning(
+                f"switch_controller unavailable after {self._switch_timeout}s; "
+                "controllers stay parked"
+            )
+            return False
+        req = SwitchController.Request()
+        req.activate_controllers = activate
+        req.deactivate_controllers = deactivate
+        req.strictness = SwitchController.Request.BEST_EFFORT
+        req.activate_asap = True
+        req.timeout.sec = int(self._switch_timeout)
+        future = self._switch_client.call_async(req)
+        # Executor-safe wait: MultiThreadedExecutor already spins this node,
+        # so poll future.done() instead of nested spin_until_future_complete
+        # (which would raise "node already added to executor" from Zenoh thread).
+        deadline = time.monotonic() + self._switch_timeout + 2.0
+        while not future.done() and time.monotonic() < deadline:
+            time.sleep(0.05)
+        if not future.done():
+            self.get_logger().warning("switch_controller call timed out")
+            return False
+        if not future.result().ok:
+            self.get_logger().warning(
+                f"switch_controller rejected: {future.result().message}"
+            )
+            return False
+        return True
+
+    def handle_engage(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+        """ENGAGE handshake: activate controllers, subscribe joints, home, go IDLE.
+
+        Strict order: (1) switch controllers active, (2) subscribe joints
+        lazily, (3) home via existing homing path. A rejected/unavailable
+        switch aborts parked: no joint subscription, no homing thread,
+        state back to STANDBY plus a standby error frame.
+        """
+        with self._lock:
+            if self._robot_state == RobotState.IDLE:
+                return self.publish_telemetry(command_id=command_id)
+            if self._robot_state not in (RobotState.STANDBY, RobotState.BOOTING):
+                self._publish_error(
+                    "ROBOT_BUSY",
+                    f"Robot is currently {self._robot_state.value}; ENGAGE rejected",
+                )
+                return self.publish_telemetry(command_id=command_id)
+            self._robot_state = RobotState.BOOTING
+            self._homing_done_event.clear()
+            self._startup_motion_event.clear()
+            need_sub = self._joint_sub is None
+            need_homing_thread = (
+                self._startup_thread is None or not self._startup_thread.is_alive()
+            )
+
+        self.get_logger().info("ENGAGE step 1/3: activating controllers...")
+        switched = self._switch_controllers(
+            activate=["joint_state_broadcaster", "scaled_joint_trajectory_controller"],
+            deactivate=[],
+        )
+        if not switched:
+            self.get_logger().warning(
+                "ENGAGE step 1/3 failed: switch_controller rejected/unavailable; "
+                "staying parked in STANDBY"
+            )
+            with self._lock:
+                self._robot_state = RobotState.STANDBY
+            self._homing_done_event.set()
+            self._publish_error(
+                "SWITCH_CONTROLLER_FAILED",
+                "switch_controller activation failed; arm stays parked in STANDBY",
+            )
+            return self.publish_telemetry(command_id=command_id)
+        self.get_logger().info("ENGAGE step 1/3 done: controllers active")
+
+        if need_sub:
+            self.get_logger().info("ENGAGE step 2/3: subscribing to joint states...")
+            self._joint_sub = self.create_subscription(
+                JointState,
+                self._joint_states_topic,
+                self._handle_joint_states,
+                qos_profile_sensor_data,
+                callback_group=self._telem_cb_group,
+            )
+            self.get_logger().info("ENGAGE step 2/3 done: joint subscription active")
+        else:
+            self.get_logger().info(
+                "ENGAGE step 2/3 skipped: sub already active"
+            )
+
+        if need_homing_thread:
+            if self._auto_home_on_startup:
+                self.get_logger().info("ENGAGE step 3/3: starting homing thread...")
+                self._startup_thread = threading.Thread(
+                    target=self._run_startup_homing,
+                    name="edge_bridge_homing",
+                    daemon=True,
+                )
+                self._startup_thread.start()
+            else:
+                self.get_logger().info(
+                    "ENGAGE step 3/3 skipped: homing off, going IDLE"
+                )
+                with self._lock:
+                    self._robot_state = RobotState.IDLE
+                self._homing_done_event.set()
+                return self.publish_telemetry(command_id=command_id)
+        else:
+            self.get_logger().info(
+                "ENGAGE step 3/3 skipped: homing already in progress"
+            )
+
+        return self.publish_telemetry(command_id=command_id)
+
+    def handle_standby(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+        """STANDBY handshake: cancel goals, drop joint sub, park in STANDBY."""
+        with self._lock:
+            self._robot_state = RobotState.STANDBY
+            active_handle = self._active_traj_handle
+            self._active_traj_handle = None
+            active_pnp = self._active_pnp_handle
+            self._active_pnp_handle = None
+            joint_sub = self._joint_sub
+            self._joint_sub = None
+
+        for handle, label in ((active_handle, "trajectory"), (active_pnp, "PickAndPlace")):
+            if handle is not None:
+                try:
+                    handle.cancel_goal_async()
+                except Exception as e:
+                    self.get_logger().warning(f"Failed to cancel active {label}: {e}")
+
+        if joint_sub is not None:
+            try:
+                self.destroy_subscription(joint_sub)
+            except Exception:
+                pass
+
+        self._switch_controllers(
+            activate=[],
+            deactivate=["scaled_joint_trajectory_controller", "joint_state_broadcaster"],
+        )
+
+        return self.publish_telemetry(command_id=command_id)
+
+
     def handle_command_payload(self, raw_payload: str | bytes) -> Optional[RobotTelemetryEvent]:
         """Validates JSON schema and dispatches inbound RobotCommand."""
         if isinstance(raw_payload, bytes):
@@ -370,6 +521,21 @@ class EdgeBridgeNode(Node):
 
         if command.type == CommandType.RESET_FAULT:
             return self.handle_reset_fault(command_id=command.command_id)
+
+        if command.type == CommandType.ENGAGE:
+            return self.handle_engage(command_id=command.command_id)
+
+        if command.type == CommandType.STANDBY:
+            return self.handle_standby(command_id=command.command_id)
+
+        with self._lock:
+            standby = self._robot_state == RobotState.STANDBY
+        if standby:
+            self._publish_error(
+                "ROBOT_STANDBY",
+                "Robot is in STANDBY; send ENGAGE handshake before motion commands",
+            )
+            return None
 
         if command.type == CommandType.TRAJECTORY_EXECUTE:
             with self._lock:
@@ -943,6 +1109,13 @@ class EdgeBridgeNode(Node):
             except Exception:
                 pass
             self._clear_workspace_client = None
+
+        if self._switch_client is not None:
+            try:
+                self.destroy_client(self._switch_client)
+            except Exception:
+                pass
+            self._switch_client = None
 
 
 

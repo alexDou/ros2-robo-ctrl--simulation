@@ -2,7 +2,7 @@
 
 Covers Unit 6.5-Bugfix.2.1 (hand-sim-o5es):
 - EdgeBridgeNode initialization and parameters
-- Zero-alloc 500 Hz JointState subscription and canonical joint index caching
+- Zero-alloc 100 Hz sim JointState subscription and canonical joint index caching
 - Automatic startup homing to CANONICAL_POSES[HOME]
 - Dispatching TRAJECTORY_EXECUTE for canonical poses (HOME, READY, INSPECT_POSE)
 - EMERGENCY_STOP handling: canceling active goal, commanding safe-stop trajectory, and FAULT transition
@@ -16,6 +16,9 @@ import math
 import threading
 import time
 import pytest
+
+from controller_manager_msgs.srv import SwitchController
+from rclpy.node import Node
 
 from control_msgs.action import FollowJointTrajectory
 import rclpy
@@ -50,6 +53,22 @@ def ros_context():
         rclpy.shutdown()
 
 
+_switch_counter = [0]
+
+def _add_fake_switch(executor, ok=True):
+    _switch_counter[0] += 1
+    srv_node = Node(f"fake_switch_poses_{_switch_counter[0]}")
+
+    def _cb(req, res):
+        res.ok = bool(ok)
+        res.message = "fake switch"
+        return res
+
+    srv_node.create_service(SwitchController, "/controller_manager/switch_controller", _cb)
+    executor.add_node(srv_node)
+    return srv_node
+
+
 def test_edge_bridge_initialization():
     """Asserts default parameters and initial states of EdgeBridgeNode."""
     node = EdgeBridgeNode(
@@ -57,11 +76,12 @@ def test_edge_bridge_initialization():
             Parameter("robot_id", Parameter.Type.STRING, "test-arm"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
     try:
         assert node.robot_id == "test-arm"
-        assert node.robot_state == RobotState.IDLE
+        assert node.robot_state == RobotState.STANDBY
         assert len(node.current_joints) == 6
         assert node.current_joints == CANONICAL_POSES[PoseName.HOME]
     finally:
@@ -77,6 +97,7 @@ def test_edge_bridge_joint_states_subscriber():
             Parameter("joint_states_topic", Parameter.Type.STRING, "/test/edge_bridge/joint_states"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
     pub_node = Node("test_js_publisher")
@@ -85,11 +106,23 @@ def test_edge_bridge_joint_states_subscriber():
     executor = MultiThreadedExecutor()
     executor.add_node(node)
     executor.add_node(pub_node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        # Handshake: joint sub created lazily on ENGAGE
+        assert node.robot_state == RobotState.STANDBY
+        engage = RobotCommand(
+            command_id="engage-js",
+            sender_id="test-client",
+            timestamp_ns=time.time_ns(),
+            type=CommandType.ENGAGE,
+            payload={},
+        )
+        node.handle_command(engage)
+        assert node.robot_state == RobotState.IDLE
         # Shuffled order of joints
         shuffled_names = [
             "wrist_3_joint",
@@ -118,6 +151,10 @@ def test_edge_bridge_joint_states_subscriber():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         pub_node.destroy_node()
         node.close()
         node.destroy_node()
@@ -150,17 +187,30 @@ def test_edge_bridge_startup_homing():
             Parameter("traj_connect_timeout", Parameter.Type.DOUBLE, 2.0),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.05),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_controller)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        # Homing deferred until ENGAGE handshake (no auto-spin on startup)
+        assert node.robot_state == RobotState.STANDBY
+        assert len(received_traj_goals) == 0
+        engage = RobotCommand(
+            command_id="engage-homing",
+            sender_id="test-client",
+            timestamp_ns=time.time_ns(),
+            type=CommandType.ENGAGE,
+            payload={},
+        )
+        node.handle_command(engage)
         # Wait for homing to complete
         homed = node.wait_for_homing(timeout_sec=4.0)
         assert homed, "Startup homing timed out"
@@ -177,6 +227,10 @@ def test_edge_bridge_startup_homing():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_traj_server.destroy()
         mock_controller.destroy_node()
         node.close()
@@ -209,17 +263,28 @@ def test_edge_bridge_canned_poses_dispatch():
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.05),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_controller)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        engage = RobotCommand(
+            command_id="engage-poses",
+            sender_id="test-client",
+            timestamp_ns=time.time_ns(),
+            type=CommandType.ENGAGE,
+            payload={},
+        )
+        node.handle_command(engage)
+        assert node.robot_state == RobotState.IDLE
         poses_to_test = [PoseName.READY, PoseName.INSPECT_POSE, PoseName.HOME]
         for pose_name in poses_to_test:
             received_traj_goals.clear()
@@ -249,6 +314,10 @@ def test_edge_bridge_canned_poses_dispatch():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_traj_server.destroy()
         mock_controller.destroy_node()
         node.close()
@@ -295,18 +364,29 @@ def test_edge_bridge_emergency_stop_and_reset_fault():
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.5),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_controller)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
-        # Start a trajectory
+        # Start a trajectory (requires ENGAGE first)
+        engage = RobotCommand(
+            command_id="engage-estop",
+            sender_id="test-client",
+            timestamp_ns=time.time_ns(),
+            type=CommandType.ENGAGE,
+            payload={},
+        )
+        node.handle_command(engage)
+        assert node.robot_state == RobotState.IDLE
         cmd_move = RobotCommand(
             command_id="cmd-start-move",
             sender_id="test-client",
@@ -377,6 +457,10 @@ def test_edge_bridge_emergency_stop_and_reset_fault():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_traj_server.destroy()
         mock_controller.destroy_node()
         node.close()
@@ -406,6 +490,7 @@ def test_edge_bridge_zenoh_integration():
             Parameter("robot_id", Parameter.Type.STRING, robot_id),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ],
         zenoh_session=session,
     )
@@ -427,12 +512,12 @@ def test_edge_bridge_zenoh_integration():
         )
         session.put(cmd_topic, cmd.model_dump_json())
 
-        # Wait for telemetry response
+        # Wait for telemetry response (PING allowed in STANDBY)
         assert telem_event.wait(timeout=3.0), "Zenoh telemetry event not received"
         assert len(received_telemetry) >= 1
         last_telem = RobotTelemetryEvent.model_validate_json(received_telemetry[-1])
         assert last_telem.command_id == "cmd-ping-zenoh"
-        assert last_telem.robot_state == RobotState.IDLE
+        assert last_telem.robot_state == RobotState.STANDBY
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
@@ -449,6 +534,7 @@ def test_edge_bridge_schema_validation_error_frame():
             Parameter("robot_id", Parameter.Type.STRING, "test-arm-err"),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
     try:
@@ -460,7 +546,7 @@ def test_edge_bridge_schema_validation_error_frame():
         res2 = node.handle_command_payload('{"type": "PING"}')
         assert res2 is None
 
-        # Unknown pose name
+        # Unknown pose name (rejected: STANDBY gate fires before pose validation)
         bad_pose_cmd = RobotCommand(
             command_id="bad-pose",
             sender_id="tester",
@@ -470,7 +556,7 @@ def test_edge_bridge_schema_validation_error_frame():
         )
         res3 = node.handle_command(bad_pose_cmd)
         assert res3 is None
-        assert node.robot_state == RobotState.IDLE
+        assert node.robot_state == RobotState.STANDBY
 
         # Unsupported command type (e.g. unknown or unhandled)
         unsupported_cmd = RobotCommand(
@@ -482,7 +568,7 @@ def test_edge_bridge_schema_validation_error_frame():
         )
         res4 = node.handle_command(unsupported_cmd)
         assert res4 is None
-        assert node.robot_state == RobotState.IDLE
+        assert node.robot_state == RobotState.STANDBY
     finally:
         node.close()
         node.destroy_node()
@@ -514,17 +600,28 @@ def test_edge_bridge_multi_waypoint_preservation():
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.05),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
         ]
     )
 
     executor = MultiThreadedExecutor()
     executor.add_node(mock_controller)
     executor.add_node(node)
+    _fake = _add_fake_switch(executor)
 
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
     spin_thread.start()
 
     try:
+        engage = RobotCommand(
+            command_id="engage-wp",
+            sender_id="test-client",
+            timestamp_ns=time.time_ns(),
+            type=CommandType.ENGAGE,
+            payload={},
+        )
+        node.handle_command(engage)
+        assert node.robot_state == RobotState.IDLE
         waypoints = [
             [0.1, -1.0, 0.5, -1.0, -1.5, 0.0],
             [0.2, -0.8, 1.0, -0.8, -1.5, 0.1],
@@ -555,6 +652,10 @@ def test_edge_bridge_multi_waypoint_preservation():
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
         mock_traj_server.destroy()
         mock_controller.destroy_node()
         node.close()
