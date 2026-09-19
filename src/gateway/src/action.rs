@@ -12,7 +12,8 @@ pub const ROS2_ACTION_GOAL_TOPIC: &str = "rt/arm_controller/pick_and_place/_acti
 pub const ACTION_FEEDBACK_TOPIC: &str = "rt/arm_controller/pick_and_place/_action/feedback";
 
 /// Wildcard topic matching both bare and rt/-prefixed feedback publications.
-pub const ACTION_FEEDBACK_WILDCARD_TOPIC: &str = "**/arm_controller/pick_and_place/_action/feedback";
+pub const ACTION_FEEDBACK_WILDCARD_TOPIC: &str =
+    "**/arm_controller/pick_and_place/_action/feedback";
 
 /// 3D Cartesian point matching ROS geometry_msgs/Point.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

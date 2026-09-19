@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 5  # 5 Hz sim loop (GenericSystem fake hardware, non-RT host); real UR uses ur_controllers_real.yaml at 500 Hz
+    update_rate: 500  # 500 Hz RTDE loop for physical UR5e (real hardware only)
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -27,8 +27,8 @@ scaled_joint_trajectory_controller:
       - position
       - velocity
     speed_scaling_interface_name: ""
-    state_publish_rate: 5.0
-    action_monitor_rate: 2.0
+    state_publish_rate: 100.0
+    action_monitor_rate: 20.0
     allow_partial_joints_goal: false
     constraints:
       stopped_velocity_tolerance: 0.2

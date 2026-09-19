@@ -85,6 +85,20 @@
       "properties": {},
       "additionalProperties": false
     },
+    "engage_payload": {
+      "type": "object",
+      "title": "EngagePayload",
+      "description": "Typed payload for ENGAGE command activating EdgeNode from STANDBY",
+      "properties": {},
+      "additionalProperties": false
+    },
+    "standby_payload": {
+      "type": "object",
+      "title": "StandbyPayload",
+      "description": "Typed payload for STANDBY command parking EdgeNode to idle",
+      "properties": {},
+      "additionalProperties": false
+    },
     "spawn_object_payload": {
       "type": "object",
       "title": "SpawnObjectPayload",
@@ -190,6 +204,8 @@
         "TRAJECTORY_EXECUTE",
         "EMERGENCY_STOP",
         "RESET_FAULT",
+        "ENGAGE",
+        "STANDBY",
         "SPAWN_OBJECT",
         "CLEAR_WORKSPACE",
         "PICK_AND_PLACE_TARGET"

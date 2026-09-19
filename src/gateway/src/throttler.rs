@@ -1,10 +1,10 @@
 //! Gateway TelemetryThrottler decimating 500 Hz RTDE telemetry to a smooth 30 Hz stream.
 #![allow(clippy::missing_errors_doc, clippy::missing_panics_doc)]
 
+use serde::Deserialize;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
-use serde::Deserialize;
 use tokio::sync::broadcast;
 
 use crate::domain::{RobotState, RobotTelemetryEvent, UR5E_JOINTS};
@@ -236,7 +236,9 @@ impl TelemetryThrottler {
         // Fast dispatch: OMG-CDR begins with 4-byte encapsulation header [0x00, 0x01/0x00, 0x00, 0x00]
         if bytes.len() >= 4 && bytes[0] == 0 && (bytes[1] == 1 || bytes[1] == 0) {
             if let Ok(cdr_msg) = cdr::deserialize::<CdrJointStateMsg>(bytes) {
-                let timestamp_ns = if cdr_msg.header.stamp.sec > 0 || cdr_msg.header.stamp.nanosec > 0 {
+                let timestamp_ns = if cdr_msg.header.stamp.sec > 0
+                    || cdr_msg.header.stamp.nanosec > 0
+                {
                     (u64::try_from(cdr_msg.header.stamp.sec.max(0)).unwrap_or(0)) * 1_000_000_000
                         + u64::from(cdr_msg.header.stamp.nanosec)
                 } else {
@@ -294,13 +296,22 @@ impl TelemetryThrottler {
         if let Ok(raw) = serde_json::from_slice::<RawJointStateMsgRef>(bytes) {
             let timestamp_ns = if let Some(ref h) = raw.header {
                 if let Some(ref s) = h.stamp {
-                    let computed = (u64::try_from(s.sec.max(0)).unwrap_or(0)) * 1_000_000_000 + u64::from(s.nanosec);
-                    if computed > 0 { computed } else { current_time_ns() }
+                    let computed = (u64::try_from(s.sec.max(0)).unwrap_or(0)) * 1_000_000_000
+                        + u64::from(s.nanosec);
+                    if computed > 0 {
+                        computed
+                    } else {
+                        current_time_ns()
+                    }
                 } else {
-                    raw.timestamp_ns.filter(|&t| t > 0).unwrap_or_else(current_time_ns)
+                    raw.timestamp_ns
+                        .filter(|&t| t > 0)
+                        .unwrap_or_else(current_time_ns)
                 }
             } else {
-                raw.timestamp_ns.filter(|&t| t > 0).unwrap_or_else(current_time_ns)
+                raw.timestamp_ns
+                    .filter(|&t| t > 0)
+                    .unwrap_or_else(current_time_ns)
             };
 
             let mut positions = [0.0; 6];
@@ -342,7 +353,10 @@ impl TelemetryThrottler {
             return Ok(());
         }
 
-        Err("Failed to parse payload as RobotTelemetryEvent, CDR JointState, or JSON JointState".to_string())
+        Err(
+            "Failed to parse payload as RobotTelemetryEvent, CDR JointState, or JSON JointState"
+                .to_string(),
+        )
     }
 
     /// Pushes a raw JSON string into the throttler.

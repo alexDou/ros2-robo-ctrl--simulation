@@ -5,13 +5,13 @@
     clippy::items_after_statements
 )]
 
-use std::time::Duration;
 use actix_web::{web, App, HttpServer};
 use futures_util::{SinkExt, StreamExt};
 use gateway::action::{ActionFeedbackFrame, ActionPoint, PickAndPlaceFeedback, PickAndPlaceGoal};
 use gateway::domain::{CommandType, RobotCommand, RobotState, RobotTelemetryEvent};
 use gateway::throttler::TelemetryThrottler;
 use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
+use std::time::Duration;
 use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
 
@@ -226,10 +226,10 @@ async fn test_telemetry_throttler_500hz_cdr_to_30hz_json_decimation() {
 
     // Raw ROS 2 sensor_msgs/msg/JointState in OMG-CDR format
     let hex_cdr = concat!(
-        "00010000", // CDR LE header
-        "00f1536515cd5b07", // stamp: sec=1700000000, nanosec=123456789
+        "00010000",                         // CDR LE header
+        "00f1536515cd5b07",                 // stamp: sec=1700000000, nanosec=123456789
         "0a000000626173655f6c696e6b000235", // frame_id: "base_link" + padding
-        "06000000", // 6 joint names
+        "06000000",                         // 6 joint names
         "1300000073686f756c6465725f70616e5f6a6f696e740000",
         "1400000073686f756c6465725f6c6966745f6a6f696e7400",
         "0c000000656c626f775f6a6f696e7400",
@@ -279,7 +279,8 @@ async fn test_telemetry_throttler_500hz_cdr_to_30hz_json_decimation() {
         match tokio::time::timeout(Duration::from_millis(60), rx_json.recv()).await {
             Ok(Ok(json_str)) => {
                 count += 1;
-                let event: RobotTelemetryEvent = serde_json::from_str(&json_str).expect("valid json event");
+                let event: RobotTelemetryEvent =
+                    serde_json::from_str(&json_str).expect("valid json event");
                 assert!((event.joint_positions[0] - 0.1).abs() < 1e-4);
                 if event.robot_state == RobotState::Executing {
                     observed_executing = true;
@@ -300,7 +301,10 @@ async fn test_telemetry_throttler_500hz_cdr_to_30hz_json_decimation() {
     let _ = feeder_handle.await;
     throttler.stop();
 
-    assert!(observed_executing, "Expected dynamic robot_state Executing mutation to propagate into emitted JSON");
+    assert!(
+        observed_executing,
+        "Expected dynamic robot_state Executing mutation to propagate into emitted JSON"
+    );
     assert!(
         (25.0..=35.0).contains(&effective_hz),
         "Expected effective decimation rate 30 ± 5 Hz under test load, got {effective_hz:.2} Hz ({count} frames in {elapsed_sec:.3}s)"
@@ -378,12 +382,8 @@ async fn test_ws_pick_and_place_translates_to_action_and_relays_feedback() {
     assert!((received_goal.drop_coords.z - 0.08).abs() < 1e-6);
 
     // 3. Emit ActionFeedbackFrame onto fabric, verify client receives it over WebSocket
-    let feedback_frame = ActionFeedbackFrame::new(
-        "cmd-pnp-action-42",
-        "TRANSFERRING",
-        60.0,
-        1_700_000_000_100,
-    );
+    let feedback_frame =
+        ActionFeedbackFrame::new("cmd-pnp-action-42", "TRANSFERRING", 60.0, 1_700_000_000_100);
     fabric
         .publish_action_feedback("robot-action-test", &feedback_frame)
         .await

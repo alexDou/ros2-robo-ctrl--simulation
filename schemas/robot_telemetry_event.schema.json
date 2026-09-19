@@ -52,6 +52,7 @@
       "title": "RobotState",
       "enum": [
         "BOOTING",
+        "STANDBY",
         "IDLE",
         "PROCESSING",
         "EXECUTING",

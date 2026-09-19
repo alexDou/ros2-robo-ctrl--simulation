@@ -36,6 +36,8 @@ class CommandType(str, Enum):
     TRAJECTORY_EXECUTE = "TRAJECTORY_EXECUTE"
     EMERGENCY_STOP = "EMERGENCY_STOP"
     RESET_FAULT = "RESET_FAULT"
+    ENGAGE = "ENGAGE"
+    STANDBY = "STANDBY"
     SPAWN_OBJECT = "SPAWN_OBJECT"
     CLEAR_WORKSPACE = "CLEAR_WORKSPACE"
     PICK_AND_PLACE_TARGET = "PICK_AND_PLACE_TARGET"
@@ -45,6 +47,7 @@ class RobotState(str, Enum):
     """Current lifecycle state of the robotic manipulator"""
 
     BOOTING = "BOOTING"
+    STANDBY = "STANDBY"
     IDLE = "IDLE"
     PROCESSING = "PROCESSING"
     EXECUTING = "EXECUTING"
@@ -112,6 +115,20 @@ class EmergencyStopPayload(BaseModel):
 
 class ResetFaultPayload(BaseModel):
     """Typed payload for RESET_FAULT command"""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+
+class EngagePayload(BaseModel):
+    """Typed payload for ENGAGE command activating EdgeNode from STANDBY"""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+
+class StandbyPayload(BaseModel):
+    """Typed payload for STANDBY command parking EdgeNode to idle"""
 
     model_config = ConfigDict(extra="forbid")
 

@@ -23,7 +23,7 @@ Verifies:
   - arm_controller_node
 - Spawners activate joint_state_broadcaster and scaled_joint_trajectory
 - Workcell services and arm controller action server are available
-- /joint_states publishes at 500 Hz (~2ms RTDE loop)
+- /joint_states publishes at 5 Hz sim loop (GenericSystem fake hardware, non-RT host)
 """
 
 import os
@@ -33,6 +33,8 @@ import unittest
 from ament_index_python.packages import get_package_share_directory
 
 from control_msgs.action import FollowJointTrajectory
+
+from controller_manager_msgs.srv import SwitchController
 
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
@@ -179,8 +181,31 @@ class TestRobotNodesBringup(unittest.TestCase):
             'arm_controller pick_and_place action server not ready',
         )
 
-    def test_joint_states_500hz_frequency(self):
-        """Assert /joint_states streams at 500 Hz (~2ms RTDE loop)."""
+    def test_joint_states_5hz_sim_frequency(self):
+        """Assert /joint_states streams at 5 Hz sim loop (activate parked first)."""
+        switch_client = self.node.create_client(
+            SwitchController, '/controller_manager/switch_controller'
+        )
+        self.assertTrue(
+            switch_client.wait_for_service(timeout_sec=15.0),
+            'switch_controller service not ready',
+        )
+        req = SwitchController.Request()
+        req.activate_controllers = [
+            'joint_state_broadcaster',
+            'scaled_joint_trajectory_controller',
+        ]
+        req.deactivate_controllers = []
+        req.strictness = SwitchController.Request.BEST_EFFORT
+        req.activate_asap = True
+        req.timeout.sec = 5
+        future = switch_client.call_async(req)
+        rclpy.spin_until_future_complete(self.node, future, timeout_sec=10.0)
+        self.assertTrue(future.done(), 'switch_controller call timed out')
+        self.assertTrue(
+            future.result().ok,
+            f'ENGAGE switch failed: {future.result().message}',
+        )
         received_stamps = []
         received_wall_times = []
 
@@ -196,10 +221,10 @@ class TestRobotNodesBringup(unittest.TestCase):
             qos_profile_sensor_data,
         )
 
-        # Collect at least 150 samples
-        target_samples = 150
+        # Collect at least 20 samples (5 Hz needs ~4s window)
+        target_samples = 20
         start_time = time.time()
-        timeout = 10.0
+        timeout = 15.0
 
         while len(received_stamps) < target_samples and (
             time.time() - start_time < timeout
@@ -230,15 +255,14 @@ class TestRobotNodesBringup(unittest.TestCase):
             f'stamp_hz={stamp_hz:.2f}, wall_hz={wall_hz:.2f}'
         )
 
-        # RTDE loop target is 500 Hz. Under CPU/CI virtualization and non-RT kernels,
-        # thread scheduling jitter causes missed cycles (typically 250-450 Hz).
+        # Sim loop target is 5 Hz (non-RT host floor proven zero-overrun).
         self.assertGreaterEqual(
             stamp_hz,
-            200.0,
-            f'Expected /joint_states rate >= 200 Hz under non-RT load, got {stamp_hz:.2f} Hz',
+            3.0,
+            f'Expected /joint_states rate >= 3 Hz sim, got {stamp_hz:.2f} Hz',
         )
         self.assertLessEqual(
             stamp_hz,
-            650.0,
-            f'Expected /joint_states rate <= 650 Hz, got {stamp_hz:.2f} Hz',
+            8.0,
+            f'Expected /joint_states rate <= 8 Hz sim, got {stamp_hz:.2f} Hz',
         )
