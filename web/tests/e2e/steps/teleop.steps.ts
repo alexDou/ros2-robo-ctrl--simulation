@@ -6,12 +6,22 @@ import { TeleopPage } from '../pages/TeleopPage';
 Given('an operator is actively connected to robot {string}', async function (this: CustomWorld, robotId: string) {
   const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
   await this.teleopPage!.goto(url);
+  await this.teleopPage!.clickConnect();
   await this.teleopPage!.expectConnectionStatus(/CONNECTED/);
+});
+
+When('the operator clicks the Connect button', async function (this: CustomWorld) {
+  await this.teleopPage!.clickConnect();
+});
+
+When('the operator clicks the Disconnect button', async function (this: CustomWorld) {
+  await this.teleopPage!.clickDisconnect();
 });
 
 When('the operator opens the teleoperation visualizer for robot {string}', async function (this: CustomWorld, robotId: string) {
   const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
   await this.teleopPage!.goto(url);
+  await this.teleopPage!.clickConnect();
 });
 
 Then('the connection status should indicate {string}', async function (this: CustomWorld, status: string) {
@@ -44,6 +54,7 @@ When('another operator attempts to connect to robot {string} in a second browser
 
   const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
   await this.secondTeleopPage.goto(url);
+  await this.secondTeleopPage.clickConnect();
 });
 
 Then('the second session connection status should indicate {string}', async function (this: CustomWorld, status: string) {

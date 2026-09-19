@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'preact/hooks';
+import { useState, useCallback, useEffect } from 'preact/hooks';
 import { resolveGatewayWsUrl } from '@utils/url';
 import { DEFAULT_ROBOT_ID, type SpawnObjectPayload } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
@@ -13,6 +13,8 @@ import { RobotVisualizer } from '@components/RobotVisualizer';
 import { OperatorToolbar } from '@components/OperatorToolbar';
 
 export type { ConnectionState, LogEntry };
+
+const BOOT_TIMEOUT_MS = 10000;
 
 export interface TeleopClientProps {
   robotId?: string;
@@ -55,6 +57,7 @@ export function TeleopClient({
     actionProgress,
     errorBanner,
     connect,
+    disconnect,
     executePose,
     togglePalm,
     emergencyStop,
@@ -79,6 +82,34 @@ export function TeleopClient({
     clearWorkspace();
     setVisualizerHasGears(false);
   }, [clearWorkspace]);
+
+  // BOOTING window: activation (switch + sub + home) takes seconds.
+  // Fall back to STANDBY display when no telemetry arrives within the budget.
+  const [bootTimedOut, setBootTimedOut] = useState(false);
+  useEffect(() => {
+    if (connectionState === 'CONNECTED' && !isStreaming) {
+      setBootTimedOut(false);
+      const timer = setTimeout(() => setBootTimedOut(true), BOOT_TIMEOUT_MS);
+      return () => clearTimeout(timer);
+    }
+    setBootTimedOut(false);
+    return undefined;
+  }, [connectionState, isStreaming]);
+  const effectiveRobotState: string | null =
+    connectionState === 'CONNECTED' && !isStreaming
+      ? bootTimedOut
+        ? 'STANDBY'
+        : 'BOOTING'
+      : (robotState ?? 'STANDBY');
+  const toolbarDisabled = connectionState !== 'CONNECTED';
+  const toolbarDisabledReason =
+    connectionState !== 'CONNECTED'
+      ? 'Robot controls unavailable: not connected. Press Connect to activate.'
+      : effectiveRobotState === 'STANDBY'
+        ? 'Robot parked in STANDBY. Connect handshake activates controllers.'
+        : effectiveRobotState === 'BOOTING'
+          ? 'Robot activating (BOOTING): controllers switching, joints subscribing, homing.'
+          : `Robot ${effectiveRobotState}: actions resume when IDLE.`;
 
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '1.5rem', fontFamily: 'sans-serif' }}>
@@ -123,7 +154,7 @@ export function TeleopClient({
         <ConnectionBadge
           connectionState={connectionState}
           isStreaming={isStreaming}
-          robotState={robotState}
+          robotState={effectiveRobotState}
         />
       </header>
 
@@ -162,7 +193,7 @@ export function TeleopClient({
               assetBaseUrl={assetBaseUrl}
               telemetryBufferRef={bufferRef}
               jointPositionsRef={jointPositionsRef}
-              robotState={robotState || 'IDLE'}
+              robotState={effectiveRobotState ?? 'STANDBY'}
               hasActiveGear={hasActiveGear}
               onSpawnObject={onSpawnObject}
               onWorkspaceGearsChange={handleWorkspaceGearsChange}
@@ -174,7 +205,7 @@ export function TeleopClient({
             {actionProgress && <ActionProgressBar progress={actionProgress} />}
           </div>
           <OperatorToolbar
-            robotState={robotState || 'IDLE'}
+            robotState={effectiveRobotState ?? 'STANDBY'}
             isGrasped={!!palmState?.is_grasped}
             hasActiveGear={hasActiveGear || visualizerHasGears}
             onExecutePose={executePose}
@@ -183,7 +214,10 @@ export function TeleopClient({
             onResetFault={resetFault}
             onClearWorkspace={handleClearWorkspace}
             errorBanner={errorBanner}
-            disabled={connectionState !== 'CONNECTED'}
+            disabled={toolbarDisabled}
+            disabledReason={
+              toolbarDisabled || effectiveRobotState !== 'IDLE' ? toolbarDisabledReason : null
+            }
           />
         </div>
         <div
@@ -200,7 +234,7 @@ export function TeleopClient({
           <TelemetryMonitor
             bufferRef={bufferRef}
             isStreaming={isStreaming}
-            robotState={robotState}
+            robotState={effectiveRobotState}
             layout={isDesktop ? 'vertical' : 'grid'}
           />
         </div>
@@ -227,10 +261,11 @@ export function TeleopClient({
         </div>
       )}
 
-      {connectionState === 'DISCONNECTED' && (
+      {(connectionState === 'CONNECTED' || connectionState === 'CONNECTING') ? (
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
           <button
-            onClick={connect}
+            data-testid="disconnect-button"
+            onClick={disconnect}
             style={{
               backgroundColor: '#4b5563',
               color: '#fff',
@@ -241,7 +276,25 @@ export function TeleopClient({
               cursor: 'pointer',
             }}
           >
-            Reconnect
+            Disconnect
+          </button>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
+          <button
+            data-testid="connect-button"
+            onClick={connect}
+            style={{
+              backgroundColor: '#2563eb',
+              color: '#fff',
+              fontWeight: 600,
+              padding: '0.5rem 1.5rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            Connect
           </button>
         </div>
       )}

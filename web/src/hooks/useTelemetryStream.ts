@@ -21,7 +21,7 @@ export function useTelemetryStream() {
   const bufferRef = useRef<TelemetryBuffer>({
     jointPositions: [...CANONICAL_POSES.HOME],
     timestampNs: 0n.toString(),
-    robotState: 'IDLE' as RobotState,
+    robotState: 'STANDBY' as RobotState,
     palmState: { is_grasped: false },
     frequencyHz: 0,
     latencyMs: 0,
@@ -30,7 +30,7 @@ export function useTelemetryStream() {
   });
 
   const [isStreaming, setIsStreaming] = useState(false);
-  const [robotState, setRobotState] = useState<RobotState | null>(null);
+  const [robotState, setRobotState] = useState<RobotState | null>('STANDBY');
   const [palmState, setPalmState] = useState<{ is_grasped: boolean }>({ is_grasped: false });
   const frameTimestampsRef = useRef<number[]>([]);
   const lastStreamingRef = useRef(false);
@@ -94,16 +94,16 @@ export function useTelemetryStream() {
 
   const resetStream = useCallback(() => {
     lastStreamingRef.current = false;
-    lastRobotStateRef.current = null;
+    lastRobotStateRef.current = 'STANDBY';
     lastPalmGraspedRef.current = null;
     setIsStreaming(false);
-    setRobotState(null);
+    setRobotState('STANDBY');
     setPalmState({ is_grasped: false });
     frameTimestampsRef.current = [];
     bufferRef.current = {
       jointPositions: [...CANONICAL_POSES.HOME],
       timestampNs: 0n.toString(),
-      robotState: 'IDLE' as RobotState,
+      robotState: 'STANDBY' as RobotState,
       palmState: { is_grasped: false },
       frequencyHz: 0,
       latencyMs: 0,
