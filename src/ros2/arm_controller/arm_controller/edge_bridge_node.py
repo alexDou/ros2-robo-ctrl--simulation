@@ -94,6 +94,7 @@ class EdgeBridgeNode(Node):
         self.declare_parameter("max_joint_velocity", 2.0)
         self.declare_parameter("switch_service_name", "/controller_manager/switch_controller")
         self.declare_parameter("switch_timeout", 5.0)
+        self.declare_parameter("standby_park_timeout", 10.0)
 
         self._robot_id = str(self.get_parameter("robot_id").value)
         self._controller_action_name = str(self.get_parameter("controller_action_name").value)
@@ -117,6 +118,7 @@ class EdgeBridgeNode(Node):
         self._max_joint_velocity = float(self.get_parameter("max_joint_velocity").value)
         self._switch_service_name = str(self.get_parameter("switch_service_name").value)
         self._switch_timeout = float(self.get_parameter("switch_timeout").value)
+        self._standby_park_timeout = float(self.get_parameter("standby_park_timeout").value)
 
         self._lock = threading.RLock()
         self._cb_group = ReentrantCallbackGroup()
@@ -459,15 +461,20 @@ class EdgeBridgeNode(Node):
         return self.publish_telemetry(command_id=command_id)
 
     def handle_standby(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
-        """STANDBY handshake: cancel goals, drop joint sub, park in STANDBY."""
+        """STANDBY handshake: cancel goals, park home if mid-motion, drop sub, park in STANDBY.
+
+        Order: (1) cancel active trajectory + PickAndPlace goals, (2) send one
+        home park goal when the previous state was EXECUTING (skipped while
+        ready), bounded by standby_park_timeout, (3) drop the joint
+        subscription, (4) deactivate controllers. Park/deactivate failures are
+        warnings; state always ends STANDBY.
+        """
         with self._lock:
-            self._robot_state = RobotState.STANDBY
+            prev_state = self._robot_state
             active_handle = self._active_traj_handle
             self._active_traj_handle = None
             active_pnp = self._active_pnp_handle
             self._active_pnp_handle = None
-            joint_sub = self._joint_sub
-            self._joint_sub = None
 
         for handle, label in ((active_handle, "trajectory"), (active_pnp, "PickAndPlace")):
             if handle is not None:
@@ -476,16 +483,60 @@ class EdgeBridgeNode(Node):
                 except Exception as e:
                     self.get_logger().warning(f"Failed to cancel active {label}: {e}")
 
+        if prev_state == RobotState.EXECUTING:
+            self.get_logger().info("STANDBY: parking to HOME before deactivation...")
+            # Park runs while still EXECUTING so the dispatch gate passes and
+            # the park result callback is not treated as stale.
+            park_done = threading.Event()
+            try:
+                self._dispatch_trajectory_points(
+                    [list(CANONICAL_POSES[PoseName.HOME])],
+                    command_id=command_id,
+                    completion_event=park_done,
+                )
+            except Exception as e:
+                self.get_logger().warning(f"STANDBY park dispatch failed: {e}; staying parked")
+                park_done.set()
+            else:
+                if not park_done.wait(timeout=self._standby_park_timeout):
+                    self.get_logger().warning(
+                        f"STANDBY park timed out after {self._standby_park_timeout}s; staying parked"
+                    )
+                    with self._lock:
+                        stray = self._active_traj_handle
+                        self._active_traj_handle = None
+                    if stray is not None:
+                        try:
+                            stray.cancel_goal_async()
+                        except Exception as e:
+                            self.get_logger().warning(f"Failed to cancel stray park goal: {e}")
+                else:
+                    self.get_logger().info("STANDBY: park to HOME complete")
+        else:
+            self.get_logger().info(
+                f"STANDBY: skipping park (state was {prev_state.value}); deactivating..."
+            )
+
+        with self._lock:
+            # Park completion may have flipped EXECUTING->IDLE; force STANDBY last
+            # so the final state is always parked regardless of callback timing.
+            self._robot_state = RobotState.STANDBY
+            self._active_traj_handle = None
+            self._active_pnp_handle = None
+            joint_sub = self._joint_sub
+            self._joint_sub = None
+
         if joint_sub is not None:
             try:
                 self.destroy_subscription(joint_sub)
             except Exception:
                 pass
 
-        self._switch_controllers(
+        if not self._switch_controllers(
             activate=[],
             deactivate=["scaled_joint_trajectory_controller", "joint_state_broadcaster"],
-        )
+        ):
+            self.get_logger().warning("STANDBY: controller deactivation failed; staying parked")
 
         return self.publish_telemetry(command_id=command_id)
 
@@ -797,21 +848,25 @@ class EdgeBridgeNode(Node):
             def on_result(r_future: Any) -> None:
                 should_publish_completion = False
                 with self._lock:
-                    self._active_traj_handle = None
-                    if self._robot_state == RobotState.EXECUTING:
-                        try:
-                            traj_res = r_future.result()
-                            if traj_res.result.error_code == FollowJointTrajectory.Result.SUCCESSFUL:
-                                self._robot_state = RobotState.IDLE
-                                should_publish_completion = True
-                            else:
-                                self.get_logger().error(
-                                    f"Trajectory failed with code {traj_res.result.error_code}"
-                                )
+                    if self._active_traj_handle is not goal_handle:
+                        # Stale result (superseded by STANDBY park or ESTOP); ignore.
+                        pass
+                    else:
+                        self._active_traj_handle = None
+                        if self._robot_state == RobotState.EXECUTING:
+                            try:
+                                traj_res = r_future.result()
+                                if traj_res.result.error_code == FollowJointTrajectory.Result.SUCCESSFUL:
+                                    self._robot_state = RobotState.IDLE
+                                    should_publish_completion = True
+                                else:
+                                    self.get_logger().error(
+                                        f"Trajectory failed with code {traj_res.result.error_code}"
+                                    )
+                                    self._robot_state = RobotState.FAULT
+                            except Exception as err:
+                                self.get_logger().error(f"Error reading trajectory result: {err}")
                                 self._robot_state = RobotState.FAULT
-                        except Exception as err:
-                            self.get_logger().error(f"Error reading trajectory result: {err}")
-                            self._robot_state = RobotState.FAULT
 
                 if completion_event is not None:
                     completion_event.set()
@@ -924,26 +979,30 @@ class EdgeBridgeNode(Node):
             def on_result(r_future: Any) -> None:
                 should_publish_completion = False
                 with self._lock:
-                    self._active_pnp_handle = None
-                    if self._robot_state == RobotState.EXECUTING:
-                        try:
-                            pnp_res = r_future.result()
-                            if pnp_res.result.success:
-                                self._robot_state = RobotState.IDLE
-                                self._is_grasped = False
-                                should_publish_completion = True
-                            else:
-                                self.get_logger().error(
-                                    f"PickAndPlace failed: {pnp_res.result.message}"
-                                )
+                    if self._active_pnp_handle is not goal_handle:
+                        # Stale result (superseded by STANDBY teardown or ESTOP); ignore.
+                        pass
+                    else:
+                        self._active_pnp_handle = None
+                        if self._robot_state == RobotState.EXECUTING:
+                            try:
+                                pnp_res = r_future.result()
+                                if pnp_res.result.success:
+                                    self._robot_state = RobotState.IDLE
+                                    self._is_grasped = False
+                                    should_publish_completion = True
+                                else:
+                                    self.get_logger().error(
+                                        f"PickAndPlace failed: {pnp_res.result.message}"
+                                    )
+                                    self._robot_state = RobotState.FAULT
+                                    self._publish_error("ACTION_FAILED", pnp_res.result.message)
+                                    should_publish_completion = True
+                            except Exception as err:
+                                self.get_logger().error(f"Error reading PickAndPlace result: {err}")
                                 self._robot_state = RobotState.FAULT
-                                self._publish_error("ACTION_FAILED", pnp_res.result.message)
+                                self._publish_error("RESULT_ERROR", str(err))
                                 should_publish_completion = True
-                        except Exception as err:
-                            self.get_logger().error(f"Error reading PickAndPlace result: {err}")
-                            self._robot_state = RobotState.FAULT
-                            self._publish_error("RESULT_ERROR", str(err))
-                            should_publish_completion = True
 
                 if completion_event is not None:
                     completion_event.set()
