@@ -24,6 +24,9 @@ export class TeleopPage {
   readonly emergencyStopButton: Locator;
   readonly clearWorkspaceButton: Locator;
   readonly toolbarErrorBanner: Locator;
+  readonly connectButton: Locator;
+  readonly disconnectButton: Locator;
+  readonly toolbarDisabledReason: Locator;
   readonly actionProgressContainer: Locator;
   readonly actionProgressBar: Locator;
   readonly actionProgressPhase: Locator;
@@ -52,6 +55,9 @@ export class TeleopPage {
     this.emergencyStopButton = page.getByTestId('emergency-stop-button');
     this.clearWorkspaceButton = page.getByTestId('clear-workspace-button');
     this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
+    this.connectButton = page.getByTestId('connect-button');
+    this.disconnectButton = page.getByTestId('disconnect-button');
+    this.toolbarDisabledReason = page.getByTestId('toolbar-disabled-reason');
     this.actionProgressContainer = page.getByTestId('action-progress-container');
     this.actionProgressBar = page.getByTestId('action-progress-bar');
     this.actionProgressPhase = page.getByTestId('action-progress-phase');
@@ -64,6 +70,16 @@ export class TeleopPage {
 
   async expectConnectionStatus(status: string | RegExp, timeout = 10000): Promise<void> {
     await expect(this.connectionBadge).toHaveText(status, { timeout });
+  }
+
+  async clickConnect(): Promise<void> {
+    await expect(this.connectButton).toBeEnabled();
+    await this.connectButton.click();
+  }
+
+  async clickDisconnect(): Promise<void> {
+    await expect(this.disconnectButton).toBeEnabled();
+    await this.disconnectButton.click();
   }
 
   async clickPing(): Promise<void> {

@@ -26,6 +26,13 @@ export function ConnectionBadge({
   robotState,
 }: ConnectionBadgeProps) {
   const badgeColor = getBadgeColor(connectionState);
+  const displayState = robotState ?? 'STANDBY';
+  const stateSuffix =
+    displayState === 'STANDBY'
+      ? ' / STANDBY (parked)'
+      : displayState === 'BOOTING'
+        ? ' / BOOTING (activating)'
+        : ` / ${displayState}`;
 
   return (
     <div
@@ -52,8 +59,10 @@ export function ConnectionBadge({
         }}
       />
       {isStreaming && connectionState === 'CONNECTED'
-        ? `CONNECTED / ${robotState || 'IDLE'}`
-        : connectionState}
+        ? `CONNECTED${stateSuffix}`
+        : connectionState === 'CONNECTED'
+          ? `CONNECTED${stateSuffix}`
+          : connectionState}
     </div>
   );
 }

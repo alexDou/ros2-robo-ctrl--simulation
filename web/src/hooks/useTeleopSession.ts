@@ -67,12 +67,13 @@ export function useTeleopSession({
   robotState,
   palmState,
 }: UseTeleopSessionOptions) {
-  const [connectionState, setConnectionState] = useState<ConnectionState>('CONNECTING');
+  const [connectionState, setConnectionState] = useState<ConnectionState>('DISCONNECTED');
   const [conflictReason, setConflictReason] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [hasActiveGear, setHasActiveGear] = useState(false);
   const [actionProgress, setActionProgress] = useState<ActionProgress | null>(null);
   const [errorBanner, setErrorBanner] = useState<ErrorBannerInfo | null>(null);
+  const [hasEverConnected, setHasEverConnected] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
   const isCleaningUp = useRef(false);
@@ -81,7 +82,7 @@ export function useTeleopSession({
   const errorBannerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const current = robotState ?? 'IDLE';
+    const current = robotState ?? 'STANDBY';
     const prev = prevRobotStateRef.current;
     if (prev === 'EXECUTING' && current === 'IDLE') {
       setHasActiveGear(false);
@@ -106,6 +107,7 @@ export function useTeleopSession({
     ws.onopen = () => {
       if (isCleaningUp.current) return;
       setConnectionState('CONNECTED');
+      setHasEverConnected(true);
       setConflictReason(null);
     };
 
@@ -190,7 +192,6 @@ export function useTeleopSession({
   }, [wsUrl, handleIncomingFrame, resetStream]);
 
   useEffect(() => {
-    connect();
     return () => {
       isCleaningUp.current = true;
       if (errorBannerTimerRef.current) {
@@ -203,7 +204,19 @@ export function useTeleopSession({
         wsRef.current.close();
       }
     };
-  }, [connect]);
+  }, []);
+
+  const disconnect = useCallback(() => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
+    }
+    if (isBrowser()) {
+      delete window.__teleop_ws;
+    }
+    resetStream();
+    setConnectionState('DISCONNECTED');
+  }, [resetStream]);
 
   const executePose = useCallback((poseName: PoseName) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
@@ -238,7 +251,7 @@ export function useTeleopSession({
   const pickAndPlaceTarget = useCallback(
     (payload: PickAndPlaceTargetPayload) => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-      const currentRobotState = robotState ?? 'IDLE';
+      const currentRobotState = robotState ?? 'STANDBY';
       if (currentRobotState !== 'IDLE') return;
       setActionProgress(null);
       const cmd = createPickAndPlaceTargetCommand(payload, { senderId: 'ui-client' });
@@ -251,7 +264,7 @@ export function useTeleopSession({
   const spawnObject = useCallback(
     (payload: SpawnObjectPayload) => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-      const currentRobotState = robotState ?? 'IDLE';
+      const currentRobotState = robotState ?? 'STANDBY';
       if (currentRobotState !== 'IDLE') return;
       const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
       wsRef.current.send(serializeCommand(cmd));
@@ -262,7 +275,7 @@ export function useTeleopSession({
 
   const clearWorkspace = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-    const currentRobotState = robotState ?? 'IDLE';
+    const currentRobotState = robotState ?? 'STANDBY';
     if (currentRobotState !== 'IDLE') return;
     const hasVisualizerGears =
       typeof window !== 'undefined' &&
@@ -292,7 +305,9 @@ export function useTeleopSession({
     hasActiveGear,
     actionProgress,
     errorBanner,
+    hasEverConnected,
     connect,
+    disconnect,
     executePose,
     togglePalm,
     emergencyStop,
