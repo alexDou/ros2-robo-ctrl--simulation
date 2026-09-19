@@ -1,3 +1,6 @@
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
+
 use actix_web::{web, HttpRequest, HttpResponse};
 use actix_ws::Message;
 use futures_util::StreamExt;
@@ -20,43 +23,36 @@ fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), Str
     };
     use serde::Deserialize;
     match cmd.r#type {
-        CommandType::PalmActuate => {
-            PalmActuatePayload::deserialize(&cmd.payload)
-                .map(|_| ())
-                .map_err(|e| e.to_string())
-        }
-        CommandType::TrajectoryExecute => {
-            TrajectoryExecutePayload::deserialize(&cmd.payload)
-                .map(|_| ())
-                .map_err(|e| e.to_string())
-        }
-        CommandType::EmergencyStop => {
-            EmergencyStopPayload::deserialize(&cmd.payload)
-                .map(|_| ())
-                .map_err(|e| e.to_string())
-        }
-        CommandType::ResetFault => {
-            ResetFaultPayload::deserialize(&cmd.payload)
-                .map(|_| ())
-                .map_err(|e| e.to_string())
-        }
+        CommandType::PalmActuate => PalmActuatePayload::deserialize(&cmd.payload)
+            .map(|_| ())
+            .map_err(|e| e.to_string()),
+        CommandType::TrajectoryExecute => TrajectoryExecutePayload::deserialize(&cmd.payload)
+            .map(|_| ())
+            .map_err(|e| e.to_string()),
+        CommandType::EmergencyStop => EmergencyStopPayload::deserialize(&cmd.payload)
+            .map(|_| ())
+            .map_err(|e| e.to_string()),
+        CommandType::ResetFault => ResetFaultPayload::deserialize(&cmd.payload)
+            .map(|_| ())
+            .map_err(|e| e.to_string()),
         CommandType::SpawnObject => {
-            let payload = SpawnObjectPayload::deserialize(&cmd.payload)
-                .map_err(|e| e.to_string())?;
+            let payload =
+                SpawnObjectPayload::deserialize(&cmd.payload).map_err(|e| e.to_string())?;
             if !payload.x.is_finite() || !payload.y.is_finite() || !payload.z.is_finite() {
                 return Err("Coordinates x, y, and z must be finite floats".to_string());
             }
             Ok(())
         }
-        CommandType::ClearWorkspace => {
-            ClearWorkspacePayload::deserialize(&cmd.payload)
-                .map(|_| ())
-                .map_err(|e| e.to_string())
-        }
+        CommandType::ClearWorkspace => ClearWorkspacePayload::deserialize(&cmd.payload)
+            .map(|_| ())
+            .map_err(|e| e.to_string()),
         CommandType::PickAndPlaceTarget => {
-            let payload = PickAndPlaceTargetPayload::deserialize(&cmd.payload)
-                .map_err(|e| e.to_string())?;
-            if !payload.pick_x.is_finite() || !payload.pick_y.is_finite() || !payload.pick_z.is_finite() {
+            let payload =
+                PickAndPlaceTargetPayload::deserialize(&cmd.payload).map_err(|e| e.to_string())?;
+            if !payload.pick_x.is_finite()
+                || !payload.pick_y.is_finite()
+                || !payload.pick_z.is_finite()
+            {
                 return Err("Coordinates must be finite floats".to_string());
             }
             if payload.drop_x.is_some_and(|x| !x.is_finite())
@@ -67,11 +63,19 @@ fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), Str
             }
             Ok(())
         }
-        CommandType::Ping | CommandType::TeleopJointTarget => Ok(()),
+        CommandType::Ping
+        | CommandType::TeleopJointTarget
+        | CommandType::Engage
+        | CommandType::Standby => Ok(()),
     }
 }
 
 const MIN_COMMAND_INTERVAL: std::time::Duration = std::time::Duration::from_millis(50);
+
+/// Maximum ENGAGE handshake retries after the initial attempt.
+const HANDSHAKE_MAX_RETRIES: u32 = 3;
+/// Delay between ENGAGE handshake retries.
+const HANDSHAKE_RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_millis(500);
 
 /// WebSocket teleoperation endpoint handling handshake, ActiveSession exclusivity,
 /// command forwarding to DataFabric, and telemetry streaming back to client.
@@ -113,7 +117,9 @@ pub async fn teleop_ws(
         Ok(rx) => rx,
         Err(err) => {
             error!("Failed to subscribe to telemetry for robot '{robot_id}': {err}");
-            return Ok(HttpResponse::InternalServerError().body("Failed to subscribe to telemetry fabric"));
+            return Ok(
+                HttpResponse::InternalServerError().body("Failed to subscribe to telemetry fabric")
+            );
         }
     };
 
@@ -133,6 +139,68 @@ pub async fn teleop_ws(
         // Hold guard for duration of connection; dropping guard on exit frees session
         let _active_guard: ActiveSessionGuard = guard;
         let mut last_command_time: Option<std::time::Instant> = None;
+
+        // Handshake: EdgeNode idles in STANDBY until Gateway forwards ENGAGE.
+        // Bounded retry: a slow EdgeBridge may miss the first ENGAGE, so retry
+        // until telemetry shows the arm left parked state (anything but STANDBY).
+        let handshake_done = Arc::new(AtomicBool::new(false));
+        let handshake_engaged = Arc::new(AtomicBool::new(false));
+        let engage_cmd = crate::domain::RobotCommand {
+            command_id: format!("gateway-engage-{robot_id_for_task}-{0}", current_time_ns()),
+            sender_id: "gateway".to_string(),
+            timestamp_ns: current_time_ns(),
+            r#type: crate::domain::CommandType::Engage,
+            payload: serde_json::json!({}),
+        };
+        if let Err(err) = fabric_for_task
+            .publish_command(&robot_id_for_task, &engage_cmd)
+            .await
+        {
+            warn!("Failed to forward ENGAGE handshake for robot {robot_id_for_task}: {err}");
+        }
+        let retry_fabric = web::Data::clone(&fabric_for_task);
+        let retry_robot_id = robot_id_for_task.clone();
+        let retry_done = Arc::clone(&handshake_done);
+        let retry_engaged = Arc::clone(&handshake_engaged);
+        let retry_handle = tokio::spawn(async move {
+            for attempt in 1..=HANDSHAKE_MAX_RETRIES {
+                tokio::time::sleep(HANDSHAKE_RETRY_INTERVAL).await;
+                if retry_engaged.load(Ordering::SeqCst) {
+                    info!(
+                        "ENGAGE handshake acknowledged for robot {retry_robot_id}; stopping retries"
+                    );
+                    return;
+                }
+                if retry_done.load(Ordering::SeqCst) {
+                    return;
+                }
+                let retry_cmd = crate::domain::RobotCommand {
+                    command_id: format!(
+                        "gateway-engage-retry-{retry_robot_id}-{attempt}-{0}",
+                        current_time_ns()
+                    ),
+                    sender_id: "gateway".to_string(),
+                    timestamp_ns: current_time_ns(),
+                    r#type: crate::domain::CommandType::Engage,
+                    payload: serde_json::json!({}),
+                };
+                match retry_fabric.publish_command(&retry_robot_id, &retry_cmd).await {
+                    Ok(()) => info!(
+                        "Retried ENGAGE handshake for robot {retry_robot_id} (attempt {attempt}/{HANDSHAKE_MAX_RETRIES})"
+                    ),
+                    Err(err) => warn!(
+                        "Failed to retry ENGAGE handshake for robot {retry_robot_id} (attempt {attempt}): {err}"
+                    ),
+                }
+            }
+            if retry_engaged.load(Ordering::SeqCst) {
+                info!("ENGAGE handshake acknowledged for robot {retry_robot_id}; stopping retries");
+            } else {
+                warn!(
+                    "ENGAGE handshake retries exhausted for robot {retry_robot_id} ({HANDSHAKE_MAX_RETRIES} attempts); arm may still be parked"
+                );
+            }
+        });
 
         loop {
             tokio::select! {
@@ -241,6 +309,16 @@ pub async fn teleop_ws(
                 telem_res = telemetry_rx.recv() => {
                     match telem_res {
                         Ok(telem_str) => {
+                            if let Ok(telem) = serde_json::from_str::<crate::domain::RobotTelemetryEvent>(&telem_str) {
+                                if telem.robot_state != crate::domain::RobotState::Standby
+                                    && !handshake_engaged.swap(true, Ordering::SeqCst)
+                                {
+                                    info!(
+                                        "Arm {:?} left parked state for robot {robot_id_for_task}; ENGAGE acknowledged",
+                                        telem.robot_state
+                                    );
+                                }
+                            }
                             if session.text(telem_str).await.is_err() {
                                 break;
                             }
@@ -280,6 +358,22 @@ pub async fn teleop_ws(
                     }
                 }
             }
+        }
+        // Abort retries (no await: awaiting delays session release); STANDBY then publishes exactly once.
+        retry_handle.abort();
+        handshake_done.store(true, Ordering::SeqCst);
+        let standby_cmd = crate::domain::RobotCommand {
+            command_id: format!("gateway-standby-{robot_id_for_task}-{0}", current_time_ns()),
+            sender_id: "gateway".to_string(),
+            timestamp_ns: current_time_ns(),
+            r#type: crate::domain::CommandType::Standby,
+            payload: serde_json::json!({}),
+        };
+        if let Err(err) = fabric_for_task
+            .publish_command(&robot_id_for_task, &standby_cmd)
+            .await
+        {
+            warn!("Failed to forward STANDBY handshake for robot {robot_id_for_task}: {err}");
         }
         info!("WebSocket connection ended for robot: {robot_id_for_task}");
     });
