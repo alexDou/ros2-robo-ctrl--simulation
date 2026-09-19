@@ -5,7 +5,6 @@
     clippy::items_after_statements
 )]
 
-use std::time::Duration;
 use actix_web::{test, web, App, HttpServer};
 use futures_util::{SinkExt, StreamExt};
 use gateway::domain::{
@@ -13,9 +12,9 @@ use gateway::domain::{
     RobotTelemetryEvent, SpawnObjectPayload, SpawnObjectType,
 };
 use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
+use std::time::Duration;
 use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
-
 
 #[actix_web::test]
 async fn test_ws_handshake_success_and_conflict_rejection() {
@@ -40,7 +39,10 @@ async fn test_ws_handshake_success_and_conflict_rejection() {
         .to_request();
 
     let resp1 = test::call_service(&app, req1).await;
-    assert_eq!(resp1.status(), actix_web::http::StatusCode::SWITCHING_PROTOCOLS);
+    assert_eq!(
+        resp1.status(),
+        actix_web::http::StatusCode::SWITCHING_PROTOCOLS
+    );
 
     // Second request while first is active: 409 Conflict
     let req2 = test::TestRequest::get()
@@ -91,6 +93,11 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
 
     let ws_url = format!("ws://127.0.0.1:{port}/ws/teleop/robot/robot-1");
 
+    // Subscribe before connect: Gateway auto-publishes ENGAGE on acquire
+    let mut cmd_rx = fabric
+        .subscribe_command("robot-1")
+        .expect("subscribe command");
+
     // Connect WS client
     let (mut ws_stream, _) = connect_async(&ws_url)
         .await
@@ -99,10 +106,13 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
     // Verify session is active
     assert!(registry.is_active("robot-1"));
 
-    // Subscribe to fabric command topic to verify forwarded command
-    let mut cmd_rx = fabric
-        .subscribe_command("robot-1")
-        .expect("subscribe command");
+    // 0. Gateway auto-ENGAGE handshake forwarded to fabric on connect
+    let engage_cmd = tokio::time::timeout(Duration::from_millis(500), cmd_rx.recv())
+        .await
+        .expect("timed out waiting for ENGAGE")
+        .expect("cmd rx");
+    assert_eq!(engage_cmd.r#type, CommandType::Engage);
+    assert_eq!(engage_cmd.sender_id, "gateway");
 
     // 1. Send valid PING command
     let ping_cmd = RobotCommand {
@@ -180,8 +190,16 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
 
     // 4. Drop WS client connection and verify ActiveSession is immediately released
     drop(ws_stream);
-    tokio::time::sleep(Duration::from_millis(50)).await;
+    tokio::time::sleep(Duration::from_millis(200)).await;
     assert!(!registry.is_active("robot-1"));
+
+    // 4b. Gateway auto-STANDBY handshake forwarded to fabric on disconnect
+    let standby_cmd = tokio::time::timeout(Duration::from_millis(500), cmd_rx.recv())
+        .await
+        .expect("timed out waiting for STANDBY")
+        .expect("cmd rx");
+    assert_eq!(standby_cmd.r#type, CommandType::Standby);
+    assert_eq!(standby_cmd.sender_id, "gateway");
 
     // 5. Subsequent connection to robot-1 succeeds
     let (ws_stream2, _) = connect_async(&ws_url)
@@ -320,13 +338,20 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
     tokio::spawn(srv_handle);
 
     let ws_url = format!("ws://127.0.0.1:{port}/ws/teleop/robot/robot-ratelimit");
+    let mut cmd_rx = fabric
+        .subscribe_command("robot-ratelimit")
+        .expect("subscribe command");
+
     let (mut ws_stream, _) = connect_async(&ws_url)
         .await
         .expect("WebSocket connection handshake failed");
 
-    let mut cmd_rx = fabric
-        .subscribe_command("robot-ratelimit")
-        .expect("subscribe command");
+    // Drain Gateway auto-ENGAGE handshake published on connect
+    let engage = tokio::time::timeout(Duration::from_millis(500), cmd_rx.recv())
+        .await
+        .expect("timed out waiting for ENGAGE")
+        .expect("cmd rx");
+    assert_eq!(engage.r#type, CommandType::Engage);
 
     // 1. Send first command (Ping) -> Should succeed and reach fabric
     let cmd1 = RobotCommand {
@@ -337,7 +362,9 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
         payload: serde_json::json!({}),
     };
     ws_stream
-        .send(Message::Text(serde_json::to_string(&cmd1).expect("serialize cmd1")))
+        .send(Message::Text(
+            serde_json::to_string(&cmd1).expect("serialize cmd1"),
+        ))
         .await
         .expect("send cmd1");
 
@@ -356,7 +383,9 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
         payload: serde_json::json!({}),
     };
     ws_stream
-        .send(Message::Text(serde_json::to_string(&cmd2).expect("serialize cmd2")))
+        .send(Message::Text(
+            serde_json::to_string(&cmd2).expect("serialize cmd2"),
+        ))
         .await
         .expect("send cmd2");
 
@@ -384,7 +413,9 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
         payload: serde_json::json!({"reason": "Safety trigger"}),
     };
     ws_stream
-        .send(Message::Text(serde_json::to_string(&estop_cmd).expect("serialize estop")))
+        .send(Message::Text(
+            serde_json::to_string(&estop_cmd).expect("serialize estop"),
+        ))
         .await
         .expect("send estop");
 
@@ -405,7 +436,9 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
         payload: serde_json::json!({"action": "INVALID_ACTION"}),
     };
     ws_stream
-        .send(Message::Text(serde_json::to_string(&malformed_palm_cmd).expect("serialize bad cmd")))
+        .send(Message::Text(
+            serde_json::to_string(&malformed_palm_cmd).expect("serialize bad cmd"),
+        ))
         .await
         .expect("send malformed palm cmd");
 
@@ -450,13 +483,20 @@ async fn test_ws_spawn_object_and_clear_workspace_handling_and_validation() {
     tokio::spawn(srv_handle);
 
     let ws_url = format!("ws://127.0.0.1:{port}/ws/teleop/robot/robot-workcell");
+    let mut cmd_rx = fabric
+        .subscribe_command("robot-workcell")
+        .expect("subscribe command");
+
     let (mut ws_stream, _) = connect_async(&ws_url)
         .await
         .expect("WebSocket connection handshake failed");
 
-    let mut cmd_rx = fabric
-        .subscribe_command("robot-workcell")
-        .expect("subscribe command");
+    // Drain Gateway auto-ENGAGE handshake published on connect
+    let engage = tokio::time::timeout(Duration::from_millis(500), cmd_rx.recv())
+        .await
+        .expect("timed out waiting for ENGAGE")
+        .expect("cmd rx");
+    assert_eq!(engage.r#type, CommandType::Engage);
 
     // 1. Send valid SPAWN_OBJECT command -> Forwarded to Zenoh fabric
     let spawn_cmd = RobotCommand {
@@ -705,25 +745,29 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
     tokio::spawn(srv_handle);
 
     let ws_url = format!("ws://127.0.0.1:{port}/ws/teleop/robot/robot-pnp");
+    let mut cmd_rx = fabric
+        .subscribe_command("robot-pnp")
+        .expect("subscribe command");
+
     let (mut ws_stream, _) = connect_async(&ws_url)
         .await
         .expect("WebSocket connection handshake failed");
 
-    // Verify session is active
-    assert!(registry.is_active("robot-pnp"));
+    // Drain Gateway auto-ENGAGE handshake published on connect
+    let engage = tokio::time::timeout(Duration::from_millis(500), cmd_rx.recv())
+        .await
+        .expect("timed out waiting for ENGAGE")
+        .expect("cmd rx");
+    assert_eq!(engage.r#type, CommandType::Engage);
 
-    // Verify ActiveSession exclusivity (409 Conflict) on concurrent connection attempt
-    let conflict_res = connect_async(&ws_url).await;
-    match conflict_res {
+    // Verify session is active + 409 Conflict on concurrent attempt
+    assert!(registry.is_active("robot-pnp"));
+    match connect_async(&ws_url).await {
         Err(tokio_tungstenite::tungstenite::Error::Http(resp)) => {
             assert_eq!(resp.status().as_u16(), 409);
         }
-        other => panic!("expected 409 Conflict on concurrent connection, got {other:?}"),
+        other => panic!("expected 409 Conflict, got {other:?}"),
     }
-
-    let mut cmd_rx = fabric
-        .subscribe_command("robot-pnp")
-        .expect("subscribe command");
 
     // 1. Send valid PICK_AND_PLACE_TARGET (pick only) -> Forwarded to Zenoh fabric
     let pick_only_cmd = RobotCommand {
@@ -791,7 +835,10 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
         }
         other => panic!("expected text error frame, got {other:?}"),
     }
-    assert!(cmd_rx.try_recv().is_err(), "Rate-limited command must not be forwarded to fabric");
+    assert!(
+        cmd_rx.try_recv().is_err(),
+        "Rate-limited command must not be forwarded to fabric"
+    );
 
     // 3. Send valid PICK_AND_PLACE_TARGET with drop coordinates (after 60ms delay to respect 20 Hz throttle)
     tokio::time::sleep(Duration::from_millis(60)).await;
@@ -864,7 +911,10 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
         }
         other => panic!("expected text error frame, got {other:?}"),
     }
-    assert!(cmd_rx.try_recv().is_err(), "Malformed command (missing field) must not be forwarded to fabric");
+    assert!(
+        cmd_rx.try_recv().is_err(),
+        "Malformed command (missing field) must not be forwarded to fabric"
+    );
 
     // 5. Send malformed PICK_AND_PLACE_TARGET with unknown extra fields -> Structured ErrorFrame
     tokio::time::sleep(Duration::from_millis(60)).await;
@@ -901,7 +951,10 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
         }
         other => panic!("expected text error frame, got {other:?}"),
     }
-    assert!(cmd_rx.try_recv().is_err(), "Malformed command (extra field) must not be forwarded to fabric");
+    assert!(
+        cmd_rx.try_recv().is_err(),
+        "Malformed command (extra field) must not be forwarded to fabric"
+    );
 
     // 6. Send malformed PICK_AND_PLACE_TARGET with non-finite float coordinates -> Structured ErrorFrame
     tokio::time::sleep(Duration::from_millis(60)).await;
@@ -941,7 +994,10 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
         }
         other => panic!("expected text error frame, got {other:?}"),
     }
-    assert!(cmd_rx.try_recv().is_err(), "Malformed command (non-finite) must not be forwarded to fabric");
+    assert!(
+        cmd_rx.try_recv().is_err(),
+        "Malformed command (non-finite) must not be forwarded to fabric"
+    );
 
     // 7. Verify session durability: subsequent valid PING command succeeds after errors
     tokio::time::sleep(Duration::from_millis(60)).await;
@@ -972,4 +1028,103 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
     assert!(!registry.is_active("robot-pnp"));
 }
 
+#[tokio::test]
+async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
+    let registry = web::Data::new(ActiveSessionRegistry::default());
+    let fabric = web::Data::new(DataFabricPort::memory());
 
+    let reg_clone = registry.clone();
+    let fab_clone = fabric.clone();
+
+    let server = HttpServer::new(move || {
+        App::new()
+            .app_data(reg_clone.clone())
+            .app_data(fab_clone.clone())
+            .route("/ws/teleop/robot/{id}", web::get().to(teleop_ws))
+    })
+    .bind(("127.0.0.1", 0))
+    .expect("bind ephemeral port");
+
+    let port = server.addrs()[0].port();
+    let srv_handle = server.run();
+    tokio::spawn(srv_handle);
+
+    let ws_url = format!("ws://127.0.0.1:{port}/ws/teleop/robot/robot-retry");
+    let mut cmd_rx = fabric
+        .subscribe_command("robot-retry")
+        .expect("subscribe command");
+
+    let (ws_stream, _) = connect_async(&ws_url)
+        .await
+        .expect("WebSocket connection handshake failed");
+
+    // 1. Initial ENGAGE on connect
+    let first = tokio::time::timeout(Duration::from_millis(500), cmd_rx.recv())
+        .await
+        .expect("timed out waiting for initial ENGAGE")
+        .expect("cmd rx");
+    assert_eq!(first.r#type, CommandType::Engage);
+
+    // 2. Arm still parked (STANDBY telemetry): gateway must retry ENGAGE
+    let parked = RobotTelemetryEvent {
+        timestamp_ns: 1_700_000_000_000_000_000,
+        robot_state: RobotState::Standby,
+        joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
+        inference_metrics: None,
+        command_id: None,
+    };
+    fabric
+        .publish_telemetry(
+            "robot-retry",
+            &serde_json::to_string(&parked).expect("serialize parked"),
+        )
+        .expect("publish parked telemetry");
+
+    let retry = tokio::time::timeout(Duration::from_millis(1500), cmd_rx.recv())
+        .await
+        .expect("timed out waiting for ENGAGE retry while arm parked")
+        .expect("cmd rx");
+    assert_eq!(retry.r#type, CommandType::Engage);
+    assert_ne!(retry.command_id, first.command_id);
+
+    // 3. Arm leaves parked state (IDLE telemetry): retries must stop
+    let idle = RobotTelemetryEvent {
+        timestamp_ns: 1_700_000_000_000_000_001,
+        robot_state: RobotState::Idle,
+        joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
+        inference_metrics: None,
+        command_id: None,
+    };
+    fabric
+        .publish_telemetry(
+            "robot-retry",
+            &serde_json::to_string(&idle).expect("serialize idle"),
+        )
+        .expect("publish idle telemetry");
+
+    // Grace for an in-flight retry, then drain stragglers and demand quiet
+    tokio::time::sleep(Duration::from_millis(300)).await;
+    while cmd_rx.try_recv().is_ok() {}
+    tokio::time::sleep(Duration::from_millis(1200)).await;
+    assert!(
+        cmd_rx.try_recv().is_err(),
+        "no ENGAGE retry after arm left parked state"
+    );
+
+    // 4. Disconnect publishes STANDBY exactly once
+    drop(ws_stream);
+    tokio::time::sleep(Duration::from_millis(300)).await;
+    let mut standbys = 0;
+    let mut others = 0;
+    while let Ok(cmd) = cmd_rx.try_recv() {
+        if cmd.r#type == CommandType::Standby {
+            standbys += 1;
+        } else {
+            others += 1;
+        }
+    }
+    assert_eq!(standbys, 1, "disconnect must publish STANDBY exactly once");
+    assert_eq!(others, 0, "no ENGAGE retry after disconnect, got {others}");
+}
