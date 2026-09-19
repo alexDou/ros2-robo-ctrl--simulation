@@ -116,6 +116,68 @@ async fn test_telemetry_throttler_500hz_to_30hz_stability() {
 }
 
 #[tokio::test]
+async fn test_telemetry_throttler_5hz_slow_upstream_no_repeat() {
+    // Sim loop runs 5 Hz (hand-sim-h7tu); throttler ticks 30 Hz.
+    // Worker takes pending per tick, so slow upstream must pass through
+    // at ~5 Hz with zero duplicate frames (emitted <= ingested).
+    let throttler = TelemetryThrottler::new();
+    let mut rx = throttler.subscribe();
+
+    let throttler_feed = throttler.clone();
+    let feeder_handle = tokio::spawn(async move {
+        let mut ticker = tokio::time::interval(Duration::from_millis(200));
+        ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
+        for i in 0..10 {
+            ticker.tick().await;
+            let event = RobotTelemetryEvent {
+                timestamp_ns: 1_700_000_000_000_000_000 + (i * 200_000_000),
+                robot_state: RobotState::Idle,
+                joint_positions: [i as f64 * 0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+                palm_state: gateway::domain::PalmState::default(),
+                inference_metrics: None,
+                command_id: None,
+            };
+            throttler_feed.push_event(event);
+        }
+    });
+
+    let mut stamps = Vec::new();
+    let start = std::time::Instant::now();
+    while start.elapsed() < Duration::from_millis(2500) {
+        match tokio::time::timeout(Duration::from_millis(300), rx.recv()).await {
+            Ok(Ok(event)) => stamps.push(event.timestamp_ns),
+            Ok(Err(_)) => break,
+            Err(_) => {
+                if feeder_handle.is_finished() && start.elapsed() > Duration::from_millis(2200)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+    let _ = feeder_handle.await;
+    let ingested = throttler.ingested_count();
+    let emitted = throttler.emitted_count();
+    throttler.stop();
+
+    println!("Slow upstream: ingested={ingested} emitted={} frames", stamps.len());
+    assert_eq!(ingested, 10, "feeder pushed exactly 10 frames");
+    assert_eq!(stamps.len(), 10, "each upstream frame emitted exactly once");
+    assert!(emitted <= ingested, "no duplicate emits: {emitted} <= {ingested}");
+    let mut sorted = stamps.clone();
+    sorted.sort_unstable();
+    sorted.dedup();
+    assert_eq!(sorted.len(), stamps.len(), "zero duplicate timestamps");
+    let elapsed_sec = start.elapsed().as_secs_f64();
+    let effective_hz = stamps.len() as f64 / elapsed_sec;
+    assert!(
+        (3.0..=8.0).contains(&effective_hz),
+        "Expected ~5 Hz passthrough, got {effective_hz:.2} Hz"
+    );
+}
+
+#[tokio::test]
 async fn test_telemetry_throttler_raw_joint_states_ingestion() {
     let throttler = TelemetryThrottler::new();
 
