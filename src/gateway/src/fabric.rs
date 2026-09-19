@@ -130,8 +130,14 @@ impl MemoryFabric {
             .clone()
     }
 
-    fn get_or_create_action_feedback_tx(&self, robot_id: &str) -> broadcast::Sender<ActionFeedbackFrame> {
-        let mut map = self.action_feedback_txs.lock().expect("lock action_feedback_txs");
+    fn get_or_create_action_feedback_tx(
+        &self,
+        robot_id: &str,
+    ) -> broadcast::Sender<ActionFeedbackFrame> {
+        let mut map = self
+            .action_feedback_txs
+            .lock()
+            .expect("lock action_feedback_txs");
         map.entry(robot_id.to_string())
             .or_insert_with(|| broadcast::channel(CHANNEL_CAPACITY).0)
             .clone()
@@ -142,7 +148,10 @@ impl MemoryFabric {
     /// # Panics
     /// Panics if internal mutex is poisoned.
     pub fn active_telemetry_subscriptions(&self, robot_id: &str) -> usize {
-        let map = self.active_subscriptions.lock().expect("lock active_subscriptions");
+        let map = self
+            .active_subscriptions
+            .lock()
+            .expect("lock active_subscriptions");
         map.get(robot_id).copied().unwrap_or(0)
     }
 
@@ -153,12 +162,18 @@ impl MemoryFabric {
     ///
     /// # Panics
     /// Panics if internal mutex is poisoned.
-    pub fn subscribe_telemetry(&self, robot_id: &str) -> Result<TelemetrySubscription, FabricError> {
+    pub fn subscribe_telemetry(
+        &self,
+        robot_id: &str,
+    ) -> Result<TelemetrySubscription, FabricError> {
         let _ = robot_telemetry_topic(robot_id)?;
         let tx = self.get_or_create_telem_tx(robot_id);
         let rx = tx.subscribe();
 
-        let mut sub_map = self.active_subscriptions.lock().expect("lock active_subscriptions");
+        let mut sub_map = self
+            .active_subscriptions
+            .lock()
+            .expect("lock active_subscriptions");
         *sub_map.entry(robot_id.to_string()).or_insert(0) += 1;
         drop(sub_map);
 
@@ -203,7 +218,11 @@ impl MemoryFabric {
     ///
     /// # Errors
     /// Returns [`FabricError`] on invalid robot ID.
-    pub fn publish_telemetry(&self, robot_id: &str, telemetry_json: &str) -> Result<(), FabricError> {
+    pub fn publish_telemetry(
+        &self,
+        robot_id: &str,
+        telemetry_json: &str,
+    ) -> Result<(), FabricError> {
         let _ = robot_telemetry_topic(robot_id)?;
         let tx = self.get_or_create_telem_tx(robot_id);
         let _ = tx.send(telemetry_json.to_string());
@@ -211,27 +230,41 @@ impl MemoryFabric {
     }
 
     /// Publishes a PickAndPlace action goal for `robot_id`.
-    pub fn publish_action_goal(&self, robot_id: &str, goal: &PickAndPlaceGoal) -> Result<(), FabricError> {
+    pub fn publish_action_goal(
+        &self,
+        robot_id: &str,
+        goal: &PickAndPlaceGoal,
+    ) -> Result<(), FabricError> {
         let tx = self.get_or_create_action_goal_tx(robot_id);
         let _ = tx.send(goal.clone());
         Ok(())
     }
 
     /// Subscribes to PickAndPlace action goals for `robot_id`.
-    pub fn subscribe_action_goal(&self, robot_id: &str) -> Result<broadcast::Receiver<PickAndPlaceGoal>, FabricError> {
+    pub fn subscribe_action_goal(
+        &self,
+        robot_id: &str,
+    ) -> Result<broadcast::Receiver<PickAndPlaceGoal>, FabricError> {
         let tx = self.get_or_create_action_goal_tx(robot_id);
         Ok(tx.subscribe())
     }
 
     /// Publishes Action feedback for `robot_id`.
-    pub fn publish_action_feedback(&self, robot_id: &str, feedback: &ActionFeedbackFrame) -> Result<(), FabricError> {
+    pub fn publish_action_feedback(
+        &self,
+        robot_id: &str,
+        feedback: &ActionFeedbackFrame,
+    ) -> Result<(), FabricError> {
         let tx = self.get_or_create_action_feedback_tx(robot_id);
         let _ = tx.send(feedback.clone());
         Ok(())
     }
 
     /// Subscribes to Action feedback for `robot_id`.
-    pub fn subscribe_action_feedback(&self, robot_id: &str) -> Result<ActionFeedbackSubscription, FabricError> {
+    pub fn subscribe_action_feedback(
+        &self,
+        robot_id: &str,
+    ) -> Result<ActionFeedbackSubscription, FabricError> {
         let tx = self.get_or_create_action_feedback_tx(robot_id);
         Ok(ActionFeedbackSubscription {
             receiver: tx.subscribe(),
@@ -291,7 +324,10 @@ impl ZenohFabric {
     ///
     /// # Panics
     /// Panics if internal mutex is poisoned.
-    pub fn subscribe_telemetry(&self, robot_id: &str) -> Result<TelemetrySubscription, FabricError> {
+    pub fn subscribe_telemetry(
+        &self,
+        robot_id: &str,
+    ) -> Result<TelemetrySubscription, FabricError> {
         let topic = robot_telemetry_topic(robot_id)?;
         let mut streams = self
             .streams
@@ -311,12 +347,16 @@ impl ZenohFabric {
                             Ok(subscriber) => {
                                 log::info!("Declared Zenoh subscriber for {topic_clone}");
                                 while let Ok(sample) = subscriber.recv_async().await {
-                                    let payload_str = String::from_utf8_lossy(&sample.payload().to_bytes()).into_owned();
+                                    let payload_str =
+                                        String::from_utf8_lossy(&sample.payload().to_bytes())
+                                            .into_owned();
                                     let _ = tx_forward.send(payload_str);
                                 }
                             }
                             Err(err) => {
-                                log::error!("Failed to declare Zenoh subscriber on {topic_clone}: {err}");
+                                log::error!(
+                                    "Failed to declare Zenoh subscriber on {topic_clone}: {err}"
+                                );
                             }
                         }
                     });
@@ -339,12 +379,16 @@ impl ZenohFabric {
                         Ok(subscriber) => {
                             log::info!("Declared Zenoh subscriber for {topic_clone}");
                             while let Ok(sample) = subscriber.recv_async().await {
-                                let payload_str = String::from_utf8_lossy(&sample.payload().to_bytes()).into_owned();
+                                let payload_str =
+                                    String::from_utf8_lossy(&sample.payload().to_bytes())
+                                        .into_owned();
                                 let _ = tx_forward.send(payload_str);
                             }
                         }
                         Err(err) => {
-                            log::error!("Failed to declare Zenoh subscriber on {topic_clone}: {err}");
+                            log::error!(
+                                "Failed to declare Zenoh subscriber on {topic_clone}: {err}"
+                            );
                         }
                     }
                 });
@@ -365,7 +409,9 @@ impl ZenohFabric {
             let mut streams = streams_map
                 .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
-            if let std::collections::hash_map::Entry::Occupied(mut occ) = streams.entry(r_id.clone()) {
+            if let std::collections::hash_map::Entry::Occupied(mut occ) =
+                streams.entry(r_id.clone())
+            {
                 let entry = occ.get_mut();
                 entry.sub_count = entry.sub_count.saturating_sub(1);
                 if entry.sub_count == 0 {
@@ -392,7 +438,11 @@ impl ZenohFabric {
     ///
     /// # Errors
     /// Returns [`FabricError`] on invalid robot ID or Zenoh put failure.
-    pub async fn publish_telemetry_async(&self, robot_id: &str, telemetry_json: &str) -> Result<(), FabricError> {
+    pub async fn publish_telemetry_async(
+        &self,
+        robot_id: &str,
+        telemetry_json: &str,
+    ) -> Result<(), FabricError> {
         let topic = robot_telemetry_topic(robot_id)?;
         self.session
             .put(&topic, telemetry_json)
@@ -405,7 +455,11 @@ impl ZenohFabric {
     ///
     /// # Errors
     /// Returns [`FabricError`] on invalid robot ID.
-    pub fn publish_telemetry(&self, robot_id: &str, telemetry_json: &str) -> Result<(), FabricError> {
+    pub fn publish_telemetry(
+        &self,
+        robot_id: &str,
+        telemetry_json: &str,
+    ) -> Result<(), FabricError> {
         let topic = robot_telemetry_topic(robot_id)?;
         let session = Arc::clone(&self.session);
         let payload = telemetry_json.to_string();
@@ -421,7 +475,11 @@ impl ZenohFabric {
     ///
     /// # Errors
     /// Returns [`FabricError`] on serialization or Zenoh put failure.
-    pub async fn publish_action_goal(&self, _robot_id: &str, goal: &PickAndPlaceGoal) -> Result<(), FabricError> {
+    pub async fn publish_action_goal(
+        &self,
+        _robot_id: &str,
+        goal: &PickAndPlaceGoal,
+    ) -> Result<(), FabricError> {
         let json_payload = serde_json::to_string(goal)?;
         let res1 = self
             .session
@@ -437,7 +495,11 @@ impl ZenohFabric {
     ///
     /// # Errors
     /// Returns [`FabricError`] on serialization or Zenoh put failure.
-    pub async fn publish_action_feedback(&self, _robot_id: &str, feedback: &ActionFeedbackFrame) -> Result<(), FabricError> {
+    pub async fn publish_action_feedback(
+        &self,
+        _robot_id: &str,
+        feedback: &ActionFeedbackFrame,
+    ) -> Result<(), FabricError> {
         let json_payload = serde_json::to_string(feedback)?;
         self.session
             .put(ACTION_FEEDBACK_TOPIC, json_payload)
@@ -455,7 +517,10 @@ impl ZenohFabric {
     /// # Panics
     /// Panics if internal mutex is poisoned.
     #[allow(clippy::too_many_lines)]
-    pub fn subscribe_action_feedback(&self, robot_id: &str) -> Result<ActionFeedbackSubscription, FabricError> {
+    pub fn subscribe_action_feedback(
+        &self,
+        robot_id: &str,
+    ) -> Result<ActionFeedbackSubscription, FabricError> {
         let mut streams = self
             .feedback_streams
             .lock()
@@ -469,18 +534,27 @@ impl ZenohFabric {
                     let session = Arc::clone(&self.session);
                     let tx_forward = new_tx.clone();
                     let handle = tokio::spawn(async move {
-                        match session.declare_subscriber(ACTION_FEEDBACK_WILDCARD_TOPIC).await {
+                        match session
+                            .declare_subscriber(ACTION_FEEDBACK_WILDCARD_TOPIC)
+                            .await
+                        {
                             Ok(subscriber) => {
                                 log::info!("Declared Zenoh subscriber for action feedback on {ACTION_FEEDBACK_WILDCARD_TOPIC}");
                                 while let Ok(sample) = subscriber.recv_async().await {
                                     let payload_bytes = sample.payload().to_bytes();
                                     let payload_str = String::from_utf8_lossy(&payload_bytes);
-                                    if let Ok(frame) = serde_json::from_str::<ActionFeedbackFrame>(&payload_str) {
+                                    if let Ok(frame) =
+                                        serde_json::from_str::<ActionFeedbackFrame>(&payload_str)
+                                    {
                                         let _ = tx_forward.send(frame);
-                                    } else if let Ok(fb) = serde_json::from_str::<PickAndPlaceFeedback>(&payload_str) {
+                                    } else if let Ok(fb) =
+                                        serde_json::from_str::<PickAndPlaceFeedback>(&payload_str)
+                                    {
                                         let now_ns = std::time::SystemTime::now()
                                             .duration_since(std::time::UNIX_EPOCH)
-                                            .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX));
+                                            .map_or(0, |d| {
+                                                u64::try_from(d.as_nanos()).unwrap_or(u64::MAX)
+                                            });
                                         let frame = ActionFeedbackFrame::new(
                                             "arm_controller",
                                             fb.phase,
@@ -492,7 +566,9 @@ impl ZenohFabric {
                                 }
                             }
                             Err(err) => {
-                                log::error!("Failed to declare Zenoh subscriber on action feedback: {err}");
+                                log::error!(
+                                    "Failed to declare Zenoh subscriber on action feedback: {err}"
+                                );
                             }
                         }
                     });
@@ -510,18 +586,27 @@ impl ZenohFabric {
                 let session = Arc::clone(&self.session);
                 let tx_forward = new_tx.clone();
                 let handle = tokio::spawn(async move {
-                    match session.declare_subscriber(ACTION_FEEDBACK_WILDCARD_TOPIC).await {
+                    match session
+                        .declare_subscriber(ACTION_FEEDBACK_WILDCARD_TOPIC)
+                        .await
+                    {
                         Ok(subscriber) => {
                             log::info!("Declared Zenoh subscriber for action feedback on {ACTION_FEEDBACK_WILDCARD_TOPIC}");
                             while let Ok(sample) = subscriber.recv_async().await {
                                 let payload_bytes = sample.payload().to_bytes();
                                 let payload_str = String::from_utf8_lossy(&payload_bytes);
-                                if let Ok(frame) = serde_json::from_str::<ActionFeedbackFrame>(&payload_str) {
+                                if let Ok(frame) =
+                                    serde_json::from_str::<ActionFeedbackFrame>(&payload_str)
+                                {
                                     let _ = tx_forward.send(frame);
-                                } else if let Ok(fb) = serde_json::from_str::<PickAndPlaceFeedback>(&payload_str) {
+                                } else if let Ok(fb) =
+                                    serde_json::from_str::<PickAndPlaceFeedback>(&payload_str)
+                                {
                                     let now_ns = std::time::SystemTime::now()
                                         .duration_since(std::time::UNIX_EPOCH)
-                                        .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX));
+                                        .map_or(0, |d| {
+                                            u64::try_from(d.as_nanos()).unwrap_or(u64::MAX)
+                                        });
                                     let frame = ActionFeedbackFrame::new(
                                         "arm_controller",
                                         fb.phase,
@@ -533,7 +618,9 @@ impl ZenohFabric {
                             }
                         }
                         Err(err) => {
-                            log::error!("Failed to declare Zenoh subscriber on action feedback: {err}");
+                            log::error!(
+                                "Failed to declare Zenoh subscriber on action feedback: {err}"
+                            );
                         }
                     }
                 });
@@ -554,7 +641,9 @@ impl ZenohFabric {
             let mut streams = streams_map
                 .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
-            if let std::collections::hash_map::Entry::Occupied(mut occ) = streams.entry(r_id.clone()) {
+            if let std::collections::hash_map::Entry::Occupied(mut occ) =
+                streams.entry(r_id.clone())
+            {
                 let entry = occ.get_mut();
                 entry.sub_count = entry.sub_count.saturating_sub(1);
                 if entry.sub_count == 0 {
@@ -602,7 +691,11 @@ impl DataFabricPort {
     ///
     /// # Errors
     /// Returns [`FabricError`] on serialization failure, invalid topic, or Zenoh put error.
-    pub async fn publish_command(&self, robot_id: &str, command: &RobotCommand) -> Result<(), FabricError> {
+    pub async fn publish_command(
+        &self,
+        robot_id: &str,
+        command: &RobotCommand,
+    ) -> Result<(), FabricError> {
         let topic = robot_command_topic(robot_id)?;
         let json_payload = serde_json::to_string(command)?;
 
@@ -611,7 +704,10 @@ impl DataFabricPort {
                 let tx = mem.get_or_create_cmd_tx(robot_id);
                 // Send command, ignore error if no active receivers
                 let _ = tx.send(command.clone());
-                log::info!("Published command {} to memory fabric on {topic}", command.command_id);
+                log::info!(
+                    "Published command {} to memory fabric on {topic}",
+                    command.command_id
+                );
                 Ok(())
             }
             Self::Zenoh(z) => {
@@ -619,7 +715,10 @@ impl DataFabricPort {
                     .put(&topic, json_payload)
                     .await
                     .map_err(|e| FabricError::Zenoh(e.to_string()))?;
-                log::info!("Published command {} to Zenoh on {topic}", command.command_id);
+                log::info!(
+                    "Published command {} to Zenoh on {topic}",
+                    command.command_id
+                );
                 Ok(())
             }
         }
@@ -629,7 +728,10 @@ impl DataFabricPort {
     ///
     /// # Errors
     /// Returns [`FabricError`] on invalid robot ID.
-    pub fn subscribe_telemetry(&self, robot_id: &str) -> Result<TelemetrySubscription, FabricError> {
+    pub fn subscribe_telemetry(
+        &self,
+        robot_id: &str,
+    ) -> Result<TelemetrySubscription, FabricError> {
         match self {
             Self::Memory(mem) => mem.subscribe_telemetry(robot_id),
             Self::Zenoh(z) => z.subscribe_telemetry(robot_id),
@@ -640,7 +742,11 @@ impl DataFabricPort {
     ///
     /// # Errors
     /// Returns [`FabricError`] if robot ID is invalid or transmission fails.
-    pub async fn publish_telemetry_async(&self, robot_id: &str, telemetry_json: &str) -> Result<(), FabricError> {
+    pub async fn publish_telemetry_async(
+        &self,
+        robot_id: &str,
+        telemetry_json: &str,
+    ) -> Result<(), FabricError> {
         match self {
             Self::Memory(mem) => mem.publish_telemetry(robot_id, telemetry_json),
             Self::Zenoh(z) => z.publish_telemetry_async(robot_id, telemetry_json).await,
@@ -651,7 +757,11 @@ impl DataFabricPort {
     ///
     /// # Errors
     /// Returns [`FabricError`] if robot ID is invalid or transmission fails.
-    pub fn publish_telemetry(&self, robot_id: &str, telemetry_json: &str) -> Result<(), FabricError> {
+    pub fn publish_telemetry(
+        &self,
+        robot_id: &str,
+        telemetry_json: &str,
+    ) -> Result<(), FabricError> {
         match self {
             Self::Memory(mem) => mem.publish_telemetry(robot_id, telemetry_json),
             Self::Zenoh(z) => z.publish_telemetry(robot_id, telemetry_json),
@@ -662,19 +772,28 @@ impl DataFabricPort {
     ///
     /// # Errors
     /// Returns [`FabricError`] if robot ID is invalid.
-    pub fn subscribe_command(&self, robot_id: &str) -> Result<broadcast::Receiver<RobotCommand>, FabricError> {
+    pub fn subscribe_command(
+        &self,
+        robot_id: &str,
+    ) -> Result<broadcast::Receiver<RobotCommand>, FabricError> {
         let _ = robot_command_topic(robot_id)?;
         match self {
             Self::Memory(mem) => {
                 let tx = mem.get_or_create_cmd_tx(robot_id);
                 Ok(tx.subscribe())
             }
-            Self::Zenoh(_) => Err(FabricError::Zenoh("Zenoh direct command subscribe helper unimplemented".into())),
+            Self::Zenoh(_) => Err(FabricError::Zenoh(
+                "Zenoh direct command subscribe helper unimplemented".into(),
+            )),
         }
     }
 
     /// Publishes a PickAndPlace action goal for `robot_id`.
-    pub async fn publish_action_goal(&self, robot_id: &str, goal: &PickAndPlaceGoal) -> Result<(), FabricError> {
+    pub async fn publish_action_goal(
+        &self,
+        robot_id: &str,
+        goal: &PickAndPlaceGoal,
+    ) -> Result<(), FabricError> {
         match self {
             Self::Memory(mem) => mem.publish_action_goal(robot_id, goal),
             Self::Zenoh(z) => z.publish_action_goal(robot_id, goal).await,
@@ -682,15 +801,24 @@ impl DataFabricPort {
     }
 
     /// Subscribes to PickAndPlace action goals for `robot_id`.
-    pub fn subscribe_action_goal(&self, robot_id: &str) -> Result<broadcast::Receiver<PickAndPlaceGoal>, FabricError> {
+    pub fn subscribe_action_goal(
+        &self,
+        robot_id: &str,
+    ) -> Result<broadcast::Receiver<PickAndPlaceGoal>, FabricError> {
         match self {
             Self::Memory(mem) => mem.subscribe_action_goal(robot_id),
-            Self::Zenoh(_) => Err(FabricError::Zenoh("Zenoh direct action goal subscribe unsupported".into())),
+            Self::Zenoh(_) => Err(FabricError::Zenoh(
+                "Zenoh direct action goal subscribe unsupported".into(),
+            )),
         }
     }
 
     /// Publishes Action feedback for `robot_id`.
-    pub async fn publish_action_feedback(&self, robot_id: &str, feedback: &ActionFeedbackFrame) -> Result<(), FabricError> {
+    pub async fn publish_action_feedback(
+        &self,
+        robot_id: &str,
+        feedback: &ActionFeedbackFrame,
+    ) -> Result<(), FabricError> {
         match self {
             Self::Memory(mem) => mem.publish_action_feedback(robot_id, feedback),
             Self::Zenoh(z) => z.publish_action_feedback(robot_id, feedback).await,
@@ -698,7 +826,10 @@ impl DataFabricPort {
     }
 
     /// Subscribes to Action feedback for `robot_id`.
-    pub fn subscribe_action_feedback(&self, robot_id: &str) -> Result<ActionFeedbackSubscription, FabricError> {
+    pub fn subscribe_action_feedback(
+        &self,
+        robot_id: &str,
+    ) -> Result<ActionFeedbackSubscription, FabricError> {
         match self {
             Self::Memory(mem) => mem.subscribe_action_feedback(robot_id),
             Self::Zenoh(z) => z.subscribe_action_feedback(robot_id),

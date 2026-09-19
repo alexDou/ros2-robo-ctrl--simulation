@@ -38,7 +38,10 @@ fn test_robot_command_malformed_fails_deserialization() {
     .to_string();
 
     let result: Result<RobotCommand, _> = serde_json::from_str(&invalid_json);
-    assert!(result.is_err(), "Expected deserialization to fail for invalid command type");
+    assert!(
+        result.is_err(),
+        "Expected deserialization to fail for invalid command type"
+    );
 }
 
 #[test]
@@ -92,7 +95,10 @@ fn test_robot_telemetry_event_malformed_fails() {
     .to_string();
 
     let result: Result<RobotTelemetryEvent, _> = serde_json::from_str(&invalid_joints);
-    assert!(result.is_err(), "Expected deserialization to fail for invalid joint count (too few)");
+    assert!(
+        result.is_err(),
+        "Expected deserialization to fail for invalid joint count (too few)"
+    );
 
     let too_many_joints = json!({
         "timestamp_ns": 12345,
@@ -102,7 +108,10 @@ fn test_robot_telemetry_event_malformed_fails() {
     .to_string();
 
     let result: Result<RobotTelemetryEvent, _> = serde_json::from_str(&too_many_joints);
-    assert!(result.is_err(), "Expected deserialization to fail for invalid joint count (too many)");
+    assert!(
+        result.is_err(),
+        "Expected deserialization to fail for invalid joint count (too many)"
+    );
 
     let non_number_joints = json!({
         "timestamp_ns": 12345,
@@ -112,7 +121,10 @@ fn test_robot_telemetry_event_malformed_fails() {
     .to_string();
 
     let result: Result<RobotTelemetryEvent, _> = serde_json::from_str(&non_number_joints);
-    assert!(result.is_err(), "Expected deserialization to fail for non-numeric joint value");
+    assert!(
+        result.is_err(),
+        "Expected deserialization to fail for non-numeric joint value"
+    );
 
     let invalid_state = json!({
         "timestamp_ns": 12345,
@@ -122,7 +134,10 @@ fn test_robot_telemetry_event_malformed_fails() {
     .to_string();
 
     let result: Result<RobotTelemetryEvent, _> = serde_json::from_str(&invalid_state);
-    assert!(result.is_err(), "Expected deserialization to fail for invalid robot_state");
+    assert!(
+        result.is_err(),
+        "Expected deserialization to fail for invalid robot_state"
+    );
 
     let negative_timestamp = json!({
         "timestamp_ns": -1, // Negative timestamp
@@ -132,7 +147,10 @@ fn test_robot_telemetry_event_malformed_fails() {
     .to_string();
 
     let result: Result<RobotTelemetryEvent, _> = serde_json::from_str(&negative_timestamp);
-    assert!(result.is_err(), "Expected deserialization to fail for negative timestamp");
+    assert!(
+        result.is_err(),
+        "Expected deserialization to fail for negative timestamp"
+    );
 }
 
 #[test]
@@ -158,7 +176,10 @@ fn test_robot_telemetry_event_non_finite_validation() {
         inference_metrics: None,
         command_id: None,
     };
-    assert_eq!(nan_event.validate(), Err(DomainError::InvalidJointPositions));
+    assert_eq!(
+        nan_event.validate(),
+        Err(DomainError::InvalidJointPositions)
+    );
 
     let inf_event = RobotTelemetryEvent {
         timestamp_ns: 12345,
@@ -168,7 +189,10 @@ fn test_robot_telemetry_event_non_finite_validation() {
         inference_metrics: None,
         command_id: None,
     };
-    assert_eq!(inf_event.validate(), Err(DomainError::InvalidJointPositions));
+    assert_eq!(
+        inf_event.validate(),
+        Err(DomainError::InvalidJointPositions)
+    );
 
     let neg_inf_event = RobotTelemetryEvent {
         timestamp_ns: 12345,
@@ -178,14 +202,22 @@ fn test_robot_telemetry_event_non_finite_validation() {
         inference_metrics: None,
         command_id: None,
     };
-    assert_eq!(neg_inf_event.validate(), Err(DomainError::InvalidJointPositions));
+    assert_eq!(
+        neg_inf_event.validate(),
+        Err(DomainError::InvalidJointPositions)
+    );
 }
 
 #[test]
 fn test_error_frame_serialization_round_trip() {
-    let err = ErrorFrame::new("SCHEMA_VIOLATION", "Payload missing command_id", 1_725_894_942_000);
+    let err = ErrorFrame::new(
+        "SCHEMA_VIOLATION",
+        "Payload missing command_id",
+        1_725_894_942_000,
+    );
     let serialized = serde_json::to_string(&err).expect("Serialization failed");
-    let deserialized: ErrorFrame = serde_json::from_str(&serialized).expect("Deserialization failed");
+    let deserialized: ErrorFrame =
+        serde_json::from_str(&serialized).expect("Deserialization failed");
 
     assert_eq!(err, deserialized);
     assert_eq!(deserialized.r#type, "ERROR");
@@ -200,8 +232,14 @@ fn test_datafabric_key_expressions() {
     let tel_topic = robot_telemetry_topic("robot-0").expect("Valid robot ID");
     assert_eq!(tel_topic, "robot/robot-0/telemetry");
 
-    assert_eq!(parse_robot_topic("robot/robot-0/command"), Some(("robot-0".to_string(), "command")));
-    assert_eq!(parse_robot_topic("robot/robot-0/telemetry"), Some(("robot-0".to_string(), "telemetry")));
+    assert_eq!(
+        parse_robot_topic("robot/robot-0/command"),
+        Some(("robot-0".to_string(), "command"))
+    );
+    assert_eq!(
+        parse_robot_topic("robot/robot-0/telemetry"),
+        Some(("robot-0".to_string(), "telemetry"))
+    );
     assert_eq!(parse_robot_topic("invalid/topic/structure"), None);
     assert_eq!(parse_robot_topic("robot//command"), None);
 
@@ -227,7 +265,10 @@ fn test_palm_actuate_payload_serialization_round_trip() {
 
     let invalid_res: Result<PalmActuatePayload, _> =
         serde_json::from_str(r#"{"action":"UNKNOWN"}"#);
-    assert!(invalid_res.is_err(), "Expected deserialization to fail on invalid action");
+    assert!(
+        invalid_res.is_err(),
+        "Expected deserialization to fail on invalid action"
+    );
 
     // Command wrapper
     let cmd = RobotCommand {
@@ -291,7 +332,10 @@ fn test_emergency_stop_and_reset_fault_payload_round_trip() {
     let serialized_estop = serde_json::to_string(&estop).expect("Serialize EmergencyStopPayload");
     let deserialized_estop: EmergencyStopPayload =
         serde_json::from_str(&serialized_estop).expect("Deserialize EmergencyStopPayload");
-    assert_eq!(deserialized_estop.reason, Some("Collision risk".to_string()));
+    assert_eq!(
+        deserialized_estop.reason,
+        Some("Collision risk".to_string())
+    );
 
     let estop_empty: EmergencyStopPayload =
         serde_json::from_str("{}").expect("Deserialize empty EmergencyStopPayload");
@@ -456,7 +500,10 @@ fn test_pick_and_place_target_payload_round_trip() {
     })
     .to_string();
     let result: Result<PickAndPlaceTargetPayload, _> = serde_json::from_str(&missing_field_json);
-    assert!(result.is_err(), "Expected deserialization error on missing pick_z");
+    assert!(
+        result.is_err(),
+        "Expected deserialization error on missing pick_z"
+    );
 
     // Extra fields rejected (deny_unknown_fields)
     let extra_json = json!({
@@ -481,5 +528,3 @@ fn test_pick_and_place_target_payload_round_trip() {
         serde_json::from_str(&cmd_json).expect("Deserialize PickAndPlaceTarget command");
     assert_eq!(cmd_deserialized.r#type, CommandType::PickAndPlaceTarget);
 }
-
-

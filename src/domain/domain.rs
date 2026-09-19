@@ -45,6 +45,8 @@ pub enum CommandType {
     TrajectoryExecute,
     EmergencyStop,
     ResetFault,
+    Engage,
+    Standby,
     SpawnObject,
     ClearWorkspace,
     PickAndPlaceTarget,
@@ -55,6 +57,7 @@ pub enum CommandType {
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum RobotState {
     Booting,
+    Standby,
     Idle,
     Processing,
     Executing,
@@ -135,6 +138,18 @@ pub struct EmergencyStopPayload {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
 pub struct ResetFaultPayload {
+}
+
+/// Typed payload for ENGAGE command activating EdgeNode from STANDBY
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EngagePayload {
+}
+
+/// Typed payload for STANDBY command parking EdgeNode to idle
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct StandbyPayload {
 }
 
 /// Typed payload for SPAWN_OBJECT command

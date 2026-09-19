@@ -91,6 +91,8 @@ export const CommandType = {
   TRAJECTORY_EXECUTE: 'TRAJECTORY_EXECUTE',
   EMERGENCY_STOP: 'EMERGENCY_STOP',
   RESET_FAULT: 'RESET_FAULT',
+  ENGAGE: 'ENGAGE',
+  STANDBY: 'STANDBY',
   SPAWN_OBJECT: 'SPAWN_OBJECT',
   CLEAR_WORKSPACE: 'CLEAR_WORKSPACE',
   PICK_AND_PLACE_TARGET: 'PICK_AND_PLACE_TARGET',
@@ -103,6 +105,8 @@ export const CommandTypeSchema = z.enum([
   'TRAJECTORY_EXECUTE',
   'EMERGENCY_STOP',
   'RESET_FAULT',
+  'ENGAGE',
+  'STANDBY',
   'SPAWN_OBJECT',
   'CLEAR_WORKSPACE',
   'PICK_AND_PLACE_TARGET',
@@ -115,6 +119,7 @@ export type CommandType = z.infer<typeof CommandTypeSchema>;
 /** Current lifecycle state of the robotic manipulator */
 export const RobotState = {
   BOOTING: 'BOOTING',
+  STANDBY: 'STANDBY',
   IDLE: 'IDLE',
   PROCESSING: 'PROCESSING',
   EXECUTING: 'EXECUTING',
@@ -123,6 +128,7 @@ export const RobotState = {
 
 export const RobotStateSchema = z.enum([
   'BOOTING',
+  'STANDBY',
   'IDLE',
   'PROCESSING',
   'EXECUTING',
@@ -227,6 +233,30 @@ export const ResetFaultPayloadSchema = jsonInput.pipe(rawResetFaultPayloadSchema
 export const resetFaultPayloadSchema = ResetFaultPayloadSchema;
 
 export type ResetFaultPayload = z.infer<typeof rawResetFaultPayloadSchema>;
+
+/** Typed payload for ENGAGE command activating EdgeNode from STANDBY */
+export const rawEngagePayloadSchema = z.object(
+  {
+  },
+  { message: 'EngagePayload payload must be an object' }
+).strict();
+
+export const EngagePayloadSchema = jsonInput.pipe(rawEngagePayloadSchema);
+export const engagePayloadSchema = EngagePayloadSchema;
+
+export type EngagePayload = z.infer<typeof rawEngagePayloadSchema>;
+
+/** Typed payload for STANDBY command parking EdgeNode to idle */
+export const rawStandbyPayloadSchema = z.object(
+  {
+  },
+  { message: 'StandbyPayload payload must be an object' }
+).strict();
+
+export const StandbyPayloadSchema = jsonInput.pipe(rawStandbyPayloadSchema);
+export const standbyPayloadSchema = StandbyPayloadSchema;
+
+export type StandbyPayload = z.infer<typeof rawStandbyPayloadSchema>;
 
 /** Typed payload for SPAWN_OBJECT command */
 export const rawSpawnObjectPayloadSchema = z.object(
@@ -396,6 +426,22 @@ export function parseResetFaultPayload(input: unknown): ResetFaultPayload {
 
 export function isResetFaultPayload(input: unknown): input is ResetFaultPayload {
   return resetFaultPayloadSchema.safeParse(input).success;
+}
+
+export function parseEngagePayload(input: unknown): EngagePayload {
+  return unwrapZod<EngagePayload>(engagePayloadSchema.safeParse(input));
+}
+
+export function isEngagePayload(input: unknown): input is EngagePayload {
+  return engagePayloadSchema.safeParse(input).success;
+}
+
+export function parseStandbyPayload(input: unknown): StandbyPayload {
+  return unwrapZod<StandbyPayload>(standbyPayloadSchema.safeParse(input));
+}
+
+export function isStandbyPayload(input: unknown): input is StandbyPayload {
+  return standbyPayloadSchema.safeParse(input).success;
 }
 
 export function parseSpawnObjectPayload(input: unknown): SpawnObjectPayload {

@@ -20,9 +20,11 @@ Per ADR 0004 & Unit Refactoring-A (hand-sim-bjcw):
 - If use_fake_hardware is true:
   - Generates URDF via GenericSystem mock hardware.
   - Starts robot_state_publisher.
-  - Starts controller_manager (ros2_control_node) running at 500 Hz.
-  - Spawns joint_state_broadcaster (streaming /joint_states at 500 Hz).
-  - Spawns scaled_joint_trajectory_controller.
+  - Starts controller_manager (ros2_control_node) running at 5 Hz sim
+    (GenericSystem fake hardware, non-RT host; real UR uses ur_controllers_real.yaml at 500 Hz).
+  - Spawns joint_state_broadcaster + scaled_joint_trajectory_controller
+    --inactive (parked: no /joint_states traffic until ENGAGE handshake
+    from Gateway activates them via switch_controller).
 - If use_fake_hardware is false:
   - Invokes ur_robot_driver launch configuration for physical robot.
 - Launches workcell_node and arm_controller_node.
@@ -65,6 +67,12 @@ def launch_setup(
     controllers_file = LaunchConfiguration('controllers_file').perform(context)
     robot_id = LaunchConfiguration('robot_id').perform(context)
 
+    if not use_fake_hardware and controllers_file.endswith('ur_controllers.yaml'):
+        # Default sim config is 5 Hz; physical UR needs 500 Hz RTDE loop.
+        controllers_file = controllers_file.replace(
+            'ur_controllers.yaml', 'ur_controllers_real.yaml'
+        )
+
     entities: List[LaunchDescriptionEntity] = []
 
     if use_fake_hardware:
@@ -98,7 +106,7 @@ def launch_setup(
         )
         entities.append(robot_state_publisher_node)
 
-        # 3. Controller Manager (ros2_control_node running at 500 Hz)
+        # 3. Controller Manager (ros2_control_node at 5 Hz sim; 500 Hz only for real UR)
         control_node = Node(
             package='controller_manager',
             executable='ros2_control_node',
@@ -108,6 +116,9 @@ def launch_setup(
         entities.append(control_node)
 
         # 4. Spawners for joint_state_broadcaster and scaled_joint_trajectory
+        # --inactive: load+configure only; EdgeBridge activates on ENGAGE
+        # handshake (Gateway WS connect) via /controller_manager/switch_controller,
+        # and deactivates again on STANDBY. Parked = zero /joint_states traffic.
         jsb_spawner = Node(
             package='controller_manager',
             executable='spawner',
@@ -117,6 +128,7 @@ def launch_setup(
                 '/controller_manager',
                 '--controller-manager-timeout',
                 '30',
+                '--inactive',
             ],
             output='both',
         )
@@ -131,6 +143,7 @@ def launch_setup(
                 '/controller_manager',
                 '--controller-manager-timeout',
                 '30',
+                '--inactive',
             ],
             output='both',
         )

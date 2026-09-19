@@ -85,7 +85,6 @@ export function useTeleopSession({
     const prev = prevRobotStateRef.current;
     if (prev === 'EXECUTING' && current === 'IDLE') {
       setHasActiveGear(false);
-      setActionProgress(null);
     }
     prevRobotStateRef.current = current;
   }, [robotState]);
@@ -119,7 +118,7 @@ export function useTeleopSession({
           const telem = parsed as RobotTelemetryEvent;
           const isFirst = lastLoggedStateRef.current === null;
           const stateChanged = lastLoggedStateRef.current !== telem.robot_state;
-          if (telem.robot_state === 'FAULT' || telem.robot_state === 'IDLE') {
+          if (telem.robot_state === 'FAULT') {
             setActionProgress(null);
           }
           if (telem.command_id || isFirst || stateChanged) {

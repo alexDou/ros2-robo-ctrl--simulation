@@ -613,7 +613,7 @@ describe('TeleopClient Component', () => {
       expect(secondCmd.payload.pick_x).toBeCloseTo(0.55, 2);
     });
 
-    it('auto-resets hasActiveGear to false and clears action progress when robot_state returns to IDLE after pick-and-place execution', () => {
+    it('auto-resets hasActiveGear to false and keeps COMPLETED progress visible when robot_state returns to IDLE', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
       const ws = MockWebSocket.instances[0];
       act(() => {
@@ -661,17 +661,19 @@ describe('TeleopClient Component', () => {
         }));
       });
 
-      // actionProgress must be cleared
-      expect(screen.queryByTestId('action-progress-container')).toBeNull();
+      // COMPLETED progress stays visible across final IDLE telemetry;
+      // cleared only on next pickAndPlaceTarget dispatch.
+      expect(screen.queryByTestId('action-progress-container')).not.toBeNull();
 
       // ClickLockout is lifted
       expect(visualizer.isLockedOut()).toBe(false);
 
-      // Able to click again for next target
+      // Able to click again for next target (dispatch clears stale progress)
       act(() => {
         visualizer.simulateClick(0.55, -0.05);
       });
       expect(ws.sentMessages.length).toBe(2);
+      expect(screen.queryByTestId('action-progress-container')).toBeNull();
     });
 
     it('passes onSpawnObject callback prop to RobotVisualizer and invokes on table click', () => {
