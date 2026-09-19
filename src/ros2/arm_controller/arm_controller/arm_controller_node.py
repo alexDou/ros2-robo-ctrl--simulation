@@ -82,7 +82,7 @@ class ArmControllerNode(Node):
         self._active_goal_handle = None
         self._active_traj_handle = None
 
-        # Telemetry parsing cache for zero-alloc 500 Hz ingestion
+        # Telemetry parsing cache for zero-alloc 100 Hz sim ingestion (500 Hz only on real UR)
         self._cached_joint_names: Optional[list[str]] = None
         self._cached_joint_indices: Optional[list[int]] = None
 
@@ -90,14 +90,10 @@ class ArmControllerNode(Node):
         self.solver = AnalyticalInverseKinematics(tcp_offset=self._tcp_offset)
         self.trajectory_generator = PickAndPlaceTrajectoryGenerator(solver=self.solver)
 
-        # Joint state subscriber with BEST_EFFORT QoS matching 500 Hz RTDE driver
-        self._joint_sub = self.create_subscription(
-            JointState,
-            self._joint_states_topic,
-            self._handle_joint_states,
-            qos_profile_sensor_data,
-            callback_group=self._cb_group,
-        )
+        # Lazy joint subscription: stays None while parked idle so idle launch
+        # yields zero joint-state callbacks. Created on first accepted goal.
+        # BEST_EFFORT QoS matching 100 Hz sim driver (500 Hz only on real UR).
+        self._joint_sub = None
 
         # Drop slot service client
         self._drop_slot_client = self.create_client(
@@ -143,6 +139,24 @@ class ArmControllerNode(Node):
         with self._lock:
             self._current_joints = list(joints)
 
+    def _ensure_joint_subscription(self) -> None:
+        """Creates /joint_states subscription on first accepted goal (idempotent)."""
+        with self._lock:
+            if self._joint_sub is not None:
+                return
+        sub = self.create_subscription(
+            JointState,
+            self._joint_states_topic,
+            self._handle_joint_states,
+            qos_profile_sensor_data,
+            callback_group=self._cb_group,
+        )
+        with self._lock:
+            if self._joint_sub is None:
+                self._joint_sub = sub
+            else:
+                self.destroy_subscription(sub)
+
     def _handle_joint_states(self, msg: JointState) -> None:
         """Extracts canonical UR5e joint angles from incoming JointState message with O(1) cached lookup."""
         if not msg.name or not msg.position:
@@ -171,6 +185,7 @@ class ArmControllerNode(Node):
                 )
                 return GoalResponse.REJECT
 
+        self._ensure_joint_subscription()
         self.get_logger().info(
             f"Accepting goal request: pick=({goal_request.pick_coords.x:.3f}, "
             f"{goal_request.pick_coords.y:.3f}, {goal_request.pick_coords.z:.3f}), "
