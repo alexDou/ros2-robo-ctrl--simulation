@@ -121,7 +121,6 @@ export const RobotState = {
   BOOTING: 'BOOTING',
   STANDBY: 'STANDBY',
   IDLE: 'IDLE',
-  PROCESSING: 'PROCESSING',
   EXECUTING: 'EXECUTING',
   FAULT: 'FAULT',
 } as const;
@@ -130,7 +129,6 @@ export const RobotStateSchema = z.enum([
   'BOOTING',
   'STANDBY',
   'IDLE',
-  'PROCESSING',
   'EXECUTING',
   'FAULT',
 ], { message: 'Invalid robot state' });

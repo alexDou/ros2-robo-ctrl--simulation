@@ -59,7 +59,6 @@ pub enum RobotState {
     Booting,
     Standby,
     Idle,
-    Processing,
     Executing,
     Fault,
 }

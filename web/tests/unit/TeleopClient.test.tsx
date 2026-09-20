@@ -714,18 +714,7 @@ describe('TeleopClient Component', () => {
       expect(ws.sentMessages.length).toBe(1);
       expect(visualizer.isLockedOut()).toBe(true);
 
-      // Transition to PROCESSING
-      act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000000000000',
-          robot_state: RobotState.PROCESSING,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-          palm_state: { is_grasped: false },
-        }));
-      });
-      expect(visualizer.isLockedOut()).toBe(true);
-
-      // Transition to EXECUTING
+      // Transition to EXECUTING (no PROCESSING state post-6.6.0)
       act(() => {
         ws.simulateMessage(JSON.stringify({
           timestamp_ns: '1700000000100000000',

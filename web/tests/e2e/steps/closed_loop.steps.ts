@@ -68,7 +68,7 @@ Then(
 When('the robot begins executing trajectory motion', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await expect(this.teleopPage!.connectionBadge).toHaveText(
-    /CONNECTED \/ (PROCESSING|EXECUTING)/,
+    /CONNECTED \/ EXECUTING/,
     { timeout: 3000 }
   );
 });

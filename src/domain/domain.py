@@ -49,7 +49,6 @@ class RobotState(str, Enum):
     BOOTING = "BOOTING"
     STANDBY = "STANDBY"
     IDLE = "IDLE"
-    PROCESSING = "PROCESSING"
     EXECUTING = "EXECUTING"
     FAULT = "FAULT"
 
