@@ -63,7 +63,6 @@ export class MockGateway {
   private motionStartTime: number = Date.now();
   private timer: NodeJS.Timeout | null = null;
   private activeTrajectory: ActiveTrajectory | null = null;
-  private processingTimeout: NodeJS.Timeout | null = null;
   private palmTimeout: NodeJS.Timeout | null = null;
 
   private trajectoryGenerator = new PickAndPlaceTrajectoryGenerator();
@@ -332,22 +331,14 @@ export class MockGateway {
         const poseName = (cmd.payload?.pose_name as PoseName) ?? 'READY';
         const target = CANONICAL_POSES[poseName] ?? CANONICAL_POSES.READY;
 
-        this.robotState = 'PROCESSING';
+        this.robotState = 'EXECUTING';
+        this.activeTrajectory = {
+          startJoints: [...this.currentJoints],
+          targetJoints: [...target],
+          startTime: Date.now(),
+          durationMs: 800,
+        };
         this.sendTelemetryToAll(cmd.command_id);
-
-        this.processingTimeout = setTimeout(() => {
-          this.processingTimeout = null;
-          if (this.robotState === 'PROCESSING') {
-            this.robotState = 'EXECUTING';
-            this.activeTrajectory = {
-              startJoints: [...this.currentJoints],
-              targetJoints: [...target],
-              startTime: Date.now(),
-              durationMs: 800,
-            };
-            this.sendTelemetryToAll();
-          }
-        }, 100);
         break;
       }
 
@@ -428,10 +419,6 @@ export class MockGateway {
   }
 
   private cancelTrajectory(): void {
-    if (this.processingTimeout) {
-      clearTimeout(this.processingTimeout);
-      this.processingTimeout = null;
-    }
     if (this.pnpTimeout) {
       clearTimeout(this.pnpTimeout);
       this.pnpTimeout = null;
@@ -467,7 +454,7 @@ export class MockGateway {
     }
 
     this.pnpExecuting = true;
-    this.robotState = 'PROCESSING';
+    this.robotState = 'EXECUTING';
     this.sendTelemetryToAll(commandId);
 
     let stepIdx = 0;

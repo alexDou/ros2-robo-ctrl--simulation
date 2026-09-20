@@ -155,8 +155,8 @@ describe('MockGateway', () => {
 
     await new Promise((r) => setTimeout(r, 600));
 
-    expect(states).toContain('PROCESSING');
     expect(states).toContain('EXECUTING');
+    expect(states).not.toContain('PROCESSING');
 
     ws.close();
   });
@@ -327,8 +327,8 @@ describe('MockGateway', () => {
     expect(phases).toContain('HOMING');
     expect(phases).toContain('COMPLETED');
 
-    expect(receivedStates).toContain('PROCESSING');
     expect(receivedStates).toContain('EXECUTING');
+    expect(receivedStates).not.toContain('PROCESSING');
     expect(gateway.getRobotState()).toBe('IDLE');
     expect(gateway.getTowerGearsCount()).toBe(1);
 

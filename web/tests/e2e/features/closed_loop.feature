@@ -10,8 +10,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
     When the operator clicks the "Ready" pose button
-    Then the event log should record state transition to "PROCESSING"
-    And the event log should record state transition to "EXECUTING"
+    Then the event log should record state transition to "EXECUTING"
     And the event log should record state transition to "IDLE"
     And the 3D robot model should reach the "READY" pose within 4 seconds
     And the connection status should indicate "CONNECTED / IDLE"
