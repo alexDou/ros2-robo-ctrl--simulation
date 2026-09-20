@@ -11,7 +11,7 @@ apply_to: "{src,scripts,nodes,services}/**/*.{py,rs}"
 All telemetry payloads published to Zenoh topic `telemetry/state` must conform to:
 
 * `timestamp_ns`: integer, nanoseconds since Unix epoch.
-* `robot_state`: string enum, strictly one of: `"BOOTING"`, `"IDLE"`, `"PROCESSING"`, `"EXECUTING"`, `"FAULT"`.
+* `robot_state`: string enum, strictly one of: `"BOOTING"`, `"STANDBY"`, `"IDLE"`, `"EXECUTING"`, `"FAULT"`.
 * `joint_positions`: array of exactly 6 numbers (radians, matching UR5e joint kinematics).
 * `inference_metrics`: object containing:
   * `latency_ms`: number (inference execution time in milliseconds).
