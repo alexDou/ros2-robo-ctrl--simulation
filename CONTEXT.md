@@ -5,7 +5,7 @@ Robotics simulation, real-time telemetry streaming, and teleoperation control pl
 ## Language
 
 **RobotState**:
-Operational lifecycle state of the robotic manipulator (`BOOTING`, `IDLE`, `PROCESSING`, `EXECUTING`, `FAULT`).
+Operational lifecycle state of the robotic manipulator (`BOOTING`, `STANDBY`, `IDLE`, `EXECUTING`, `FAULT`).
 _Avoid_: Status, mode, condition
 
 **ArmJointPositions**:
