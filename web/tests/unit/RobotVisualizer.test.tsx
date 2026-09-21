@@ -1545,16 +1545,128 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       }
 
       // RELEASING at tower: tower grows by one at slot height
+      // (stable release: 3 consecutive false frames)
       telemetryBufferRef.current.palmState.is_grasped = false;
-      act(() => {
-        stepFrame();
-      });
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
       expect(visualizer.isGearAttached()).toBe(false);
       expect(visualizer.getTowerGearCount()).toBe(1);
       const towerGears = visualizer.getTowerGears();
       expect(towerGears[0].position.x).toBeCloseTo(0.40, 2);
       expect(towerGears[0].position.y).toBeCloseTo(-0.30, 2);
       expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
+    });
+
+    it('Unit 6.6.6/c7kb: single-frame grasp flicker mid-transfer keeps gear on flange, tower grows only on stable release', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+      const gear = visualizer.getGearMesh();
+      expect(gear).not.toBeNull();
+
+      // Tool far from table gear: backend drove the real nozzle to pick.
+      fakeTool0Link.position.set(0, 0.5, 0.5);
+      fakeRobot.updateMatrixWorld(true);
+
+      // GRASP: table gear empties onto flange, tower stays 0
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+      expect(gear.parent).toBe(fakeTool0Link);
+      expect(visualizer.getTowerGearCount()).toBe(0);
+
+      // LIFT/TRANSFER/DROP window: grasp held, still riding, tower still 0
+      for (let i = 0; i < 5; i++) {
+        act(() => {
+          stepFrame();
+        });
+        expect(visualizer.isGearAttached()).toBe(true);
+        expect(visualizer.getTowerGearCount()).toBe(0);
+      }
+
+      // Single-frame grasp-bit flicker mid-transfer: gear keeps riding, tower stays 0
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+      expect(visualizer.getTowerGearCount()).toBe(0);
+
+      // Grasp restored: still riding
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+      expect(visualizer.getTowerGearCount()).toBe(0);
+
+      // Stable RELEASING at tower (consecutive false frames): tower +1 at slot height
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+      const towerGears = visualizer.getTowerGears();
+      expect(towerGears[0].position.x).toBeCloseTo(0.40, 2);
+      expect(towerGears[0].position.y).toBeCloseTo(-0.30, 2);
+      expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
+
+      // Second cycle: lockout lifted, new gear spawns and towers at slot k=1
+      expect(visualizer.isLockedOut()).toBe(false);
+      act(() => {
+        visualizer.simulateClick(0.55, 0.0);
+      });
+      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(2);
+      expect(visualizer.getTowerGears()[1].position.z).toBeCloseTo(0.02, 3);
     });
 
     it('unparents gear to SpindleTower stack at z_k on release', async () => {
@@ -1601,11 +1713,13 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
       expect(visualizer.isGearAttached()).toBe(true);
 
-      // Release grasp at tower
+      // Release grasp at tower (stable: 3 consecutive false frames)
       telemetryBufferRef.current.palmState.is_grasped = false;
-      act(() => {
-        stepFrame();
-      });
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
 
       expect(visualizer.isGearAttached()).toBe(false);
       expect(gear.parent).not.toBe(fakeTool0Link);
@@ -1664,9 +1778,11 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         expect(visualizer.isGearAttached()).toBe(true);
 
         telemetryBufferRef.current.palmState.is_grasped = false;
-        act(() => {
-          stepFrame();
-        });
+        for (let i = 0; i < 3; i++) {
+          act(() => {
+            stepFrame();
+          });
+        }
         expect(visualizer.isGearAttached()).toBe(false);
       }
 
@@ -1721,9 +1837,11 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           stepFrame();
         });
         telemetryBufferRef.current.palmState.is_grasped = false;
-        act(() => {
-          stepFrame();
-        });
+        for (let i = 0; i < 3; i++) {
+          act(() => {
+            stepFrame();
+          });
+        }
       }
 
       expect(visualizer.getTowerGearCount()).toBe(10);
@@ -1747,9 +1865,11 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         stepFrame();
       });
       telemetryBufferRef.current.palmState.is_grasped = false;
-      act(() => {
-        stepFrame();
-      });
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
 
       // Capacity capped at 10
       expect(visualizer.getTowerGearCount()).toBe(10);
@@ -1809,9 +1929,11 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           stepFrame();
         });
         telemetryBufferRef.current.palmState.is_grasped = false;
-        act(() => {
-          stepFrame();
-        });
+        for (let i = 0; i < 3; i++) {
+          act(() => {
+            stepFrame();
+          });
+        }
       }
 
       // Spawn a 3rd gear on table
@@ -1877,9 +1999,11 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         stepFrame();
       });
       telemetryBufferRef.current.palmState.is_grasped = false;
-      act(() => {
-        stepFrame();
-      });
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
 
       expect(visualizer.getTowerGearCount()).toBe(1);
 
@@ -1997,11 +2121,13 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
       expect(visualizer.isGearAttached()).toBe(true);
 
-      // RELEASING: tower grows by one
+      // RELEASING: tower grows by one (stable: 3 consecutive false frames)
       telemetryBufferRef.current.palmState.is_grasped = false;
-      act(() => {
-        stepFrame();
-      });
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
       expect(visualizer.isGearAttached()).toBe(false);
       expect(visualizer.getTowerGearCount()).toBe(1);
     });

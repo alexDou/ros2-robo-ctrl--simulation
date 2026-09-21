@@ -559,6 +559,10 @@ export function RobotVisualizer({
     const towerGears: GearwheelProceduralAssets[] = [];
     let isLockedOut = false;
     let wasGrasped = false;
+    // Unit 6.6.6: Case 2 release needs N consecutive false frames so a
+    // single-frame grasp-bit flicker mid-transfer cannot teleport the gear.
+    let releaseFalseCount = 0;
+    const RELEASE_STABLE_FRAMES = 3;
     let needsRender = true;
     const lastRenderedPositions = new Float64Array(6).fill(NaN);
 
@@ -793,6 +797,7 @@ export function RobotVisualizer({
     };
 
     const clearActiveGear = () => {
+      releaseFalseCount = 0;
       if (activeGearAssets) {
         if (activeGearAssets.group.parent) {
           activeGearAssets.group.parent.remove(activeGearAssets.group);
@@ -1251,6 +1256,7 @@ export function RobotVisualizer({
         // grasp bit unconditionally: the rendered FK pose may lag/mismatch the
         // 15mm proximity gate and must never block the visible ride.
         if (currentGrasped && !attachedGear && activeGearAssets) {
+          releaseFalseCount = 0;
           mountLink.attach(activeGearAssets.group);
           // Hang gear visibly below nozzle tip (tip at z=0.108 in tool0 frame)
           // instead of at tool0 origin inside the palm mesh.
@@ -1262,17 +1268,26 @@ export function RobotVisualizer({
           onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
           needsRender = true;
         }
-        // Case 2: Releasing grasped gear -> unparent to tower stack at z_k
+        // Case 2: Releasing grasped gear -> unparent to tower stack at z_k.
+        // Unit 6.6.6: require RELEASE_STABLE_FRAMES consecutive false frames
+        // so a single-frame grasp-bit flicker mid-transfer keeps the ride.
         else if (!currentGrasped && attachedGear) {
-          mountLink.remove(attachedGear.group);
-          depositGearToTower(attachedGear);
-          attachedGear = null;
-          isLockedOut = false;
-          needsRender = true;
+          releaseFalseCount += 1;
+          if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
+            mountLink.remove(attachedGear.group);
+            depositGearToTower(attachedGear);
+            attachedGear = null;
+            isLockedOut = false;
+            releaseFalseCount = 0;
+            needsRender = true;
+          }
+        } else if (currentGrasped) {
+          releaseFalseCount = 0;
         }
       } else {
         // Fallback for mock/test environments without loaded URDF
         if (currentGrasped && !attachedGear && activeGearAssets) {
+          releaseFalseCount = 0;
           attachedGear = activeGearAssets;
           activeGearAssets = null;
           // Same visible ride offset as the URDF path (tool0-frame z).
@@ -1282,10 +1297,16 @@ export function RobotVisualizer({
           onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
           needsRender = true;
         } else if (!currentGrasped && attachedGear) {
-          depositGearToTower(attachedGear);
-          attachedGear = null;
-          isLockedOut = false;
-          needsRender = true;
+          releaseFalseCount += 1;
+          if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
+            depositGearToTower(attachedGear);
+            attachedGear = null;
+            isLockedOut = false;
+            releaseFalseCount = 0;
+            needsRender = true;
+          }
+        } else if (currentGrasped) {
+          releaseFalseCount = 0;
         }
       }
 
