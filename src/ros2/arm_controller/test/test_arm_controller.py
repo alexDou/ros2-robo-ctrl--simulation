@@ -625,3 +625,117 @@ def test_arm_controller_mutual_exclusion():
         client_node.destroy_node()
 
 
+def test_arm_controller_drop_slot_unavailable_aborts_goal():
+    """Asserts missing GetDropSlot service aborts goal with structured message (6.7.2)."""
+    node = ArmControllerNode(
+        parameter_overrides=[
+            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_no_drop_svc"),
+            Parameter("get_drop_slot_service_name", Parameter.Type.STRING, "/test_workcell/nonexistent_drop_slot"),
+            Parameter("step_duration", Parameter.Type.DOUBLE, 0.005),
+            Parameter("traj_connect_timeout", Parameter.Type.DOUBLE, 0.01),
+        ]
+    )
+    client_node = Node("test_pnp_client_no_drop")
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+    executor.add_node(client_node)
+
+    client = ActionClient(client_node, PickAndPlace, "/test/pnp_no_drop_svc")
+
+    spin_thread = threading.Thread(target=executor.spin, daemon=True)
+    spin_thread.start()
+
+    try:
+        assert client.wait_for_server(timeout_sec=3.0)
+
+        goal = PickAndPlace.Goal()
+        goal.pick_coords = Point(x=0.35, y=0.15, z=0.0)
+        goal.use_custom_drop = False
+        goal.command_id = "test-no-drop-svc-1"
+
+        send_future = client.send_goal_async(goal)
+        start_t = time.time()
+        while not send_future.done() and time.time() - start_t < 3.0:
+            time.sleep(0.01)
+        assert send_future.done()
+        goal_handle = send_future.result()
+        assert goal_handle.accepted
+
+        res_future = goal_handle.get_result_async()
+        start_t = time.time()
+        while not res_future.done() and time.time() - start_t < 5.0:
+            time.sleep(0.01)
+        assert res_future.done()
+        result = res_future.result().result
+        assert result.success is False
+        assert "drop" in result.message.lower()
+    finally:
+        executor.shutdown()
+        spin_thread.join(timeout=1.0)
+        node.destroy_node()
+        client_node.destroy_node()
+
+
+def test_arm_controller_slow_drop_slot_service_still_resolves():
+    """Asserts delayed GetDropSlot response resolves via callback chain (6.7.2)."""
+    mock_workcell = Node("mock_slow_workcell_node")
+
+    def mock_get_drop_slot(req, res):
+        time.sleep(0.5)
+        res.drop_coords = Point(x=0.40, y=-0.30, z=0.08)
+        res.slot_index = 4
+        res.overflow_occurred = False
+        return res
+
+    mock_workcell.create_service(GetDropSlot, "/test_slow_workcell/get_drop_slot", mock_get_drop_slot)
+
+    node = ArmControllerNode(
+        parameter_overrides=[
+            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_slow_drop"),
+            Parameter("get_drop_slot_service_name", Parameter.Type.STRING, "/test_slow_workcell/get_drop_slot"),
+            Parameter("step_duration", Parameter.Type.DOUBLE, 0.005),
+            Parameter("traj_connect_timeout", Parameter.Type.DOUBLE, 0.01),
+        ]
+    )
+
+    client_node = Node("test_pnp_client_slow_drop")
+    executor = MultiThreadedExecutor()
+    executor.add_node(mock_workcell)
+    executor.add_node(node)
+    executor.add_node(client_node)
+
+    client = ActionClient(client_node, PickAndPlace, "/test/pnp_slow_drop")
+
+    spin_thread = threading.Thread(target=executor.spin, daemon=True)
+    spin_thread.start()
+
+    try:
+        assert client.wait_for_server(timeout_sec=3.0)
+
+        goal = PickAndPlace.Goal()
+        goal.pick_coords = Point(x=0.35, y=0.15, z=0.0)
+        goal.use_custom_drop = False
+        goal.command_id = "test-slow-drop-1"
+
+        send_future = client.send_goal_async(goal)
+        start_t = time.time()
+        while not send_future.done() and time.time() - start_t < 3.0:
+            time.sleep(0.01)
+        assert send_future.done()
+        goal_handle = send_future.result()
+
+        res_future = goal_handle.get_result_async()
+        start_t = time.time()
+        while not res_future.done() and time.time() - start_t < 6.0:
+            time.sleep(0.01)
+        assert res_future.done()
+        result = res_future.result().result
+        assert result.success is True
+    finally:
+        executor.shutdown()
+        spin_thread.join(timeout=1.0)
+        mock_workcell.destroy_node()
+        node.destroy_node()
+        client_node.destroy_node()
+
+
