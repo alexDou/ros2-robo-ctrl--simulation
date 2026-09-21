@@ -400,7 +400,7 @@ describe('TeleopClient Component', () => {
       vi.useRealTimers();
     });
 
-    it('renders operator toolbar with pose buttons, palm toggle, and emergency stop button', () => {
+    it('renders operator toolbar with Home pose only, no palm/E-STOP/Ready/Inspect, connect toggle in toolbar', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -410,14 +410,20 @@ describe('TeleopClient Component', () => {
 
       expect(screen.getByTestId('operator-toolbar')).toBeDefined();
       expect(screen.getByTestId('pose-home-button')).toBeDefined();
-      expect(screen.getByTestId('pose-ready-button')).toBeDefined();
-      expect(screen.getByTestId('pose-inspect-button')).toBeDefined();
-      expect(screen.getByTestId('palm-toggle-button')).toBeDefined();
-      expect(screen.getByTestId('emergency-stop-button')).toBeDefined();
+      expect(screen.queryByTestId('pose-ready-button')).toBeNull();
+      expect(screen.queryByTestId('pose-inspect-button')).toBeNull();
+      expect(screen.queryByTestId('palm-toggle-button')).toBeNull();
+      expect(screen.queryByTestId('palm-control-cluster')).toBeNull();
+      expect(screen.queryByTestId('palm-status')).toBeNull();
+      expect(screen.queryByTestId('emergency-stop-button')).toBeNull();
+      expect(screen.queryByTestId('safety-control-cluster')).toBeNull();
       expect(screen.getByTestId('reset-fault-button')).toBeDefined();
+      // Toolbar right slot now holds the single Connect/Disconnect toggle
+      expect(screen.getByTestId('connection-control-cluster')).toBeDefined();
+      expect(screen.getByTestId('disconnect-button')).toBeDefined();
     });
 
-    it('dispatches TRAJECTORY_EXECUTE commands when clicking Canned Pose buttons', () => {
+    it('dispatches TRAJECTORY_EXECUTE HOME command when clicking Home pose button', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -425,78 +431,45 @@ describe('TeleopClient Component', () => {
         ws.simulateOpen();
       });
 
-      // Initially robotState is IDLE by default, action buttons enabled
-      const readyBtn = screen.getByTestId('pose-ready-button');
-      fireEvent.click(readyBtn);
-
-      expect(ws.sentMessages.length).toBe(1);
-      const sent = JSON.parse(ws.sentMessages[0]);
-      expect(sent.type).toBe(CommandType.TRAJECTORY_EXECUTE);
-      expect(sent.payload.pose_name).toBe('READY');
+      // B.7 seed: handshake complete -> IDLE enables toolbar
+      act(() => {
+              ws.simulateMessage(JSON.stringify({
+                timestamp_ns: '1700000000000000000',
+                robot_state: RobotState.IDLE,
+                joint_positions: [0, 0, 0, 0, 0, 0],
+                palm_state: { is_grasped: false },
+              }));
+            });
 
       // Click Home button
       const homeBtn = screen.getByTestId('pose-home-button');
       fireEvent.click(homeBtn);
-      const sentHome = JSON.parse(ws.sentMessages[1]);
+      expect(ws.sentMessages.length).toBe(1);
+      const sentHome = JSON.parse(ws.sentMessages[0]);
+      expect(sentHome.type).toBe(CommandType.TRAJECTORY_EXECUTE);
       expect(sentHome.payload.pose_name).toBe('HOME');
     });
 
-    it('dispatches PALM_ACTUATE commands and toggles grasp status', () => {
+    it('toggles Connect/Disconnect from the toolbar right slot without bottom buttons', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      // Connect lives in toolbar right slot pre-connection
+      fireEvent.click(screen.getByTestId("connect-button"));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
+      // Connected: toolbar shows Disconnect, no bottom duplicate
+      expect(screen.getByTestId('disconnect-button')).toBeDefined();
+      expect(screen.queryByTestId('connect-button')).toBeNull();
 
-      // Initially ungrasped
-      const palmBtn = screen.getByTestId('palm-toggle-button');
-      expect(palmBtn.textContent).toBe('Grasp');
-      fireEvent.click(palmBtn);
-
-      expect(ws.sentMessages.length).toBe(1);
-      const sentGrasp = JSON.parse(ws.sentMessages[0]);
-      expect(sentGrasp.type).toBe(CommandType.PALM_ACTUATE);
-      expect(sentGrasp.payload.action).toBe('GRASP');
-
-      // Inbound telemetry updates palm_state to is_grasped: true
-      const telem: RobotTelemetryEvent = {
-        timestamp_ns: '1700000000000000000',
-        robot_state: RobotState.IDLE,
-        joint_positions: [0, 0, 0, 0, 0, 0],
-        palm_state: { is_grasped: true },
-      };
-      act(() => {
-        ws.simulateMessage(JSON.stringify(telem));
-      });
-
-      expect(screen.getByTestId('palm-toggle-button').textContent).toBe('Release');
-      expect(screen.getByTestId('palm-status').textContent).toBe('Grasped');
-
-      // Clicking now sends RELEASE
-      fireEvent.click(screen.getByTestId('palm-toggle-button'));
-      const sentRelease = JSON.parse(ws.sentMessages[1]);
-      expect(sentRelease.payload.action).toBe('RELEASE');
+      fireEvent.click(screen.getByTestId('disconnect-button'));
+      expect(screen.getByTestId('connection-badge').textContent).toBe('DISCONNECTED');
+      // Disconnected: toolbar flips back to Connect
+      expect(screen.getByTestId('connect-button')).toBeDefined();
+      expect(screen.queryByTestId('disconnect-button')).toBeNull();
     });
 
-    it('dispatches EMERGENCY_STOP unconditionally even when busy or in fault', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
-      act(() => {
-        ws.simulateOpen();
-      });
-
-      const estopBtn = screen.getByTestId('emergency-stop-button');
-      expect((estopBtn as HTMLButtonElement).disabled).toBe(false);
-
-      fireEvent.click(estopBtn);
-      expect(ws.sentMessages.length).toBe(1);
-      const sentEstop = JSON.parse(ws.sentMessages[0]);
-      expect(sentEstop.type).toBe(CommandType.EMERGENCY_STOP);
-    });
-
-    it('enforces UI interlocks: disables action buttons when EXECUTING, enables Reset Fault only on FAULT', () => {
+    it('enforces UI interlocks: disables Home when EXECUTING, enables Reset Fault only on FAULT', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -526,9 +499,9 @@ describe('TeleopClient Component', () => {
       });
 
       expect((screen.getByTestId('pose-home-button') as HTMLButtonElement).disabled).toBe(true);
-      expect((screen.getByTestId('palm-toggle-button') as HTMLButtonElement).disabled).toBe(true);
+      expect(screen.queryByTestId('palm-toggle-button')).toBeNull();
       expect((screen.getByTestId('reset-fault-button') as HTMLButtonElement).disabled).toBe(true);
-      expect((screen.getByTestId('emergency-stop-button') as HTMLButtonElement).disabled).toBe(false);
+      expect(screen.queryByTestId('emergency-stop-button')).toBeNull();
 
       // 2. Robot transitions to FAULT
       const telemFault: RobotTelemetryEvent = {
@@ -542,9 +515,9 @@ describe('TeleopClient Component', () => {
       });
 
       expect((screen.getByTestId('pose-home-button') as HTMLButtonElement).disabled).toBe(true);
-      expect((screen.getByTestId('palm-toggle-button') as HTMLButtonElement).disabled).toBe(true);
+      expect(screen.queryByTestId('palm-toggle-button')).toBeNull();
       expect((screen.getByTestId('reset-fault-button') as HTMLButtonElement).disabled).toBe(false);
-      expect((screen.getByTestId('emergency-stop-button') as HTMLButtonElement).disabled).toBe(false);
+      expect(screen.queryByTestId('emergency-stop-button')).toBeNull();
 
       // Click Reset Fault
       fireEvent.click(screen.getByTestId('reset-fault-button'));
@@ -1205,7 +1178,7 @@ describe('TeleopClient Component', () => {
       expect(progressBar.getAttribute('aria-valuenow')).toBe('100');
     });
 
-    it('clears action progress bar upon Emergency Stop or Clear Workspace', () => {
+    it('clears action progress bar upon inbound ERROR frame', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -1213,26 +1186,6 @@ describe('TeleopClient Component', () => {
         ws.simulateOpen();
       });
 
-      act(() => {
-        ws.simulateMessage(JSON.stringify({
-          type: 'ACTION_FEEDBACK',
-          command_id: 'cmd-pnp-1',
-          phase: 'TRANSFERRING',
-          percent_complete: 50.0,
-          timestamp_ns: '1700000000000000000',
-        }));
-      });
-      expect(screen.getByTestId('action-progress-container')).toBeDefined();
-
-      // Trigger Emergency Stop
-      const eStopBtn = screen.getByTestId('emergency-stop-button');
-      act(() => {
-        fireEvent.click(eStopBtn);
-      });
-
-      expect(screen.queryByTestId('action-progress-container')).toBeNull();
-
-      // Re-send action feedback and verify cleared upon error frame
       act(() => {
         ws.simulateMessage(JSON.stringify({
           type: 'ACTION_FEEDBACK',
