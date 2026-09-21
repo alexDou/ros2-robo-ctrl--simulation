@@ -55,7 +55,7 @@ Feature: Interactive 3D Workcell Table, Click-to-Place Gear Ingestion & Lifecycl
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
-    When the operator clicks the "Ready" pose button
+    When the operator clicks the "Home" pose button
     And the robot begins executing trajectory motion
     Then the Clear Workspace button should be disabled
     And clicking the workcell table is locked out

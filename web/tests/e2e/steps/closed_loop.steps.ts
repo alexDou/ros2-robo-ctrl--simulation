@@ -7,7 +7,8 @@ When(
   'the operator clicks the {string} pose button',
   async function (this: CustomWorld, poseName: string) {
     expect(this.teleopPage).toBeDefined();
-    await this.teleopPage!.clickCannedPose(poseName as 'Home' | 'Ready' | 'Inspect');
+    expect(poseName).toBe('Home');
+    await this.teleopPage!.clickHomePose();
   }
 );
 
@@ -31,14 +32,17 @@ Then(
 
 Then('the palm status should indicate {string}', async function (this: CustomWorld, status: string) {
   expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.expectPalmStatus(status);
+  expect(status).toMatch(/^(Grasped|Released)$/);
+  // Palm badge removed in 6.6.4a; 3D nozzle highlight is the grasp source of truth.
+  await this.teleopPage!.expectPalmNozzleHighlighted(status === 'Grasped');
 });
 
 Then(
   'the palm status should indicate {string} within {int} ms',
   async function (this: CustomWorld, status: string, timeoutMs: number) {
     expect(this.teleopPage).toBeDefined();
-    await this.teleopPage!.expectPalmStatus(status, timeoutMs);
+    expect(status).toMatch(/^(Grasped|Released)$/);
+    await this.teleopPage!.expectPalmNozzleHighlighted(status === 'Grasped', timeoutMs);
   }
 );
 
@@ -52,19 +56,6 @@ Then('the palm nozzle visual material should be highlighted', async function (th
   await this.teleopPage!.expectPalmNozzleHighlighted(true);
 });
 
-When('the operator clicks the palm toggle button', async function (this: CustomWorld) {
-  expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.clickPalmToggle();
-});
-
-Then(
-  'the palm toggle button text should be {string}',
-  async function (this: CustomWorld, text: string) {
-    expect(this.teleopPage).toBeDefined();
-    await this.teleopPage!.expectPalmButtonText(text);
-  }
-);
-
 When('the robot begins executing trajectory motion', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await expect(this.teleopPage!.connectionBadge).toHaveText(
@@ -73,9 +64,9 @@ When('the robot begins executing trajectory motion', async function (this: Custo
   );
 });
 
-When('the operator clicks the "EMERGENCY STOP" button', async function (this: CustomWorld) {
+When('the operator dispatches an EMERGENCY_STOP command', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.clickEmergencyStop();
+  await this.teleopPage!.dispatchEstop('E2E safety scenario');
 });
 
 Then(
@@ -116,18 +107,13 @@ Then('the Reset Fault button should be disabled', async function (this: CustomWo
   await this.teleopPage!.expectResetFaultButtonDisabled();
 });
 
-Then('the EMERGENCY STOP button should remain enabled', async function (this: CustomWorld) {
-  expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.expectEmergencyStopButtonEnabled();
-});
-
 Given('the robot is in {string} state', async function (this: CustomWorld, expectedState: string) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectConnectionStatus(/CONNECTED/);
   const badgeText = await this.teleopPage!.connectionBadge.innerText();
   if (!badgeText.includes(expectedState)) {
     if (expectedState === 'FAULT') {
-      await this.teleopPage!.clickEmergencyStop();
+      await this.teleopPage!.dispatchEstop('E2E legacy scenario');
       await this.teleopPage!.expectConnectionStatus(/FAULT/);
     }
   }
