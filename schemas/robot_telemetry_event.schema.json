@@ -9,7 +9,8 @@
     "timestamp_ns",
     "robot_state",
     "joint_positions",
-    "palm_state"
+    "palm_state",
+    "workcell_state"
   ],
   "consts": {
     "DEFAULT_ROBOT_ID": {
@@ -128,6 +129,128 @@
     "command_id": {
       "type": "string",
       "description": "Optional command identifier acknowledged by this telemetry event"
+    },
+    "workcell_state": {
+      "type": "object",
+      "title": "WorkcellState",
+      "description": "Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id",
+      "required": [
+        "spawned",
+        "in_progress",
+        "processed"
+      ],
+      "properties": {
+        "spawned": {
+          "type": "array",
+          "description": "Gears resting on the workcell table awaiting pickup",
+          "items": {
+            "type": "object",
+            "title": "GearEntry",
+            "description": "Single gear with id and Cartesian coordinates in robot base frame",
+            "required": [
+              "id",
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Backend-assigned gear identifier, never cut"
+              },
+              "x": {
+                "type": "number",
+                "description": "Cartesian X in meters (REP-103 robot base frame)"
+              },
+              "y": {
+                "type": "number",
+                "description": "Cartesian Y in meters (REP-103 robot base frame)"
+              },
+              "z": {
+                "type": "number",
+                "description": "Cartesian Z in meters (REP-103 robot base frame)"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "in_progress": {
+          "type": "array",
+          "description": "Gears currently grasped or in transit",
+          "items": {
+            "type": "object",
+            "title": "GearEntry",
+            "description": "Single gear with id and Cartesian coordinates in robot base frame",
+            "required": [
+              "id",
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Backend-assigned gear identifier, never cut"
+              },
+              "x": {
+                "type": "number",
+                "description": "Cartesian X in meters (REP-103 robot base frame)"
+              },
+              "y": {
+                "type": "number",
+                "description": "Cartesian Y in meters (REP-103 robot base frame)"
+              },
+              "z": {
+                "type": "number",
+                "description": "Cartesian Z in meters (REP-103 robot base frame)"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "processed": {
+          "type": "array",
+          "description": "Gears deposited at drop slots",
+          "items": {
+            "type": "object",
+            "title": "GearEntry",
+            "description": "Single gear with id and Cartesian coordinates in robot base frame",
+            "required": [
+              "id",
+              "x",
+              "y",
+              "z"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Backend-assigned gear identifier, never cut"
+              },
+              "x": {
+                "type": "number",
+                "description": "Cartesian X in meters (REP-103 robot base frame)"
+              },
+              "y": {
+                "type": "number",
+                "description": "Cartesian Y in meters (REP-103 robot base frame)"
+              },
+              "z": {
+                "type": "number",
+                "description": "Cartesian Z in meters (REP-103 robot base frame)"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "active_id": {
+          "type": "string",
+          "description": "Optional id of the gear currently targeted"
+        }
+      },
+      "additionalProperties": false
     },
     "phase": {
       "type": "string",

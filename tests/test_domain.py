@@ -22,6 +22,7 @@ from domain import (
     SpawnObjectPayload,
     SpawnObjectType,
     TrajectoryExecutePayload,
+    WorkcellState,
     parse_robot_topic,
     robot_command_topic,
     robot_telemetry_topic,
@@ -60,6 +61,7 @@ def test_robot_telemetry_event_serialization_round_trip():
         timestamp_ns=1_725_894_942_000_000_000,
         robot_state=RobotState.IDLE,
         joint_positions=[0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state=WorkcellState(spawned=[], in_progress=[], processed=[]),
         inference_metrics=InferenceMetrics(
             latency_ms=15.5,
             confidence=0.98,
@@ -80,6 +82,7 @@ def test_robot_telemetry_event_phase_optional_round_trip():
         timestamp_ns=1_725_894_942_000_000_000,
         robot_state=RobotState.EXECUTING,
         joint_positions=[0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state=WorkcellState(spawned=[], in_progress=[], processed=[]),
         phase="RELEASING",
     )
     restored = RobotTelemetryEvent.model_validate_json(event.model_dump_json())
@@ -88,7 +91,8 @@ def test_robot_telemetry_event_phase_optional_round_trip():
 
     # Absent phase stays valid (legacy senders, debounce fallback).
     legacy = RobotTelemetryEvent.model_validate_json(
-        '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}'
+        '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],'
+        ' "workcell_state": {"spawned": [], "in_progress": [], "processed": []}}'
     )
     assert legacy.phase is None
 
@@ -319,6 +323,7 @@ def test_robot_telemetry_event_palm_state():
         timestamp_ns=1_725_894_942_000_000_000,
         robot_state=RobotState.IDLE,
         joint_positions=[0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state=WorkcellState(spawned=[], in_progress=[], processed=[]),
         palm_state=PalmState(is_grasped=True),
     )
     assert event_grasped.palm_state.is_grasped is True
@@ -333,11 +338,12 @@ def test_robot_telemetry_event_palm_state():
         timestamp_ns=1_725_894_942_000_000_000,
         robot_state=RobotState.IDLE,
         joint_positions=[0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state=WorkcellState(spawned=[], in_progress=[], processed=[]),
     )
     assert event_default.palm_state.is_grasped is False
 
     # Deserializing without palm_state uses safe default
-    raw_no_palm = '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}'
+    raw_no_palm = '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "workcell_state": {"spawned": [], "in_progress": [], "processed": []}}'
     restored_default = RobotTelemetryEvent.model_validate_json(raw_no_palm)
     assert restored_default.palm_state.is_grasped is False
 
@@ -473,6 +479,42 @@ def test_pick_and_place_target_payload_serialization():
     with pytest.raises(ValidationError):
         PickAndPlaceTargetPayload.model_validate_json(
             '{"pick_x": 0.5, "pick_y": 0.0, "pick_z": 0.0, "unexpected_field": 123}'
+        )
+
+
+def test_robot_telemetry_event_workcell_state_required_round_trip():
+    # Unit 6.7.0/1n85: required workcell_state snapshot, flat gear entries, id never cut.
+    event = RobotTelemetryEvent.model_validate(
+        {
+            "timestamp_ns": 1_725_894_942_000_000_000,
+            "robot_state": RobotState.IDLE,
+            "joint_positions": [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+            "workcell_state": {
+                "spawned": [{"id": "gear-1", "x": 0.5, "y": 0.1, "z": 0.0}],
+                "in_progress": [],
+                "processed": [{"id": "gear-0", "x": 0.4, "y": -0.3, "z": 0.02}],
+                "active_id": "gear-1",
+            },
+        }
+    )
+    restored = RobotTelemetryEvent.model_validate_json(event.model_dump_json())
+    assert restored == event
+    assert restored.workcell_state.spawned[0].id == "gear-1"
+    assert restored.workcell_state.spawned[0].x == 0.5
+    assert restored.workcell_state.processed[0].id == "gear-0"
+    assert restored.workcell_state.active_id == "gear-1"
+
+    # Missing workcell_state rejected (legacy senders must upgrade).
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent.model_validate_json(
+            '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}'
+        )
+
+    # Gear entry without id rejected (id never cut).
+    with pytest.raises(ValidationError):
+        RobotTelemetryEvent.model_validate_json(
+            '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],'
+            ' "workcell_state": {"spawned": [{"x": 0.5, "y": 0.1, "z": 0.0}], "in_progress": [], "processed": []}}'
         )
 
 

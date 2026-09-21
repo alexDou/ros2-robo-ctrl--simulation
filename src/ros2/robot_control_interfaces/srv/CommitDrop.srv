@@ -1,0 +1,6 @@
+---
+bool success
+string message
+geometry_msgs/Point drop_coords
+int32 slot_index
+bool overflow_occurred

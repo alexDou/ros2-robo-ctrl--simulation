@@ -57,6 +57,12 @@ fn test_robot_telemetry_event_serialization_round_trip() {
             detected_object: "target_box".to_string(),
         }),
         command_id: Some("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d".to_string()),
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
         phase: None,
     };
 
@@ -79,6 +85,12 @@ fn test_robot_telemetry_event_phase_optional_round_trip() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
         phase: Some("RELEASING".to_string()),
     };
     let serialized = serde_json::to_string(&event).expect("Serialization failed");
@@ -87,12 +99,16 @@ fn test_robot_telemetry_event_phase_optional_round_trip() {
     assert_eq!(event, deserialized);
     assert_eq!(deserialized.phase.as_deref(), Some("RELEASING"));
 
-    // Absent phase stays valid (legacy senders, debounce fallback).
+    // Absent phase stays valid (debounce fallback); workcell_state required since 6.7.0.
     let legacy: RobotTelemetryEvent = serde_json::from_str(
-        r#"{"timestamp_ns":1,"robot_state":"IDLE","joint_positions":[0.0,0.0,0.0,0.0,0.0,0.0]}"#,
+        r#"{"timestamp_ns":1,"robot_state":"IDLE","joint_positions":[0.0,0.0,0.0,0.0,0.0,0.0],"workcell_state":{"spawned":[],"in_progress":[],"processed":[]}}"#,
     )
-    .expect("Legacy without phase must parse");
+    .expect("Without phase must parse");
     assert_eq!(legacy.phase, None);
+    // Missing workcell_state rejected (legacy senders must upgrade).
+    assert!(serde_json::from_str::<RobotTelemetryEvent>(
+        r#"{"timestamp_ns":1,"robot_state":"IDLE","joint_positions":[0.0,0.0,0.0,0.0,0.0,0.0]}"#
+    ).is_err());
 }
 
 #[test]
@@ -192,6 +208,12 @@ fn test_robot_telemetry_event_non_finite_validation() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
                 phase: None,
     };
     assert_eq!(valid_event.validate(), Ok(()));
@@ -203,6 +225,12 @@ fn test_robot_telemetry_event_non_finite_validation() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
                 phase: None,
     };
     assert_eq!(
@@ -217,6 +245,12 @@ fn test_robot_telemetry_event_non_finite_validation() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
                 phase: None,
     };
     assert_eq!(
@@ -231,6 +265,12 @@ fn test_robot_telemetry_event_non_finite_validation() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
                 phase: None,
     };
     assert_eq!(
@@ -387,6 +427,12 @@ fn test_robot_telemetry_event_with_palm_state() {
         palm_state: PalmState { is_grasped: true },
         inference_metrics: None,
         command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
                 phase: None,
     };
     let serialized = serde_json::to_string(&event).expect("Serialize telemetry event");
@@ -401,6 +447,7 @@ fn test_robot_telemetry_event_with_palm_state() {
         "timestamp_ns": 12345,
         "robot_state": "IDLE",
         "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        "workcell_state": {"spawned": [], "in_progress": [], "processed": []},
     })
     .to_string();
     let deserialized_default: RobotTelemetryEvent =
@@ -559,4 +606,41 @@ fn test_pick_and_place_target_payload_round_trip() {
     let cmd_deserialized: RobotCommand =
         serde_json::from_str(&cmd_json).expect("Deserialize PickAndPlaceTarget command");
     assert_eq!(cmd_deserialized.r#type, CommandType::PickAndPlaceTarget);
+}
+
+#[test]
+fn test_robot_telemetry_event_workcell_state_required_round_trip() {
+    // Unit 6.7.0: required workcell_state {id,x,y,z} buckets, never cut id.
+    let event = RobotTelemetryEvent {
+        timestamp_ns: 1_725_894_942_000_000_000,
+        robot_state: RobotState::Idle,
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        palm_state: PalmState::default(),
+        inference_metrics: None,
+        command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: vec![gateway::domain::GearEntry {
+                    id: "gear-1".to_string(),
+                    x: 0.5,
+                    y: 0.1,
+                    z: 0.0,
+                }],
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: Some("gear-1".to_string()),
+            },
+        phase: None,
+    };
+    let serialized = serde_json::to_string(&event).expect("Serialization failed");
+    let deserialized: RobotTelemetryEvent =
+        serde_json::from_str(&serialized).expect("Deserialization failed");
+    assert_eq!(event, deserialized);
+    assert_eq!(deserialized.workcell_state.spawned[0].id, "gear-1");
+    assert_eq!(deserialized.workcell_state.active_id.as_deref(), Some("gear-1"));
+
+    // Missing workcell_state rejected (legacy senders must upgrade).
+    assert!(serde_json::from_str::<RobotTelemetryEvent>(
+        r#"{"timestamp_ns":1,"robot_state":"IDLE","joint_positions":[0.0,0.0,0.0,0.0,0.0,0.0]}"#
+    )
+    .is_err());
 }

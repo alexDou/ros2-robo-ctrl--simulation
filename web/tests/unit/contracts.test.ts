@@ -144,6 +144,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           detected_object: 'box',
         },
         command_id: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
 
       const event = parseRobotTelemetryEvent(JSON.stringify(raw));
@@ -160,6 +161,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
         inference_metrics: null,
         command_id: null,
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
 
       const event = parseRobotTelemetryEvent(JSON.stringify(rawNulls));
@@ -175,6 +177,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         robot_state: 'EXECUTING',
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
         phase: 'RELEASING',
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
       const event = parseRobotTelemetryEvent(JSON.stringify(withPhase));
       expect(event.phase).toBe('RELEASING');
@@ -183,9 +186,44 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         timestamp_ns: '1725894942000000000',
         robot_state: 'IDLE',
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
       const legacyEvent = parseRobotTelemetryEvent(JSON.stringify(legacy));
       expect(legacyEvent.phase ?? null).toBeNull();
+    });
+
+    it('Unit 6.7.0: requires workcell_state with id+coords, rejects legacy-absent', () => {
+      const withBucket = {
+        timestamp_ns: '1725894942000000000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state: {
+          spawned: [{ id: 'gear-1', x: 0.5, y: 0.1, z: 0.0 }],
+          in_progress: [],
+          processed: [],
+          active_id: 'gear-1',
+        },
+      };
+      const event = parseRobotTelemetryEvent(JSON.stringify(withBucket));
+      expect(event.workcell_state.spawned[0].id).toBe('gear-1');
+      expect(event.workcell_state.spawned[0].x).toBe(0.5);
+      expect(event.workcell_state.active_id).toBe('gear-1');
+
+      const legacyAbsent = {
+        timestamp_ns: '1725894942000000000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+      };
+      expect(() => parseRobotTelemetryEvent(JSON.stringify(legacyAbsent))).toThrow();
+      expect(isRobotTelemetryEvent(legacyAbsent)).toBe(false);
+
+      const idLess = {
+        timestamp_ns: '1725894942000000000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state: { spawned: [{ x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] },
+      };
+      expect(() => parseRobotTelemetryEvent(JSON.stringify(idLess))).toThrow();
     });
 
     it('rejects RobotTelemetryEvent with invalid joint count', () => {
@@ -366,6 +404,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         timestamp_ns: 1000,
         robot_state: 'IDLE',
         joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
       expect(isRobotTelemetryEvent(validTelem)).toBe(true);
       expect(isRobotTelemetryEvent(JSON.stringify(validTelem))).toBe(true);
@@ -586,6 +625,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           timestamp_ns: '1725894942000000000',
           robot_state: 'IDLE',
           joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+          workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: true },
         };
 
@@ -598,6 +638,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           timestamp_ns: '1725894942000000000',
           robot_state: 'IDLE',
           joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+          workcell_state: { spawned: [], in_progress: [], processed: [] },
         };
 
         const event = parseRobotTelemetryEvent(JSON.stringify(raw));

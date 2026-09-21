@@ -47,6 +47,7 @@ from domain import (
     RobotTelemetryEvent,
     SpawnObjectPayload,
     TrajectoryExecutePayload,
+    WorkcellState,
     robot_command_topic,
     robot_telemetry_topic,
 )
@@ -129,6 +130,7 @@ class EdgeBridgeNode(Node):
         self._robot_state: RobotState = RobotState.STANDBY
         self._is_grasped: bool = False
         self._current_phase: Optional[str] = None
+        self._workcell_state: WorkcellState = WorkcellState(spawned=[], in_progress=[], processed=[])
         self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
         self._active_traj_handle: Optional[Any] = None
         self._active_pnp_handle: Optional[Any] = None
@@ -1080,12 +1082,14 @@ class EdgeBridgeNode(Node):
             joints = list(self._current_joints)
             is_grasped = self._is_grasped
             phase = self._current_phase
+            workcell_state = self._workcell_state
 
         event = RobotTelemetryEvent(
             timestamp_ns=time.time_ns(),
             robot_state=state,
             joint_positions=joints,
             palm_state=PalmState(is_grasped=is_grasped),
+            workcell_state=workcell_state,
             command_id=command_id,
             phase=phase,
         )

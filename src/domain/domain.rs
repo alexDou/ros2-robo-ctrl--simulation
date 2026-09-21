@@ -199,6 +199,27 @@ pub struct InferenceMetrics {
     pub detected_object: String,
 }
 
+/// Single gear with id and Cartesian coordinates in robot base frame
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct GearEntry {
+    pub id: String,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+/// Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WorkcellState {
+    pub spawned: Vec<GearEntry>,
+    pub in_progress: Vec<GearEntry>,
+    pub processed: Vec<GearEntry>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub active_id: Option<String>,
+}
+
 /// Canonical schema for structured error frames returned by Gateway over WebSocket
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -246,6 +267,7 @@ pub struct RobotTelemetryEvent {
     pub inference_metrics: Option<InferenceMetrics>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub command_id: Option<String>,
+    pub workcell_state: WorkcellState,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phase: Option<String>,
 }

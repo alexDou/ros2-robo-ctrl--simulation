@@ -99,6 +99,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000000000000',
         robot_state: state,
         joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
         ...(commandId ? { command_id: commandId } : {}),
       });
@@ -240,6 +241,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.IDLE,
       joint_positions: [0.0, 0.1, -0.2, 0.3, -0.4, 0.5],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       palm_state: { is_grasped: false },
       command_id: 'cmd-test-123',
     };
@@ -268,6 +270,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.IDLE,
       joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       palm_state: { is_grasped: false },
     };
     act(() => {
@@ -333,6 +336,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.IDLE,
       joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       palm_state: { is_grasped: false },
     };
 
@@ -405,6 +409,7 @@ describe('TeleopClient Component', () => {
       timestamp_ns: 1700000000000000000n.toString(),
       robot_state: RobotState.EXECUTING,
       joint_positions: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       palm_state: { is_grasped: false },
     };
 
@@ -463,6 +468,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -509,6 +515,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -518,6 +525,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000000000000',
         robot_state: RobotState.EXECUTING,
         joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -534,6 +542,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000100000000',
         robot_state: RobotState.FAULT,
         joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -606,6 +615,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -640,6 +650,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -672,6 +683,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000000000000',
         robot_state: RobotState.EXECUTING,
         joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -700,6 +712,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -719,6 +732,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000100000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: true },
         }));
       });
@@ -733,6 +747,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000150000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -747,6 +762,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000200000000',
           robot_state: RobotState.IDLE,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -775,6 +791,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -805,6 +822,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000100000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: true },
         }));
       });
@@ -819,6 +837,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000150000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -832,6 +851,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000200000000',
           robot_state: RobotState.IDLE,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -872,6 +892,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -924,6 +945,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -957,6 +979,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -995,6 +1018,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -1048,6 +1072,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -1067,6 +1092,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000000000000',
         robot_state: RobotState.EXECUTING,
         joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -1086,6 +1112,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000100000000',
         robot_state: RobotState.FAULT,
         joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -1099,6 +1126,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000200000000',
         robot_state: RobotState.IDLE,
         joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -1122,6 +1150,7 @@ describe('TeleopClient Component', () => {
                 timestamp_ns: '1700000000000000000',
                 robot_state: RobotState.IDLE,
                 joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
                 palm_state: { is_grasped: false },
               }));
             });
@@ -1248,6 +1277,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000000000000',
           robot_state: RobotState.IDLE,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -1262,6 +1292,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000100000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
           palm_state: { is_grasped: grasped },
           ...(phase ? { phase } : {}),
         });
