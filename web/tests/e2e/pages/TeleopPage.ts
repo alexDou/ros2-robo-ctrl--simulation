@@ -16,12 +16,7 @@ export class TeleopPage {
   readonly visualizerCanvas: Locator;
   readonly operatorToolbar: Locator;
   readonly poseHomeButton: Locator;
-  readonly poseReadyButton: Locator;
-  readonly poseInspectButton: Locator;
-  readonly palmToggleButton: Locator;
-  readonly palmStatusBadge: Locator;
   readonly resetFaultButton: Locator;
-  readonly emergencyStopButton: Locator;
   readonly clearWorkspaceButton: Locator;
   readonly toolbarErrorBanner: Locator;
   readonly connectButton: Locator;
@@ -47,12 +42,7 @@ export class TeleopPage {
     this.visualizerCanvas = page.getByTestId('robot-canvas');
     this.operatorToolbar = page.getByTestId('operator-toolbar');
     this.poseHomeButton = page.getByTestId('pose-home-button');
-    this.poseReadyButton = page.getByTestId('pose-ready-button');
-    this.poseInspectButton = page.getByTestId('pose-inspect-button');
-    this.palmToggleButton = page.getByTestId('palm-toggle-button');
-    this.palmStatusBadge = page.getByTestId('palm-status');
     this.resetFaultButton = page.getByTestId('reset-fault-button');
-    this.emergencyStopButton = page.getByTestId('emergency-stop-button');
     this.clearWorkspaceButton = page.getByTestId('clear-workspace-button');
     this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
     this.connectButton = page.getByTestId('connect-button');
@@ -301,25 +291,21 @@ export class TeleopPage {
     expect(isDisposed).toBe(true);
   }
 
-  async clickCannedPose(name: 'Home' | 'Ready' | 'Inspect'): Promise<void> {
-    const btn =
-      name === 'Home'
-        ? this.poseHomeButton
-        : name === 'Ready'
-          ? this.poseReadyButton
-          : this.poseInspectButton;
-    await expect(btn).toBeEnabled();
-    await btn.click();
+  async clickHomePose(): Promise<void> {
+    await expect(this.poseHomeButton).toBeEnabled();
+    await this.poseHomeButton.click();
   }
 
-  async clickPalmToggle(): Promise<void> {
-    await expect(this.palmToggleButton).toBeEnabled();
-    await this.palmToggleButton.click();
-  }
-
-  async clickEmergencyStop(): Promise<void> {
-    await expect(this.emergencyStopButton).toBeEnabled();
-    await this.emergencyStopButton.click();
+  async dispatchEstop(reason: string): Promise<void> {
+    await this.injectRawFrame(
+      JSON.stringify({
+        command_id: `estop-${Date.now()}`,
+        sender_id: 'ui-client',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'EMERGENCY_STOP',
+        payload: { reason },
+      })
+    );
   }
 
   async clickClearWorkspace(): Promise<void> {
@@ -342,16 +328,10 @@ export class TeleopPage {
 
   async expectActionButtonsDisabled(): Promise<void> {
     await expect(this.poseHomeButton).toBeDisabled();
-    await expect(this.poseReadyButton).toBeDisabled();
-    await expect(this.poseInspectButton).toBeDisabled();
-    await expect(this.palmToggleButton).toBeDisabled();
   }
 
   async expectActionButtonsEnabled(): Promise<void> {
     await expect(this.poseHomeButton).toBeEnabled();
-    await expect(this.poseReadyButton).toBeEnabled();
-    await expect(this.poseInspectButton).toBeEnabled();
-    await expect(this.palmToggleButton).toBeEnabled();
   }
 
   async expectResetFaultButtonDisabled(): Promise<void> {
@@ -360,18 +340,6 @@ export class TeleopPage {
 
   async expectResetFaultButtonEnabled(): Promise<void> {
     await expect(this.resetFaultButton).toBeEnabled();
-  }
-
-  async expectEmergencyStopButtonEnabled(): Promise<void> {
-    await expect(this.emergencyStopButton).toBeEnabled();
-  }
-
-  async expectPalmStatus(status: string, timeout = 5000): Promise<void> {
-    await expect(this.palmStatusBadge).toHaveText(status, { timeout });
-  }
-
-  async expectPalmButtonText(text: string, timeout = 5000): Promise<void> {
-    await expect(this.palmToggleButton).toHaveText(text, { timeout });
   }
 
   async expectPalmNozzleHighlighted(isGrasped: boolean, timeout = 5000): Promise<void> {
