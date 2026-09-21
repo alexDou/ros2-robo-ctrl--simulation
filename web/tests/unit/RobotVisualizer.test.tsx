@@ -2172,6 +2172,91 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(pinGeomSpy).toHaveBeenCalled();
       expect(pinMatSpy).toHaveBeenCalled();
     });
+
+    it('Unit 6.6.7/4ixr: stable false outside RELEASING never grows tower; RELEASING deposits +1', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+          phase: null as string | null,
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      render(
+        <RobotVisualizer
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      act(() => {
+        visualizer.simulateClick(0.5, 0.0);
+      });
+      fakeTool0Link.position.set(0, 0.5, 0.5);
+      fakeRobot.updateMatrixWorld(true);
+
+      // GRASPING ride
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      telemetryBufferRef.current.phase = 'GRASPING';
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+
+      // TRANSFERRING with stable false x5: gear keeps riding, tower stays 0
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      telemetryBufferRef.current.phase = 'TRANSFERRING';
+      for (let i = 0; i < 5; i++) {
+        act(() => {
+          stepFrame();
+        });
+        expect(visualizer.isGearAttached()).toBe(true);
+        expect(visualizer.getTowerGearCount()).toBe(0);
+      }
+
+      // True RELEASING with stable false x3: tower +1 at slot 0
+      telemetryBufferRef.current.phase = 'RELEASING';
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+      expect(visualizer.getTowerGears()[0].position.z).toBeCloseTo(0.0, 3);
+
+      // Second cycle deposits at slot k=1
+      act(() => {
+        visualizer.simulateClick(0.55, 0.0);
+      });
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      telemetryBufferRef.current.phase = 'GRASPING';
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      telemetryBufferRef.current.phase = 'RELEASING';
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
+      expect(visualizer.getTowerGearCount()).toBe(2);
+      expect(visualizer.getTowerGears()[1].position.z).toBeCloseTo(0.02, 3);
+    });
   });
 });
 

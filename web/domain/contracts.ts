@@ -372,6 +372,7 @@ export const rawRobotTelemetryEventSchema = z.object(
     palm_state: rawPalmStateSchema.default({"is_grasped": false}),
     inference_metrics: rawInferenceMetricsSchema.nullish(),
     command_id: z.string().nullish(),
+    phase: z.string().nullish(),
   },
   { message: 'RobotTelemetryEvent payload must be an object' }
 ).strict();

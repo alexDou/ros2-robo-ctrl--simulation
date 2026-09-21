@@ -14,6 +14,12 @@ export const MAX_TOWER_STACK_CAPACITY = 10;
 export const GRASP_PROXIMITY_THRESHOLD_M = 0.015;
 // Gear hangs visibly below nozzle tip (tip at z=0.108 in tool0 frame)
 // instead of at tool0 origin inside the palm mesh.
+// Unit 6.6.7: phase truth. Deposit only on RELEASING; null = legacy
+// sender without phase (debounce fallback). Anything else is
+// flicker/mid-transfer false.
+export function phaseAllowsRelease(phase: string | null | undefined): boolean {
+  return phase == null || phase === 'RELEASING';
+}
 export const GRASP_RIDE_OFFSET_Z_M = 0.118;
 
 export interface RobotVisualizerProps {
@@ -24,6 +30,7 @@ export interface RobotVisualizerProps {
     current: {
       jointPositions?: readonly number[];
       palmState?: { is_grasped: boolean };
+      phase?: string | null;
     };
   };
   robotState?: RobotState | string;
@@ -1237,6 +1244,10 @@ export function RobotVisualizer({
       const currentGrasped = Boolean(
         telemetryBufferRefProp.current?.current?.palmState?.is_grasped
       );
+      // Unit 6.6.7: phase-plumbed release gate. Null/undefined = legacy
+      // sender (debounce-only fallback); otherwise deposit only on RELEASING.
+      const currentPhase: string | null | undefined =
+        telemetryBufferRefProp.current?.current?.phase;
       if (palmAssets && currentGrasped !== wasGrasped) {
         wasGrasped = currentGrasped;
         if (currentGrasped) {
@@ -1271,15 +1282,23 @@ export function RobotVisualizer({
         // Case 2: Releasing grasped gear -> unparent to tower stack at z_k.
         // Unit 6.6.6: require RELEASE_STABLE_FRAMES consecutive false frames
         // so a single-frame grasp-bit flicker mid-transfer keeps the ride.
+        // Unit 6.6.7: when phase plumbed, deposit only on true RELEASING;
+        // stable false outside RELEASING never grows the tower.
         else if (!currentGrasped && attachedGear) {
-          releaseFalseCount += 1;
-          if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
-            mountLink.remove(attachedGear.group);
-            depositGearToTower(attachedGear);
-            attachedGear = null;
-            isLockedOut = false;
+          if (!phaseAllowsRelease(currentPhase)) {
+            // Phase truth: false outside RELEASING is flicker/mid-transfer.
+            // Drop accumulated credit so deposit needs 3 stable RELEASING frames.
             releaseFalseCount = 0;
-            needsRender = true;
+          } else {
+            releaseFalseCount += 1;
+            if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
+              mountLink.remove(attachedGear.group);
+              depositGearToTower(attachedGear);
+              attachedGear = null;
+              isLockedOut = false;
+              releaseFalseCount = 0;
+              needsRender = true;
+            }
           }
         } else if (currentGrasped) {
           releaseFalseCount = 0;
@@ -1297,13 +1316,17 @@ export function RobotVisualizer({
           onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
           needsRender = true;
         } else if (!currentGrasped && attachedGear) {
-          releaseFalseCount += 1;
-          if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
-            depositGearToTower(attachedGear);
-            attachedGear = null;
-            isLockedOut = false;
+          if (!phaseAllowsRelease(currentPhase)) {
             releaseFalseCount = 0;
-            needsRender = true;
+          } else {
+            releaseFalseCount += 1;
+            if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
+              depositGearToTower(attachedGear);
+              attachedGear = null;
+              isLockedOut = false;
+              releaseFalseCount = 0;
+              needsRender = true;
+            }
           }
         } else if (currentGrasped) {
           releaseFalseCount = 0;

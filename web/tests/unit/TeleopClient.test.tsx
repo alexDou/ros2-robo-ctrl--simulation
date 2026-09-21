@@ -1233,6 +1233,72 @@ describe('TeleopClient Component', () => {
       });
       expect(screen.queryByTestId('action-progress-container')).toBeNull();
     });
+
+    it('Unit 6.6.7/4ixr (border: mocked gateway): phase telemetry deposits tower only on RELEASING', async () => {
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+
+      // B.7 seed: handshake complete -> IDLE enables toolbar
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000000000000',
+          robot_state: RobotState.IDLE,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: false },
+        }));
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      act(() => {
+        visualizer.simulateClick(0.5, 0.1);
+      });
+
+      const telem = (grasped: boolean, phase: string | null) =>
+        JSON.stringify({
+          timestamp_ns: '1700000000100000000',
+          robot_state: RobotState.EXECUTING,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: grasped },
+          ...(phase ? { phase } : {}),
+        });
+
+      // GRASPING ride
+      act(() => {
+        ws.simulateMessage(telem(true, 'GRASPING'));
+      });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+
+      // TRANSFERRING + stable false: gear keeps riding, tower stays 0
+      for (let i = 0; i < 5; i++) {
+        act(() => {
+          ws.simulateMessage(telem(false, 'TRANSFERRING'));
+        });
+        await act(async () => {
+          await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+        });
+        expect(visualizer.isGearAttached()).toBe(true);
+        expect(visualizer.getTowerGearCount()).toBe(0);
+      }
+
+      // RELEASING + stable false: tower +1
+      for (let i = 0; i < 3; i++) {
+        act(() => {
+          ws.simulateMessage(telem(false, 'RELEASING'));
+        });
+        await act(async () => {
+          await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+        });
+      }
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+    });
   });
 });
 

@@ -246,6 +246,8 @@ pub struct RobotTelemetryEvent {
     pub inference_metrics: Option<InferenceMetrics>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub command_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub phase: Option<String>,
 }
 
 impl RobotTelemetryEvent {

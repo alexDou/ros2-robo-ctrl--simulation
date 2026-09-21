@@ -128,6 +128,10 @@
     "command_id": {
       "type": "string",
       "description": "Optional command identifier acknowledged by this telemetry event"
+    },
+    "phase": {
+      "type": "string",
+      "description": "Optional PickAndPlace action phase (e.g. RELEASING) tracked by EdgeNode from action feedback"
     }
   },
   "additionalProperties": false

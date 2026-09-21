@@ -74,6 +74,25 @@ def test_robot_telemetry_event_serialization_round_trip():
     assert len(restored.joint_positions) == 6
 
 
+def test_robot_telemetry_event_phase_optional_round_trip():
+    # Unit 6.6.7/4ixr: phase end-to-end edge->gateway->WS->buffer.
+    event = RobotTelemetryEvent(
+        timestamp_ns=1_725_894_942_000_000_000,
+        robot_state=RobotState.EXECUTING,
+        joint_positions=[0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        phase="RELEASING",
+    )
+    restored = RobotTelemetryEvent.model_validate_json(event.model_dump_json())
+    assert restored == event
+    assert restored.phase == "RELEASING"
+
+    # Absent phase stays valid (legacy senders, debounce fallback).
+    legacy = RobotTelemetryEvent.model_validate_json(
+        '{"timestamp_ns": 1, "robot_state": "IDLE", "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}'
+    )
+    assert legacy.phase is None
+
+
 def test_canonical_joint_constants():
     assert UR5E_JOINTS == [
         "shoulder_pan_joint",

@@ -57,6 +57,7 @@ export class MockGateway {
 
   private robotState: RobotState = 'IDLE';
   private palmState: { is_grasped: boolean } = { is_grasped: false };
+  private currentPhase: string | null = null;
   private currentJoints: ArmJointPositions = [...CANONICAL_POSES.HOME];
 
   private dynamicMotionEnabled = true;
@@ -132,6 +133,7 @@ export class MockGateway {
     this.autoExecutePickAndPlace = true;
     this.robotState = 'IDLE';
     this.palmState = { is_grasped: false };
+    this.currentPhase = null;
     this.currentJoints = [...CANONICAL_POSES.HOME];
     this.clearCapturedLogs();
   }
@@ -469,6 +471,7 @@ export class MockGateway {
         this.towerGearsCount = Math.min(this.towerGearsCount + 1, 10);
         this.robotState = 'IDLE';
         this.palmState = { is_grasped: false };
+        this.currentPhase = null;
         this.sendTelemetryToAll(commandId);
         return;
       }
@@ -477,6 +480,7 @@ export class MockGateway {
       const isComplete = step.stepNumber === 10;
       this.currentJoints = [...step.jointPositions] as ArmJointPositions;
       this.palmState = { is_grasped: step.isGrasped };
+      this.currentPhase = step.phase;
 
       const fbFrame = {
         type: 'ACTION_FEEDBACK',
@@ -493,6 +497,7 @@ export class MockGateway {
           this.pnpExecuting = false;
           this.robotState = 'IDLE';
           this.palmState = { is_grasped: false };
+          this.currentPhase = null;
           this.sendTelemetryToAll(commandId);
         }, 600);
         return;
@@ -576,6 +581,7 @@ export class MockGateway {
       joint_positions: [...this.currentJoints] as ArmJointPositions,
       palm_state: { ...this.palmState },
       command_id: commandId ?? null,
+      phase: this.currentPhase,
     };
     try {
       ws.send(JSON.stringify(event));

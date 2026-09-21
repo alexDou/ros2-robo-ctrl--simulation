@@ -166,6 +166,7 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: Some("cmd-1234".to_string()),
+        phase: None,
     };
     let telem_json = serde_json::to_string(&telem_event).expect("serialize telemetry");
     fabric
@@ -247,6 +248,7 @@ async fn test_ws_30hz_telemetry_high_throughput() {
             palm_state: PalmState::default(),
             inference_metrics: None,
             command_id: None,
+                phase: None,
         };
         let telem_json = serde_json::to_string(&telem_event).expect("serialize telemetry");
         fabric
@@ -1073,6 +1075,7 @@ async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
+                phase: None,
     };
     fabric
         .publish_telemetry(
@@ -1096,6 +1099,7 @@ async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
         palm_state: PalmState::default(),
         inference_metrics: None,
         command_id: None,
+                phase: None,
     };
     fabric
         .publish_telemetry(
