@@ -275,18 +275,35 @@ class ArmControllerNode(Node):
 
                 get_drop_req = GetDropSlot.Request()
                 drop_future = self._drop_slot_client.call_async(get_drop_req)
-                start_t = time.time()
-                while not drop_future.done() and time.time() - start_t < 2.0:
-                    time.sleep(0.01)
+                drop_arrived = threading.Event()
+                drop_store: dict = {}
 
-                if not drop_future.done() or drop_future.result() is None:
+                def _on_drop_done(fut) -> None:
+                    try:
+                        drop_store["result"] = fut.result()
+                    except Exception as err:
+                        drop_store["error"] = err
+                    finally:
+                        drop_arrived.set()
+
+                drop_future.add_done_callback(_on_drop_done)
+                while not drop_arrived.is_set():
+                    if goal_handle.is_cancel_requested:
+                        self.get_logger().info("PickAndPlace goal canceled during drop slot query")
+                        goal_handle.canceled()
+                        result.success = False
+                        result.message = "Goal canceled"
+                        return result
+                    drop_arrived.wait(0.02)
+
+                if "error" in drop_store or drop_store.get("result") is None:
                     self.get_logger().error("Failed to query drop slot from /workcell/get_drop_slot")
                     goal_handle.abort()
                     result.success = False
                     result.message = "Failed to query drop slot"
                     return result
 
-                drop_res = drop_future.result()
+                drop_res = drop_store["result"]
                 drop_coords = (drop_res.drop_coords.x, drop_res.drop_coords.y, drop_res.drop_coords.z)
                 self.get_logger().info(
                     f"Queried drop slot: ({drop_res.drop_coords.x:.3f}, {drop_res.drop_coords.y:.3f}, {drop_res.drop_coords.z:.3f}), "
