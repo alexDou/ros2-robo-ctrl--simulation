@@ -1,15 +1,23 @@
 """Standalone WorkcellNode and SpindleTower inventory tracker per ADR 0004 and Refactor-A.1."""
 
+import json
 import threading
+import uuid
 from typing import Optional
 
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
 from geometry_msgs.msg import Point
-from std_msgs.msg import Int32
+from std_msgs.msg import Int32, String
 
-from robot_control_interfaces.srv import ClearWorkspace, GetDropSlot, SpawnObject
+from robot_control_interfaces.srv import (
+    ClearWorkspace,
+    CommitDrop,
+    GetDropSlot,
+    MarkGrasped,
+    SpawnObject,
+)
 
 DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.40, -0.30, 0.0)
 GEAR_STACK_HEIGHT_STEP_M: float = 0.02
@@ -17,7 +25,7 @@ MAX_TOWER_STACK_CAPACITY: int = 10
 
 
 class WorkcellNode(Node):
-    """ROS2 node managing SpindleTower inventory and table workpiece coordinates."""
+    """ROS2 node owning authoritative 3-bucket gear truth (spawned/in_progress/processed)."""
 
     def __init__(self, node_name: str = "workcell_node", **kwargs) -> None:
         super().__init__(node_name, **kwargs)
@@ -35,13 +43,16 @@ class WorkcellNode(Node):
         self._max_capacity = int(self.get_parameter("max_capacity").value)
 
         self._lock = threading.Lock()
-        self._inventory: int = 0
-        self._active_workpiece: Optional[tuple[float, float, float]] = None
+        self._spawned: dict[str, dict] = {}
+        self._in_progress: dict[str, dict] = {}
+        self._processed: list[dict] = []
 
-        # Publisher for inventory count updates
+        # Publisher for inventory count updates (compat: len(processed))
         self._inventory_pub = self.create_publisher(Int32, "workcell/inventory", 10)
+        # Publisher for authoritative gear snapshot (JSON)
+        self._state_pub = self.create_publisher(String, "workcell/state", 10)
 
-        # Service servers for drop slot calculation, workpiece spawning, and workspace clearing
+        # Service servers for drop slot reservation, spawning, grasp/commit, clearing
         self._get_drop_slot_srv = self.create_service(
             GetDropSlot, "workcell/get_drop_slot", self.handle_get_drop_slot
         )
@@ -51,6 +62,15 @@ class WorkcellNode(Node):
         self._spawn_object_srv = self.create_service(
             SpawnObject, "workcell/spawn_object", self.handle_spawn_object
         )
+        self._mark_grasped_srv = self.create_service(
+            MarkGrasped, "workcell/mark_grasped", self.handle_mark_grasped
+        )
+        self._commit_drop_srv = self.create_service(
+            CommitDrop, "workcell/commit_drop", self.handle_commit_drop
+        )
+
+        # 1 Hz heartbeat so late joiners get a snapshot; never drives transitions.
+        self._heartbeat_timer = self.create_timer(1.0, self._publish_state)
 
         self.get_logger().info(
             f"WorkcellNode initialized. SpindleTower at ({self._tower_x}, {self._tower_y}, {self._tower_z}), "
@@ -58,43 +78,78 @@ class WorkcellNode(Node):
         )
 
     @property
-    def inventory(self) -> int:
-        """Returns total placed gear inventory count."""
+    def spawned(self) -> list[dict]:
+        """Returns gears resting on the table awaiting pickup."""
         with self._lock:
-            return self._inventory
+            return [dict(e) for e in self._spawned.values()]
+
+    @property
+    def in_progress(self) -> list[dict]:
+        """Returns gears currently grasped or in transit."""
+        with self._lock:
+            return [dict(e) for e in self._in_progress.values()]
+
+    @property
+    def processed(self) -> list[dict]:
+        """Returns gears deposited at drop slots, in stack order."""
+        with self._lock:
+            return [dict(e) for e in self._processed]
+
+    @property
+    def inventory(self) -> int:
+        """Returns total placed gear count (compat: len(processed))."""
+        with self._lock:
+            return len(self._processed)
 
     @property
     def tower_count(self) -> int:
         """Returns number of gears currently stacked on SpindleTower (capped at max capacity)."""
         with self._lock:
-            return min(self._inventory, self._max_capacity)
+            return min(len(self._processed), self._max_capacity)
 
     @property
     def has_active_workpiece(self) -> bool:
-        """Returns True if a workpiece is currently active on the table."""
+        """Returns True if a gear is currently spawned or in transit."""
         with self._lock:
-            return self._active_workpiece is not None
+            return bool(self._spawned or self._in_progress)
 
     @property
     def active_workpiece_coords(self) -> Optional[tuple[float, float, float]]:
-        """Returns active workpiece (x, y, z) coordinates or None."""
+        """Returns active gear (x, y, z) coordinates or None."""
         with self._lock:
-            return self._active_workpiece
+            for entry in list(self._spawned.values()) + list(self._in_progress.values()):
+                return (entry["x"], entry["y"], entry["z"])
+            return None
 
     @property
     def tower_coords(self) -> tuple[float, float, float]:
         """Returns base coordinates of SpindleTower."""
         return (self._tower_x, self._tower_y, self._tower_z)
 
-    def set_workpiece_coords(self, coords: tuple[float, float, float]) -> None:
-        """Sets active table workpiece coordinates."""
+    def get_snapshot(self) -> dict:
+        """Returns current authoritative gear snapshot."""
         with self._lock:
-            self._active_workpiece = (float(coords[0]), float(coords[1]), float(coords[2]))
+            return self._snapshot_locked()
 
-    def clear_workpiece(self) -> None:
-        """Clears active table workpiece coordinates."""
+    def _snapshot_locked(self) -> dict:
+        active_id: Optional[str] = None
+        for bucket in (self._spawned, self._in_progress):
+            if bucket:
+                active_id = next(iter(bucket))
+                break
+        return {
+            "spawned": [dict(e) for e in self._spawned.values()],
+            "in_progress": [dict(e) for e in self._in_progress.values()],
+            "processed": [dict(e) for e in self._processed],
+            "active_id": active_id,
+        }
+
+    def _publish_state(self) -> None:
         with self._lock:
-            self._active_workpiece = None
+            snapshot = self._snapshot_locked()
+        msg = String()
+        msg.data = json.dumps(snapshot)
+        self._state_pub.publish(msg)
 
     def publish_inventory(self, count: int) -> None:
         """Emits current inventory count to workcell/inventory topic."""
@@ -102,26 +157,19 @@ class WorkcellNode(Node):
         msg.data = int(count)
         self._inventory_pub.publish(msg)
 
+    def _slot_for_count(self, count: int) -> tuple[int, float, bool]:
+        """Computes (slot_index, z_k, overflow) for a given processed count."""
+        if count < self._max_capacity:
+            return count, count * self._height_step, False
+        return self._max_capacity - 1, (self._max_capacity - 1) * self._height_step, True
+
     def handle_get_drop_slot(
         self, request: GetDropSlot.Request, response: GetDropSlot.Response
     ) -> GetDropSlot.Response:
-        """Calculates next vacant drop slot coordinates and enforces FIFO bottom-drop on overflow."""
+        """Pure reservation: computes next drop slot from len(processed), no state change."""
         with self._lock:
-            current_k = self._inventory
-            if current_k < self._max_capacity:
-                slot_index = current_k
-                z_k = (slot_index % self._max_capacity) * self._height_step
-                overflow_occurred = False
-            else:
-                # FIFO bottom-drop behavior on overflow (k > 10 / current_k >= 10)
-                # Oldest bottom gear drops off, stack shifts down by 1 slot, new gear lands at top slot
-                slot_index = self._max_capacity - 1
-                z_k = slot_index * self._height_step
-                overflow_occurred = True
-
-            self._inventory += 1
-            new_count = self._inventory
-            self.publish_inventory(new_count)
+            count = len(self._processed)
+            slot_index, z_k, overflow_occurred = self._slot_for_count(count)
 
         response.drop_coords = Point(
             x=float(self._tower_x),
@@ -130,48 +178,122 @@ class WorkcellNode(Node):
         )
         response.slot_index = int(slot_index)
         response.overflow_occurred = bool(overflow_occurred)
-
-        self.get_logger().info(
-            f"Allocated drop slot {slot_index} at ({response.drop_coords.x:.2f}, "
-            f"{response.drop_coords.y:.2f}, {response.drop_coords.z:.3f}), "
-            f"overflow={overflow_occurred}, inventory={new_count}"
-        )
         return response
 
     def handle_clear_workspace(
         self, request: ClearWorkspace.Request, response: ClearWorkspace.Response
     ) -> ClearWorkspace.Response:
-        """Resets SpindleTower inventory and table workpiece coordinates to 0."""
+        """Wipes all three buckets and publishes zero snapshot."""
         with self._lock:
-            self._inventory = 0
-            self._active_workpiece = None
-            self.publish_inventory(0)
+            self._spawned.clear()
+            self._in_progress.clear()
+            self._processed.clear()
+        self._publish_state()
+        self.publish_inventory(0)
 
         response.success = True
         response.message = "Workspace reset"
-        self.get_logger().info("Workspace reset: inventory cleared and active workpiece purged")
+        self.get_logger().info("Workspace reset: all buckets wiped")
         return response
 
     def handle_spawn_object(
         self, request: SpawnObject.Request, response: SpawnObject.Response
     ) -> SpawnObject.Response:
-        """Spawns workpiece on the table surface if workspace slot is vacant."""
+        """Spawns gear on the table if no gear is spawned or in transit."""
         with self._lock:
-            if self._active_workpiece is not None:
+            if self._spawned or self._in_progress:
                 response.success = False
                 response.message = "Workpiece already active on table"
-                self.get_logger().warning("Rejecting spawn_object: workpiece already active")
+                response.gear_id = ""
+                self.get_logger().warning("Rejecting spawn_object: workcell busy")
                 return response
-            self._active_workpiece = (
-                float(request.coords.x),
-                float(request.coords.y),
-                float(request.coords.z),
-            )
+            gear_id = uuid.uuid4().hex
+            self._spawned[gear_id] = {
+                "id": gear_id,
+                "x": float(request.coords.x),
+                "y": float(request.coords.y),
+                "z": float(request.coords.z),
+            }
+        self._publish_state()
 
         response.success = True
         response.message = "Object spawned"
+        response.gear_id = gear_id
         self.get_logger().info(
-            f"Spawned workpiece at ({request.coords.x:.3f}, {request.coords.y:.3f}, {request.coords.z:.3f})"
+            f"Spawned gear {gear_id} at ({request.coords.x:.3f}, {request.coords.y:.3f}, {request.coords.z:.3f})"
+        )
+        return response
+
+    def handle_mark_grasped(
+        self, request: MarkGrasped.Request, response: MarkGrasped.Response
+    ) -> MarkGrasped.Response:
+        """Moves single spawned entry to in_progress, keeping origin=pick xyz."""
+        with self._lock:
+            if not self._spawned:
+                response.success = False
+                response.message = "No spawned gear to grasp"
+                return response
+            gear_id, entry = next(iter(self._spawned.items()))
+            del self._spawned[gear_id]
+            self._in_progress[gear_id] = {
+                "id": gear_id,
+                "x": entry["x"],
+                "y": entry["y"],
+                "z": entry["z"],
+                "origin_x": entry["x"],
+                "origin_y": entry["y"],
+                "origin_z": entry["z"],
+            }
+        self._publish_state()
+
+        response.success = True
+        response.message = "Gear marked grasped"
+        self.get_logger().info(f"Gear {gear_id} marked grasped (spawned->in_progress)")
+        return response
+
+    def handle_commit_drop(
+        self, request: CommitDrop.Request, response: CommitDrop.Response
+    ) -> CommitDrop.Response:
+        """Moves in_progress entry to processed with drop xyz, origin preserved."""
+        with self._lock:
+            if not self._in_progress:
+                response.success = False
+                response.message = "No in-progress gear to commit"
+                response.slot_index = -1
+                response.overflow_occurred = False
+                return response
+            gear_id, entry = next(iter(self._in_progress.items()))
+            del self._in_progress[gear_id]
+            count = len(self._processed)
+            slot_index, z_k, overflow_occurred = self._slot_for_count(count)
+            if overflow_occurred:
+                # FIFO bottom-drop: oldest bottom gear drops off, stack shifts
+                # down one slot, new gear lands at top slot.
+                self._processed.pop(0)
+                for i, older in enumerate(self._processed):
+                    older["z"] = float(self._tower_z + i * self._height_step)
+            drop_entry = {
+                "id": gear_id,
+                "x": float(self._tower_x),
+                "y": float(self._tower_y),
+                "z": float(self._tower_z + z_k),
+                "origin_x": entry["origin_x"],
+                "origin_y": entry["origin_y"],
+                "origin_z": entry["origin_z"],
+            }
+            self._processed.append(drop_entry)
+            new_count = len(self._processed)
+        self._publish_state()
+        self.publish_inventory(new_count)
+
+        response.success = True
+        response.message = "Drop committed"
+        response.drop_coords = Point(x=drop_entry["x"], y=drop_entry["y"], z=drop_entry["z"])
+        response.slot_index = int(slot_index)
+        response.overflow_occurred = bool(overflow_occurred)
+        self.get_logger().info(
+            f"Committed gear {gear_id} to slot {slot_index} at ({drop_entry['x']:.2f}, "
+            f"{drop_entry['y']:.2f}, {drop_entry['z']:.3f}), overflow={overflow_occurred}"
         )
         return response
 
