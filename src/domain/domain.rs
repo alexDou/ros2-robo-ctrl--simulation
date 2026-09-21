@@ -207,6 +207,12 @@ pub struct GearEntry {
     pub x: f64,
     pub y: f64,
     pub z: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub origin_x: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub origin_y: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub origin_z: Option<f64>,
 }
 
 /// Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id

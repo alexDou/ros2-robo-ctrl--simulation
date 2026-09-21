@@ -191,6 +191,9 @@ class GearEntry(BaseModel):
     x: float = Field(..., description="Cartesian X in meters (REP-103 robot base frame)")
     y: float = Field(..., description="Cartesian Y in meters (REP-103 robot base frame)")
     z: float = Field(..., description="Cartesian Z in meters (REP-103 robot base frame)")
+    origin_x: Optional[float] = Field(default=None, description="Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries")
+    origin_y: Optional[float] = Field(default=None, description="Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries")
+    origin_z: Optional[float] = Field(default=None, description="Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries")
 
 
 class WorkcellState(BaseModel):

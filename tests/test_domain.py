@@ -520,3 +520,35 @@ def test_robot_telemetry_event_workcell_state_required_round_trip():
 
 
 
+
+
+def test_robot_telemetry_event_workcell_origin_optional_round_trip():
+    # Unit 6.7.4: origin_* optional on GearEntry, coords verbatim incl origin.
+    event = RobotTelemetryEvent.model_validate(
+        {
+            "timestamp_ns": 1_725_894_942_000_000_000,
+            "robot_state": RobotState.IDLE,
+            "joint_positions": [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+            "workcell_state": {
+                "spawned": [{"id": "gear-0", "x": 0.45, "y": 0.1, "z": 0.0}],
+                "in_progress": [
+                    {"id": "gear-1", "x": 0.45, "y": 0.1, "z": 0.0,
+                     "origin_x": 0.45, "origin_y": 0.1, "origin_z": 0.0}
+                ],
+                "processed": [
+                    {"id": "gear-2", "x": 0.4, "y": -0.3, "z": 0.02,
+                     "origin_x": 0.5, "origin_y": 0.15, "origin_z": 0.0}
+                ],
+                "active_id": "gear-1",
+            },
+        }
+    )
+    restored = RobotTelemetryEvent.model_validate_json(event.model_dump_json())
+    assert restored == event
+    assert restored.workcell_state.spawned[0].origin_x is None
+    assert restored.workcell_state.in_progress[0].origin_x == 0.45
+    assert restored.workcell_state.processed[0].origin_y == 0.15
+    # Spawned entry omits origin keys on the wire (exclude_none).
+    wire = event.model_dump_json(exclude_none=True)
+    assert '"origin_x"' not in wire.split('"spawned"')[1].split("]")[0]
+    assert '"origin_x":0.45' in wire.replace(" ", "")
