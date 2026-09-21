@@ -226,6 +226,29 @@ describe('TypeScript Domain Schemas & Contracts', () => {
       expect(() => parseRobotTelemetryEvent(JSON.stringify(idLess))).toThrow();
     });
 
+    it('Unit 6.7.4: origin optional on GearEntry, coords verbatim incl origin', () => {
+      const withOrigin = {
+        timestamp_ns: '1725894942000000000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        workcell_state: {
+          spawned: [{ id: 'gear-0', x: 0.45, y: 0.1, z: 0.0 }],
+          in_progress: [
+            { id: 'gear-1', x: 0.45, y: 0.1, z: 0.0, origin_x: 0.45, origin_y: 0.1, origin_z: 0.0 },
+          ],
+          processed: [
+            { id: 'gear-2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.5, origin_y: 0.15, origin_z: 0.0 },
+          ],
+          active_id: 'gear-1',
+        },
+      };
+      const event = parseRobotTelemetryEvent(JSON.stringify(withOrigin));
+      expect(event.workcell_state.spawned[0].origin_x ?? null).toBeNull();
+      expect(event.workcell_state.in_progress[0].origin_x).toBe(0.45);
+      expect(event.workcell_state.processed[0].origin_y).toBe(0.15);
+      expect(event.workcell_state.active_id).toBe('gear-1');
+    });
+
     it('rejects RobotTelemetryEvent with invalid joint count', () => {
       const rawTooFew = {
         timestamp_ns: '1000',

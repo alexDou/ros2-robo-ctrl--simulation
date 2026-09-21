@@ -337,6 +337,9 @@ export const rawGearEntrySchema = z.object(
     x: z.number({ message: "Field 'x' must be a number" }),
     y: z.number({ message: "Field 'y' must be a number" }),
     z: z.number({ message: "Field 'z' must be a number" }),
+    origin_x: z.number({ message: "Field 'origin_x' must be a number" }).nullish(),
+    origin_y: z.number({ message: "Field 'origin_y' must be a number" }).nullish(),
+    origin_z: z.number({ message: "Field 'origin_z' must be a number" }).nullish(),
   },
   { message: 'GearEntry payload must be an object' }
 ).strict();

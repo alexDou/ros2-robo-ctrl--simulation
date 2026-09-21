@@ -170,6 +170,18 @@
               "z": {
                 "type": "number",
                 "description": "Cartesian Z in meters (REP-103 robot base frame)"
+              },
+              "origin_x": {
+                "type": "number",
+                "description": "Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_y": {
+                "type": "number",
+                "description": "Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_z": {
+                "type": "number",
+                "description": "Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries"
               }
             },
             "additionalProperties": false
@@ -205,6 +217,18 @@
               "z": {
                 "type": "number",
                 "description": "Cartesian Z in meters (REP-103 robot base frame)"
+              },
+              "origin_x": {
+                "type": "number",
+                "description": "Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_y": {
+                "type": "number",
+                "description": "Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_z": {
+                "type": "number",
+                "description": "Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries"
               }
             },
             "additionalProperties": false
@@ -240,6 +264,18 @@
               "z": {
                 "type": "number",
                 "description": "Cartesian Z in meters (REP-103 robot base frame)"
+              },
+              "origin_x": {
+                "type": "number",
+                "description": "Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_y": {
+                "type": "number",
+                "description": "Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_z": {
+                "type": "number",
+                "description": "Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries"
               }
             },
             "additionalProperties": false
