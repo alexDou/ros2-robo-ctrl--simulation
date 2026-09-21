@@ -1,13 +1,13 @@
 ---
 # hand-sim-92ew
 title: 'Unit 6.6.4a: Toolbar controls cleanup'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-20T10:44:28Z
-updated_at: 2026-09-21T10:47:17Z
+updated_at: 2026-09-21T13:33:54Z
 parent: hand-sim-4814
 blocked_by:
     - hand-sim-jqtr
