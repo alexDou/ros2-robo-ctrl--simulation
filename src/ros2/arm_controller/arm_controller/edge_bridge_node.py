@@ -29,6 +29,7 @@ from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 from sensor_msgs.msg import JointState
+from std_msgs.msg import String
 from trajectory_msgs.msg import JointTrajectoryPoint
 
 from arm_controller.arm_controller_node import seconds_to_duration
@@ -52,7 +53,7 @@ from domain import (
     robot_telemetry_topic,
 )
 from robot_control_interfaces.action import PickAndPlace
-from robot_control_interfaces.srv import ClearWorkspace, SpawnObject
+from robot_control_interfaces.srv import ClearWorkspace, CommitDrop, MarkGrasped, SpawnObject
 
 
 class EdgeBridgeNode(Node):
@@ -93,6 +94,15 @@ class EdgeBridgeNode(Node):
         self.declare_parameter("traj_connect_timeout", 5.0)
         self.declare_parameter("step_duration", 1.0)
         self.declare_parameter("max_joint_velocity", 2.0)
+        self.declare_parameter("workcell_state_topic", "workcell/state")
+        self.declare_parameter(
+            "mark_grasped_service_name",
+            "/workcell/mark_grasped",
+        )
+        self.declare_parameter(
+            "commit_drop_service_name",
+            "/workcell/commit_drop",
+        )
         self.declare_parameter("switch_service_name", "/controller_manager/switch_controller")
         self.declare_parameter("switch_timeout", 5.0)
         self.declare_parameter("standby_park_timeout", 10.0)
@@ -120,6 +130,13 @@ class EdgeBridgeNode(Node):
         self._switch_service_name = str(self.get_parameter("switch_service_name").value)
         self._switch_timeout = float(self.get_parameter("switch_timeout").value)
         self._standby_park_timeout = float(self.get_parameter("standby_park_timeout").value)
+        self._workcell_state_topic = str(self.get_parameter("workcell_state_topic").value)
+        self._mark_grasped_service_name = str(
+            self.get_parameter("mark_grasped_service_name").value
+        )
+        self._commit_drop_service_name = str(
+            self.get_parameter("commit_drop_service_name").value
+        )
 
         self._lock = threading.RLock()
         self._cb_group = ReentrantCallbackGroup()
@@ -136,6 +153,10 @@ class EdgeBridgeNode(Node):
         self._active_pnp_handle: Optional[Any] = None
         self._homing_done_event = threading.Event()
         self._startup_motion_event = threading.Event()
+        self._pending_spawn_coords: Optional[tuple[float, float, float]] = None
+        self._pending_spawn_command_id: Optional[str] = None
+        self._grasp_notified = False
+        self._commit_notified = False
 
         # Zero-alloc JointState parsing cache
         self._cached_joint_names: Optional[list[str]] = None
@@ -174,6 +195,26 @@ class EdgeBridgeNode(Node):
             SwitchController,
             self._switch_service_name,
             callback_group=self._cb_group,
+        )
+
+        self._mark_grasped_client = self.create_client(
+            MarkGrasped,
+            self._mark_grasped_service_name,
+            callback_group=self._cb_group,
+        )
+
+        self._commit_drop_client = self.create_client(
+            CommitDrop,
+            self._commit_drop_service_name,
+            callback_group=self._cb_group,
+        )
+
+        self._workcell_state_sub = self.create_subscription(
+            String,
+            self._workcell_state_topic,
+            self._on_workcell_state,
+            10,
+            callback_group=self._telem_cb_group,
         )
 
         # Zenoh setup
@@ -276,6 +317,16 @@ class EdgeBridgeNode(Node):
             return
 
         self.handle_command_payload(raw_payload)
+
+    def _on_workcell_state(self, msg: String) -> None:
+        """Caches authoritative workcell snapshot; never drives gear transitions."""
+        try:
+            snapshot = WorkcellState.model_validate_json(msg.data)
+        except Exception as e:
+            self.get_logger().warning(f"Ignoring malformed workcell/state snapshot: {e}")
+            return
+        with self._lock:
+            self._workcell_state = snapshot
 
     def _handle_joint_states(self, msg: JointState) -> None:
         """Parses /joint_states and maps positions to canonical UR5e joint order."""
@@ -676,20 +727,50 @@ class EdgeBridgeNode(Node):
             req.coords = Point(x=float(payload.x), y=float(payload.y), z=float(payload.z))
             req.object_type = payload.object_type.value
 
-            future = self._spawn_object_client.call_async(req)
-            start_t = time.time()
-            while not future.done() and time.time() - start_t < 2.0:
-                time.sleep(0.01)
+            with self._lock:
+                self._pending_spawn_coords = (float(payload.x), float(payload.y), float(payload.z))
+                self._pending_spawn_command_id = command.command_id
+            spawn_command_id = command.command_id
 
-            if not future.done():
-                self._publish_error("SERVICE_TIMEOUT", "SpawnObject service call timed out")
-                return None
+            def _on_spawn_done(future: Any) -> None:
+                try:
+                    res = future.result()
+                except Exception as err:
+                    self.get_logger().error(f"SpawnObject call failed: {err}")
+                    with self._lock:
+                        self._pending_spawn_coords = None
+                        self._pending_spawn_command_id = None
+                    self._publish_error("SERVICE_ERROR", str(err))
+                    return
+                if res is None or not res.success:
+                    msg = res.message if res else "Unknown service failure"
+                    with self._lock:
+                        self._pending_spawn_coords = None
+                        self._pending_spawn_command_id = None
+                    self._publish_error("WORKCELL_OCCUPIED", msg)
+                    self.publish_telemetry(command_id=spawn_command_id)
+                    return
+                with self._lock:
+                    coords = self._pending_spawn_coords
+                    self._pending_spawn_coords = None
+                    self._pending_spawn_command_id = None
+                    idle = self._robot_state == RobotState.IDLE
+                self.publish_telemetry(command_id=spawn_command_id)
+                if coords is None or not idle:
+                    return
+                # Auto-dispatch: click IS dispatch; UI sends one command.
+                pnp_payload = PickAndPlaceTargetPayload(
+                    pick_x=coords[0], pick_y=coords[1], pick_z=coords[2],
+                )
+                with self._lock:
+                    if self._robot_state != RobotState.IDLE:
+                        return
+                    self._robot_state = RobotState.EXECUTING
+                    self._grasp_notified = False
+                    self._commit_notified = False
+                self._dispatch_pick_and_place_goal(pnp_payload, command_id=spawn_command_id)
 
-            res = future.result()
-            if res is None or not res.success:
-                msg = res.message if res else "Unknown service failure"
-                self._publish_error("WORKCELL_OCCUPIED", msg)
-                return None
+            self._spawn_object_client.call_async(req).add_done_callback(_on_spawn_done)
 
             return self.publish_telemetry(command_id=command.command_id)
 
@@ -716,23 +797,24 @@ class EdgeBridgeNode(Node):
                 return None
 
             req = ClearWorkspace.Request()
-            future = self._clear_workspace_client.call_async(req)
-            start_t = time.time()
-            while not future.done() and time.time() - start_t < 2.0:
-                time.sleep(0.01)
+            clear_command_id = command.command_id
 
-            if not future.done():
-                self._publish_error("SERVICE_TIMEOUT", "ClearWorkspace service call timed out")
-                return None
+            def _on_clear_done(future: Any) -> None:
+                try:
+                    res = future.result()
+                except Exception as err:
+                    self.get_logger().error(f"ClearWorkspace call failed: {err}")
+                    self._publish_error("SERVICE_ERROR", str(err))
+                    return
+                if res is None or not res.success:
+                    msg = res.message if res else "Unknown service failure"
+                    self._publish_error("SERVICE_ERROR", msg)
+                    return
+                with self._lock:
+                    self._is_grasped = False
+                self.publish_telemetry(command_id=clear_command_id)
 
-            res = future.result()
-            if res is None or not res.success:
-                msg = res.message if res else "Unknown service failure"
-                self._publish_error("SERVICE_ERROR", msg)
-                return None
-
-            with self._lock:
-                self._is_grasped = False
+            self._clear_workspace_client.call_async(req).add_done_callback(_on_clear_done)
 
             return self.publish_telemetry(command_id=command.command_id)
 
@@ -765,6 +847,8 @@ class EdgeBridgeNode(Node):
                     return None
 
                 self._robot_state = RobotState.EXECUTING
+                self._grasp_notified = False
+                self._commit_notified = False
 
             return self._dispatch_pick_and_place_goal(
                 payload, command_id=command.command_id
@@ -887,6 +971,63 @@ class EdgeBridgeNode(Node):
         send_goal_future.add_done_callback(on_goal_response)
         return event
 
+    def _call_mark_grasped_async(self) -> None:
+        """Fires MarkGrasped once; failure -> ErrorFrame + cancel active goal, no retry."""
+        if not self._mark_grasped_client.wait_for_service(timeout_sec=1.0):
+            self._publish_error(
+                "SERVICE_UNAVAILABLE",
+                f"MarkGrasped service not available at '{self._mark_grasped_service_name}'",
+            )
+            self._cancel_active_pnp("MarkGrasped unavailable")
+            return
+
+        def _on_done(future: Any) -> None:
+            try:
+                res = future.result()
+            except Exception as err:
+                self._publish_error("SERVICE_ERROR", f"MarkGrasped failed: {err}")
+                self._cancel_active_pnp("MarkGrasped failed")
+                return
+            if res is None or not res.success:
+                msg = res.message if res else "Unknown service failure"
+                self._publish_error("GRASP_FAILED", msg)
+                self._cancel_active_pnp("MarkGrasped rejected")
+
+        self._mark_grasped_client.call_async(MarkGrasped.Request()).add_done_callback(_on_done)
+
+    def _call_commit_drop_async(self) -> None:
+        """Fires CommitDrop once; failure -> ErrorFrame + cancel active goal, no retry."""
+        if not self._commit_drop_client.wait_for_service(timeout_sec=1.0):
+            self._publish_error(
+                "SERVICE_UNAVAILABLE",
+                f"CommitDrop service not available at '{self._commit_drop_service_name}'",
+            )
+            self._cancel_active_pnp("CommitDrop unavailable")
+            return
+
+        def _on_done(future: Any) -> None:
+            try:
+                res = future.result()
+            except Exception as err:
+                self._publish_error("SERVICE_ERROR", f"CommitDrop failed: {err}")
+                self._cancel_active_pnp("CommitDrop failed")
+                return
+            if res is None or not res.success:
+                msg = res.message if res else "Unknown service failure"
+                self._publish_error("COMMIT_FAILED", msg)
+                self._cancel_active_pnp("CommitDrop rejected")
+
+        self._commit_drop_client.call_async(CommitDrop.Request()).add_done_callback(_on_done)
+
+    def _cancel_active_pnp(self, reason: str) -> None:
+        with self._lock:
+            handle = self._active_pnp_handle
+        if handle is not None:
+            try:
+                handle.cancel_goal_async()
+            except Exception as err:
+                self.get_logger().error(f"Failed to cancel PnP goal ({reason}): {err}")
+
     def _dispatch_pick_and_place_goal(
         self,
         payload: PickAndPlaceTargetPayload,
@@ -921,19 +1062,32 @@ class EdgeBridgeNode(Node):
             phase = fb.phase
             pct = float(fb.percent_complete)
             state_changed = False
+            fire_grasp = False
+            fire_commit = False
 
             with self._lock:
                 if phase == "GRASPING":
                     if not self._is_grasped:
                         self._is_grasped = True
                         state_changed = True
+                    if not self._grasp_notified:
+                        self._grasp_notified = True
+                        fire_grasp = True
                 elif phase == "RELEASING":
                     if self._is_grasped:
                         self._is_grasped = False
                         state_changed = True
+                    if not self._commit_notified:
+                        self._commit_notified = True
+                        fire_commit = True
                 if self._current_phase != phase:
                     self._current_phase = phase
                     state_changed = True
+
+            if fire_grasp:
+                self._call_mark_grasped_async()
+            if fire_commit:
+                self._call_commit_drop_async()
 
             self._publish_action_feedback(goal.command_id, phase, pct)
             if state_changed:
@@ -1191,6 +1345,27 @@ class EdgeBridgeNode(Node):
             except Exception:
                 pass
             self._switch_client = None
+
+        if self._mark_grasped_client is not None:
+            try:
+                self.destroy_client(self._mark_grasped_client)
+            except Exception:
+                pass
+            self._mark_grasped_client = None
+
+        if self._commit_drop_client is not None:
+            try:
+                self.destroy_client(self._commit_drop_client)
+            except Exception:
+                pass
+            self._commit_drop_client = None
+
+        if self._workcell_state_sub is not None:
+            try:
+                self.destroy_subscription(self._workcell_state_sub)
+            except Exception:
+                pass
+            self._workcell_state_sub = None
 
 
 
