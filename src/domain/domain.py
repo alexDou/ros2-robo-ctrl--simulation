@@ -216,6 +216,7 @@ class RobotTelemetryEvent(BaseModel):
     palm_state: PalmState = Field(default_factory=PalmState, description="End-effector dexterous palm pneumatic actuation and grasp status")
     inference_metrics: Optional[InferenceMetrics] = Field(default=None, description="Edge AI inference latency and object classification metrics")
     command_id: Optional[str] = Field(default=None, description="Optional command identifier acknowledged by this telemetry event")
+    phase: Optional[str] = Field(default=None, description="Optional PickAndPlace action phase (e.g. RELEASING) tracked by EdgeNode from action feedback")
 
 
 def _validate_robot_id(robot_id: str) -> None:

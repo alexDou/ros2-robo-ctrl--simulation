@@ -169,6 +169,25 @@ describe('TypeScript Domain Schemas & Contracts', () => {
       expect(event.command_id).toBeNull();
     });
 
+    it('Unit 6.6.7/4ixr: carries optional phase end-to-end, absent stays valid', () => {
+      const withPhase = {
+        timestamp_ns: '1725894942000000000',
+        robot_state: 'EXECUTING',
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+        phase: 'RELEASING',
+      };
+      const event = parseRobotTelemetryEvent(JSON.stringify(withPhase));
+      expect(event.phase).toBe('RELEASING');
+
+      const legacy = {
+        timestamp_ns: '1725894942000000000',
+        robot_state: 'IDLE',
+        joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
+      };
+      const legacyEvent = parseRobotTelemetryEvent(JSON.stringify(legacy));
+      expect(legacyEvent.phase ?? null).toBeNull();
+    });
+
     it('rejects RobotTelemetryEvent with invalid joint count', () => {
       const rawTooFew = {
         timestamp_ns: '1000',

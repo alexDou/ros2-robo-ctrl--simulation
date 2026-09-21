@@ -89,6 +89,29 @@ def test_edge_bridge_initialization():
         node.destroy_node()
 
 
+def test_edge_bridge_telemetry_carries_phase():
+    """Unit 6.6.7/4ixr: publish_telemetry includes tracked _current_phase."""
+    node = EdgeBridgeNode(
+        parameter_overrides=[
+            Parameter("robot_id", Parameter.Type.STRING, "test-arm-phase"),
+            Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
+            Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
+        ]
+    )
+    try:
+        assert node.current_phase is None
+        event = node.publish_telemetry()
+        assert event.phase is None
+
+        node._current_phase = "RELEASING"
+        event = node.publish_telemetry(command_id="cmd-phase-1")
+        assert event.phase == "RELEASING"
+    finally:
+        node.close()
+        node.destroy_node()
+
+
 def test_edge_bridge_joint_states_subscriber():
     """Asserts /joint_states message with shuffled names maps to canonical UR5e joint order."""
     node = EdgeBridgeNode(

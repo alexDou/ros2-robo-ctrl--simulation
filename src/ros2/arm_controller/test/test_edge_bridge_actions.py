@@ -177,6 +177,11 @@ def test_edge_bridge_pick_and_place_action_dispatch_and_feedback():
 
         assert "GRASPING" in feedback_phases_observed
         assert "RELEASING" in feedback_phases_observed
+        # Unit 6.6.7/4ixr: phase end-to-end. Edge tracks last feedback phase
+        # through completion; publish_telemetry carries it on the wire.
+        assert node.current_phase in (None, "COMPLETED")
+        completion_event = node.publish_telemetry(command_id="cmd-pnp-01")
+        assert completion_event.phase in (None, "COMPLETED")
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)

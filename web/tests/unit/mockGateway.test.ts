@@ -237,6 +237,53 @@ describe('MockGateway', () => {
     ws.close();
   });
 
+  it('Unit 6.6.7/4ixr (border: mocked gateway): telemetry carries phase during PnP', async () => {
+    gateway.setDynamicMotionEnabled(false);
+    const ws = new WebSocket(wsUrl);
+    await new Promise<void>((resolve, reject) => {
+      ws.on('open', resolve);
+      ws.on('error', reject);
+    });
+
+    const phases = new Set<string>();
+    let graspTrueSeen = false;
+    let graspFalseWithReleasing = false;
+    ws.on('message', (data) => {
+      const parsed = JSON.parse(data.toString());
+      if (parsed.robot_state) {
+        if (parsed.phase) phases.add(parsed.phase as string);
+        if (parsed.palm_state?.is_grasped === true) graspTrueSeen = true;
+        if (parsed.palm_state?.is_grasped === false && parsed.phase === 'RELEASING') {
+          graspFalseWithReleasing = true;
+        }
+      }
+    });
+
+    ws.send(JSON.stringify({
+      command_id: 'pnp-phase-1',
+      sender_id: 'ui-test',
+      timestamp_ns: Date.now() * 1_000_000,
+      type: 'PICK_AND_PLACE_TARGET',
+      payload: { pick_x: 0.5, pick_y: 0.0, pick_z: 0.0 },
+    }));
+
+    await new Promise<void>((resolve) => {
+      const check = setInterval(() => {
+        if (gateway.getRobotState() === 'IDLE' && graspFalseWithReleasing) {
+          clearInterval(check);
+          resolve();
+        }
+      }, 50);
+    });
+
+    expect(graspTrueSeen).toBe(true);
+    expect(graspFalseWithReleasing).toBe(true);
+    expect(phases.has('GRASPING')).toBe(true);
+    expect(phases.has('RELEASING')).toBe(true);
+
+    ws.close();
+  });
+
   it('handles PICK_AND_PLACE_TARGET and CLEAR_WORKSPACE with expected log formats', async () => {
     const ws = new WebSocket(wsUrl);
     await new Promise<void>((resolve, reject) => {

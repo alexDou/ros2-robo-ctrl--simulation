@@ -128,6 +128,7 @@ class EdgeBridgeNode(Node):
         # IDLE means engaged-ready; motion cmds rejected while STANDBY.
         self._robot_state: RobotState = RobotState.STANDBY
         self._is_grasped: bool = False
+        self._current_phase: Optional[str] = None
         self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
         self._active_traj_handle: Optional[Any] = None
         self._active_pnp_handle: Optional[Any] = None
@@ -207,6 +208,11 @@ class EdgeBridgeNode(Node):
     def is_grasped(self) -> bool:
         with self._lock:
             return self._is_grasped
+
+    @property
+    def current_phase(self) -> Optional[str]:
+        with self._lock:
+            return self._current_phase
 
     def _init_zenoh(self) -> None:
         """Initializes Zenoh subscriber and publisher on DataFabric topics."""
@@ -923,6 +929,9 @@ class EdgeBridgeNode(Node):
                     if self._is_grasped:
                         self._is_grasped = False
                         state_changed = True
+                if self._current_phase != phase:
+                    self._current_phase = phase
+                    state_changed = True
 
             self._publish_action_feedback(goal.command_id, phase, pct)
             if state_changed:
@@ -990,6 +999,7 @@ class EdgeBridgeNode(Node):
                                 if pnp_res.result.success:
                                     self._robot_state = RobotState.IDLE
                                     self._is_grasped = False
+                                    self._current_phase = None
                                     should_publish_completion = True
                                 else:
                                     self.get_logger().error(
@@ -1069,6 +1079,7 @@ class EdgeBridgeNode(Node):
             state = self._robot_state
             joints = list(self._current_joints)
             is_grasped = self._is_grasped
+            phase = self._current_phase
 
         event = RobotTelemetryEvent(
             timestamp_ns=time.time_ns(),
@@ -1076,6 +1087,7 @@ class EdgeBridgeNode(Node):
             joint_positions=joints,
             palm_state=PalmState(is_grasped=is_grasped),
             command_id=command_id,
+            phase=phase,
         )
 
         if self._zenoh_pub is not None:

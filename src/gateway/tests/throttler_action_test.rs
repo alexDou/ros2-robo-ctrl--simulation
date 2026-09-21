@@ -57,6 +57,29 @@ fn test_action_goal_and_feedback_serialization() {
 }
 
 #[tokio::test]
+async fn test_telemetry_throttler_preserves_phase() {
+    // Unit 6.6.7/4ixr: push_event passthrough carries phase to 30 Hz out.
+    let throttler = TelemetryThrottler::new();
+    let mut rx = throttler.subscribe();
+    let event = RobotTelemetryEvent {
+        timestamp_ns: 1_700_000_000_000_000_000,
+        robot_state: RobotState::Executing,
+        joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        palm_state: gateway::domain::PalmState::default(),
+        inference_metrics: None,
+        command_id: None,
+        phase: Some("RELEASING".to_string()),
+    };
+    throttler.push_event(event);
+    let out = tokio::time::timeout(Duration::from_millis(500), rx.recv())
+        .await
+        .expect("throttled frame")
+        .expect("channel open");
+    assert_eq!(out.phase.as_deref(), Some("RELEASING"));
+    throttler.stop();
+}
+
+#[tokio::test]
 async fn test_telemetry_throttler_500hz_to_30hz_stability() {
     let throttler = TelemetryThrottler::new();
     let mut rx = throttler.subscribe();
@@ -75,6 +98,7 @@ async fn test_telemetry_throttler_500hz_to_30hz_stability() {
                 palm_state: gateway::domain::PalmState::default(),
                 inference_metrics: None,
                 command_id: None,
+                phase: None,
             };
             throttler_feed.push_event(event);
         }
@@ -136,6 +160,7 @@ async fn test_telemetry_throttler_5hz_slow_upstream_no_repeat() {
                 palm_state: gateway::domain::PalmState::default(),
                 inference_metrics: None,
                 command_id: None,
+                phase: None,
             };
             throttler_feed.push_event(event);
         }

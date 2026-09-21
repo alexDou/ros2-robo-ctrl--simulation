@@ -70,6 +70,7 @@ struct ThrottlerState {
     cached_indices: Option<[usize; 6]>,
     current_robot_state: RobotState,
     current_palm_state: crate::domain::PalmState,
+    current_phase: Option<String>,
 }
 
 impl Default for ThrottlerState {
@@ -80,6 +81,7 @@ impl Default for ThrottlerState {
             cached_indices: None,
             current_robot_state: RobotState::Idle,
             current_palm_state: crate::domain::PalmState::default(),
+            current_phase: None,
         }
     }
 }
@@ -221,6 +223,7 @@ impl TelemetryThrottler {
         let mut guard = self.inner.state.lock().expect("lock throttler state");
         guard.current_robot_state = event.robot_state;
         guard.current_palm_state = event.palm_state.clone();
+        guard.current_phase = event.phase.clone();
         guard.latest = Some(event.clone());
         guard.pending = Some(event);
     }
@@ -275,6 +278,7 @@ impl TelemetryThrottler {
                     palm_state: guard.current_palm_state.clone(),
                     inference_metrics: None,
                     command_id: None,
+                    phase: guard.current_phase.clone(),
                 };
 
                 self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);
@@ -344,6 +348,7 @@ impl TelemetryThrottler {
                 palm_state: guard.current_palm_state.clone(),
                 inference_metrics: None,
                 command_id: None,
+                phase: guard.current_phase.clone(),
             };
 
             self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);

@@ -11,6 +11,7 @@ export interface TelemetryBuffer {
   timestampNs: string | bigint | number;
   robotState: RobotState;
   palmState?: { is_grasped: boolean };
+  phase?: string | null;
   frequencyHz: number;
   latencyMs: number;
   lastPacketTime: number;
@@ -23,6 +24,7 @@ export function useTelemetryStream() {
     timestampNs: 0n.toString(),
     robotState: 'STANDBY' as RobotState,
     palmState: { is_grasped: false },
+    phase: null,
     frequencyHz: 0,
     latencyMs: 0,
     lastPacketTime: 0,
@@ -47,6 +49,7 @@ export function useTelemetryStream() {
     buf.jointPositions = data.joint_positions;
     buf.robotState = data.robot_state;
     buf.palmState = data.palm_state;
+    buf.phase = data.phase ?? null;
     buf.timestampNs = data.timestamp_ns;
     buf.lastPacketTime = now;
     buf.frameCount++;
@@ -105,6 +108,7 @@ export function useTelemetryStream() {
       timestampNs: 0n.toString(),
       robotState: 'STANDBY' as RobotState,
       palmState: { is_grasped: false },
+      phase: null,
       frequencyHz: 0,
       latencyMs: 0,
       lastPacketTime: 0,
