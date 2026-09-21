@@ -1472,7 +1472,11 @@ export function RobotVisualizer({
     const currentState = robotState || 'IDLE';
     const prevState = prevRobotStateRef.current;
     if (prevState !== 'IDLE' && currentState === 'IDLE') {
-      depositPendingGearRef.current?.();
+      // Safety net only: normal flow deposits via Case 2 during RELEASING.
+      // Gate here too, else a mid-cycle IDLE blip teleports flange gear.
+      if (phaseAllowsRelease(telemetryBufferRef?.current?.phase)) {
+        depositPendingGearRef.current?.();
+      }
     }
     // Unit 6.6.2: table gear survives EXECUTING + IDLE return until grasp.
     // Session hasActiveGear=false must not auto-clear ungrasped table gear;
