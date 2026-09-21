@@ -4,6 +4,16 @@ import * as THREE from 'three';
 import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
 
+function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[] = []) {
+  return {
+    current: {
+      jointPositions: [0, 0, 0, 0, 0, 0],
+      palmState: { is_grasped: false },
+      workcellState: { spawned, inProgress, processed, activeId: null },
+    },
+  };
+}
+
 describe('Unit 3.2: RobotVisualizer Component', () => {
   let mockRenderer: any;
   let mockControls: any;
@@ -1019,7 +1029,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(reticle.visible).toBe(true);
     });
 
-    it('clicking reachable spot spawns procedural gearwheel mesh and triggers onSpawnObject', async () => {
+    it('clicking reachable spot sends SPAWN_OBJECT with no local mesh before echo', async () => {
       const onSpawnSpy = vi.fn();
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1042,14 +1052,12 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-      expect(visualizer.hasActiveGear()).toBe(false);
 
       // Click reachable table spot: x=0.5, y=0.1 (R ~ 0.51m)
       act(() => {
         visualizer.simulateClick(0.5, 0.1);
       });
 
-      expect(visualizer.hasActiveGear()).toBe(true);
       expect(onSpawnSpy).toHaveBeenCalledTimes(1);
       expect(onSpawnSpy).toHaveBeenCalledWith({
         x: 0.5,
@@ -1058,28 +1066,16 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         object_type: 'GEAR',
       });
 
-      // Gear mesh resting at clicked coordinates
-      const gearMesh = visualizer.getGearMesh();
-      expect(gearMesh).toBeDefined();
-      expect(gearMesh.name).toBe('gearwheel');
-      expect(gearMesh.position.x).toBeCloseTo(0.5, 2);
-      expect(gearMesh.position.y).toBeCloseTo(0.1, 2);
-      expect(gearMesh.position.z).toBeCloseTo(0.004, 3);
-
-      // Verify procedural gear features (body, teeth, hub) and matte steel finish
-      const childNames = gearMesh.children.map((c: any) => c.name);
-      expect(childNames).toContain('gear-body');
-      expect(childNames).toContain('gear-hub');
-      expect(childNames.some((n: string) => n.startsWith('gear-tooth-'))).toBe(true);
-
-      const bodyMesh = gearMesh.getObjectByName('gear-body') as THREE.Mesh;
-      const bodyMat = bodyMesh.material as THREE.MeshStandardMaterial;
-      expect(bodyMat.metalness).toBeCloseTo(0.35, 2);
-      expect(bodyMat.roughness).toBeCloseTo(0.5, 2);
+      // Workcell-authority: no local mesh before snapshot echo, no lockout.
+      expect(visualizer.getSnapshotGearCount()).toBe(0);
+      expect(visualizer.getGearMesh()).toBeNull();
+      expect(visualizer.hasActiveGear()).toBe(false);
+      expect(visualizer.isLockedOut()).toBe(false);
     });
 
-    it('enforces client-side ClickLockout preventing further clicks while gearwheel is present', async () => {
+    it('snapshot echo renders spawned mesh verbatim and drives ClickLockout', async () => {
       const onSpawnSpy = vi.fn();
+      const telemetryBufferRef = snapBuffer();
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -1088,6 +1084,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       await act(async () => {
         render(
           <RobotVisualizer
+            telemetryBufferRef={telemetryBufferRef}
             onSpawnObject={onSpawnSpy}
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
@@ -1102,36 +1099,45 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
       const visualizer = (window as any).__robot_visualizer;
 
-      // Click 1: spawns gear
+      // Backend echo: spawned entry appears at click coords verbatim.
       act(() => {
-        visualizer.simulateClick(0.5, 0.0);
+        telemetryBufferRef.current.workcellState.spawned = [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }];
+        stepFrame();
       });
-      expect(visualizer.isLockedOut()).toBe(true);
-      expect(onSpawnSpy).toHaveBeenCalledTimes(1);
 
-      // Reticle should be hidden while locked out
+      expect(visualizer.getSnapshotGearCount()).toBe(1);
+      const pos = visualizer.getSnapshotGearPosition('g1');
+      expect(pos.x).toBeCloseTo(0.5, 2);
+      expect(pos.y).toBeCloseTo(0.1, 2);
+      expect(pos.z).toBeCloseTo(0.0, 3);
+      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(visualizer.isLockedOut()).toBe(true);
+
+      // Click blocked while snapshot holds an active entry.
+      act(() => {
+        visualizer.simulateClick(0.6, 0.0);
+      });
+      expect(onSpawnSpy).not.toHaveBeenCalled();
+
+      // Reticle hidden while locked out.
       act(() => {
         visualizer.simulatePointerMove(0.6, 0.0);
       });
       expect(visualizer.getReticleMesh().visible).toBe(false);
-
-      // Click 2: blocked by ClickLockout
-      act(() => {
-        visualizer.simulateClick(0.6, 0.0);
-      });
-      expect(onSpawnSpy).toHaveBeenCalledTimes(1);
-      expect(visualizer.getGearPosition().x).toBeCloseTo(0.5, 2);
     });
 
-    it('clearing workspace destroys 3D gearwheel mesh and lifts ClickLockout', async () => {
+    it('snapshot removal deletes mesh and lifts ClickLockout; clearWorkspace is echo-driven no-op', async () => {
+      const onSpawnSpy = vi.fn();
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
       });
 
-      const { rerender } = render(
+      render(
         <RobotVisualizer
-          hasActiveGear={false}
+          telemetryBufferRef={telemetryBufferRef}
+          onSpawnObject={onSpawnSpy}
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
@@ -1143,57 +1149,37 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-
-      // Click to place gear
       act(() => {
-        visualizer.simulateClick(0.5, 0.0);
+        stepFrame();
       });
-      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(visualizer.getSnapshotGearCount()).toBe(1);
       expect(visualizer.isLockedOut()).toBe(true);
 
-      // Clear workspace via clearWorkspace()
+      // clearWorkspace is a local no-op: mesh persists until snapshot echo.
       act(() => {
         visualizer.clearWorkspace();
       });
+      expect(visualizer.getSnapshotGearCount()).toBe(1);
 
+      // Empty echo removes the mesh and lifts lockout.
+      act(() => {
+        telemetryBufferRef.current.workcellState.spawned = [];
+        stepFrame();
+      });
+      expect(visualizer.getSnapshotGearCount()).toBe(0);
+      expect(visualizer.getGearMesh()).toBeNull();
       expect(visualizer.hasActiveGear()).toBe(false);
       expect(visualizer.isLockedOut()).toBe(false);
-      expect(visualizer.getGearMesh()).toBeNull();
 
-      // Rerender with hasActiveGear=true
-      act(() => {
-        rerender(
-          <RobotVisualizer
-            hasActiveGear={true}
-            rendererFactory={() => mockRenderer}
-            controlsFactory={() => mockControls}
-          />
-        );
-      });
-
-      // Now rerender with hasActiveGear=false lifts lockout and clears workspace
-      act(() => {
-        rerender(
-          <RobotVisualizer
-            hasActiveGear={false}
-            rendererFactory={() => mockRenderer}
-            controlsFactory={() => mockControls}
-          />
-        );
-      });
-
-      expect(visualizer.hasActiveGear()).toBe(false);
-      expect(visualizer.isLockedOut()).toBe(false);
-      expect(visualizer.getGearMesh()).toBeNull();
-
-      // Able to click and spawn again
+      // Clickable again after echo.
       act(() => {
         visualizer.simulateClick(0.55, 0.0);
       });
-      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(onSpawnSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('cleans up and disposes table, reticle, and gear geometries and materials on unmount', async () => {
+    it('cleans up and disposes table, reticle, and snapshot gear geometries and materials on unmount', async () => {
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
       let unmountFn: () => void;
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1203,6 +1189,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       await act(async () => {
         const res = render(
           <RobotVisualizer
+            telemetryBufferRef={telemetryBufferRef}
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
@@ -1216,14 +1203,13 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
+      act(() => {
+        stepFrame();
+      });
       const table = visualizer.getTableMesh();
       const reticle = visualizer.getReticleMesh();
-
-      // Spawn a gear first
-      act(() => {
-        visualizer.simulateClick(0.5, 0.0);
-      });
       const gear = visualizer.getGearMesh();
+      expect(gear).not.toBeNull();
       const gearBody = gear.children.find((c: any) => c.name === 'gear-body');
 
       const tableGeomSpy = vi.spyOn(table.geometry, 'dispose');
@@ -1381,13 +1367,8 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(pinGeom.parameters.radiusTop).toBeCloseTo(0.007, 3);
     });
 
-    it('parents gear to tool0 via KinematicLinkAttachment during grasp within 15mm proximity', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
+    it('renders spawned entry as table mesh at entry xyz verbatim', async () => {
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1408,41 +1389,21 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-
-      // Click table to spawn gear at (0.50, 0.0)
-      act(() => {
-        visualizer.simulateClick(0.50, 0.0);
-      });
-
-      const gear = visualizer.getGearMesh();
-      expect(gear).not.toBeNull();
-      expect(visualizer.isGearAttached()).toBe(false);
-
-      // Position tool0 within 15mm of gear (gear is at x=0.50, y=0.0, z=0.004 in robot-root)
-      // Since robotGroup is rotated x = -PI/2, world position matches robotGroup.localToWorld
-      // Setting fakeTool0Link world position close to gear:
-      const gearWorldPos = new THREE.Vector3();
-      gear.getWorldPosition(gearWorldPos);
-      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone().add(new THREE.Vector3(0, 0.005, 0))));
-      fakeRobot.updateMatrixWorld(true);
-
-      // Actuate grasp in telemetry buffer
-      telemetryBufferRef.current.palmState.is_grasped = true;
       act(() => {
         stepFrame();
       });
 
-      expect(visualizer.isGearAttached()).toBe(true);
-      expect(gear.parent).toBe(fakeTool0Link);
+      const gear = visualizer.getGearMesh();
+      expect(gear).not.toBeNull();
+      expect(gear.position.x).toBeCloseTo(0.5, 2);
+      expect(gear.position.y).toBeCloseTo(0.0, 2);
+      expect(gear.position.z).toBeCloseTo(0.0, 3);
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(0);
     });
 
-    it('parents gear to tool0 on grasp regardless of rendered tool distance (Unit 6.6.3/he7j)', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
+    it('moves entry spawned->in_progress: mesh reparents to tool0 flange ride', async () => {
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1464,34 +1425,33 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
       const visualizer = (window as any).__robot_visualizer;
       act(() => {
-        visualizer.simulateClick(0.50, 0.0);
+        stepFrame();
       });
-
       const gear = visualizer.getGearMesh();
       expect(gear).not.toBeNull();
+      expect(visualizer.isGearAttached()).toBe(false);
 
-      // Tool far away in rendered FK: backend drove the real nozzle to pick,
-      // so the visual still attaches on the grasp bit.
-      fakeTool0Link.position.set(0, 0.5, 0.5);
-      fakeRobot.updateMatrixWorld(true);
-
-      telemetryBufferRef.current.palmState.is_grasped = true;
+      // Backend marks grasped: entry relocates with origin preserved.
       act(() => {
+        telemetryBufferRef.current.workcellState.spawned = [];
+        telemetryBufferRef.current.workcellState.inProgress = [
+          { id: 'g1', x: 0.5, y: 0.0, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 },
+        ];
         stepFrame();
       });
 
       expect(visualizer.isGearAttached()).toBe(true);
       expect(gear.parent).toBe(fakeTool0Link);
       expect(visualizer.getTowerGearCount()).toBe(0);
+      expect(visualizer.getSnapshotGearCount()).toBe(1);
     });
 
-    it('Unit 6.6.3/he7j: gear rides flange visibly during transfer, tower grows only on release', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
+    it('renders processed entries as tower meshes at entry xyz verbatim in order', async () => {
+      const telemetryBufferRef = snapBuffer([], [], [
+        { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 },
+        { id: 'g2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.55, origin_y: 0.0, origin_z: 0.0 },
+        { id: 'g3', x: 0.4, y: -0.3, z: 0.04, origin_x: 0.6, origin_y: 0.0, origin_z: 0.0 },
+      ]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1513,293 +1473,31 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
       const visualizer = (window as any).__robot_visualizer;
       act(() => {
-        visualizer.simulateClick(0.50, 0.0);
-      });
-      const gear = visualizer.getGearMesh();
-      expect(gear).not.toBeNull();
-
-      // Tool far from table gear: backend drove the real nozzle to pick,
-      // visual must still attach on grasp (no proximity gate).
-      fakeTool0Link.position.set(0, 0.5, 0.5);
-      fakeRobot.updateMatrixWorld(true);
-
-      telemetryBufferRef.current.palmState.is_grasped = true;
-      act(() => {
         stepFrame();
       });
-
-      // Attached to flange, NOT in tower yet
-      expect(visualizer.isGearAttached()).toBe(true);
-      expect(gear.parent).toBe(fakeTool0Link);
-      expect(visualizer.getTowerGearCount()).toBe(0);
-      // Hangs visibly below nozzle tip (tip at z=0.108 in tool0 frame)
-      expect(gear.position.z).toBeGreaterThan(0.108);
-
-      // LIFT/TRANSFER/DROP window: grasp held across frames, still riding, tower still empty
-      for (let i = 0; i < 5; i++) {
-        act(() => {
-          stepFrame();
-        });
-        expect(visualizer.isGearAttached()).toBe(true);
-        expect(visualizer.getTowerGearCount()).toBe(0);
-      }
-
-      // RELEASING at tower: tower grows by one at slot height
-      // (stable release: 3 consecutive false frames)
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          stepFrame();
-        });
-      }
-      expect(visualizer.isGearAttached()).toBe(false);
-      expect(visualizer.getTowerGearCount()).toBe(1);
-      const towerGears = visualizer.getTowerGears();
-      expect(towerGears[0].position.x).toBeCloseTo(0.40, 2);
-      expect(towerGears[0].position.y).toBeCloseTo(-0.30, 2);
-      expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
-    });
-
-    it('Unit 6.6.6/c7kb: single-frame grasp flicker mid-transfer keeps gear on flange, tower grows only on stable release', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
-
-      let resolveLoaded: () => void;
-      const loadedPromise = new Promise<void>((res) => {
-        resolveLoaded = res;
-      });
-
-      render(
-        <RobotVisualizer
-          telemetryBufferRef={telemetryBufferRef}
-          rendererFactory={() => mockRenderer}
-          controlsFactory={() => mockControls}
-          onRobotLoaded={() => resolveLoaded()}
-        />
-      );
-
-      await act(async () => {
-        await loadedPromise;
-      });
-
-      const visualizer = (window as any).__robot_visualizer;
-      act(() => {
-        visualizer.simulateClick(0.50, 0.0);
-      });
-      const gear = visualizer.getGearMesh();
-      expect(gear).not.toBeNull();
-
-      // Tool far from table gear: backend drove the real nozzle to pick.
-      fakeTool0Link.position.set(0, 0.5, 0.5);
-      fakeRobot.updateMatrixWorld(true);
-
-      // GRASP: table gear empties onto flange, tower stays 0
-      telemetryBufferRef.current.palmState.is_grasped = true;
-      act(() => {
-        stepFrame();
-      });
-      expect(visualizer.isGearAttached()).toBe(true);
-      expect(gear.parent).toBe(fakeTool0Link);
-      expect(visualizer.getTowerGearCount()).toBe(0);
-
-      // LIFT/TRANSFER/DROP window: grasp held, still riding, tower still 0
-      for (let i = 0; i < 5; i++) {
-        act(() => {
-          stepFrame();
-        });
-        expect(visualizer.isGearAttached()).toBe(true);
-        expect(visualizer.getTowerGearCount()).toBe(0);
-      }
-
-      // Single-frame grasp-bit flicker mid-transfer: gear keeps riding, tower stays 0
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      act(() => {
-        stepFrame();
-      });
-      expect(visualizer.isGearAttached()).toBe(true);
-      expect(visualizer.getTowerGearCount()).toBe(0);
-
-      // Grasp restored: still riding
-      telemetryBufferRef.current.palmState.is_grasped = true;
-      act(() => {
-        stepFrame();
-      });
-      expect(visualizer.isGearAttached()).toBe(true);
-      expect(visualizer.getTowerGearCount()).toBe(0);
-
-      // Stable RELEASING at tower (consecutive false frames): tower +1 at slot height
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          stepFrame();
-        });
-      }
-      expect(visualizer.isGearAttached()).toBe(false);
-      expect(visualizer.getTowerGearCount()).toBe(1);
-      const towerGears = visualizer.getTowerGears();
-      expect(towerGears[0].position.x).toBeCloseTo(0.40, 2);
-      expect(towerGears[0].position.y).toBeCloseTo(-0.30, 2);
-      expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
-
-      // Second cycle: lockout lifted, new gear spawns and towers at slot k=1
-      expect(visualizer.isLockedOut()).toBe(false);
-      act(() => {
-        visualizer.simulateClick(0.55, 0.0);
-      });
-      expect(visualizer.hasActiveGear()).toBe(true);
-      expect(visualizer.getTowerGearCount()).toBe(1);
-      telemetryBufferRef.current.palmState.is_grasped = true;
-      act(() => {
-        stepFrame();
-      });
-      expect(visualizer.isGearAttached()).toBe(true);
-      expect(visualizer.getTowerGearCount()).toBe(1);
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          stepFrame();
-        });
-      }
-      expect(visualizer.isGearAttached()).toBe(false);
-      expect(visualizer.getTowerGearCount()).toBe(2);
-      expect(visualizer.getTowerGears()[1].position.z).toBeCloseTo(0.02, 3);
-    });
-
-    it('unparents gear to SpindleTower stack at z_k on release', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
-
-      let resolveLoaded: () => void;
-      const loadedPromise = new Promise<void>((res) => {
-        resolveLoaded = res;
-      });
-
-      render(
-        <RobotVisualizer
-          telemetryBufferRef={telemetryBufferRef}
-          rendererFactory={() => mockRenderer}
-          controlsFactory={() => mockControls}
-          onRobotLoaded={() => resolveLoaded()}
-        />
-      );
-
-      await act(async () => {
-        await loadedPromise;
-      });
-
-      const visualizer = (window as any).__robot_visualizer;
-
-      // Spawn gear and attach
-      act(() => {
-        visualizer.simulateClick(0.50, 0.0);
-      });
-      const gear = visualizer.getGearMesh();
-      const gearWorldPos = new THREE.Vector3();
-      gear.getWorldPosition(gearWorldPos);
-      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
-      fakeRobot.updateMatrixWorld(true);
-
-      telemetryBufferRef.current.palmState.is_grasped = true;
-      act(() => {
-        stepFrame();
-      });
-      expect(visualizer.isGearAttached()).toBe(true);
-
-      // Release grasp at tower (stable: 3 consecutive false frames)
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          stepFrame();
-        });
-      }
-
-      expect(visualizer.isGearAttached()).toBe(false);
-      expect(gear.parent).not.toBe(fakeTool0Link);
-      expect(visualizer.getTowerGearCount()).toBe(1);
-
-      const towerGears = visualizer.getTowerGears();
-      expect(towerGears.length).toBe(1);
-      expect(towerGears[0].position.x).toBeCloseTo(0.40, 2);
-      expect(towerGears[0].position.y).toBeCloseTo(-0.30, 2);
-      expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
-    });
-
-    it('stacks multiple gears vertically at z_k = k * 0.02m', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
-
-      let resolveLoaded: () => void;
-      const loadedPromise = new Promise<void>((res) => {
-        resolveLoaded = res;
-      });
-
-      render(
-        <RobotVisualizer
-          telemetryBufferRef={telemetryBufferRef}
-          rendererFactory={() => mockRenderer}
-          controlsFactory={() => mockControls}
-          onRobotLoaded={() => resolveLoaded()}
-        />
-      );
-
-      await act(async () => {
-        await loadedPromise;
-      });
-
-      const visualizer = (window as any).__robot_visualizer;
-
-      // Pick and place 3 gears
-      for (let k = 0; k < 3; k++) {
-        act(() => {
-          visualizer.simulateClick(0.50, 0.0);
-        });
-        const gear = visualizer.getGearMesh();
-        const gearWorldPos = new THREE.Vector3();
-        gear.getWorldPosition(gearWorldPos);
-        fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
-        fakeRobot.updateMatrixWorld(true);
-
-        telemetryBufferRef.current.palmState.is_grasped = true;
-        act(() => {
-          stepFrame();
-        });
-        expect(visualizer.isGearAttached()).toBe(true);
-
-        telemetryBufferRef.current.palmState.is_grasped = false;
-        for (let i = 0; i < 3; i++) {
-          act(() => {
-            stepFrame();
-          });
-        }
-        expect(visualizer.isGearAttached()).toBe(false);
-      }
 
       expect(visualizer.getTowerGearCount()).toBe(3);
       const towerGears = visualizer.getTowerGears();
       expect(towerGears[0].position.z).toBeCloseTo(0.0, 3);
-      expect(towerGears[1].position.z).toBeCloseTo(1 * 0.02, 3);
-      expect(towerGears[2].position.z).toBeCloseTo(2 * 0.02, 3);
+      expect(towerGears[1].position.z).toBeCloseTo(0.02, 3);
+      expect(towerGears[2].position.z).toBeCloseTo(0.04, 3);
+      for (const g of towerGears) {
+        expect(g.position.x).toBeCloseTo(0.4, 2);
+        expect(g.position.y).toBeCloseTo(-0.3, 2);
+      }
+      // Processed tower never drives ClickLockout.
+      expect(visualizer.isLockedOut()).toBe(false);
+      expect(visualizer.hasActiveGear()).toBe(false);
     });
 
-    it('activates visual FIFO bottom-drop shift when tower exceeds 10 gears', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
+    it('renders backend tower verbatim with no UI cap (overflow owned by workcell)', async () => {
+      const processed = Array.from({ length: 11 }, (_, k) => ({
+        id: `g${k}`,
+        x: 0.4,
+        y: -0.3,
+        z: k * 0.02,
+      }));
+      const telemetryBufferRef = snapBuffer([], [], processed);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1820,78 +1518,20 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-
-      // Stack 10 gears
-      for (let k = 0; k < 10; k++) {
-        act(() => {
-          visualizer.simulateClick(0.50, 0.0);
-        });
-        const gear = visualizer.getGearMesh();
-        const gearWorldPos = new THREE.Vector3();
-        gear.getWorldPosition(gearWorldPos);
-        fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
-        fakeRobot.updateMatrixWorld(true);
-
-        telemetryBufferRef.current.palmState.is_grasped = true;
-        act(() => {
-          stepFrame();
-        });
-        telemetryBufferRef.current.palmState.is_grasped = false;
-        for (let i = 0; i < 3; i++) {
-          act(() => {
-            stepFrame();
-          });
-        }
-      }
-
-      expect(visualizer.getTowerGearCount()).toBe(10);
-      const initialBottomGear = visualizer.getTowerGears()[0];
-      const secondGear = visualizer.getTowerGears()[1];
-      expect(initialBottomGear.position.z).toBeCloseTo(0.0, 3);
-      expect(secondGear.position.z).toBeCloseTo(0.02, 3);
-
-      // Stack 11th gear -> FIFO bottom-drop shift
-      act(() => {
-        visualizer.simulateClick(0.50, 0.0);
-      });
-      const gear11 = visualizer.getGearMesh();
-      const gearWorldPos = new THREE.Vector3();
-      gear11.getWorldPosition(gearWorldPos);
-      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
-      fakeRobot.updateMatrixWorld(true);
-
-      telemetryBufferRef.current.palmState.is_grasped = true;
       act(() => {
         stepFrame();
       });
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          stepFrame();
-        });
-      }
 
-      // Capacity capped at 10
-      expect(visualizer.getTowerGearCount()).toBe(10);
-      const updatedGears = visualizer.getTowerGears();
-
-      // Oldest bottom gear has despawned and removed from parent
-      expect(initialBottomGear.parent).toBeNull();
-      // Former second gear shifted down to bottom (z=0.0)
-      expect(updatedGears[0]).toBe(secondGear);
-      expect(updatedGears[0].position.z).toBeCloseTo(0.0, 3);
-      // 11th gear lands at top slot (z = 9 * 0.02 = 0.18m)
-      expect(updatedGears[9]).toBe(gear11);
-      expect(updatedGears[9].position.z).toBeCloseTo(0.18, 3);
+      expect(visualizer.getTowerGearCount()).toBe(11);
+      expect(visualizer.getTowerGears()[10].position.z).toBeCloseTo(0.2, 3);
     });
 
-    it('clears active table gear and all stacked tower meshes on clearWorkspace', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
+    it('empty snapshot echo removes all meshes (clear)', async () => {
+      const telemetryBufferRef = snapBuffer(
+        [{ id: 'g-table', x: 0.5, y: 0.0, z: 0.0 }],
+        [],
+        [{ id: 'g-tower', x: 0.4, y: -0.3, z: 0.0 }]
+      );
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1912,65 +1552,34 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-
-      // Place 2 gears on tower
-      for (let k = 0; k < 2; k++) {
-        act(() => {
-          visualizer.simulateClick(0.50, 0.0);
-        });
-        const gear = visualizer.getGearMesh();
-        const gearWorldPos = new THREE.Vector3();
-        gear.getWorldPosition(gearWorldPos);
-        fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
-        fakeRobot.updateMatrixWorld(true);
-
-        telemetryBufferRef.current.palmState.is_grasped = true;
-        act(() => {
-          stepFrame();
-        });
-        telemetryBufferRef.current.palmState.is_grasped = false;
-        for (let i = 0; i < 3; i++) {
-          act(() => {
-            stepFrame();
-          });
-        }
-      }
-
-      // Spawn a 3rd gear on table
       act(() => {
-        visualizer.simulateClick(0.50, 0.0);
+        stepFrame();
       });
-      expect(visualizer.hasActiveGear()).toBe(true);
-      expect(visualizer.getTowerGearCount()).toBe(2);
+      expect(visualizer.getSnapshotGearCount()).toBe(2);
 
-      // Call clearWorkspace
       act(() => {
-        visualizer.clearWorkspace();
+        telemetryBufferRef.current.workcellState.spawned = [];
+        telemetryBufferRef.current.workcellState.processed = [];
+        stepFrame();
       });
 
-      expect(visualizer.hasActiveGear()).toBe(false);
+      expect(visualizer.getSnapshotGearCount()).toBe(0);
       expect(visualizer.getTowerGearCount()).toBe(0);
-      expect(visualizer.getTowerGears().length).toBe(0);
       expect(visualizer.getGearMesh()).toBeNull();
       expect(visualizer.isLockedOut()).toBe(false);
     });
 
-    it('preserves stacked tower gears when hasActiveGear transitions to false and on table interaction', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
+    it('grasp-bit and phase hints without snapshot entries create no meshes', async () => {
+      const telemetryBufferRef = snapBuffer();
+      (telemetryBufferRef.current as any).phase = 'RELEASING';
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
       });
 
-      const { rerender } = render(
+      render(
         <RobotVisualizer
-          hasActiveGear={false}
           telemetryBufferRef={telemetryBufferRef}
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
@@ -1983,21 +1592,12 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-
-      // 1. Place 1 gear onto tower
-      act(() => {
-        visualizer.simulateClick(0.50, 0.0);
-      });
-      const gear = visualizer.getGearMesh();
-      const gearWorldPos = new THREE.Vector3();
-      gear.getWorldPosition(gearWorldPos);
-      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
-      fakeRobot.updateMatrixWorld(true);
-
       telemetryBufferRef.current.palmState.is_grasped = true;
-      act(() => {
-        stepFrame();
-      });
+      for (let i = 0; i < 5; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
       telemetryBufferRef.current.palmState.is_grasped = false;
       for (let i = 0; i < 3; i++) {
         act(() => {
@@ -2005,51 +1605,13 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         });
       }
 
-      expect(visualizer.getTowerGearCount()).toBe(1);
-
-      // 2. Rerender with hasActiveGear=true (in progress) then hasActiveGear=false (pick-and-place completed)
-      act(() => {
-        rerender(
-          <RobotVisualizer
-            hasActiveGear={true}
-            telemetryBufferRef={telemetryBufferRef}
-            rendererFactory={() => mockRenderer}
-            controlsFactory={() => mockControls}
-          />
-        );
-      });
-
-      act(() => {
-        rerender(
-          <RobotVisualizer
-            hasActiveGear={false}
-            telemetryBufferRef={telemetryBufferRef}
-            rendererFactory={() => mockRenderer}
-            controlsFactory={() => mockControls}
-          />
-        );
-      });
-
-      // Stacked tower gear MUST be preserved!
-      expect(visualizer.getTowerGearCount()).toBe(1);
-
-      // 3. Table interaction: click table again to spawn a 2nd gear
-      act(() => {
-        visualizer.simulateClick(0.55, 0.0);
-      });
-
-      // Tower gear is still preserved, and new active gear is present
-      expect(visualizer.getTowerGearCount()).toBe(1);
-      expect(visualizer.hasActiveGear()).toBe(true);
+      expect(visualizer.getSnapshotGearCount()).toBe(0);
+      expect(visualizer.getTowerGearCount()).toBe(0);
+      expect(visualizer.isGearAttached()).toBe(false);
     });
 
-    it('Unit 6.6.2: table gear survives EXECUTING and IDLE return until grasp, then towers on release', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-        },
-      };
+    it('EXECUTING/IDLE robotState transitions never mutate snapshot meshes', async () => {
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -2071,65 +1633,42 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-
-      // Click table to spawn gear
       act(() => {
-        visualizer.simulateClick(0.50, 0.0);
+        stepFrame();
       });
       expect(visualizer.getGearMesh()).not.toBeNull();
 
-      // EXECUTING: gear still on table
       act(() => {
         rerender(
           <RobotVisualizer
             robotState="EXECUTING"
-            hasActiveGear={true}
             telemetryBufferRef={telemetryBufferRef}
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
           />
         );
       });
+      act(() => {
+        stepFrame();
+      });
       expect(visualizer.getGearMesh()).not.toBeNull();
       expect(visualizer.getTowerGearCount()).toBe(0);
 
-      // IDLE return with session flag cleared, no grasp yet: gear MUST survive
       act(() => {
         rerender(
           <RobotVisualizer
             robotState="IDLE"
-            hasActiveGear={false}
             telemetryBufferRef={telemetryBufferRef}
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
           />
         );
       });
-      expect(visualizer.getGearMesh()).not.toBeNull();
-      expect(visualizer.getTowerGearCount()).toBe(0);
-
-      // GRASPING suction: gear leaves table (attached/hidden as sucked)
-      const gear = visualizer.getGearMesh();
-      const gearWorldPos = new THREE.Vector3();
-      gear.getWorldPosition(gearWorldPos);
-      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
-      fakeRobot.updateMatrixWorld(true);
-
-      telemetryBufferRef.current.palmState.is_grasped = true;
       act(() => {
         stepFrame();
       });
-      expect(visualizer.isGearAttached()).toBe(true);
-
-      // RELEASING: tower grows by one (stable: 3 consecutive false frames)
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          stepFrame();
-        });
-      }
-      expect(visualizer.isGearAttached()).toBe(false);
-      expect(visualizer.getTowerGearCount()).toBe(1);
+      expect(visualizer.getGearMesh()).not.toBeNull();
+      expect(visualizer.getTowerGearCount()).toBe(0);
     });
 
     it('disposes SpindleTower geometries and materials on unmount', async () => {
@@ -2173,14 +1712,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(pinMatSpy).toHaveBeenCalled();
     });
 
-    it('Unit 6.6.7/4ixr: stable false outside RELEASING never grows tower; RELEASING deposits +1', async () => {
-      const telemetryBufferRef = {
-        current: {
-          jointPositions: [0, 0, 0, 0, 0, 0],
-          palmState: { is_grasped: false },
-          phase: null as string | null,
-        },
-      };
+    it('Unit 6.7.5: phase/RELEASING without snapshot entries grows no tower; processed echo deposits verbatim', async () => {
+      const telemetryBufferRef = snapBuffer();
+      (telemetryBufferRef.current as any).phase = 'GRASPING';
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -2201,65 +1735,48 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-      act(() => {
-        visualizer.simulateClick(0.5, 0.0);
-      });
       fakeTool0Link.position.set(0, 0.5, 0.5);
       fakeRobot.updateMatrixWorld(true);
 
-      // GRASPING ride
+      // Grasp-bit + phase hints alone: no mesh without entry.
       telemetryBufferRef.current.palmState.is_grasped = true;
-      telemetryBufferRef.current.phase = 'GRASPING';
       act(() => {
         stepFrame();
       });
-      expect(visualizer.isGearAttached()).toBe(true);
+      expect(visualizer.isGearAttached()).toBe(false);
 
-      // TRANSFERRING with stable false x5: gear keeps riding, tower stays 0
+      (telemetryBufferRef.current as any).phase = 'TRANSFERRING';
       telemetryBufferRef.current.palmState.is_grasped = false;
-      telemetryBufferRef.current.phase = 'TRANSFERRING';
       for (let i = 0; i < 5; i++) {
         act(() => {
           stepFrame();
         });
-        expect(visualizer.isGearAttached()).toBe(true);
+        expect(visualizer.isGearAttached()).toBe(false);
         expect(visualizer.getTowerGearCount()).toBe(0);
       }
 
-      // True RELEASING with stable false x3: tower +1 at slot 0
-      telemetryBufferRef.current.phase = 'RELEASING';
+      (telemetryBufferRef.current as any).phase = 'RELEASING';
       for (let i = 0; i < 3; i++) {
         act(() => {
           stepFrame();
         });
       }
       expect(visualizer.isGearAttached()).toBe(false);
-      expect(visualizer.getTowerGearCount()).toBe(1);
-      expect(visualizer.getTowerGears()[0].position.z).toBeCloseTo(0.0, 3);
+      expect(visualizer.getTowerGearCount()).toBe(0);
 
-      // Second cycle deposits at slot k=1
+      // Processed echo deposits tower mesh at entry coords verbatim.
       act(() => {
-        visualizer.simulateClick(0.55, 0.0);
-      });
-      telemetryBufferRef.current.palmState.is_grasped = true;
-      telemetryBufferRef.current.phase = 'GRASPING';
-      act(() => {
+        telemetryBufferRef.current.workcellState.processed = [
+          { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 },
+        ];
         stepFrame();
       });
-      expect(visualizer.isGearAttached()).toBe(true);
-      telemetryBufferRef.current.palmState.is_grasped = false;
-      telemetryBufferRef.current.phase = 'RELEASING';
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          stepFrame();
-        });
-      }
-      expect(visualizer.getTowerGearCount()).toBe(2);
-      expect(visualizer.getTowerGears()[1].position.z).toBeCloseTo(0.02, 3);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+      expect(visualizer.getTowerGears()[0].position.z).toBeCloseTo(0.0, 3);
     });
+
+
+
+
   });
 });
-
-
-
-

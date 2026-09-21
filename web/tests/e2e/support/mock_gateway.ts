@@ -6,6 +6,7 @@ import {
   CANONICAL_POSES,
   RobotCommandSchema,
   type ArmJointPositions,
+  type GearEntry,
   type PoseName,
   type RobotState,
   type RobotTelemetryEvent,
@@ -67,7 +68,11 @@ export class MockGateway {
   private palmTimeout: NodeJS.Timeout | null = null;
 
   private trajectoryGenerator = new PickAndPlaceTrajectoryGenerator();
-  private towerGearsCount = 0;
+  // Workcell-authority (6.7.5): mock owns bucket gear truth, emits snapshots.
+  private spawned: GearEntry[] = [];
+  private inProgress: GearEntry[] = [];
+  private processed: GearEntry[] = [];
+  private activeId: string | null = null;
   private pnpExecuting = false;
   private pnpTimeout: NodeJS.Timeout | null = null;
   private autoExecutePickAndPlace = true;
@@ -129,7 +134,10 @@ export class MockGateway {
       clearTimeout(this.palmTimeout);
       this.palmTimeout = null;
     }
-    this.towerGearsCount = 0;
+    this.spawned = [];
+    this.inProgress = [];
+    this.processed = [];
+    this.activeId = null;
     this.autoExecutePickAndPlace = true;
     this.robotState = 'IDLE';
     this.palmState = { is_grasped: false };
@@ -139,11 +147,34 @@ export class MockGateway {
   }
 
   public getTowerGearsCount(): number {
-    return this.towerGearsCount;
+    return this.processed.length;
   }
 
   public setTowerGearsCount(count: number): void {
-    this.towerGearsCount = count;
+    // Legacy alias: synthesize processed entries at tower coords verbatim.
+    this.processed = Array.from({ length: Math.max(0, count) }, (_, i) => ({
+      id: `legacy-tower-${i}`,
+      x: 0.40,
+      y: -0.30,
+      z: i * 0.02,
+      origin_x: 0.40,
+      origin_y: -0.30,
+      origin_z: 0,
+    }));
+  }
+
+  public getWorkcellSnapshot(): {
+    spawned: GearEntry[];
+    inProgress: GearEntry[];
+    processed: GearEntry[];
+    activeId: string | null;
+  } {
+    return {
+      spawned: [...this.spawned],
+      inProgress: [...this.inProgress],
+      processed: [...this.processed],
+      activeId: this.activeId,
+    };
   }
 
   public getRobotState(): RobotState {
@@ -382,7 +413,30 @@ export class MockGateway {
         break;
       }
 
+      case 'SPAWN_OBJECT': {
+        if (this.robotState === 'FAULT') {
+          this.log('[EDGE] Spawn rejected: robot in FAULT state');
+          break;
+        }
+        const x = Number(cmd.payload?.x ?? 0.5);
+        const y = Number(cmd.payload?.y ?? 0.0);
+        const z = Number(cmd.payload?.z ?? 0.0);
+        const id = `gear-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        this.spawned = [{ id, x, y, z }];
+        this.inProgress = [];
+        this.activeId = id;
+        this.log(`[EDGE] Spawned GEAR ${id} at (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`);
+        this.cancelTrajectory();
+        if (this.autoExecutePickAndPlace) {
+          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z);
+        } else {
+          this.sendTelemetryToAll(cmd.command_id);
+        }
+        break;
+      }
+
       case 'PICK_AND_PLACE_TARGET': {
+        // Legacy alias (pre-6.7.5 click path): treat pick as spawn-only.
         if (this.robotState === 'FAULT') {
           this.log('[EDGE] Pick and place rejected: robot in FAULT state');
           break;
@@ -393,7 +447,11 @@ export class MockGateway {
         this.log(`[EDGE] Spawned GEAR at (${x.toFixed(3)}, ${y.toFixed(3)}, 0.000)`);
         this.cancelTrajectory();
         if (this.autoExecutePickAndPlace) {
-          this.executePickAndPlaceSequence(cmd.command_id, x, y, z);
+          const id = `gear-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+          this.spawned = [{ id, x, y, z }];
+          this.inProgress = [];
+          this.activeId = id;
+          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z);
         } else {
           this.sendTelemetryToAll(cmd.command_id);
         }
@@ -405,7 +463,10 @@ export class MockGateway {
           this.log('[EDGE] Clear workspace rejected: robot in FAULT state');
           break;
         }
-        this.towerGearsCount = 0;
+        this.spawned = [];
+        this.inProgress = [];
+        this.processed = [];
+        this.activeId = null;
         this.cancelTrajectory();
         this.log(`[EDGE] Workspace cleared for command ${cmd.command_id || ''}`);
         this.sendTelemetryToAll(cmd.command_id);
@@ -442,8 +503,8 @@ export class MockGateway {
     }
   }
 
-  private executePickAndPlaceSequence(commandId: string | undefined, x: number, y: number, z: number): void {
-    const dropZ = Math.min(this.towerGearsCount, 9) * 0.02;
+  private executePickAndPlaceSequence(commandId: string | undefined, id: string, x: number, y: number, z: number): void {
+    const dropZ = Math.min(this.processed.length, 9) * 0.02;
     const dropCoords: [number, number, number] = [0.40, -0.30, dropZ];
 
     let steps: WaypointStep[];
@@ -460,6 +521,26 @@ export class MockGateway {
     this.sendTelemetryToAll(commandId);
 
     let stepIdx = 0;
+    let grasped = false;
+    const deposit = () => {
+      const idx = this.inProgress.findIndex((g) => g.id === id);
+      const entry =
+        idx >= 0
+          ? this.inProgress.splice(idx, 1)[0]
+          : { id, x, y, z, origin_x: x, origin_y: y, origin_z: z };
+      this.processed.push({
+        id,
+        x: dropCoords[0],
+        y: dropCoords[1],
+        z: dropCoords[2],
+        origin_x: entry.origin_x ?? x,
+        origin_y: entry.origin_y ?? y,
+        origin_z: entry.origin_z ?? z,
+      });
+      if (this.processed.length > 10) this.processed.shift();
+      this.spawned = this.spawned.filter((g) => g.id !== id);
+      this.activeId = null;
+    };
     const executeNextStep = () => {
       if (!this.pnpExecuting || this.robotState === 'FAULT') {
         this.pnpExecuting = false;
@@ -468,7 +549,7 @@ export class MockGateway {
 
       if (stepIdx >= steps.length) {
         this.pnpExecuting = false;
-        this.towerGearsCount = Math.min(this.towerGearsCount + 1, 10);
+        deposit();
         this.robotState = 'IDLE';
         this.palmState = { is_grasped: false };
         this.currentPhase = null;
@@ -482,6 +563,15 @@ export class MockGateway {
       this.palmState = { is_grasped: step.isGrasped };
       this.currentPhase = step.phase;
 
+      // Bucket truth follows grasp bit: first grasp moves spawned entry
+      // to in_progress with origin = pick coords verbatim.
+      if (step.isGrasped && !grasped) {
+        grasped = true;
+        this.spawned = this.spawned.filter((g) => g.id !== id);
+        this.inProgress = [{ id, x, y, z, origin_x: x, origin_y: y, origin_z: z }];
+        this.activeId = id;
+      }
+
       const fbFrame = {
         type: 'ACTION_FEEDBACK',
         command_id: commandId || '',
@@ -492,7 +582,7 @@ export class MockGateway {
       this.broadcastRaw(JSON.stringify(fbFrame));
 
       if (isComplete) {
-        this.towerGearsCount = Math.min(this.towerGearsCount + 1, 10);
+        deposit();
         this.pnpTimeout = setTimeout(() => {
           this.pnpExecuting = false;
           this.robotState = 'IDLE';
@@ -581,7 +671,12 @@ export class MockGateway {
       joint_positions: [...this.currentJoints] as ArmJointPositions,
       palm_state: { ...this.palmState },
       command_id: commandId ?? null,
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+      workcell_state: {
+        spawned: [...this.spawned],
+        in_progress: [...this.inProgress],
+        processed: [...this.processed],
+        active_id: this.activeId,
+      },
       phase: this.currentPhase,
     };
     try {

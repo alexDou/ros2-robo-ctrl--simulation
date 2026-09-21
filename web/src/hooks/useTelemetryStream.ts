@@ -4,7 +4,15 @@ import {
   CANONICAL_POSES,
   type ArmJointPositions,
   type RobotState,
+  type GearEntry,
 } from '@contracts';
+
+export interface WorkcellSnapshot {
+  spawned: GearEntry[];
+  inProgress: GearEntry[];
+  processed: GearEntry[];
+  activeId: string | null;
+}
 
 export interface TelemetryBuffer {
   jointPositions: ArmJointPositions;
@@ -12,10 +20,35 @@ export interface TelemetryBuffer {
   robotState: RobotState;
   palmState?: { is_grasped: boolean };
   phase?: string | null;
+  workcellState: WorkcellSnapshot;
   frequencyHz: number;
   latencyMs: number;
   lastPacketTime: number;
   frameCount: number;
+}
+
+const EMPTY_WORKCELL: WorkcellSnapshot = {
+  spawned: [],
+  inProgress: [],
+  processed: [],
+  activeId: null,
+};
+
+function toSnapshot(ws: unknown): WorkcellSnapshot {
+  if (!ws || typeof ws !== 'object') return { ...EMPTY_WORKCELL };
+  const w = ws as {
+    spawned?: unknown;
+    in_progress?: unknown;
+    processed?: unknown;
+    active_id?: unknown;
+  };
+  const list = (v: unknown): GearEntry[] => (Array.isArray(v) ? (v as GearEntry[]) : []);
+  return {
+    spawned: list(w.spawned),
+    inProgress: list(w.in_progress),
+    processed: list(w.processed),
+    activeId: typeof w.active_id === 'string' ? w.active_id : null,
+  };
 }
 
 export function useTelemetryStream() {
@@ -25,6 +58,7 @@ export function useTelemetryStream() {
     robotState: 'STANDBY' as RobotState,
     palmState: { is_grasped: false },
     phase: null,
+    workcellState: { ...EMPTY_WORKCELL },
     frequencyHz: 0,
     latencyMs: 0,
     lastPacketTime: 0,
@@ -34,6 +68,11 @@ export function useTelemetryStream() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [robotState, setRobotState] = useState<RobotState | null>('STANDBY');
   const [palmState, setPalmState] = useState<{ is_grasped: boolean }>({ is_grasped: false });
+  // Bumped when workcell snapshot signature changes so consumers deriving
+  // UI state from bufferRef.current.workcellState (e.g. Clear button)
+  // re-render. Buffer mutation alone triggers no render.
+  const [workcellVersion, setWorkcellVersion] = useState(0);
+  const lastWorkcellSigRef = useRef<string>('');
   const frameTimestampsRef = useRef<number[]>([]);
   const lastStreamingRef = useRef(false);
   const lastRobotStateRef = useRef<RobotState | null>(null);
@@ -50,6 +89,12 @@ export function useTelemetryStream() {
     buf.robotState = data.robot_state;
     buf.palmState = data.palm_state;
     buf.phase = data.phase ?? null;
+    buf.workcellState = toSnapshot(data.workcell_state);
+    const sig = `${buf.workcellState.spawned.length}:${buf.workcellState.inProgress.length}:${buf.workcellState.processed.length}:${buf.workcellState.activeId ?? ''}`;
+    if (sig !== lastWorkcellSigRef.current) {
+      lastWorkcellSigRef.current = sig;
+      setWorkcellVersion((v) => v + 1);
+    }
     buf.timestampNs = data.timestamp_ns;
     buf.lastPacketTime = now;
     buf.frameCount++;
@@ -99,9 +144,11 @@ export function useTelemetryStream() {
     lastStreamingRef.current = false;
     lastRobotStateRef.current = 'STANDBY';
     lastPalmGraspedRef.current = null;
+    lastWorkcellSigRef.current = '';
     setIsStreaming(false);
     setRobotState('STANDBY');
     setPalmState({ is_grasped: false });
+    setWorkcellVersion((v) => v + 1);
     frameTimestampsRef.current = [];
     bufferRef.current = {
       jointPositions: [...CANONICAL_POSES.HOME],
@@ -109,6 +156,7 @@ export function useTelemetryStream() {
       robotState: 'STANDBY' as RobotState,
       palmState: { is_grasped: false },
       phase: null,
+      workcellState: { ...EMPTY_WORKCELL },
       frequencyHz: 0,
       latencyMs: 0,
       lastPacketTime: 0,
@@ -121,6 +169,7 @@ export function useTelemetryStream() {
     isStreaming,
     robotState,
     palmState,
+    workcellVersion,
     handleIncomingFrame,
     resetStream,
   };

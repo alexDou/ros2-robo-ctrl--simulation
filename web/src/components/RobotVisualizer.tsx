@@ -2,25 +2,21 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { URDFRobot } from 'urdf-loader';
-import { UR5E_JOINTS, CANONICAL_POSES, type SpawnObjectPayload, type PickAndPlaceTargetPayload, type RobotState } from '@contracts';
+import { UR5E_JOINTS, CANONICAL_POSES, type SpawnObjectPayload, type RobotState, type GearEntry } from '@contracts';
 import * as robotLoader from '@utils/robotLoader';
 import { isTestEnv } from '@utils/env';
 
 export const REACHABILITY_MIN_RADIUS = 0.40;
 export const REACHABILITY_MAX_RADIUS = 0.75;
 export const SPINDLE_TOWER_COORDS = { x: 0.40, y: -0.30, z: 0.0 };
-export const GEAR_STACK_HEIGHT_STEP = 0.02;
-export const MAX_TOWER_STACK_CAPACITY = 10;
-export const GRASP_PROXIMITY_THRESHOLD_M = 0.015;
-// Gear hangs visibly below nozzle tip (tip at z=0.108 in tool0 frame)
-// instead of at tool0 origin inside the palm mesh.
-// Unit 6.6.7: phase truth. Deposit only on RELEASING; null = legacy
-// sender without phase (debounce fallback). Anything else is
-// flicker/mid-transfer false.
-export function phaseAllowsRelease(phase: string | null | undefined): boolean {
-  return phase == null || phase === 'RELEASING';
-}
 export const GRASP_RIDE_OFFSET_Z_M = 0.118;
+
+export interface WorkcellSnapshotView {
+  spawned: GearEntry[];
+  inProgress: GearEntry[];
+  processed: GearEntry[];
+  activeId: string | null;
+}
 
 export interface RobotVisualizerProps {
   urdfUrl?: string;
@@ -31,13 +27,11 @@ export interface RobotVisualizerProps {
       jointPositions?: readonly number[];
       palmState?: { is_grasped: boolean };
       phase?: string | null;
+      workcellState?: WorkcellSnapshotView | null;
     };
   };
   robotState?: RobotState | string;
-  hasActiveGear?: boolean;
   onSpawnObject?: (payload: SpawnObjectPayload) => void;
-  onPickAndPlaceTarget?: (payload: PickAndPlaceTargetPayload) => void;
-  onWorkspaceGearsChange?: (hasGears: boolean, towerCount: number) => void;
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,
@@ -488,10 +482,7 @@ export function RobotVisualizer({
   jointPositionsRef,
   telemetryBufferRef,
   robotState,
-  hasActiveGear,
   onSpawnObject,
-  onPickAndPlaceTarget,
-  onWorkspaceGearsChange,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -530,22 +521,10 @@ export function RobotVisualizer({
   const robotStatePropRef = useRef(robotState);
   robotStatePropRef.current = robotState;
 
-  const hasActiveGearPropRef = useRef(hasActiveGear);
-  hasActiveGearPropRef.current = hasActiveGear;
-
   const onSpawnObjectRef = useRef(onSpawnObject);
   onSpawnObjectRef.current = onSpawnObject;
 
-  const onPickAndPlaceTargetRef = useRef(onPickAndPlaceTarget);
-  onPickAndPlaceTargetRef.current = onPickAndPlaceTarget;
-
-  const onWorkspaceGearsChangeRef = useRef(onWorkspaceGearsChange);
-  onWorkspaceGearsChangeRef.current = onWorkspaceGearsChange;
-
-  const clearWorkspaceRef = useRef<(() => void) | null>(null);
-  const depositPendingGearRef = useRef<(() => void) | null>(null);
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
-  const wasGearAttachedInCycleRef = useRef<boolean>(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -560,16 +539,12 @@ export function RobotVisualizer({
     let tableAssets: TableProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
     let mountLink: THREE.Object3D | null = null;
-    let activeGearAssets: GearwheelProceduralAssets | null = null;
-    let attachedGear: GearwheelProceduralAssets | null = null;
-    let wasGearAttachedInCycle = false;
-    const towerGears: GearwheelProceduralAssets[] = [];
-    let isLockedOut = false;
+    // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
+    // id-keyed from buffer workcellState each frame: spawned -> table mesh
+    // at entry xyz, in_progress -> flange ride, processed -> tower verbatim.
+    const snapshotGears = new Map<string, { assets: GearwheelProceduralAssets; bucket: string }>();
+    let snapshotLockout = false;
     let wasGrasped = false;
-    // Unit 6.6.6: Case 2 release needs N consecutive false frames so a
-    // single-frame grasp-bit flicker mid-transfer cannot teleport the gear.
-    let releaseFalseCount = 0;
-    const RELEASE_STABLE_FRAMES = 3;
     let needsRender = true;
     const lastRenderedPositions = new Float64Array(6).fill(NaN);
 
@@ -769,136 +744,79 @@ export function RobotVisualizer({
       onSceneReadyRef.current(scene, camera, controls, renderer);
     }
 
-    const spawnGearAt = (x: number, y: number) => {
-      if (activeGearAssets || attachedGear || isLockedOut) {
-        return;
+    const readSnapshot = (): WorkcellSnapshotView => {
+      const ws = telemetryBufferRefProp.current?.current?.workcellState;
+      if (!ws) return { spawned: [], inProgress: [], processed: [], activeId: null };
+      return {
+        spawned: Array.isArray(ws.spawned) ? ws.spawned : [],
+        inProgress: Array.isArray(ws.inProgress) ? ws.inProgress : [],
+        processed: Array.isArray(ws.processed) ? ws.processed : [],
+        activeId: typeof ws.activeId === 'string' ? ws.activeId : null,
+      };
+    };
+
+    const reconcileSnapshotGears = () => {
+      const snap = readSnapshot();
+      const desired = new Map<string, { entry: GearEntry; bucket: string }>();
+      for (const e of snap.spawned) desired.set(e.id, { entry: e, bucket: 'spawned' });
+      for (const e of snap.inProgress) desired.set(e.id, { entry: e, bucket: 'in_progress' });
+      for (const e of snap.processed) desired.set(e.id, { entry: e, bucket: 'processed' });
+
+      // Remove meshes whose id left the snapshot.
+      for (const [id, rec] of Array.from(snapshotGears)) {
+        if (!desired.has(id)) {
+          if (rec.assets.group.parent) rec.assets.group.parent.remove(rec.assets.group);
+          rec.assets.dispose();
+          snapshotGears.delete(id);
+          needsRender = true;
+        }
       }
-      const gear = createProceduralGearwheel();
-      gear.group.position.set(x, y, 0.004);
-      robotGroup.add(gear.group);
-      activeGearAssets = gear;
-      wasGearAttachedInCycle = false;
-      wasGearAttachedInCycleRef.current = false;
-      isLockedOut = true;
-      if (tableAssets) {
+      // Create meshes for new ids; reparent/position in-progress rides.
+      for (const [id, d] of desired) {
+        let rec = snapshotGears.get(id);
+        if (!rec) {
+          const assets = createProceduralGearwheel();
+          snapshotGears.set(id, { assets, bucket: d.bucket });
+          rec = snapshotGears.get(id)!;
+          needsRender = true;
+        }
+        if (rec.bucket !== d.bucket) {
+          rec.bucket = d.bucket;
+          needsRender = true;
+        }
+        if (d.bucket === 'spawned' || d.bucket === 'processed') {
+          if (rec.assets.group.parent !== robotGroup) {
+            if (rec.assets.group.parent) rec.assets.group.parent.remove(rec.assets.group);
+            robotGroup.add(rec.assets.group);
+          }
+          rec.assets.group.rotation.set(0, 0, 0);
+          rec.assets.group.position.set(d.entry.x, d.entry.y, d.entry.z);
+        } else if (d.bucket === 'in_progress') {
+          if (mountLink) {
+            if (rec.assets.group.parent !== mountLink) {
+              if (rec.assets.group.parent) rec.assets.group.parent.remove(rec.assets.group);
+              mountLink.add(rec.assets.group);
+            }
+            rec.assets.group.position.set(0, 0, GRASP_RIDE_OFFSET_Z_M);
+          } else {
+            // No URDF flange yet (tests): keep mesh tracked but parked at
+            // entry coords so count/position probes stay meaningful.
+            if (rec.assets.group.parent !== robotGroup) {
+              if (rec.assets.group.parent) rec.assets.group.parent.remove(rec.assets.group);
+              robotGroup.add(rec.assets.group);
+            }
+            rec.assets.group.position.set(d.entry.x, d.entry.y, d.entry.z);
+          }
+        }
+      }
+      // Lockout derives from active buckets only: spawned/in_progress block
+      // clicks, processed tower never does (matches pre-6.7 ClickLockout).
+      const hasActive = snap.spawned.length > 0 || snap.inProgress.length > 0;
+      snapshotLockout = hasActive;
+      if (tableAssets && hasActive) {
         tableAssets.reticleMesh.visible = false;
       }
-      onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
-      needsRender = true;
-
-      if (onPickAndPlaceTargetRef.current) {
-        onPickAndPlaceTargetRef.current({
-          pick_x: x,
-          pick_y: y,
-          pick_z: 0.0,
-        });
-      }
-      if (onSpawnObjectRef.current) {
-        onSpawnObjectRef.current({
-          x,
-          y,
-          z: 0.0,
-          object_type: 'GEAR',
-        });
-      }
     };
-
-    const clearActiveGear = () => {
-      releaseFalseCount = 0;
-      if (activeGearAssets) {
-        if (activeGearAssets.group.parent) {
-          activeGearAssets.group.parent.remove(activeGearAssets.group);
-        }
-        activeGearAssets.dispose();
-        activeGearAssets = null;
-      }
-      if (attachedGear) {
-        if (attachedGear.group.parent) {
-          attachedGear.group.parent.remove(attachedGear.group);
-        }
-        attachedGear.dispose();
-        attachedGear = null;
-      }
-      wasGearAttachedInCycle = false;
-      wasGearAttachedInCycleRef.current = false;
-      isLockedOut = false;
-      onWorkspaceGearsChangeRef.current?.(false, towerGears.length);
-      needsRender = true;
-    };
-
-    const clearWorkspace = () => {
-      clearActiveGear();
-      for (const gear of towerGears) {
-        if (gear.group.parent) {
-          gear.group.parent.remove(gear.group);
-        }
-        gear.dispose();
-      }
-      towerGears.length = 0;
-      wasGearAttachedInCycle = false;
-      wasGearAttachedInCycleRef.current = false;
-      isLockedOut = false;
-      onWorkspaceGearsChangeRef.current?.(false, 0);
-      needsRender = true;
-    };
-    clearWorkspaceRef.current = clearWorkspace;
-
-    const depositGearToTower = (gearToDeposit: GearwheelProceduralAssets) => {
-      if (gearToDeposit.group.parent) {
-        gearToDeposit.group.parent.remove(gearToDeposit.group);
-      }
-      robotGroup.add(gearToDeposit.group);
-      gearToDeposit.group.rotation.set(0, 0, 0);
-
-      if (towerGears.length < MAX_TOWER_STACK_CAPACITY) {
-        const k = towerGears.length;
-        gearToDeposit.group.position.set(
-          SPINDLE_TOWER_COORDS.x,
-          SPINDLE_TOWER_COORDS.y,
-          k * GEAR_STACK_HEIGHT_STEP
-        );
-        towerGears.push(gearToDeposit);
-      } else {
-        const oldestGear = towerGears.shift()!;
-        if (oldestGear.group.parent) {
-          oldestGear.group.parent.remove(oldestGear.group);
-        }
-        oldestGear.dispose();
-
-        for (let i = 0; i < towerGears.length; i++) {
-          towerGears[i].group.position.set(
-            SPINDLE_TOWER_COORDS.x,
-            SPINDLE_TOWER_COORDS.y,
-            i * GEAR_STACK_HEIGHT_STEP
-          );
-        }
-
-        const topSlot = MAX_TOWER_STACK_CAPACITY - 1;
-        gearToDeposit.group.position.set(
-          SPINDLE_TOWER_COORDS.x,
-          SPINDLE_TOWER_COORDS.y,
-          topSlot * GEAR_STACK_HEIGHT_STEP
-        );
-        towerGears.push(gearToDeposit);
-      }
-      onWorkspaceGearsChangeRef.current?.(activeGearAssets !== null || attachedGear !== null, towerGears.length);
-    };
-
-    const depositPendingGear = () => {
-      if (attachedGear) {
-        const g = attachedGear;
-        attachedGear = null;
-        depositGearToTower(g);
-        wasGearAttachedInCycle = false;
-        wasGearAttachedInCycleRef.current = false;
-        isLockedOut = false;
-        needsRender = true;
-      }
-      // No teleport: an un-attached table gear stays on the table.
-      // Tower grows only via Case 2 release of a flange-riding gear.
-      onWorkspaceGearsChangeRef.current?.(activeGearAssets !== null || attachedGear !== null, towerGears.length);
-    };
-    depositPendingGearRef.current = depositPendingGear;
 
     const raycaster = new THREE.Raycaster();
     const pointerNdc = new THREE.Vector2();
@@ -926,6 +844,11 @@ export function RobotVisualizer({
       return { x: localPoint.x, y: localPoint.y };
     };
 
+    const isClickLocked = (): boolean => {
+      const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+      return snapshotLockout || !isIdle;
+    };
+
     const handlePointerMoveCoords = (x: number, y: number) => {
       if (isDisposed || !tableAssets) return;
       const r = Math.sqrt(x * x + y * y);
@@ -941,8 +864,7 @@ export function RobotVisualizer({
         y >= tableAssets.matBounds.minY &&
         y <= tableAssets.matBounds.maxY;
       const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-      const hasTableOrAttachedGear = activeGearAssets !== null || attachedGear !== null;
-      const isLocked = isLockedOut || hasTableOrAttachedGear || !isIdle;
+      const isLocked = isClickLocked();
 
       if (isReachable && isInsideTable && isInsideMat && isIdle && !isLocked) {
         tableAssets.reticleMesh.position.set(x, y, 0.006);
@@ -968,9 +890,7 @@ export function RobotVisualizer({
     const handleClickCoords = (x: number, y: number) => {
       if (isDisposed || !tableAssets) return false;
       const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-      const hasTableOrAttachedGear = activeGearAssets !== null || attachedGear !== null;
-      const isLocked = isLockedOut || hasTableOrAttachedGear || !isIdle;
-      if (isLocked || !isIdle) return false;
+      if (isClickLocked() || !isIdle) return false;
 
       const r = Math.sqrt(x * x + y * y);
       const isReachable = r >= REACHABILITY_MIN_RADIUS && r <= REACHABILITY_MAX_RADIUS;
@@ -986,7 +906,11 @@ export function RobotVisualizer({
         y <= tableAssets.matBounds.maxY;
 
       if (isReachable && isInsideTable && isInsideMat) {
-        spawnGearAt(x, y);
+        // Workcell-authority: click sends ONLY SPAWN_OBJECT. No local mesh;
+        // table gear appears on snapshot echo. Edge auto-dispatches PnP.
+        onSpawnObjectRef.current?.({ x, y, z: 0.0, object_type: 'GEAR' });
+        if (tableAssets) tableAssets.reticleMesh.visible = false;
+        needsRender = true;
         return true;
       }
 
@@ -1100,30 +1024,51 @@ export function RobotVisualizer({
       getSpindleTowerMesh: () => spindleTowerAssets?.group ?? null,
       getSpindleBaseFlangeMesh: () => spindleTowerAssets?.flangeMesh ?? null,
       getSpindlePinMesh: () => spindleTowerAssets?.pinMesh ?? null,
-      getTowerGears: () => towerGears.map((g) => g.group),
-      getTowerGearCount: () => towerGears.length,
-      isGearAttached: () => attachedGear !== null,
-      wasGearEverAttached: () => wasGearAttachedInCycle || wasGearAttachedInCycleRef.current,
-      getAttachedGearMesh: () => attachedGear?.group ?? null,
+      getSnapshotGearCount: () => snapshotGears.size,
+      getSnapshotGearPosition: (id: string) => {
+        const rec = snapshotGears.get(id);
+        if (!rec) return null;
+        const p = rec.assets.group.position;
+        return { x: p.x, y: p.y, z: p.z, bucket: rec.bucket };
+      },
+      getSnapshotGearIds: () => [...snapshotGears.keys()],
+      getTowerGears: () =>
+        [...snapshotGears.values()]
+          .filter((r) => r.bucket === 'processed')
+          .map((r) => r.assets.group),
+      getTowerGearCount: () =>
+        [...snapshotGears.values()].filter((r) => r.bucket === 'processed').length,
+      isGearAttached: () => [...snapshotGears.values()].some((r) => r.bucket === 'in_progress'),
+      wasGearEverAttached: () => [...snapshotGears.values()].some((r) => r.bucket === 'in_progress'),
+      getAttachedGearMesh: () => {
+        const rec = [...snapshotGears.values()].find((r) => r.bucket === 'in_progress');
+        return rec?.assets.group ?? null;
+      },
       getTableMesh: () => tableAssets?.tableMesh ?? null,
       getPedestalMesh: () => pedestalAssets?.group ?? null,
       getLandingMatMesh: () => tableAssets?.matMesh ?? null,
       getReticleMesh: () => tableAssets?.reticleMesh ?? null,
-      getGearMesh: () => activeGearAssets?.group ?? attachedGear?.group ?? null,
+      getGearMesh: () => {
+        const rec =
+          [...snapshotGears.values()].find((r) => r.bucket === 'spawned') ??
+          [...snapshotGears.values()].find((r) => r.bucket === 'in_progress');
+        return rec?.assets.group ?? null;
+      },
       getGearPosition: () => {
-        const g = activeGearAssets?.group ?? attachedGear?.group;
-        if (!g) return null;
-        const pos = g.position;
+        const rec =
+          [...snapshotGears.values()].find((r) => r.bucket === 'spawned') ??
+          [...snapshotGears.values()].find((r) => r.bucket === 'in_progress');
+        if (!rec) return null;
+        const pos = rec.assets.group.position;
         return { x: pos.x, y: pos.y, z: pos.z };
       },
-      hasActiveGear: () => activeGearAssets !== null || attachedGear !== null,
-      isLockedOut: () => {
-        const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-        const hasTableOrAttachedGear = activeGearAssets !== null || attachedGear !== null;
-        return isLockedOut || hasTableOrAttachedGear || !isIdle;
-      },
+      hasActiveGear: () =>
+        [...snapshotGears.values()].some((r) => r.bucket === 'spawned' || r.bucket === 'in_progress'),
+      getSpawnedGearCount: () =>
+        [...snapshotGears.values()].filter((r) => r.bucket === 'spawned' || r.bucket === 'in_progress').length,
+      isLockedOut: () => isClickLocked(),
       clearWorkspace: () => {
-        clearWorkspace();
+        // No-op locally: workspace clears on snapshot echo (CLEAR_WORKSPACE).
       },
       simulatePointerMove: (x: number, y: number) => {
         handlePointerMoveCoords(x, y);
@@ -1244,10 +1189,6 @@ export function RobotVisualizer({
       const currentGrasped = Boolean(
         telemetryBufferRefProp.current?.current?.palmState?.is_grasped
       );
-      // Unit 6.6.7: phase-plumbed release gate. Null/undefined = legacy
-      // sender (debounce-only fallback); otherwise deposit only on RELEASING.
-      const currentPhase: string | null | undefined =
-        telemetryBufferRefProp.current?.current?.phase;
       if (palmAssets && currentGrasped !== wasGrasped) {
         wasGrasped = currentGrasped;
         if (currentGrasped) {
@@ -1260,85 +1201,9 @@ export function RobotVisualizer({
         needsRender = true;
       }
 
-      // KinematicLinkAttachment logic
-      if (mountLink) {
-        // Case 1: Grasping active table gear -> parent to tool0.
-        // Backend drove the real nozzle to the pick point, so attach on the
-        // grasp bit unconditionally: the rendered FK pose may lag/mismatch the
-        // 15mm proximity gate and must never block the visible ride.
-        if (currentGrasped && !attachedGear && activeGearAssets) {
-          releaseFalseCount = 0;
-          mountLink.attach(activeGearAssets.group);
-          // Hang gear visibly below nozzle tip (tip at z=0.108 in tool0 frame)
-          // instead of at tool0 origin inside the palm mesh.
-          activeGearAssets.group.position.set(0, 0, GRASP_RIDE_OFFSET_Z_M);
-          attachedGear = activeGearAssets;
-          activeGearAssets = null;
-          wasGearAttachedInCycle = true;
-          wasGearAttachedInCycleRef.current = true;
-          onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
-          needsRender = true;
-        }
-        // Case 2: Releasing grasped gear -> unparent to tower stack at z_k.
-        // Unit 6.6.6: require RELEASE_STABLE_FRAMES consecutive false frames
-        // so a single-frame grasp-bit flicker mid-transfer keeps the ride.
-        // Unit 6.6.7: when phase plumbed, deposit only on true RELEASING;
-        // stable false outside RELEASING never grows the tower.
-        else if (!currentGrasped && attachedGear) {
-          if (!phaseAllowsRelease(currentPhase)) {
-            // Phase truth: false outside RELEASING is flicker/mid-transfer.
-            // Drop accumulated credit so deposit needs 3 stable RELEASING frames.
-            releaseFalseCount = 0;
-          } else {
-            releaseFalseCount += 1;
-            if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
-              mountLink.remove(attachedGear.group);
-              depositGearToTower(attachedGear);
-              attachedGear = null;
-              isLockedOut = false;
-              releaseFalseCount = 0;
-              needsRender = true;
-            }
-          }
-        } else if (currentGrasped) {
-          releaseFalseCount = 0;
-        }
-      } else {
-        // Fallback for mock/test environments without loaded URDF
-        if (currentGrasped && !attachedGear && activeGearAssets) {
-          releaseFalseCount = 0;
-          attachedGear = activeGearAssets;
-          activeGearAssets = null;
-          // Same visible ride offset as the URDF path (tool0-frame z).
-          attachedGear.group.position.set(0, 0, GRASP_RIDE_OFFSET_Z_M);
-          wasGearAttachedInCycle = true;
-          wasGearAttachedInCycleRef.current = true;
-          onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
-          needsRender = true;
-        } else if (!currentGrasped && attachedGear) {
-          if (!phaseAllowsRelease(currentPhase)) {
-            releaseFalseCount = 0;
-          } else {
-            releaseFalseCount += 1;
-            if (releaseFalseCount >= RELEASE_STABLE_FRAMES) {
-              depositGearToTower(attachedGear);
-              attachedGear = null;
-              isLockedOut = false;
-              releaseFalseCount = 0;
-              needsRender = true;
-            }
-          }
-        } else if (currentGrasped) {
-          releaseFalseCount = 0;
-        }
-      }
-
-      // Automatic ClickLockout lifting when robot returns to IDLE with no active table gear
-      const isRobotIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-      if (isRobotIdle && activeGearAssets === null && attachedGear === null && isLockedOut) {
-        isLockedOut = false;
-        needsRender = true;
-      }
+      // Workcell-authority pure render: gears follow snapshot buckets only.
+      // No grasp-bit cases, no phase gates, no IDLE safety net here.
+      reconcileSnapshotGears();
 
       // Render only when dirty, skipping static frames
       if (needsRender) {
@@ -1353,7 +1218,6 @@ export function RobotVisualizer({
     // 11. Cleanup lifecycle on unmount
     return () => {
       isDisposed = true;
-      depositPendingGearRef.current = null;
       cancelAnimationFrame(animId);
 
       if (typeof window !== 'undefined') {
@@ -1381,10 +1245,15 @@ export function RobotVisualizer({
       canvas.removeEventListener('pointermove', onPointerMove);
       canvas.removeEventListener('pointerleave', onPointerLeave);
       canvas.removeEventListener('click', onCanvasClick);
-      clearWorkspaceRef.current = null;
 
-      // Dispose all active and tower gears
-      clearWorkspace();
+      // Dispose snapshot-reconciled gear meshes
+      for (const rec of snapshotGears.values()) {
+        if (rec.assets.group.parent) {
+          rec.assets.group.parent.remove(rec.assets.group);
+        }
+        rec.assets.dispose();
+      }
+      snapshotGears.clear();
 
       // Dispose SpindleTower fixture assets
       if (spindleTowerAssets) {
@@ -1402,15 +1271,6 @@ export function RobotVisualizer({
         }
         palmAssets.dispose();
         palmAssets = null;
-      }
-
-      // Dispose active gear assets
-      if (activeGearAssets) {
-        if (activeGearAssets.group.parent) {
-          activeGearAssets.group.parent.remove(activeGearAssets.group);
-        }
-        activeGearAssets.dispose();
-        activeGearAssets = null;
       }
 
       // Dispose robot pedestal table assets
@@ -1469,19 +1329,9 @@ export function RobotVisualizer({
   }, [urdfUrl, assetBaseUrl]);
 
   useEffect(() => {
-    const currentState = robotState || 'IDLE';
-    const prevState = prevRobotStateRef.current;
-    if (prevState !== 'IDLE' && currentState === 'IDLE') {
-      // Safety net only: normal flow deposits via Case 2 during RELEASING.
-      // Gate here too, else a mid-cycle IDLE blip teleports flange gear.
-      if (phaseAllowsRelease(telemetryBufferRef?.current?.phase)) {
-        depositPendingGearRef.current?.();
-      }
-    }
-    // Unit 6.6.2: table gear survives EXECUTING + IDLE return until grasp.
-    // Session hasActiveGear=false must not auto-clear ungrasped table gear;
-    // only explicit clearWorkspace() or tower deposit removes it.
-    prevRobotStateRef.current = currentState;
+    // Workcell-authority: no IDLE safety net. Snapshot reconcile in the
+    // render loop is the only gear mutator; this tracks prev state only.
+    prevRobotStateRef.current = robotState || 'IDLE';
   }, [robotState]);
   return (
     <div

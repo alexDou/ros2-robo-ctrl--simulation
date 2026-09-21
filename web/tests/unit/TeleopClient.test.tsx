@@ -601,7 +601,7 @@ describe('TeleopClient Component', () => {
   });
 
   describe('Unit 6.4: TeleopClient Pick-and-Place Target Dispatch & ClickLockout Lifecycle', () => {
-    it('dispatches PICK_AND_PLACE_TARGET command when valid reachable table spot is clicked', () => {
+    it('dispatches SPAWN_OBJECT command when valid reachable table spot is clicked', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -630,13 +630,13 @@ describe('TeleopClient Component', () => {
 
       expect(ws.sentMessages.length).toBe(1);
       const sentCmd = JSON.parse(ws.sentMessages[0]);
-      expect(sentCmd.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
-      expect(sentCmd.payload.pick_x).toBeCloseTo(0.5, 2);
-      expect(sentCmd.payload.pick_y).toBeCloseTo(0.1, 2);
-      expect(sentCmd.payload.pick_z).toBeCloseTo(0.0, 2);
+      expect(sentCmd.type).toBe(CommandType.SPAWN_OBJECT);
+      expect(sentCmd.payload.x).toBeCloseTo(0.5, 2);
+      expect(sentCmd.payload.y).toBeCloseTo(0.1, 2);
+      expect(sentCmd.payload.z).toBeCloseTo(0.0, 2);
     });
 
-    it('enforces client-side ClickLockout preventing second PICK_AND_PLACE_TARGET command dispatch', () => {
+    it('enforces client-side ClickLockout preventing second SPAWN_OBJECT command dispatch', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -670,7 +670,7 @@ describe('TeleopClient Component', () => {
       expect(ws.sentMessages.length).toBe(1);
     });
 
-    it('does not dispatch PICK_AND_PLACE_TARGET command when robot_state is not IDLE', () => {
+    it('does not dispatch SPAWN_OBJECT command when robot_state is not IDLE', () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -719,62 +719,66 @@ describe('TeleopClient Component', () => {
 
       const visualizer = (window as any).__robot_visualizer;
 
-      // Click 1
+      // Click 1: SPAWN_OBJECT dispatched, session flag gives immediate send-guard
       act(() => {
         visualizer.simulateClick(0.5, 0.1);
       });
       expect(ws.sentMessages.length).toBe(1);
+
+      // Snapshot echo: spawned entry appears -> visualizer lockout engages
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000050000000',
+          robot_state: RobotState.IDLE,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          workcell_state: { spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] },
+          palm_state: { is_grasped: false },
+        }));
+      });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
       expect(visualizer.isLockedOut()).toBe(true);
 
-      // Transition to EXECUTING (no PROCESSING state post-6.6.0)
+      // Transition to EXECUTING with in_progress bucket (grasped)
       act(() => {
         ws.simulateMessage(JSON.stringify({
           timestamp_ns: '1700000000100000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+          workcell_state: { spawned: [], in_progress: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }], processed: [] },
           palm_state: { is_grasped: true },
         }));
       });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
       expect(visualizer.isLockedOut()).toBe(true);
 
-      // Flush render frames: grasp attach runs in rAF loop, then release deposits to tower
-      await act(async () => {
-        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-      });
-      act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000150000000',
-          robot_state: RobotState.EXECUTING,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-          palm_state: { is_grasped: false },
-        }));
-      });
-      await act(async () => {
-        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-      });
-
-      // Deposit gear onto tower (simulated or via telemetry grasp release)
-      // When robot transitions back to IDLE, lockout lifts
+      // Release: processed echo, robot back to IDLE -> lockout lifts (tower never locks)
       act(() => {
         ws.simulateMessage(JSON.stringify({
           timestamp_ns: '1700000000200000000',
           robot_state: RobotState.IDLE,
           joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+          workcell_state: { spawned: [], in_progress: [], processed: [{ id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }] },
           palm_state: { is_grasped: false },
         }));
       });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
+      expect(visualizer.isLockedOut()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(1);
 
-      // User can now click again to dispatch second PICK_AND_PLACE_TARGET
+      // User can now click again to dispatch second SPAWN_OBJECT
       act(() => {
         visualizer.simulateClick(0.55, -0.05);
       });
       expect(ws.sentMessages.length).toBe(2);
       const secondCmd = JSON.parse(ws.sentMessages[1]);
-      expect(secondCmd.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
-      expect(secondCmd.payload.pick_x).toBeCloseTo(0.55, 2);
+      expect(secondCmd.type).toBe(CommandType.SPAWN_OBJECT);
+      expect(secondCmd.payload.x).toBeCloseTo(0.55, 2);
     });
 
     it('auto-resets hasActiveGear to false and keeps COMPLETED progress visible when robot_state returns to IDLE', async () => {
@@ -1004,7 +1008,7 @@ describe('TeleopClient Component', () => {
       expect(clearCmd.payload).toEqual({});
     });
 
-    it('destroys 3D gearwheel mesh in RobotVisualizer and lifts ClickLockout upon clicking Clear Workspace', () => {
+    it('destroys 3D gearwheel mesh in RobotVisualizer and lifts ClickLockout upon clicking Clear Workspace', async () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -1025,9 +1029,21 @@ describe('TeleopClient Component', () => {
 
       const visualizer = (window as any).__robot_visualizer;
 
-      // Spawn initial gear
+      // Spawn initial gear + snapshot echo renders mesh
       act(() => {
         visualizer.simulateClick(0.5, 0.1);
+      });
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000050000000',
+          robot_state: RobotState.IDLE,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          workcell_state: { spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] },
+          palm_state: { is_grasped: false },
+        }));
+      });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
       });
       expect(visualizer.hasActiveGear()).toBe(true);
       expect(visualizer.isLockedOut()).toBe(true);
@@ -1036,9 +1052,24 @@ describe('TeleopClient Component', () => {
       const clearBtn = screen.getByTestId('clear-workspace-button') as HTMLButtonElement;
       expect(clearBtn.disabled).toBe(false);
 
-      // Click Clear Workspace
+      // Click Clear Workspace -> CLEAR_WORKSPACE dispatched
       act(() => {
         fireEvent.click(clearBtn);
+      });
+      expect(JSON.parse(ws.sentMessages[ws.sentMessages.length - 1]).type).toBe(CommandType.CLEAR_WORKSPACE);
+
+      // Backend echo: all buckets empty -> mesh destroyed, lockout lifted
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000060000000',
+          robot_state: RobotState.IDLE,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          workcell_state: { spawned: [], in_progress: [], processed: [] },
+          palm_state: { is_grasped: false },
+        }));
+      });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
       });
 
       // 3D gear destroyed and lockout lifted
@@ -1051,11 +1082,7 @@ describe('TeleopClient Component', () => {
       act(() => {
         visualizer.simulateClick(0.55, -0.05);
       });
-      expect(ws.sentMessages.length).toBe(3);
-      const secondSpawn = JSON.parse(ws.sentMessages[2]);
-      expect(secondSpawn.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
-      expect(visualizer.hasActiveGear()).toBe(true);
-      expect(visualizer.isLockedOut()).toBe(true);
+      expect(JSON.parse(ws.sentMessages[ws.sentMessages.length - 1]).type).toBe(CommandType.SPAWN_OBJECT);
     });
 
     it('enforces state interlocks: disables Clear Workspace button when robot_state is not IDLE', () => {
@@ -1263,7 +1290,7 @@ describe('TeleopClient Component', () => {
       expect(screen.queryByTestId('action-progress-container')).toBeNull();
     });
 
-    it('Unit 6.6.7/4ixr (border: mocked gateway): phase telemetry deposits tower only on RELEASING', async () => {
+    it('Unit 6.7.5 (border: mocked gateway): bucket walk spawned->in_progress->processed drives ride and tower', async () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
       fireEvent.click(screen.getByTestId('connect-button'));
       const ws = MockWebSocket.instances[0];
@@ -1287,48 +1314,53 @@ describe('TeleopClient Component', () => {
         visualizer.simulateClick(0.5, 0.1);
       });
 
-      const telem = (grasped: boolean, phase: string | null) =>
+      const telem = (workcell_state: object, grasped = false) =>
         JSON.stringify({
           timestamp_ns: '1700000000100000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+          workcell_state,
           palm_state: { is_grasped: grasped },
-          ...(phase ? { phase } : {}),
         });
+      const frame = async () => {
+        await act(async () => {
+          await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+        });
+      };
 
-      // GRASPING ride
+      // Spawned echo: table mesh, not attached, tower 0
       act(() => {
-        ws.simulateMessage(telem(true, 'GRASPING'));
+        ws.simulateMessage(telem({ spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] }));
       });
-      await act(async () => {
-        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      await frame();
+      expect(visualizer.getGearMesh()).not.toBeNull();
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(0);
+
+      // Grasp-bit alone (no bucket move): still table mesh, no ride
+      act(() => {
+        ws.simulateMessage(telem({ spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] }, true));
       });
+      await frame();
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(0);
+
+      // Bucket move spawned->in_progress: flange ride, tower stays 0
+      act(() => {
+        ws.simulateMessage(telem({ spawned: [], in_progress: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }], processed: [] }, true));
+      });
+      await frame();
       expect(visualizer.isGearAttached()).toBe(true);
+      expect(visualizer.getTowerGearCount()).toBe(0);
 
-      // TRANSFERRING + stable false: gear keeps riding, tower stays 0
-      for (let i = 0; i < 5; i++) {
-        act(() => {
-          ws.simulateMessage(telem(false, 'TRANSFERRING'));
-        });
-        await act(async () => {
-          await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-        });
-        expect(visualizer.isGearAttached()).toBe(true);
-        expect(visualizer.getTowerGearCount()).toBe(0);
-      }
-
-      // RELEASING + stable false: tower +1
-      for (let i = 0; i < 3; i++) {
-        act(() => {
-          ws.simulateMessage(telem(false, 'RELEASING'));
-        });
-        await act(async () => {
-          await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-        });
-      }
+      // Bucket move in_progress->processed: tower +1 verbatim
+      act(() => {
+        ws.simulateMessage(telem({ spawned: [], in_progress: [], processed: [{ id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }] }, false));
+      });
+      await frame();
       expect(visualizer.isGearAttached()).toBe(false);
       expect(visualizer.getTowerGearCount()).toBe(1);
+      expect(visualizer.getTowerGears()[0].position.x).toBeCloseTo(0.4, 2);
     });
   });
 });
