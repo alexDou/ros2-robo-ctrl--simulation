@@ -16,6 +16,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GetDropSlot.srv"
   "srv/ClearWorkspace.srv"
   "srv/SpawnObject.srv"
+  "srv/MarkGrasped.srv"
+  "srv/CommitDrop.srv"
   DEPENDENCIES
     action_msgs
     geometry_msgs

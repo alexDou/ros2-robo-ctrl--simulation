@@ -219,7 +219,14 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                         description=desc,
                         default=default_val,
                     )
-            item_ref = items_schema.get("title") or items_schema.get("type", "string")
+            if items_schema.get("$ref"):
+                item_ref = items_schema["$ref"].split("/")[-1]
+            elif items_schema.get("type") == "object" and "properties" in items_schema:
+                sub_name = items_schema.get("title") or to_pascal_case(prop_name) + "Item"
+                parse_object_model(sub_name, items_schema, is_submodel=True)
+                item_ref = sub_name
+            else:
+                item_ref = items_schema.get("title") or items_schema.get("type", "string")
             return FieldDef(
                 name=prop_name,
                 kind="array",
@@ -433,6 +440,15 @@ def emit_rust(ir: DomainIR) -> str:
         has_float = any(f.kind in ("float", "fixed_array") for f in m.fields) or any(
             f.kind == "array" and any(fa.name == f.ref for fa in ir.fixed_arrays) for f in m.fields
         )
+        if not has_float:
+            for f in m.fields:
+                if f.kind == "array":
+                    ref_model = next((x for x in ir.models if x.name == f.ref), None)
+                    if ref_model is not None and any(
+                        ff.kind == "float" for ff in ref_model.fields
+                    ):
+                        has_float = True
+                        break
         eq_derive = "" if has_float else ", Eq"
         default_derive = ", Default" if m.name in ("PalmState", "ResetFaultPayload", "EmergencyStopPayload", "TrajectoryExecutePayload", "ClearWorkspacePayload") else ""
         lines.append(f"#[derive(Debug, Clone, PartialEq{eq_derive}, Serialize, Deserialize{default_derive})]")

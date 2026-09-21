@@ -72,10 +72,38 @@ def test_import_robot_control_interfaces():
     assert spawn_req.coords.x == 0.5
     assert spawn_req.object_type == "GEAR"
 
-    spawn_res = SpawnObject.Response(success=True, message="Object spawned")
+    spawn_res = SpawnObject.Response(success=True, message="Object spawned", gear_id="gear-1")
     assert hasattr(spawn_res, "success")
     assert hasattr(spawn_res, "message")
+    assert hasattr(spawn_res, "gear_id")
     assert spawn_res.success is True
     assert spawn_res.message == "Object spawned"
+    assert spawn_res.gear_id == "gear-1"
+
+    # Test MarkGrasped Request & Response (id-free, empty request)
+    from robot_control_interfaces.srv import CommitDrop, MarkGrasped
+    grasp_req = MarkGrasped.Request()
+    assert isinstance(grasp_req, MarkGrasped.Request)
+    grasp_res = MarkGrasped.Response(success=True, message="grasped")
+    assert hasattr(grasp_res, "success")
+    assert hasattr(grasp_res, "message")
+    assert grasp_res.success is True
+    assert grasp_res.message == "grasped"
+
+    # Test CommitDrop Request & Response (id-free; response carries drop coords)
+    drop_res = CommitDrop.Response(
+        success=True,
+        message="dropped",
+        drop_coords=Point(x=0.4, y=-0.3, z=0.08),
+        slot_index=4,
+        overflow_occurred=False,
+    )
+    assert hasattr(drop_res, "drop_coords")
+    assert hasattr(drop_res, "slot_index")
+    assert hasattr(drop_res, "overflow_occurred")
+    assert isinstance(drop_res.drop_coords, Point)
+    assert drop_res.drop_coords.x == 0.4
+    assert drop_res.slot_index == 4
+    assert drop_res.overflow_occurred is False
 
 

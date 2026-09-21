@@ -3,3 +3,4 @@ string object_type
 ---
 bool success
 string message
+string gear_id

@@ -68,6 +68,12 @@ async fn test_telemetry_throttler_preserves_phase() {
         palm_state: gateway::domain::PalmState::default(),
         inference_metrics: None,
         command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
         phase: Some("RELEASING".to_string()),
     };
     throttler.push_event(event);
@@ -98,6 +104,12 @@ async fn test_telemetry_throttler_500hz_to_30hz_stability() {
                 palm_state: gateway::domain::PalmState::default(),
                 inference_metrics: None,
                 command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
                 phase: None,
             };
             throttler_feed.push_event(event);
@@ -160,6 +172,12 @@ async fn test_telemetry_throttler_5hz_slow_upstream_no_repeat() {
                 palm_state: gateway::domain::PalmState::default(),
                 inference_metrics: None,
                 command_id: None,
+        workcell_state: gateway::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
                 phase: None,
             };
             throttler_feed.push_event(event);

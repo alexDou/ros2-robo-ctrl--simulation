@@ -182,6 +182,28 @@ class InferenceMetrics(BaseModel):
     detected_object: str = Field(..., min_length=1, description="Detected object class label")
 
 
+class GearEntry(BaseModel):
+    """Single gear with id and Cartesian coordinates in robot base frame"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(..., min_length=1, description="Backend-assigned gear identifier, never cut")
+    x: float = Field(..., description="Cartesian X in meters (REP-103 robot base frame)")
+    y: float = Field(..., description="Cartesian Y in meters (REP-103 robot base frame)")
+    z: float = Field(..., description="Cartesian Z in meters (REP-103 robot base frame)")
+
+
+class WorkcellState(BaseModel):
+    """Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    spawned: list[GearEntry] = Field(..., description="Gears resting on the workcell table awaiting pickup")
+    in_progress: list[GearEntry] = Field(..., description="Gears currently grasped or in transit")
+    processed: list[GearEntry] = Field(..., description="Gears deposited at drop slots")
+    active_id: Optional[str] = Field(default=None, description="Optional id of the gear currently targeted")
+
+
 class ErrorFrame(BaseModel):
     """Canonical schema for structured error frames returned by Gateway over WebSocket"""
 
@@ -216,6 +238,7 @@ class RobotTelemetryEvent(BaseModel):
     palm_state: PalmState = Field(default_factory=PalmState, description="End-effector dexterous palm pneumatic actuation and grasp status")
     inference_metrics: Optional[InferenceMetrics] = Field(default=None, description="Edge AI inference latency and object classification metrics")
     command_id: Optional[str] = Field(default=None, description="Optional command identifier acknowledged by this telemetry event")
+    workcell_state: WorkcellState = Field(..., description="Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id")
     phase: Optional[str] = Field(default=None, description="Optional PickAndPlace action phase (e.g. RELEASING) tracked by EdgeNode from action feedback")
 
 

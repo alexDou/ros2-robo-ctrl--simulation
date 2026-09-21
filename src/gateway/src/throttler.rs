@@ -71,6 +71,7 @@ struct ThrottlerState {
     current_robot_state: RobotState,
     current_palm_state: crate::domain::PalmState,
     current_phase: Option<String>,
+    current_workcell_state: crate::domain::WorkcellState,
 }
 
 impl Default for ThrottlerState {
@@ -82,6 +83,12 @@ impl Default for ThrottlerState {
             current_robot_state: RobotState::Idle,
             current_palm_state: crate::domain::PalmState::default(),
             current_phase: None,
+            current_workcell_state: crate::domain::WorkcellState {
+                spawned: Vec::new(),
+                in_progress: Vec::new(),
+                processed: Vec::new(),
+                active_id: None,
+            },
         }
     }
 }
@@ -224,6 +231,7 @@ impl TelemetryThrottler {
         guard.current_robot_state = event.robot_state;
         guard.current_palm_state = event.palm_state.clone();
         guard.current_phase = event.phase.clone();
+        guard.current_workcell_state = event.workcell_state.clone();
         guard.latest = Some(event.clone());
         guard.pending = Some(event);
     }
@@ -278,6 +286,7 @@ impl TelemetryThrottler {
                     palm_state: guard.current_palm_state.clone(),
                     inference_metrics: None,
                     command_id: None,
+                    workcell_state: guard.current_workcell_state.clone(),
                     phase: guard.current_phase.clone(),
                 };
 
@@ -348,6 +357,7 @@ impl TelemetryThrottler {
                 palm_state: guard.current_palm_state.clone(),
                 inference_metrics: None,
                 command_id: None,
+                workcell_state: guard.current_workcell_state.clone(),
                 phase: guard.current_phase.clone(),
             };
 

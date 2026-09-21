@@ -330,6 +330,38 @@ export const inferenceMetricsSchema = InferenceMetricsSchema;
 
 export type InferenceMetrics = z.infer<typeof rawInferenceMetricsSchema>;
 
+/** Single gear with id and Cartesian coordinates in robot base frame */
+export const rawGearEntrySchema = z.object(
+  {
+    id: z.string({ message: "Missing required field 'id'" }).min(1, { message: "Missing required field 'id'" }),
+    x: z.number({ message: "Field 'x' must be a number" }),
+    y: z.number({ message: "Field 'y' must be a number" }),
+    z: z.number({ message: "Field 'z' must be a number" }),
+  },
+  { message: 'GearEntry payload must be an object' }
+).strict();
+
+export const GearEntrySchema = jsonInput.pipe(rawGearEntrySchema);
+export const gearEntrySchema = GearEntrySchema;
+
+export type GearEntry = z.infer<typeof rawGearEntrySchema>;
+
+/** Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id */
+export const rawWorkcellStateSchema = z.object(
+  {
+    spawned: z.array(gearEntrySchema),
+    in_progress: z.array(gearEntrySchema),
+    processed: z.array(gearEntrySchema),
+    active_id: z.string().nullish(),
+  },
+  { message: 'WorkcellState payload must be an object' }
+).strict();
+
+export const WorkcellStateSchema = jsonInput.pipe(rawWorkcellStateSchema);
+export const workcellStateSchema = WorkcellStateSchema;
+
+export type WorkcellState = z.infer<typeof rawWorkcellStateSchema>;
+
 /** Canonical schema for structured error frames returned by Gateway over WebSocket */
 export const rawErrorFrameSchema = z.object(
   {
@@ -372,6 +404,7 @@ export const rawRobotTelemetryEventSchema = z.object(
     palm_state: rawPalmStateSchema.default({"is_grasped": false}),
     inference_metrics: rawInferenceMetricsSchema.nullish(),
     command_id: z.string().nullish(),
+    workcell_state: rawWorkcellStateSchema,
     phase: z.string().nullish(),
   },
   { message: 'RobotTelemetryEvent payload must be an object' }
@@ -481,6 +514,22 @@ export function parseInferenceMetrics(input: unknown): InferenceMetrics {
 
 export function isInferenceMetrics(input: unknown): input is InferenceMetrics {
   return inferenceMetricsSchema.safeParse(input).success;
+}
+
+export function parseGearEntry(input: unknown): GearEntry {
+  return unwrapZod<GearEntry>(gearEntrySchema.safeParse(input));
+}
+
+export function isGearEntry(input: unknown): input is GearEntry {
+  return gearEntrySchema.safeParse(input).success;
+}
+
+export function parseWorkcellState(input: unknown): WorkcellState {
+  return unwrapZod<WorkcellState>(workcellStateSchema.safeParse(input));
+}
+
+export function isWorkcellState(input: unknown): input is WorkcellState {
+  return workcellStateSchema.safeParse(input).success;
 }
 
 export function parseErrorFrame(input: unknown): ErrorFrame {

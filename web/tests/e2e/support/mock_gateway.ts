@@ -581,6 +581,7 @@ export class MockGateway {
       joint_positions: [...this.currentJoints] as ArmJointPositions,
       palm_state: { ...this.palmState },
       command_id: commandId ?? null,
+      workcell_state: { spawned: [], in_progress: [], processed: [] },
       phase: this.currentPhase,
     };
     try {
