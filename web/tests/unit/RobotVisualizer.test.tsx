@@ -1845,6 +1845,93 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(visualizer.hasActiveGear()).toBe(true);
     });
 
+    it('Unit 6.6.2: table gear survives EXECUTING and IDLE return until grasp, then towers on release', async () => {
+      const telemetryBufferRef = {
+        current: {
+          jointPositions: [0, 0, 0, 0, 0, 0],
+          palmState: { is_grasped: false },
+        },
+      };
+
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      const { rerender } = render(
+        <RobotVisualizer
+          robotState="IDLE"
+          telemetryBufferRef={telemetryBufferRef}
+          rendererFactory={() => mockRenderer}
+          controlsFactory={() => mockControls}
+          onRobotLoaded={() => resolveLoaded()}
+        />
+      );
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+
+      // Click table to spawn gear
+      act(() => {
+        visualizer.simulateClick(0.50, 0.0);
+      });
+      expect(visualizer.getGearMesh()).not.toBeNull();
+
+      // EXECUTING: gear still on table
+      act(() => {
+        rerender(
+          <RobotVisualizer
+            robotState="EXECUTING"
+            hasActiveGear={true}
+            telemetryBufferRef={telemetryBufferRef}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+          />
+        );
+      });
+      expect(visualizer.getGearMesh()).not.toBeNull();
+      expect(visualizer.getTowerGearCount()).toBe(0);
+
+      // IDLE return with session flag cleared, no grasp yet: gear MUST survive
+      act(() => {
+        rerender(
+          <RobotVisualizer
+            robotState="IDLE"
+            hasActiveGear={false}
+            telemetryBufferRef={telemetryBufferRef}
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+          />
+        );
+      });
+      expect(visualizer.getGearMesh()).not.toBeNull();
+      expect(visualizer.getTowerGearCount()).toBe(0);
+
+      // GRASPING suction: gear leaves table (attached/hidden as sucked)
+      const gear = visualizer.getGearMesh();
+      const gearWorldPos = new THREE.Vector3();
+      gear.getWorldPosition(gearWorldPos);
+      fakeTool0Link.position.copy(fakeTool0Link.parent!.worldToLocal(gearWorldPos.clone()));
+      fakeRobot.updateMatrixWorld(true);
+
+      telemetryBufferRef.current.palmState.is_grasped = true;
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(true);
+
+      // RELEASING: tower grows by one
+      telemetryBufferRef.current.palmState.is_grasped = false;
+      act(() => {
+        stepFrame();
+      });
+      expect(visualizer.isGearAttached()).toBe(false);
+      expect(visualizer.getTowerGearCount()).toBe(1);
+    });
+
     it('disposes SpindleTower geometries and materials on unmount', async () => {
       let unmountFn: () => void;
       let resolveLoaded: () => void;

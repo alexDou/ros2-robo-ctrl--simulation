@@ -85,7 +85,16 @@ export function useTeleopSession({
     const current = robotState ?? 'STANDBY';
     const prev = prevRobotStateRef.current;
     if (prev === 'EXECUTING' && current === 'IDLE') {
-      setHasActiveGear(false);
+      // Unit 6.6.2: ungrasped table gear survives the cycle; only clear the
+      // session flag when a grasp actually happened (tower grew or gear attached).
+      const viz = (window as any)?.__robot_visualizer;
+      const grasped =
+        (typeof viz?.getTowerGearCount === 'function' && viz.getTowerGearCount() > 0) ||
+        viz?.wasGearEverAttached?.() ||
+        viz?.isGearAttached?.();
+      if (grasped) {
+        setHasActiveGear(false);
+      }
     }
     prevRobotStateRef.current = current;
   }, [robotState]);

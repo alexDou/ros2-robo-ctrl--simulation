@@ -538,7 +538,6 @@ export function RobotVisualizer({
   onWorkspaceGearsChangeRef.current = onWorkspaceGearsChange;
 
   const clearWorkspaceRef = useRef<(() => void) | null>(null);
-  const clearActiveGearRef = useRef<(() => void) | null>(null);
   const depositPendingGearRef = useRef<(() => void) | null>(null);
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
   const wasGearAttachedInCycleRef = useRef<boolean>(false);
@@ -816,7 +815,6 @@ export function RobotVisualizer({
       onWorkspaceGearsChangeRef.current?.(false, towerGears.length);
       needsRender = true;
     };
-    clearActiveGearRef.current = clearActiveGear;
 
     const clearWorkspace = () => {
       clearActiveGear();
@@ -1370,7 +1368,6 @@ export function RobotVisualizer({
       canvas.removeEventListener('pointerleave', onPointerLeave);
       canvas.removeEventListener('click', onCanvasClick);
       clearWorkspaceRef.current = null;
-      clearActiveGearRef.current = null;
 
       // Dispose all active and tower gears
       clearWorkspace();
@@ -1463,11 +1460,11 @@ export function RobotVisualizer({
     if (prevState !== 'IDLE' && currentState === 'IDLE') {
       depositPendingGearRef.current?.();
     }
-    if (hasActiveGear === false) {
-      clearActiveGearRef.current?.();
-    }
+    // Unit 6.6.2: table gear survives EXECUTING + IDLE return until grasp.
+    // Session hasActiveGear=false must not auto-clear ungrasped table gear;
+    // only explicit clearWorkspace() or tower deposit removes it.
     prevRobotStateRef.current = currentState;
-  }, [robotState, hasActiveGear]);
+  }, [robotState]);
   return (
     <div
       ref={containerRef}
