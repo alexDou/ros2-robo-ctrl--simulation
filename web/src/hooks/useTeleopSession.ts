@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { isBrowser } from '@utils/env';
+import { resolveGatewayHealthUrl } from '@utils/url';
 import {
   isErrorFrame,
   PalmAction,
@@ -321,13 +322,7 @@ export function useTeleopSession({
   const sendPing = useCallback(async () => {
     // Disconnected: HTTP health probe against Gateway /health (never silent).
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      const httpUrl = wsUrl.replace(/^ws(s)?:/, 'http$1:');
-      let healthUrl = '/health';
-      try {
-        healthUrl = `${new URL(httpUrl).origin}/health`;
-      } catch {
-        healthUrl = '/health';
-      }
+      const healthUrl = resolveGatewayHealthUrl(wsUrl);
       try {
         const res = await fetch(healthUrl);
         if (res.ok) {
