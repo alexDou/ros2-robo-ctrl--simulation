@@ -28,7 +28,7 @@ Development strictly follows interface boundaries. Once native ROS2 interface co
                                                  ▼
                     ┌────────────────────────────────────────────────────────┐
                     │ Refactor-A.5: Multi-Service Integration Verification   │
-                    │ (robot_bringup + launch_gateway.sh + launch_web.sh)    │
+                    │ (robot_bringup + launch_gateway.sh + launch_teleop-client.sh)    │
                     └────────────────────────────────────────────────────────┘
 ```
 
@@ -218,7 +218,7 @@ Verify the complete multi-tier system with dedicated log streams, validate Playw
 1. **Per-Service Launch Workflow**:
    - Terminal 1 (Robotics): `ros2 launch robot_bringup robot_nodes.launch.py use_fake_hardware:=true`
    - Terminal 2 (Gateway + Zenoh): `bash scripts/launch_gateway.sh`
-   - Terminal 3 (Web UI): `npm --prefix web run dev` (or `bash scripts/launch_web.sh`)
+   - Terminal 3 (Web UI): `npm --prefix web run dev` (or `bash scripts/launch_teleop-client.sh`)
 
 2. **Multi-Service Integration Suite**:
    - Update `web/tests/e2e/support/harness.ts` to orchestrate `robot_nodes.launch.py`, `zenoh-bridge-ros2dds`, and `gateway`.

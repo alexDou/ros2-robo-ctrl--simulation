@@ -1,4 +1,4 @@
-//! Gateway TelemetryThrottler decimating 500 Hz RTDE telemetry to a smooth 30 Hz stream.
+//! Gateway TelemetryThrottler, 30 Hz nominal tick. SIM: 5 Hz feed (passthrough); LIVE: 500 Hz RTDE feed (decimate 500->30).
 #![allow(clippy::missing_errors_doc, clippy::missing_panics_doc)]
 
 use serde::Deserialize;
@@ -105,8 +105,8 @@ impl Drop for ThrottlerInner {
     }
 }
 
-/// High-throughput non-blocking decimation sampler taking 500 Hz telemetry
-/// and emitting 30 Hz frames without buffer bloat or latency creep.
+/// Non-blocking sampler, 30 Hz nominal tick.
+/// SIM: 5 Hz feed (passthrough/sample-hold); LIVE: 500 Hz RTDE feed (decimate 500->30).
 #[derive(Debug, Clone)]
 pub struct TelemetryThrottler {
     inner: Arc<ThrottlerInner>,

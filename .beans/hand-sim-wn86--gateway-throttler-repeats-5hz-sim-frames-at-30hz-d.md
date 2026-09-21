@@ -4,11 +4,8 @@ title: Gateway throttler repeats 5Hz sim frames at 30Hz downstream
 status: completed
 type: bug
 priority: normal
-tags:
-    - needs-triage
-    - ready-for-agent
 created_at: 2026-09-19T19:43:48Z
-updated_at: 2026-09-19T19:49:50Z
+updated_at: 2026-09-21T10:05:20Z
 ---
 
 ## Context

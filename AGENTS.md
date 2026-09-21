@@ -6,7 +6,7 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
 
 - **Web Visualizer (`web/`)**: Preact + Vite + Three.js (`urdf-loader`) + Vitest. Linted via OXC (`oxlint`), formatted via Prettier.
 - **Gateway (`src/gateway/`)**: Actix-Web WebSocket service. Encapsulates Zenoh session behind deep port facade. Enforces single active session per robot (`409 Conflict` on duplicate). Translates WebSocket frames ↔ Zenoh expressions.
-- **ROS2 Subsystem (`src/ros2/`)**: ROS2 Jazzy (`rclpy`, `ros2_control`, `robot_bringup`, `arm_controller`, `workcell_manager`, `robot_control_interfaces`). 500 Hz RTDE loop with real/fake hardware support, analytical IK solver, and action servers.
+- **ROS2 Subsystem (`src/ros2/`)**: ROS2 Jazzy (`rclpy`, `ros2_control`, `robot_bringup`, `arm_controller`, `workcell_manager`, `robot_control_interfaces`). SIM: 5 Hz loop (`ur_controllers.yaml`, fake hardware — what runs now). LIVE: 500 Hz RTDE (`ur_controllers_real.yaml`, physical UR5e — real-world target, deliberately kept). Direction: lower freqs, stay real-ready. Browser: connect-gated (manual Connect, BOOTING window), lazy joint sub while parked idle.
 - **DataFabric**: Zenoh pub/sub using RESTful scoping: `robot/{id}/command` and `robot/{id}/telemetry`. No direct `rosbridge`.
 
 ## Development Methodology

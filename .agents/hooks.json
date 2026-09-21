@@ -32,6 +32,11 @@
       "type": "command",
       "command": "python3 -c 'import sys, json; cmd = sys.argv[1]; sys.exit(1 if any(b in cmd for b in [\"rm -rf /\", \"ros2 node kill -a\"]) else 0)'",
       "timeout": 5
-    }
+    },
+  "SessionStart": [
+    { "hooks": [{ "type": "command", "command": "beans prime" }] }
+  ],
+  "PreCompact": [
+    { "hooks": [{ "type": "command", "command": "beans prime" }] }
   ]
 }
