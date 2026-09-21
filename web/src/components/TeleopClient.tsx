@@ -45,6 +45,7 @@ export function TeleopClient({
     isStreaming,
     robotState,
     palmState,
+    workcellVersion,
     handleIncomingFrame,
     resetStream,
   } = useTelemetryStream();
@@ -60,7 +61,7 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
-    pickAndPlaceTarget,
+    spawnObject,
     clearWorkspace,
     sendPing,
   } = useTeleopSession({
@@ -71,14 +72,20 @@ export function TeleopClient({
     palmState,
   });
 
-  const [visualizerHasGears, setVisualizerHasGears] = useState(false);
-  const handleWorkspaceGearsChange = useCallback((hasGears: boolean, towerCount: number) => {
-    setVisualizerHasGears(hasGears || towerCount > 0);
-  }, []);
+  // Workcell-authority: Clear-button state derives from snapshot buckets,
+  // not visualizer callbacks. bufferRef.current.workcellState updates in
+  // place per frame, so read it during render. workcellVersion subscription
+  // forces re-render when bucket signature changes (buffer mutation alone
+  // triggers no render).
+  void workcellVersion;
+  const snap = bufferRef.current?.workcellState;
+  const workcellHasGears =
+    (snap?.spawned?.length ?? 0) > 0 ||
+    (snap?.inProgress?.length ?? 0) > 0 ||
+    (snap?.processed?.length ?? 0) > 0;
 
   const handleClearWorkspace = useCallback(() => {
     clearWorkspace();
-    setVisualizerHasGears(false);
   }, [clearWorkspace]);
 
   // BOOTING window: activation (switch + sub + home) takes seconds.
@@ -192,10 +199,7 @@ export function TeleopClient({
               telemetryBufferRef={bufferRef}
               jointPositionsRef={jointPositionsRef}
               robotState={effectiveRobotState ?? 'STANDBY'}
-              hasActiveGear={hasActiveGear}
-              onSpawnObject={onSpawnObject}
-              onWorkspaceGearsChange={handleWorkspaceGearsChange}
-              onPickAndPlaceTarget={pickAndPlaceTarget}
+              onSpawnObject={onSpawnObject ?? spawnObject}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}
@@ -205,7 +209,7 @@ export function TeleopClient({
           <OperatorToolbar
             robotState={effectiveRobotState ?? 'STANDBY'}
             connectionState={connectionState}
-            hasActiveGear={hasActiveGear || visualizerHasGears}
+            hasActiveGear={hasActiveGear || workcellHasGears}
             onExecutePose={executePose}
             onConnect={connect}
             onDisconnect={disconnect}

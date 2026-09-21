@@ -16,12 +16,10 @@ import {
   createPalmActuateCommand,
   createEmergencyStopCommand,
   createResetFaultCommand,
-  createPickAndPlaceTargetCommand,
   createSpawnObjectCommand,
   createClearWorkspaceCommand,
   serializeCommand,
   isActionFeedbackFrame,
-  type PickAndPlaceTargetPayload,
 } from '@domain/parsers';
 
 export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
@@ -93,16 +91,10 @@ export function useTeleopSession({
     const current = robotState ?? 'STANDBY';
     const prev = prevRobotStateRef.current;
     if (prev === 'EXECUTING' && current === 'IDLE') {
-      // Unit 6.6.2: ungrasped table gear survives the cycle; only clear the
-      // session flag when a grasp actually happened (tower grew or gear attached).
-      const viz = (window as any)?.__robot_visualizer;
-      const grasped =
-        (typeof viz?.getTowerGearCount === 'function' && viz.getTowerGearCount() > 0) ||
-        viz?.wasGearEverAttached?.() ||
-        viz?.isGearAttached?.();
-      if (grasped) {
-        setHasActiveGear(false);
-      }
+      // Workcell-authority: gear truth lives in snapshot buckets, not the
+      // session flag. Cycle end always clears the flag; Clear button state
+      // derives from snapshot (see TeleopClient workcellHasGears).
+      setHasActiveGear(false);
     }
     prevRobotStateRef.current = current;
   }, [robotState]);
@@ -265,48 +257,34 @@ export function useTeleopSession({
     wsRef.current.send(serializeCommand(cmd));
   }, []);
 
-  const pickAndPlaceTarget = useCallback(
-    (payload: PickAndPlaceTargetPayload) => {
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-      const currentRobotState = robotState ?? 'STANDBY';
-      if (currentRobotState !== 'IDLE') return;
-      setActionProgress(null);
-      const cmd = createPickAndPlaceTargetCommand(payload, { senderId: 'ui-client' });
-      wsRef.current.send(serializeCommand(cmd));
-      setHasActiveGear(true);
-    },
-    [robotState]
-  );
-
   const spawnObject = useCallback(
     (payload: SpawnObjectPayload) => {
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
       const currentRobotState = robotState ?? 'STANDBY';
       if (currentRobotState !== 'IDLE') return;
+      // Immediate ClickLockout: block second spawn before snapshot echo.
+      // Workcell single-active reject is backend backstop; snapshot echo
+      // is steady-state lockout source for visualizer.
+      if (hasActiveGear) return;
       const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
       wsRef.current.send(serializeCommand(cmd));
       setHasActiveGear(true);
+      setActionProgress(null);
     },
-    [robotState]
+    [robotState, hasActiveGear]
   );
 
   const clearWorkspace = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     const currentRobotState = robotState ?? 'STANDBY';
     if (currentRobotState !== 'IDLE') return;
-    const hasVisualizerGears =
-      typeof window !== 'undefined' &&
-      window.__robot_visualizer &&
-      ((window.__robot_visualizer.getTowerGearCount?.() ?? 0) > 0 ||
-        window.__robot_visualizer.hasActiveGear?.());
-    if (!hasActiveGear && !hasVisualizerGears) return;
+    // Workcell-authority: workspace clears on snapshot echo. Session flag
+    // alone gates the send; TeleopClient derives button state from snapshot.
+    if (!hasActiveGear) return;
     setActionProgress(null);
     const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));
     setHasActiveGear(false);
-    if (typeof window !== 'undefined' && window.__robot_visualizer?.clearWorkspace) {
-      window.__robot_visualizer.clearWorkspace();
-    }
   }, [robotState, hasActiveGear]);
 
   const pushProbeLog = useCallback((status: string, detail: string) => {
@@ -355,7 +333,6 @@ export function useTeleopSession({
     togglePalm,
     emergencyStop,
     resetFault,
-    pickAndPlaceTarget,
     spawnObject,
     clearWorkspace,
     sendPing,
