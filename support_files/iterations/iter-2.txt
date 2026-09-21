@@ -1,6 +1,7 @@
 ================================================================================
 ITERATION 2 SPECIFICATION: DUAL-FLOW INTERACTIVE GEAR SORTING & QC SHOWCASE
 ================================================================================
+NOTE HISTORICAL-SUPERSEDED-BY-6.6.0: PROCESSING state refs below stale. Removed in 6.6.0 (jqtr). Contract BOOTING/STANDBY/IDLE/EXECUTING/FAULT. Kept for history.
 Project: ROS2 Robot Controller Simulation
 Target Phase: Post-Phase-5 Interactive Showcase Feature
 Status: DRAFT / ON-HOLD (Pick up after core Phase 1-5 units complete)
