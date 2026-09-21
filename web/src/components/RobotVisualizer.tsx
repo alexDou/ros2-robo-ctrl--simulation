@@ -12,6 +12,9 @@ export const SPINDLE_TOWER_COORDS = { x: 0.40, y: -0.30, z: 0.0 };
 export const GEAR_STACK_HEIGHT_STEP = 0.02;
 export const MAX_TOWER_STACK_CAPACITY = 10;
 export const GRASP_PROXIMITY_THRESHOLD_M = 0.015;
+// Gear hangs visibly below nozzle tip (tip at z=0.108 in tool0 frame)
+// instead of at tool0 origin inside the palm mesh.
+export const GRASP_RIDE_OFFSET_Z_M = 0.118;
 
 export interface RobotVisualizerProps {
   urdfUrl?: string;
@@ -40,11 +43,6 @@ export interface RobotVisualizerProps {
   className?: string;
   style?: Record<string, string | number>;
 }
-
-const _scratchVec1 = new THREE.Vector3();
-const _scratchVec2 = new THREE.Vector3();
-const _scratchVec3 = new THREE.Vector3();
-const _scratchTipOffset = new THREE.Vector3(0, 0, 0.108);
 
 function getLatestPositions(
   jointPositionsRef?: { current?: readonly number[] | null } | null,
@@ -875,11 +873,6 @@ export function RobotVisualizer({
     };
 
     const depositPendingGear = () => {
-      const isGraspedNow = Boolean(
-        telemetryBufferRefProp.current?.current?.palmState?.is_grasped
-      );
-      const wasAttached =
-        wasGearAttachedInCycleRef.current || wasGearAttachedInCycle || isGraspedNow;
       if (attachedGear) {
         const g = attachedGear;
         attachedGear = null;
@@ -888,15 +881,9 @@ export function RobotVisualizer({
         wasGearAttachedInCycleRef.current = false;
         isLockedOut = false;
         needsRender = true;
-      } else if (activeGearAssets && wasAttached) {
-        const g = activeGearAssets;
-        activeGearAssets = null;
-        depositGearToTower(g);
-        wasGearAttachedInCycle = false;
-        wasGearAttachedInCycleRef.current = false;
-        isLockedOut = false;
-        needsRender = true;
       }
+      // No teleport: an un-attached table gear stays on the table.
+      // Tower grows only via Case 2 release of a flange-riding gear.
       onWorkspaceGearsChangeRef.current?.(activeGearAssets !== null || attachedGear !== null, towerGears.length);
     };
     depositPendingGearRef.current = depositPendingGear;
@@ -1245,10 +1232,6 @@ export function RobotVisualizer({
       const currentGrasped = Boolean(
         telemetryBufferRefProp.current?.current?.palmState?.is_grasped
       );
-      if (currentGrasped && activeGearAssets) {
-        wasGearAttachedInCycle = true;
-        wasGearAttachedInCycleRef.current = true;
-      }
       if (palmAssets && currentGrasped !== wasGrasped) {
         wasGrasped = currentGrasped;
         if (currentGrasped) {
@@ -1263,36 +1246,21 @@ export function RobotVisualizer({
 
       // KinematicLinkAttachment logic
       if (mountLink) {
-        // Case 1: Grasping active table gear -> parent to tool0
+        // Case 1: Grasping active table gear -> parent to tool0.
+        // Backend drove the real nozzle to the pick point, so attach on the
+        // grasp bit unconditionally: the rendered FK pose may lag/mismatch the
+        // 15mm proximity gate and must never block the visible ride.
         if (currentGrasped && !attachedGear && activeGearAssets) {
-          activeGearAssets.group.getWorldPosition(_scratchVec1);
-          mountLink.getWorldPosition(_scratchVec2);
-
-          let nozzleDist = Infinity;
-          if (palmAssets?.nozzleMesh) {
-            palmAssets.nozzleMesh.getWorldPosition(_scratchVec3);
-            nozzleDist = _scratchVec3.distanceTo(_scratchVec1);
-          }
-
-          let tipDist = Infinity;
-          if (palmAssets?.group) {
-            _scratchVec3.copy(_scratchTipOffset);
-            palmAssets.group.localToWorld(_scratchVec3);
-            tipDist = _scratchVec3.distanceTo(_scratchVec1);
-          }
-
-          const mountDist = _scratchVec2.distanceTo(_scratchVec1);
-          const minDist = Math.min(mountDist, nozzleDist, tipDist);
-
-          if (minDist <= GRASP_PROXIMITY_THRESHOLD_M + 1e-4) {
-            mountLink.attach(activeGearAssets.group);
-            attachedGear = activeGearAssets;
-            activeGearAssets = null;
-            wasGearAttachedInCycle = true;
-            wasGearAttachedInCycleRef.current = true;
-            onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
-            needsRender = true;
-          }
+          mountLink.attach(activeGearAssets.group);
+          // Hang gear visibly below nozzle tip (tip at z=0.108 in tool0 frame)
+          // instead of at tool0 origin inside the palm mesh.
+          activeGearAssets.group.position.set(0, 0, GRASP_RIDE_OFFSET_Z_M);
+          attachedGear = activeGearAssets;
+          activeGearAssets = null;
+          wasGearAttachedInCycle = true;
+          wasGearAttachedInCycleRef.current = true;
+          onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
+          needsRender = true;
         }
         // Case 2: Releasing grasped gear -> unparent to tower stack at z_k
         else if (!currentGrasped && attachedGear) {
@@ -1307,6 +1275,8 @@ export function RobotVisualizer({
         if (currentGrasped && !attachedGear && activeGearAssets) {
           attachedGear = activeGearAssets;
           activeGearAssets = null;
+          // Same visible ride offset as the URDF path (tool0-frame z).
+          attachedGear.group.position.set(0, 0, GRASP_RIDE_OFFSET_Z_M);
           wasGearAttachedInCycle = true;
           wasGearAttachedInCycleRef.current = true;
           onWorkspaceGearsChangeRef.current?.(true, towerGears.length);
