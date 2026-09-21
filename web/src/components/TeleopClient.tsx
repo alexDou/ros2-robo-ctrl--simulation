@@ -59,8 +59,6 @@ export function TeleopClient({
     connect,
     disconnect,
     executePose,
-    togglePalm,
-    emergencyStop,
     resetFault,
     pickAndPlaceTarget,
     clearWorkspace,
@@ -206,11 +204,11 @@ export function TeleopClient({
           </div>
           <OperatorToolbar
             robotState={effectiveRobotState ?? 'STANDBY'}
-            isGrasped={!!palmState?.is_grasped}
+            connectionState={connectionState}
             hasActiveGear={hasActiveGear || visualizerHasGears}
             onExecutePose={executePose}
-            onTogglePalm={togglePalm}
-            onEmergencyStop={emergencyStop}
+            onConnect={connect}
+            onDisconnect={disconnect}
             onResetFault={resetFault}
             onClearWorkspace={handleClearWorkspace}
             errorBanner={errorBanner}
@@ -257,44 +255,6 @@ export function TeleopClient({
             }}
           >
             Verify Connection (Ping)
-          </button>
-        </div>
-      )}
-
-      {(connectionState === 'CONNECTED' || connectionState === 'CONNECTING') ? (
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-          <button
-            data-testid="disconnect-button"
-            onClick={disconnect}
-            style={{
-              backgroundColor: '#4b5563',
-              color: '#fff',
-              fontWeight: 600,
-              padding: '0.5rem 1rem',
-              borderRadius: '0.375rem',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Disconnect
-          </button>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
-          <button
-            data-testid="connect-button"
-            onClick={connect}
-            style={{
-              backgroundColor: '#2563eb',
-              color: '#fff',
-              fontWeight: 600,
-              padding: '0.5rem 1.5rem',
-              borderRadius: '0.375rem',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            Connect
           </button>
         </div>
       )}

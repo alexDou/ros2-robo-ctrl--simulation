@@ -1,12 +1,13 @@
 import { PoseName, type RobotState } from '@contracts';
+import type { ConnectionState } from '@/hooks/useTeleopSession';
 
 export interface OperatorToolbarProps {
   robotState: RobotState | string | null;
-  isGrasped: boolean;
+  connectionState: ConnectionState;
   hasActiveGear: boolean;
   onExecutePose: (poseName: PoseName) => void;
-  onTogglePalm: () => void;
-  onEmergencyStop: () => void;
+  onConnect: () => void;
+  onDisconnect: () => void;
   onResetFault: () => void;
   onClearWorkspace: () => void;
   errorBanner?: { errorCode: string; message: string } | null;
@@ -16,11 +17,11 @@ export interface OperatorToolbarProps {
 
 export function OperatorToolbar({
   robotState,
-  isGrasped,
+  connectionState,
   hasActiveGear,
   onExecutePose,
-  onTogglePalm,
-  onEmergencyStop,
+  onConnect,
+  onDisconnect,
   onResetFault,
   onClearWorkspace,
   errorBanner,
@@ -34,6 +35,7 @@ export function OperatorToolbar({
   const actionDisabled = disabled || !isIdle;
   const resetFaultDisabled = disabled || !isFault;
   const clearWorkspaceDisabled = disabled || !isIdle || !hasActiveGear;
+  const isConnected = connectionState === 'CONNECTED' || connectionState === 'CONNECTING';
 
   return (
     <div
@@ -84,7 +86,7 @@ export function OperatorToolbar({
           gap: '1rem',
         }}
       >
-        {/* Left Cluster: Canned Poses */}
+        {/* Left Cluster: Canned Poses (Home only) */}
         <div
           data-testid="canned-pose-cluster"
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
@@ -109,89 +111,6 @@ export function OperatorToolbar({
           >
             Home
           </button>
-          <button
-            data-testid="pose-ready-button"
-            type="button"
-            onClick={() => onExecutePose(PoseName.READY)}
-            disabled={actionDisabled}
-            style={{
-              backgroundColor: actionDisabled ? '#374151' : '#3b82f6',
-              color: actionDisabled ? '#9ca3af' : '#ffffff',
-              padding: '0.4rem 0.8rem',
-              borderRadius: '0.375rem',
-              border: 'none',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              cursor: actionDisabled ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.15s ease',
-            }}
-          >
-            Ready
-          </button>
-          <button
-            data-testid="pose-inspect-button"
-            type="button"
-            onClick={() => onExecutePose(PoseName.INSPECT_POSE)}
-            disabled={actionDisabled}
-            style={{
-              backgroundColor: actionDisabled ? '#374151' : '#3b82f6',
-              color: actionDisabled ? '#9ca3af' : '#ffffff',
-              padding: '0.4rem 0.8rem',
-              borderRadius: '0.375rem',
-              border: 'none',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              cursor: actionDisabled ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.15s ease',
-            }}
-          >
-            Inspect
-          </button>
-        </div>
-
-        {/* Center Cluster: Dexterous Palm Toggle */}
-        <div
-          data-testid="palm-control-cluster"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}
-        >
-          <span style={{ color: '#9ca3af', fontSize: '0.8125rem', fontWeight: 600 }}>Palm:</span>
-          <button
-            data-testid="palm-toggle-button"
-            type="button"
-            onClick={onTogglePalm}
-            disabled={actionDisabled}
-            style={{
-              backgroundColor: actionDisabled
-                ? '#374151'
-                : isGrasped
-                  ? '#059669'
-                  : '#4b5563',
-              color: actionDisabled ? '#9ca3af' : '#ffffff',
-              padding: '0.4rem 0.875rem',
-              borderRadius: '0.375rem',
-              border: 'none',
-              fontSize: '0.8125rem',
-              fontWeight: 600,
-              cursor: actionDisabled ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.15s ease',
-            }}
-          >
-            {isGrasped ? 'Release' : 'Grasp'}
-          </button>
-          <span
-            data-testid="palm-status"
-            style={{
-              padding: '0.2rem 0.5rem',
-              borderRadius: '9999px',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              backgroundColor: isGrasped ? '#065f46' : '#374151',
-              color: isGrasped ? '#34d399' : '#9ca3af',
-              border: `1px solid ${isGrasped ? '#059669' : '#4b5563'}`,
-            }}
-          >
-            {isGrasped ? 'Grasped' : 'Released'}
-          </span>
         </div>
 
         {/* Workspace Cluster: Workcell / Workspace Controls */}
@@ -221,9 +140,9 @@ export function OperatorToolbar({
           </button>
         </div>
 
-        {/* Right Cluster: Safety Cluster */}
+        {/* Right Cluster: Fault Reset + Connection Toggle */}
         <div
-          data-testid="safety-control-cluster"
+          data-testid="connection-control-cluster"
           style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}
         >
           <button
@@ -246,26 +165,43 @@ export function OperatorToolbar({
             Reset Fault
           </button>
 
-          <button
-            data-testid="emergency-stop-button"
-            type="button"
-            onClick={onEmergencyStop}
-            style={{
-              backgroundColor: '#dc2626',
-              color: '#ffffff',
-              padding: '0.5rem 1.125rem',
-              borderRadius: '0.375rem',
-              border: '2px solid #b91c1c',
-              fontSize: '0.875rem',
-              fontWeight: 800,
-              letterSpacing: '0.05em',
-              cursor: 'pointer',
-              boxShadow: '0 0 10px rgba(220, 38, 38, 0.4)',
-              transition: 'transform 0.1s ease, background-color 0.15s ease',
-            }}
-          >
-            EMERGENCY STOP
-          </button>
+          {isConnected ? (
+            <button
+              data-testid="disconnect-button"
+              type="button"
+              onClick={onDisconnect}
+              style={{
+                backgroundColor: '#4b5563',
+                color: '#fff',
+                fontWeight: 600,
+                padding: '0.4rem 0.8rem',
+                borderRadius: '0.375rem',
+                border: 'none',
+                fontSize: '0.8125rem',
+                cursor: 'pointer',
+              }}
+            >
+              Disconnect
+            </button>
+          ) : (
+            <button
+              data-testid="connect-button"
+              type="button"
+              onClick={onConnect}
+              style={{
+                backgroundColor: '#2563eb',
+                color: '#fff',
+                fontWeight: 600,
+                padding: '0.4rem 0.8rem',
+                borderRadius: '0.375rem',
+                border: 'none',
+                fontSize: '0.8125rem',
+                cursor: 'pointer',
+              }}
+            >
+              Connect
+            </button>
+          )}
         </div>
       </div>
     </div>
