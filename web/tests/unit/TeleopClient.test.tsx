@@ -687,7 +687,7 @@ describe('TeleopClient Component', () => {
       expect(ws.sentMessages.length).toBe(0);
     });
 
-    it('lifts ClickLockout automatically when robot returns to IDLE and gear has been deposited', () => {
+    it('lifts ClickLockout automatically when robot returns to IDLE and gear has been deposited', async () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -725,6 +725,22 @@ describe('TeleopClient Component', () => {
       });
       expect(visualizer.isLockedOut()).toBe(true);
 
+      // Flush render frames: grasp attach runs in rAF loop, then release deposits to tower
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000150000000',
+          robot_state: RobotState.EXECUTING,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: false },
+        }));
+      });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
+
       // Deposit gear onto tower (simulated or via telemetry grasp release)
       // When robot transitions back to IDLE, lockout lifts
       act(() => {
@@ -746,7 +762,7 @@ describe('TeleopClient Component', () => {
       expect(secondCmd.payload.pick_x).toBeCloseTo(0.55, 2);
     });
 
-    it('auto-resets hasActiveGear to false and keeps COMPLETED progress visible when robot_state returns to IDLE', () => {
+    it('auto-resets hasActiveGear to false and keeps COMPLETED progress visible when robot_state returns to IDLE', async () => {
       render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
     fireEvent.click(screen.getByTestId("connect-button"));
     const ws = MockWebSocket.instances[0];
@@ -794,6 +810,22 @@ describe('TeleopClient Component', () => {
         }));
       });
       expect(screen.queryByTestId('action-progress-container')).not.toBeNull();
+
+      // Flush render frames: grasp attach runs in rAF loop, then release deposits to tower
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
+      act(() => {
+        ws.simulateMessage(JSON.stringify({
+          timestamp_ns: '1700000000150000000',
+          robot_state: RobotState.EXECUTING,
+          joint_positions: [0, 0, 0, 0, 0, 0],
+          palm_state: { is_grasped: false },
+        }));
+      });
+      await act(async () => {
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
 
       // 4. Robot finishes sequence and transitions back to IDLE
       act(() => {
