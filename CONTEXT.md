@@ -117,7 +117,7 @@ Standalone ROS2 Action Server node executing PickAndPlaceAction and commanding t
 _Avoid_: Arm node, motion runner, trajectory worker
 
 **TelemetryThrottler**:
-Non-blocking Gateway component sampling 500 Hz RTDE joint telemetry and decimating to a smooth 30 Hz WebSocket stream.
+Non-blocking Gateway sampler, 30 Hz nominal tick. SIM mode: 5 Hz feed (`ur_controllers.yaml`, fake hardware — what runs now) = passthrough/sample-hold. LIVE mode: 500 Hz RTDE feed (`ur_controllers_real.yaml`, physical UR5e — real-world target, deliberately kept) = decimate 500→30. Direction: lower frequencies where possible, stay real-ready. Browser: connect-gated WS (manual Connect, BOOTING window), lazy joint sub while parked, rAF render from latest sample.
 _Avoid_: Downsampler, rate limiter, decimation filter
 
 **PickAndPlaceAction**:
