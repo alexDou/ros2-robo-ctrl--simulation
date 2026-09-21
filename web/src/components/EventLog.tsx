@@ -46,6 +46,25 @@ export function EventLog({ logs }: EventLogProps) {
               );
             }
 
+            if (log.type === 'probe') {
+              return (
+                <div
+                  key={log.id}
+                  data-testid="log-item-probe"
+                  style={{
+                    borderLeft: '4px solid #3b82f6',
+                    paddingLeft: '0.75rem',
+                    marginBottom: '0.75rem',
+                    color: '#bfdbfe',
+                  }}
+                >
+                  <div>
+                    [{log.timestamp}] <strong>[PING: {log.data.status}]</strong> {log.data.detail}
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <div
                 key={log.id}

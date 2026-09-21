@@ -199,6 +199,32 @@ describe('TeleopClient Component', () => {
     expect(sent.command_id).toBeDefined();
     expect(sent.timestamp_ns).toBeDefined();
     expect(sent.payload).toEqual({});
+    // Health probe logs an event (never silent)
+    expect(screen.getByTestId('log-item-probe')).toBeDefined();
+    expect(screen.getByTestId('event-log').textContent).toMatch(/PING/);
+  });
+
+  describe('Unit 6.6.4b: Ping health probe', () => {
+    it('disconnected Ping probes Gateway /health and logs result (never silent no-op)', async () => {
+      globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, status: 200 });
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      // Zero sockets pre-connect; Ping stays enabled
+      expect(MockWebSocket.instances.length).toBe(0);
+      const pingButton = screen.getByTestId('verify-connection-button');
+      expect((pingButton as HTMLButtonElement).disabled).toBe(false);
+      fireEvent.click(pingButton);
+      expect(globalThis.fetch).toHaveBeenCalledWith('http://localhost:8080/health');
+      expect(await screen.findByTestId('log-item-probe')).toBeDefined();
+      expect(screen.getByTestId('event-log').textContent).toMatch(/UP|Gateway reachable/);
+    });
+
+    it('disconnected Ping logs DOWN detail when Gateway unreachable', async () => {
+      globalThis.fetch = vi.fn().mockRejectedValue(new Error('fetch failed'));
+      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      fireEvent.click(screen.getByTestId('verify-connection-button'));
+      expect(await screen.findByTestId('log-item-probe')).toBeDefined();
+      expect(screen.getByTestId('event-log').textContent).toMatch(/DOWN|unreachable/);
+    });
   });
 
   it('appends inbound RobotTelemetryEvent frames to the event log', () => {

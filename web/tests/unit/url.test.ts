@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach } from 'vitest';
-import { getParam, getAllParams, resolveGatewayWsUrl } from '@utils/url';
+import { getParam, getAllParams, resolveGatewayWsUrl, resolveGatewayHealthUrl } from '@utils/url';
 
 describe('URL query parameter utilities', () => {
   const originalLocation = window.location;
@@ -92,6 +92,20 @@ describe('URL query parameter utilities', () => {
       setWindowSearch('?gateway_port=9090');
       expect(resolveGatewayWsUrl('robot-1')).toBe(
         'ws://localhost:9090/ws/teleop/robot/robot-1'
+      );
+    });
+  });
+
+  describe('resolveGatewayHealthUrl', () => {
+    it('maps ws robot URL to http /health origin', () => {
+      expect(resolveGatewayHealthUrl('ws://localhost:8080/ws/teleop/robot/robot-0')).toBe(
+        'http://localhost:8080/health'
+      );
+    });
+
+    it('maps wss URL to https /health origin', () => {
+      expect(resolveGatewayHealthUrl('wss://example.com:9090/ws/teleop/robot/arm-ur5')).toBe(
+        'https://example.com:9090/health'
       );
     });
   });

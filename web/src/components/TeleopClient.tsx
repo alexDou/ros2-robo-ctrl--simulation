@@ -242,16 +242,15 @@ export function TeleopClient({
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
           <button
             data-testid="verify-connection-button"
-            onClick={sendPing}
-            disabled={connectionState !== 'CONNECTED'}
+            onClick={() => void sendPing()}
             style={{
-              backgroundColor: connectionState === 'CONNECTED' ? '#2563eb' : '#9ca3af',
+              backgroundColor: '#2563eb',
               color: '#fff',
               fontWeight: 600,
               padding: '0.5rem 1.5rem',
               borderRadius: '0.375rem',
               border: 'none',
-              cursor: connectionState === 'CONNECTED' ? 'pointer' : 'not-allowed',
+              cursor: 'pointer',
             }}
           >
             Verify Connection (Ping)

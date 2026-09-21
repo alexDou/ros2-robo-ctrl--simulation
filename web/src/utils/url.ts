@@ -73,3 +73,19 @@ export function resolveGatewayWsUrl(robotId: string, gatewayWsUrl?: string): str
   const defaultPort = queryPort || '8080';
   return `${defaultProto}//${defaultHost}:${defaultPort}/ws/teleop/robot/${robotId}`;
 }
+
+/**
+ * Resolves the Gateway HTTP health-check URL for a given WebSocket URL.
+ *
+ * Maps ws(s)://host:port/... to http(s)://host:port/health.
+ * Falls back to /health when the URL cannot be parsed.
+ */
+export function resolveGatewayHealthUrl(wsUrl: string): string {
+  const httpUrl = wsUrl.replace(/^ws(s)?:/, 'http$1:');
+  try {
+    const parsed = new URL(httpUrl);
+    return `${parsed.origin}/health`;
+  } catch {
+    return '/health';
+  }
+}

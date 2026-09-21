@@ -39,7 +39,14 @@ export interface ErrorLogEntry {
   data: ErrorFrame;
 }
 
-export type LogEntry = TelemetryLogEntry | ErrorLogEntry;
+export interface ProbeLogEntry {
+  id: string;
+  type: 'probe';
+  timestamp: string;
+  data: { status: string; detail: string };
+}
+
+export type LogEntry = TelemetryLogEntry | ErrorLogEntry | ProbeLogEntry;
 
 export interface ActionProgress {
   phase: string;
@@ -301,11 +308,43 @@ export function useTeleopSession({
     }
   }, [robotState, hasActiveGear]);
 
-  const sendPing = useCallback(() => {
-    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+  const pushProbeLog = useCallback((status: string, detail: string) => {
+    const entry: LogEntry = {
+      id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      type: 'probe',
+      timestamp: new Date().toLocaleTimeString(),
+      data: { status, detail },
+    };
+    setLogs((prev) => [entry, ...prev].slice(0, 100));
+  }, []);
+
+  const sendPing = useCallback(async () => {
+    // Disconnected: HTTP health probe against Gateway /health (never silent).
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+      const httpUrl = wsUrl.replace(/^ws(s)?:/, 'http$1:');
+      let healthUrl = '/health';
+      try {
+        healthUrl = `${new URL(httpUrl).origin}/health`;
+      } catch {
+        healthUrl = '/health';
+      }
+      try {
+        const res = await fetch(healthUrl);
+        if (res.ok) {
+          pushProbeLog('UP', `Gateway reachable at ${healthUrl}`);
+        } else {
+          pushProbeLog(`${res.status}`, `Gateway probe ${healthUrl} returned ${res.status}`);
+        }
+      } catch (err) {
+        pushProbeLog('DOWN', `Gateway unreachable at ${healthUrl}: ${err instanceof Error ? err.message : String(err)}`);
+      }
+      return;
+    }
+    // Connected-but-not-streaming: WS PING command + EventLog probe entry.
     const pingCmd = createPingCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(pingCmd));
-  }, []);
+    pushProbeLog('PING', `Ping sent (${pingCmd.command_id})`);
+  }, [wsUrl, pushProbeLog]);
 
   return {
     connectionState,
