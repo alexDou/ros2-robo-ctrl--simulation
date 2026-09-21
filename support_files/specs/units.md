@@ -1,4 +1,5 @@
 # Project Architecture Units (Vertical Walking Skeletons)
+> [!NOTE] HISTORICAL-SUPERSEDED-BY-6.6.0: `PROCESSING` state refs below are stale. Removed in Unit 6.6.0 (hand-sim-jqtr, e80962b). Contract is BOOTING/STANDBY/IDLE/EXECUTING/FAULT. Kept for history, do not implement.
 
 Each unit represents a complete, test-verified end-to-end slice traversing all three architectural tiers: Preact Frontend, Rust Actix-Web Gateway, and Python/ROS2 Jazzy EdgeNode over Zenoh.
 
@@ -178,7 +179,7 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
 - **Refactor-A.4: Edge Gateway Throttler, Action Bridge & Launcher**:
   - Integrates `zenoh-bridge-ros2dds` into `scripts/launch_gateway.sh`, implements 500Hz-to-30Hz `TelemetryThrottler` in Rust Gateway, and bridges Action feedback to WebSockets.
 - **Refactor-A.5: Mock Gateway E2E Test Harness & UI Suite Migration**:
-  - Implements lightweight in-process MockGateway emulating Gateway WebSocket protocol and /health; refactors test harness to run hermetically without spawning backend binaries; creates `scripts/launch_web.sh`; migrates existing 4 E2E features.
+  - Implements lightweight in-process MockGateway emulating Gateway WebSocket protocol and /health; refactors test harness to run hermetically without spawning backend binaries; creates `scripts/launch_teleop-client.sh`; migrates existing 4 E2E features.
 - **Refactor-A.6: Pick-and-Place & SpindleTower Stacking UI E2E Feature**:
   - Gherkin feature and step definitions verifying closed-loop table click -> Action progress feedback -> tool flange grasp attachment -> SpindleTower stacking -> ClickLockout reset against MockGateway.
 - **Refactor-A.7: Legacy Prototype Retirement & Full System Verification**:

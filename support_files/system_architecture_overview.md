@@ -1,4 +1,5 @@
 # ROS2 Robot Controller Simulation
+> [!NOTE] HISTORICAL-SUPERSEDED-BY-6.6.0: `PROCESSING` state refs below are stale. Removed in Unit 6.6.0 (hand-sim-jqtr, e80962b). Contract is BOOTING/STANDBY/IDLE/EXECUTING/FAULT. Kept for history, do not implement.
 ## Comprehensive System Architecture, Hardware Models & End-to-End Data Flow
 
 ---

@@ -1,4 +1,5 @@
 ### Dexterous Palm Integration & Actuation Foundation
+> [!NOTE] HISTORICAL-SUPERSEDED-BY-6.6.0: `PROCESSING` state refs below are stale. Removed in Unit 6.6.0 (hand-sim-jqtr, e80962b). Contract is BOOTING/STANDBY/IDLE/EXECUTING/FAULT. Kept for history, do not implement.
 
 * **Goal**: Mount a procedural pneumatic suction tool (Dexterous Palm) to UR5e flange `tool0` in Three.js, implement EdgeNode lifecycle state machine (`BOOTING`, `IDLE`, `PROCESSING`, `EXECUTING`, `FAULT`) with bounded command FIFO queue ($N=5$) and E-Stop purge, enforce Gateway 20 Hz safety gating, and provide canned trajectory triggers and palm actuation in TeleopClient.
 * **Architecture**: Contract-first parallel development. Unit 4.0 locks down schemas (`PALM_ACTUATE`, canned `TRAJECTORY_EXECUTE`, `EMERGENCY_STOP`, `RESET_FAULT`) and cross-language types. Units 4.1 (3D Palm mounting), 4.2 (EdgeNode state machine & queue), 4.3 (Gateway safety gating), and 4.4 (TeleopClient operator toolbar) execute against mocked interface seams. Unit 4.5 connects all services in an automated E2E integration test suite.

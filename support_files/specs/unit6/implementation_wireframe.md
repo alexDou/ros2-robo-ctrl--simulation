@@ -5,6 +5,7 @@ Welcome to Unit 6: Autonomous Pick-and-Place to Common Destination. This unit pr
 
 ------------------------------
 ## Contract-First Parallel Execution Model
+> [!NOTE] HISTORICAL-SUPERSEDED-BY-6.6.0: `PROCESSING` state refs below are stale. Removed in Unit 6.6.0 (hand-sim-jqtr, e80962b). Contract is BOOTING/STANDBY/IDLE/EXECUTING/FAULT. Kept for history, do not implement.
 
 Development strictly follows interface boundaries. Once wire schemas and cross-language domain types are locked in Unit 6.0, the Analytical Inverse Kinematics solver (Unit 6.1), EdgeNode `WorkcellState` & execution engine (Unit 6.2), Gateway validation (Unit 6.3), and TeleopClient 3D SpindleTower & link attachment (Unit 6.4) execute concurrently against mocked interface seams. Only the final multi-service system integration suite (Unit 6.5) depends on all components.
 

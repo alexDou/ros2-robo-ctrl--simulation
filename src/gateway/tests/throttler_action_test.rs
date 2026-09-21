@@ -8,7 +8,7 @@
 use actix_web::{web, App, HttpServer};
 use futures_util::{SinkExt, StreamExt};
 use gateway::action::{ActionFeedbackFrame, ActionPoint, PickAndPlaceFeedback, PickAndPlaceGoal};
-use gateway::domain::{CommandType, RobotCommand, RobotState, RobotTelemetryEvent};
+use gateway::domain::{CommandType, PalmState, RobotCommand, RobotState, RobotTelemetryEvent};
 use gateway::throttler::TelemetryThrottler;
 use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
 use std::time::Duration;
@@ -472,4 +472,40 @@ async fn test_ws_pick_and_place_translates_to_action_and_relays_feedback() {
     drop(ws_stream);
     tokio::time::sleep(Duration::from_millis(50)).await;
     assert!(!registry.is_active("robot-action-test"));
+}
+
+#[tokio::test]
+async fn test_telemetry_throttler_joint_bytes_preserve_authoritative_state() {
+    // Unit 6.6.1: joint-bytes decimation after state set still emits
+    // EXECUTING + grasped, never Idle/false flood.
+    let throttler = TelemetryThrottler::new();
+    let mut rx = throttler.subscribe();
+
+    throttler.set_robot_state(RobotState::Executing);
+    throttler.set_palm_state(PalmState { is_grasped: true });
+
+    let raw_joint_state_json = r#"{
+        "name": [
+            "shoulder_pan_joint",
+            "shoulder_lift_joint",
+            "elbow_joint",
+            "wrist_1_joint",
+            "wrist_2_joint",
+            "wrist_3_joint"
+        ],
+        "position": [0.1, -0.2, 0.3, -0.4, 0.5, -0.6]
+    }"#;
+    throttler
+        .push_raw(raw_joint_state_json)
+        .expect("ingest joint bytes");
+
+    let event = tokio::time::timeout(Duration::from_millis(500), rx.recv())
+        .await
+        .expect("emitted frame")
+        .expect("no lag");
+    assert_eq!(event.robot_state, RobotState::Executing);
+    assert!(event.palm_state.is_grasped);
+    assert!((event.joint_positions[0] - 0.1).abs() < 1e-6);
+
+    throttler.stop();
 }

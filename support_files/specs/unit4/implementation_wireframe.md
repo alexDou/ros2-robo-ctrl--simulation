@@ -5,6 +5,7 @@ Welcome to Unit 4: Dexterous Palm Integration & Actuation Foundation. This unit 
 
 ------------------------------
 ## Contract-First Parallel Execution Model
+> [!NOTE] HISTORICAL-SUPERSEDED-BY-6.6.0: `PROCESSING` state refs below are stale. Removed in Unit 6.6.0 (hand-sim-jqtr, e80962b). Contract is BOOTING/STANDBY/IDLE/EXECUTING/FAULT. Kept for history, do not implement.
 
 Development strictly follows interface boundaries. Once wire schemas are locked in Unit 4.0, the 3D Palm visualizer model (Unit 4.1), EdgeNode state machine & queue (Unit 4.2), Gateway safety gating (Unit 4.3), and TeleopClient toolbar controls (Unit 4.4) execute concurrently against mocked interface seams. Only the final multi-service system integration suite (Unit 4.5) depends on all components.
 
