@@ -42,6 +42,10 @@ export interface RobotVisualizerGlobalHandle {
   getSpindleTowerMesh: () => unknown;
   getSpindleBaseFlangeMesh: () => unknown;
   getSpindlePinMesh: () => unknown;
+  getSnapshotGearCount: () => number;
+  getSnapshotGearPosition: (id: string) => { x: number; y: number; z: number; bucket: string } | null;
+  getSnapshotGearIds: () => string[];
+  getSpawnedGearCount: () => number;
   getTowerGears: () => unknown[];
   getTowerGearCount: () => number;
   isGearAttached: () => boolean;

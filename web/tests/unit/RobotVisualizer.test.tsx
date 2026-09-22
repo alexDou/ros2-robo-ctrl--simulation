@@ -348,31 +348,45 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(mockRenderer.render).toHaveBeenCalledTimes(1);
 
       // Frame 3: joint position updated => WebGL draw call executed
+      // (6.7.6 lerp: first step eases 0 -> 0.0625, not a jump to 0.25)
       jointPositionsRef.current = [0.25, 0.0, 0.0, 0.0, 0.0, 0.0];
       act(() => {
         stepFrame();
       });
       expect(mockRenderer.render).toHaveBeenCalledTimes(2);
 
-      // Frame 4: unchanged positions => render SKIPPED
+      // Frame 4: target unchanged but interpolation still converging
+      // => render EXECUTED (arm still easing toward 0.25)
       act(() => {
         stepFrame();
       });
-      expect(mockRenderer.render).toHaveBeenCalledTimes(2);
+      expect(mockRenderer.render).toHaveBeenCalledTimes(3);
+
+      // Settle: step until lerp snaps to target, then renders stop.
+      for (let i = 0; i < 60; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
+      const settledCount = mockRenderer.render.mock.calls.length;
+      act(() => {
+        stepFrame();
+      });
+      expect(mockRenderer.render).toHaveBeenCalledTimes(settledCount);
 
       // Frame 5: camera movement via controls.update() returning true => draw call executed
       mockControls.update.mockReturnValue(true);
       act(() => {
         stepFrame();
       });
-      expect(mockRenderer.render).toHaveBeenCalledTimes(3);
+      expect(mockRenderer.render).toHaveBeenCalledTimes(settledCount + 1);
 
       // Reset controls movement
       mockControls.update.mockReturnValue(false);
       act(() => {
         stepFrame();
       });
-      expect(mockRenderer.render).toHaveBeenCalledTimes(3);
+      expect(mockRenderer.render).toHaveBeenCalledTimes(settledCount + 1);
     });
 
     it('updates link world transformation matrices accurately in response to dynamic ArmJointPositions', async () => {
@@ -444,14 +458,28 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       const initialWorldMatrix = shoulderLink.matrixWorld.clone();
 
       // Rotate shoulder by 90 degrees (Math.PI / 2)
+      // (6.7.6 lerp: converges over frames, not a single jump)
       jointPositionsRef.current = [Math.PI / 2, 0, 0, 0, 0, 0];
       act(() => {
         stepFrame();
       });
 
-      // World matrix of shoulder_link has updated
-      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('shoulder_pan_joint', Math.PI / 2);
+      // World matrix of shoulder_link has updated (partial ease toward target)
+      const firstCalls = fakeRobot.setJointValue.mock.calls.filter(
+        (c: any[]) => c[0] === 'shoulder_pan_joint'
+      );
+      const firstVal = firstCalls[firstCalls.length - 1][1] as number;
+      expect(firstVal).toBeGreaterThan(0);
+      expect(firstVal).toBeLessThan(Math.PI / 2);
       expect(shoulderLink.matrixWorld.equals(initialWorldMatrix)).toBe(false);
+
+      // Settle to exact target over subsequent frames.
+      for (let i = 0; i < 60; i++) {
+        act(() => {
+          stepFrame();
+        });
+      }
+      expect(fakeRobot.setJointValue).toHaveBeenCalledWith('shoulder_pan_joint', Math.PI / 2);
 
       // Verify rotation in world matrix: (1, 0, 0) rotated by 90 deg around Z becomes (0, 1, 0)
       const worldPos = new THREE.Vector3();
