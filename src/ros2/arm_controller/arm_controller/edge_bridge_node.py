@@ -106,6 +106,7 @@ class EdgeBridgeNode(Node):
         self.declare_parameter("switch_service_name", "/controller_manager/switch_controller")
         self.declare_parameter("switch_timeout", 5.0)
         self.declare_parameter("standby_park_timeout", 10.0)
+        self.declare_parameter("telemetry_rate", 10.0)
 
         self._robot_id = str(self.get_parameter("robot_id").value)
         self._controller_action_name = str(self.get_parameter("controller_action_name").value)
@@ -214,6 +215,16 @@ class EdgeBridgeNode(Node):
             self._workcell_state_topic,
             self._on_workcell_state,
             10,
+            callback_group=self._telem_cb_group,
+        )
+
+        # Unit 6.7.6: single-owner steady stream. Same writer (edge), same
+        # topic. 10 Hz cached snapshot while engaged; quiet while STANDBY
+        # (parked idle). Gateway stays verbatim forwarder.
+        self._telemetry_rate = max(1.0, float(self.get_parameter("telemetry_rate").value))
+        self._telemetry_timer = self.create_timer(
+            1.0 / self._telemetry_rate,
+            self._on_telemetry_timer,
             callback_group=self._telem_cb_group,
         )
 
@@ -327,6 +338,13 @@ class EdgeBridgeNode(Node):
             return
         with self._lock:
             self._workcell_state = snapshot
+
+    def _on_telemetry_timer(self) -> Optional[RobotTelemetryEvent]:
+        """Steady 10 Hz cached snapshot while engaged; None while STANDBY."""
+        with self._lock:
+            if self._robot_state == RobotState.STANDBY:
+                return None
+        return self.publish_telemetry()
 
     def _handle_joint_states(self, msg: JointState) -> None:
         """Parses /joint_states and maps positions to canonical UR5e joint order."""
@@ -1366,6 +1384,13 @@ class EdgeBridgeNode(Node):
             except Exception:
                 pass
             self._workcell_state_sub = None
+
+        if self._telemetry_timer is not None:
+            try:
+                self.destroy_timer(self._telemetry_timer)
+            except Exception:
+                pass
+            self._telemetry_timer = None
 
 
 

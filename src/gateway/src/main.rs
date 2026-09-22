@@ -30,23 +30,15 @@ async fn main() -> std::io::Result<()> {
     };
 
     let session_registry = ActiveSessionRegistry::default();
-    let throttler = gateway::throttler::TelemetryThrottler::new();
-
-    if let Some(session) = fabric.zenoh_session() {
-        let fabric_clone = fabric.clone();
-        let mut throttled_rx = throttler.subscribe_json();
-        tokio::spawn(async move {
-            while let Ok(telem_json) = throttled_rx.recv().await {
-                let _ = fabric_clone
-                    .publish_telemetry_async(gateway::domain::DEFAULT_ROBOT_ID, &telem_json)
-                    .await;
-            }
-        });
-        let _ = throttler.attach_zenoh(&session, "**/joint_states").await;
-        let _ = throttler.attach_zenoh(&session, "rt/joint_states").await;
-        let _ = throttler.attach_zenoh(&session, "joint_states").await;
-        info!("TelemetryThrottler attached to Zenoh joint_states mirrors");
-    }
+    // Single-owner rule (Unit 6.7): EdgeBridge is sole writer to
+    // robot/{id}/telemetry. Gateway never synthesizes workcell snapshots
+    // from raw /joint_states and never republishes to the same Zenoh key.
+    // Throttler stays as WS-side decimator only (see ws.rs); no Zenoh publish
+    // here, no attach_zenoh to joint_states mirrors. Previously this block
+    // flooded the topic at 30 Hz with default-empty workcell, interleaving
+    // with authoritative edge frames -> web single-frame delete -> blink/vanish.
+    // ponytail: LIVE 500 Hz decimation belongs WS-side (fabric->throttler->WS),
+    // never Zenoh->Zenoh. Re-add only behind that path.
 
     let registry_data = web::Data::new(session_registry);
     let fabric_data = web::Data::new(fabric);
