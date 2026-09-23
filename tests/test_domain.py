@@ -490,9 +490,9 @@ def test_robot_telemetry_event_workcell_state_required_round_trip():
             "robot_state": RobotState.IDLE,
             "joint_positions": [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
             "workcell_state": {
-                "spawned": [{"id": "gear-1", "x": 0.5, "y": 0.1, "z": 0.0}],
+                "spawned": [{"id": "gear-1", "x": 0.5, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}],
                 "in_progress": [],
-                "processed": [{"id": "gear-0", "x": 0.4, "y": -0.3, "z": 0.02}],
+                "processed": [{"id": "gear-0", "x": 0.4, "y": -0.3, "z": 0.02, "color": "WHITE", "intact": True}],
                 "active_id": "gear-1",
             },
         }
@@ -530,14 +530,16 @@ def test_robot_telemetry_event_workcell_origin_optional_round_trip():
             "robot_state": RobotState.IDLE,
             "joint_positions": [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
             "workcell_state": {
-                "spawned": [{"id": "gear-0", "x": 0.45, "y": 0.1, "z": 0.0}],
+                "spawned": [{"id": "gear-0", "x": 0.45, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}],
                 "in_progress": [
                     {"id": "gear-1", "x": 0.45, "y": 0.1, "z": 0.0,
-                     "origin_x": 0.45, "origin_y": 0.1, "origin_z": 0.0}
+                     "origin_x": 0.45, "origin_y": 0.1, "origin_z": 0.0,
+                     "color": "GREEN", "intact": True}
                 ],
                 "processed": [
                     {"id": "gear-2", "x": 0.4, "y": -0.3, "z": 0.02,
-                     "origin_x": 0.5, "origin_y": 0.15, "origin_z": 0.0}
+                     "origin_x": 0.5, "origin_y": 0.15, "origin_z": 0.0,
+                     "color": "BLUE", "intact": False}
                 ],
                 "active_id": "gear-1",
             },
@@ -554,8 +556,9 @@ def test_robot_telemetry_event_workcell_origin_optional_round_trip():
     assert '"origin_x":0.45' in wire.replace(" ", "")
 
 
-def test_unit70_color_defective_contracts():
-    # Unit 7.0/hand-sim-9kw2 RED: optional color + defective with safe defaults.
+def test_unit70_required_color_intact():
+    # Unit 7.0/hand-sim-9kw2: spawn carries no classification;
+    # GearEntry requires color + intact on every bucket, no defaults.
     import json
     from pathlib import Path
 
@@ -574,32 +577,46 @@ def test_unit70_color_defective_contracts():
     cmd_data = json.loads((schemas_dir / "robot_command.schema.json").read_text())
     spawn_def = cmd_data["$defs"]["spawn_object_payload"]
     assert set(spawn_def["required"]) == {"x", "y", "z", "object_type"}
-    assert spawn_def["properties"]["color"]["enum"] == ["WHITE", "GREEN", "BLUE"]
-    assert spawn_def["properties"]["color"]["default"] == "WHITE"
-    assert spawn_def["properties"]["defective"]["type"] == "boolean"
-    assert spawn_def["properties"]["defective"]["default"] is False
+    assert "color" not in spawn_def["properties"]
+    assert "intact" not in spawn_def["properties"]
     assert spawn_def["additionalProperties"] is False
 
-    legacy = SpawnObjectPayload(x=0.5, y=0.0, z=0.0, object_type=SpawnObjectType.GEAR)
-    assert legacy.color == GearColor.WHITE
-    assert legacy.defective is False
+    tel_data = json.loads((schemas_dir / "robot_telemetry_event.schema.json").read_text())
+    ws_def = tel_data["properties"]["workcell_state"]
+    for bucket in ("spawned", "in_progress", "processed"):
+        gear_def = ws_def["properties"][bucket]["items"]
+        assert set(gear_def["required"]) == {"id", "x", "y", "z", "color", "intact"}
+        assert gear_def["properties"]["color"]["enum"] == ["WHITE", "GREEN", "BLUE"]
+        assert "default" not in gear_def["properties"]["color"]
+        assert gear_def["properties"]["intact"]["type"] == "boolean"
+        assert "default" not in gear_def["properties"]["intact"]
+        assert gear_def["additionalProperties"] is False
 
-    for color in (GearColor.WHITE, GearColor.GREEN, GearColor.BLUE):
-        for defective in (False, True):
-            p = SpawnObjectPayload(
-                x=0.5,
-                y=0.0,
-                z=0.0,
-                object_type=SpawnObjectType.GEAR,
-                color=color,
-                defective=defective,
-            )
-            assert SpawnObjectPayload.model_validate_json(p.model_dump_json()) == p
+    spawn = SpawnObjectPayload(x=0.5, y=0.0, z=0.0, object_type=SpawnObjectType.GEAR)
+    assert SpawnObjectPayload.model_validate_json(spawn.model_dump_json()) == spawn
 
     with pytest.raises(ValidationError):
         SpawnObjectPayload.model_validate(
-            {"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "color": "RED"}
+            {"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "color": "WHITE"}
         )
+    with pytest.raises(ValidationError):
+        SpawnObjectPayload.model_validate(
+            {"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "intact": True}
+        )
+
+    for color in (GearColor.WHITE, GearColor.GREEN, GearColor.BLUE):
+        for intact in (False, True):
+            g = GearEntry(
+                id="g0", x=0.1, y=0.1, z=0.0, color=color, intact=intact
+            )
+            assert GearEntry.model_validate_json(g.model_dump_json()) == g
+
+    with pytest.raises(ValidationError):
+        GearEntry.model_validate(
+            {"id": "g0", "x": 0.1, "y": 0.1, "z": 0.0, "color": "RED", "intact": True}
+        )
+    with pytest.raises(ValidationError):
+        GearEntry.model_validate({"id": "g0", "x": 0.1, "y": 0.1, "z": 0.0})
 
     event = RobotTelemetryEvent.model_validate(
         {
@@ -607,20 +624,18 @@ def test_unit70_color_defective_contracts():
             "robot_state": RobotState.IDLE,
             "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             "workcell_state": {
-                "spawned": [{"id": "g0", "x": 0.1, "y": 0.1, "z": 0.0}],
-                "in_progress": [{"id": "g1", "x": 0.1, "y": 0.1, "z": 0.0}],
-                "processed": [{"id": "g2", "x": 0.4, "y": -0.3, "z": 0.02}],
+                "spawned": [{"id": "g0", "x": 0.1, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}],
+                "in_progress": [{"id": "g1", "x": 0.1, "y": 0.1, "z": 0.0, "color": "GREEN", "intact": False}],
+                "processed": [{"id": "g2", "x": 0.4, "y": -0.3, "z": 0.02, "color": "BLUE", "intact": True}],
             },
         }
     )
-    for bucket in ("spawned", "in_progress", "processed"):
-        entry = getattr(event.workcell_state, bucket)[0]
-        assert entry.color == GearColor.WHITE
-        assert entry.defective is False
-    tagged = GearEntry(
-        id="g3", x=0.55, y=-0.3, z=0.02, color=GearColor.GREEN, defective=True
-    )
-    assert GearEntry.model_validate_json(tagged.model_dump_json()) == tagged
+    assert event.workcell_state.spawned[0].color == GearColor.WHITE
+    assert event.workcell_state.spawned[0].intact is True
+    assert event.workcell_state.in_progress[0].color == GearColor.GREEN
+    assert event.workcell_state.in_progress[0].intact is False
+    assert event.workcell_state.processed[0].color == GearColor.BLUE
+    assert event.workcell_state.processed[0].intact is True
 
     assert WHITE_TOWER == [0.4, -0.3, 0.0]
     assert GREEN_TOWER == [0.55, -0.3, 0.0]

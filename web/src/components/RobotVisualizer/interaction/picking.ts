@@ -1,5 +1,13 @@
 import type * as THREE from 'three';
-import type { SpawnObjectPayload } from '@contracts';
+import type { SpawnObjectPayload, GearEntry } from '@contracts';
+
+/** Blind spawn request: TeleopClient knows no classification yet. Wire-level
+ *  equivalent of Omit<GearEntry, 'id' | 'color' | 'intact' | 'origin_x' | 'origin_y' | 'origin_z'>
+ *  plus object_type (gateway classifies after validation, passes color+intact via .srv). */
+export type SpawnGearRequest = Omit<
+  GearEntry,
+  'id' | 'color' | 'intact' | 'origin_x' | 'origin_y' | 'origin_z'
+> & { object_type: 'GEAR' };
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import {
   REACHABILITY_MIN_RADIUS,
@@ -75,5 +83,5 @@ export function isValidSpawnTarget(table: TableProceduralAssets, x: number, y: n
 export function buildSpawnPayload(x: number, y: number): SpawnObjectPayload {
   // Workcell-authority: click sends ONLY SPAWN_OBJECT. No local mesh;
   // table gear appears on snapshot echo. Edge auto-dispatches PnP.
-  return { x, y, z: 0.0, object_type: 'GEAR', color: 'WHITE', defective: false };
+  return { x, y, z: 0.0, object_type: 'GEAR' };
 }

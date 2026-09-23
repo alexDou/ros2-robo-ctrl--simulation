@@ -83,23 +83,6 @@ export const spawnObjectTypeSchema = SpawnObjectTypeSchema;
 
 export type SpawnObjectType = z.infer<typeof SpawnObjectTypeSchema>;
 
-/** Gear color class routing to its spindle tower */
-export const GearColor = {
-  WHITE: 'WHITE',
-  GREEN: 'GREEN',
-  BLUE: 'BLUE',
-} as const;
-
-export const GearColorSchema = z.enum([
-  'WHITE',
-  'GREEN',
-  'BLUE',
-], { message: 'Invalid gear color' });
-
-export const gearColorSchema = GearColorSchema;
-
-export type GearColor = z.infer<typeof GearColorSchema>;
-
 /** Operational command type */
 export const CommandType = {
   PING: 'PING',
@@ -153,6 +136,23 @@ export const RobotStateSchema = z.enum([
 export const robotStateSchema = RobotStateSchema;
 
 export type RobotState = z.infer<typeof RobotStateSchema>;
+
+/** Gear color class routing to its spindle tower */
+export const GearColor = {
+  WHITE: 'WHITE',
+  GREEN: 'GREEN',
+  BLUE: 'BLUE',
+} as const;
+
+export const GearColorSchema = z.enum([
+  'WHITE',
+  'GREEN',
+  'BLUE',
+], { message: 'Invalid gear color' });
+
+export const gearColorSchema = GearColorSchema;
+
+export type GearColor = z.infer<typeof GearColorSchema>;
 
 /** Canonical UR5e 6-DoF joint names in kinematic sequence */
 export const UR5E_JOINTS = [
@@ -298,8 +298,6 @@ export const rawSpawnObjectPayloadSchema = z.object(
     y: z.number({ message: "Field 'y' must be a number" }),
     z: z.number({ message: "Field 'z' must be a number" }),
     object_type: SpawnObjectTypeSchema,
-    color: GearColorSchema.default('WHITE'),
-    defective: z.boolean().default(false),
   },
   { message: 'SpawnObjectPayload payload must be an object' }
 ).strict();
@@ -377,8 +375,8 @@ export const rawGearEntrySchema = z.object(
     origin_x: z.number({ message: "Field 'origin_x' must be a number" }).nullish(),
     origin_y: z.number({ message: "Field 'origin_y' must be a number" }).nullish(),
     origin_z: z.number({ message: "Field 'origin_z' must be a number" }).nullish(),
-    color: GearColorSchema.default('WHITE'),
-    defective: z.boolean().default(false),
+    color: GearColorSchema,
+    intact: z.boolean(),
   },
   { message: 'GearEntry payload must be an object' }
 ).strict();

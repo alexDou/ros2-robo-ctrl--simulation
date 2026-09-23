@@ -198,7 +198,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         robot_state: 'IDLE',
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
         workcell_state: {
-          spawned: [{ id: 'gear-1', x: 0.5, y: 0.1, z: 0.0 }],
+          spawned: [{ id: 'gear-1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true }],
           in_progress: [],
           processed: [],
           active_id: 'gear-1',
@@ -232,12 +232,12 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         robot_state: 'IDLE',
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
         workcell_state: {
-          spawned: [{ id: 'gear-0', x: 0.45, y: 0.1, z: 0.0 }],
+          spawned: [{ id: 'gear-0', x: 0.45, y: 0.1, z: 0.0, color: 'WHITE', intact: true }],
           in_progress: [
-            { id: 'gear-1', x: 0.45, y: 0.1, z: 0.0, origin_x: 0.45, origin_y: 0.1, origin_z: 0.0 },
+            { id: 'gear-1', x: 0.45, y: 0.1, z: 0.0, origin_x: 0.45, origin_y: 0.1, origin_z: 0.0, color: 'GREEN', intact: true },
           ],
           processed: [
-            { id: 'gear-2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.5, origin_y: 0.15, origin_z: 0.0 },
+            { id: 'gear-2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.5, origin_y: 0.15, origin_z: 0.0, color: 'BLUE', intact: false },
           ],
           active_id: 'gear-1',
         },
@@ -700,7 +700,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         expect(parsed.object_type).toBe('GEAR');
 
         const fromJson = parseSpawnObjectPayload(JSON.stringify(payload));
-        expect(fromJson).toEqual({ ...payload, color: 'WHITE', defective: false });
+        expect(fromJson).toEqual(payload);
         expect(isSpawnObjectPayload(payload)).toBe(true);
         expect(SpawnObjectPayloadSchema).toBe(spawnObjectPayloadSchema);
       });
@@ -743,8 +743,6 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           y: 0.2,
           z: 0.0,
           object_type: 'GEAR',
-          color: 'WHITE',
-          defective: false,
         });
         expect(cmd.type).toBe(CommandType.SPAWN_OBJECT);
         expect(cmd.payload).toEqual({
@@ -752,8 +750,6 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           y: 0.2,
           z: 0.0,
           object_type: 'GEAR',
-          color: 'WHITE',
-          defective: false,
         });
         expect(isRobotCommand(cmd)).toBe(true);
       });
@@ -917,23 +913,28 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 
 
 
-describe('Unit 7.0: color + defective (hand-sim-9kw2) RED', () => {
-  it('defaults legacy spawn payload to WHITE / not-defective and rejects RED', async () => {
+describe('Unit 7.0: required color + intact on GearEntry (hand-sim-9kw2)', () => {
+  it('spawn payload carries no classification; GearEntry requires color + intact, rejects RED', async () => {
     const contracts = await import('@contracts');
-    const legacy = contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR' });
-    expect(legacy.color).toBe('WHITE');
-    expect(legacy.defective).toBe(false);
+    expect(() =>
+      contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', color: 'WHITE' })
+    ).toThrow();
+    expect(() =>
+      contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', intact: true })
+    ).toThrow();
+    const spawn = contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR' });
+    expect(spawn).toEqual({ x: 0.5, y: 0, z: 0, object_type: 'GEAR' });
     for (const color of ['WHITE', 'GREEN', 'BLUE'] as const) {
-      for (const defective of [false, true]) {
-        const p = contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', color, defective });
-        expect(p.color).toBe(color);
-        expect(p.defective).toBe(defective);
+      for (const intact of [false, true]) {
+        const g = contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0, color, intact });
+        expect(g.color).toBe(color);
+        expect(g.intact).toBe(intact);
       }
     }
-    expect(() => contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', color: 'RED' })).toThrow();
-    const g = contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0 });
-    expect(g.color).toBe('WHITE');
-    expect(g.defective).toBe(false);
+    expect(() =>
+      contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0, color: 'RED', intact: true })
+    ).toThrow();
+    expect(() => contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0 })).toThrow();
     expect(contracts.WHITE_TOWER).toEqual([0.4, -0.3, 0.0]);
     expect(contracts.GREEN_TOWER).toEqual([0.55, -0.3, 0.0]);
     expect(contracts.BLUE_TOWER).toEqual([0.7, -0.3, 0.0]);

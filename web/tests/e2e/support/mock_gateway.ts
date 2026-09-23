@@ -158,7 +158,7 @@ export class MockGateway {
       y: -0.30,
       z: i * 0.02,
       color: 'WHITE' as const,
-      defective: false as const,
+      intact: true as const,
       origin_x: 0.40,
       origin_y: -0.30,
       origin_z: 0,
@@ -424,7 +424,7 @@ export class MockGateway {
         const y = Number(cmd.payload?.y ?? 0.0);
         const z = Number(cmd.payload?.z ?? 0.0);
         const id = `gear-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-        this.spawned = [{ id, x, y, z, color: 'WHITE' as const, defective: false as const }];
+        this.spawned = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const }];
         this.inProgress = [];
         this.activeId = id;
         this.log(`[EDGE] Spawned GEAR ${id} at (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`);
@@ -450,7 +450,7 @@ export class MockGateway {
         this.cancelTrajectory();
         if (this.autoExecutePickAndPlace) {
           const id = `gear-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          this.spawned = [{ id, x, y, z, color: 'WHITE' as const, defective: false as const }];
+          this.spawned = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const }];
           this.inProgress = [];
           this.activeId = id;
           this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z);
@@ -529,14 +529,14 @@ export class MockGateway {
       const entry =
         idx >= 0
           ? this.inProgress.splice(idx, 1)[0]
-          : { id, x, y, z, color: 'WHITE' as const, defective: false as const, origin_x: x, origin_y: y, origin_z: z };
+          : { id, x, y, z, color: 'WHITE' as const, intact: true as const, origin_x: x, origin_y: y, origin_z: z };
       this.processed.push({
         id,
         x: dropCoords[0],
         y: dropCoords[1],
         z: dropCoords[2],
-        color: entry.color ?? 'WHITE',
-        defective: entry.defective ?? false,
+        color: entry.color,
+        intact: entry.intact,
         origin_x: entry.origin_x ?? x,
         origin_y: entry.origin_y ?? y,
         origin_z: entry.origin_z ?? z,
@@ -572,7 +572,7 @@ export class MockGateway {
       if (step.isGrasped && !grasped) {
         grasped = true;
         this.spawned = this.spawned.filter((g) => g.id !== id);
-        this.inProgress = [{ id, x, y, z, color: 'WHITE' as const, defective: false as const, origin_x: x, origin_y: y, origin_z: z }];
+        this.inProgress = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const, origin_x: x, origin_y: y, origin_z: z }];
         this.activeId = id;
       }
 

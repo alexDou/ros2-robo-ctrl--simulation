@@ -557,7 +557,7 @@ async fn test_telemetry_throttler_joint_bytes_preserve_authoritative_state() {
 async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
     // Unit 6.7.4: throttler holds + re-emits workcell_state on synthesized
     // paths (same pattern as phase); coords verbatim incl origin.
-    use gateway::domain::{GearEntry, WorkcellState};
+    use gateway::domain::{GearColor, GearEntry, WorkcellState};
     let throttler = TelemetryThrottler::new();
     let mut rx = throttler.subscribe();
     let snapshot = WorkcellState {
@@ -570,8 +570,8 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
             origin_x: Some(0.45),
             origin_y: Some(0.10),
             origin_z: Some(0.0),
-            color: Default::default(),
-            defective: false,
+            color: GearColor::White,
+            intact: true,
         }],
         processed: vec![GearEntry {
             id: "gear-0".to_string(),
@@ -581,8 +581,8 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
             origin_x: Some(0.5),
             origin_y: Some(0.15),
             origin_z: Some(0.0),
-            color: Default::default(),
-            defective: false,
+            color: GearColor::White,
+            intact: true,
         }],
         active_id: Some("gear-1".to_string()),
     };
