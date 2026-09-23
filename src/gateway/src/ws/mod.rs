@@ -1,4 +1,9 @@
-use std::sync::atomic::{AtomicBool, Ordering};
+//! WebSocket teleoperation endpoint.
+
+mod handshake;
+mod validation;
+
+pub(super) use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 
 use actix_web::{web, HttpRequest, HttpResponse};
@@ -16,66 +21,8 @@ fn current_time_ns() -> u64 {
         .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX))
 }
 
-fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), String> {
-    use crate::domain::{
-        ClearWorkspacePayload, CommandType, EmergencyStopPayload, PalmActuatePayload,
-        PickAndPlaceTargetPayload, ResetFaultPayload, SpawnObjectPayload, TrajectoryExecutePayload,
-    };
-    use serde::Deserialize;
-    match cmd.r#type {
-        CommandType::PalmActuate => PalmActuatePayload::deserialize(&cmd.payload)
-            .map(|_| ())
-            .map_err(|e| e.to_string()),
-        CommandType::TrajectoryExecute => TrajectoryExecutePayload::deserialize(&cmd.payload)
-            .map(|_| ())
-            .map_err(|e| e.to_string()),
-        CommandType::EmergencyStop => EmergencyStopPayload::deserialize(&cmd.payload)
-            .map(|_| ())
-            .map_err(|e| e.to_string()),
-        CommandType::ResetFault => ResetFaultPayload::deserialize(&cmd.payload)
-            .map(|_| ())
-            .map_err(|e| e.to_string()),
-        CommandType::SpawnObject => {
-            let payload =
-                SpawnObjectPayload::deserialize(&cmd.payload).map_err(|e| e.to_string())?;
-            if !payload.x.is_finite() || !payload.y.is_finite() || !payload.z.is_finite() {
-                return Err("Coordinates x, y, and z must be finite floats".to_string());
-            }
-            Ok(())
-        }
-        CommandType::ClearWorkspace => ClearWorkspacePayload::deserialize(&cmd.payload)
-            .map(|_| ())
-            .map_err(|e| e.to_string()),
-        CommandType::PickAndPlaceTarget => {
-            let payload =
-                PickAndPlaceTargetPayload::deserialize(&cmd.payload).map_err(|e| e.to_string())?;
-            if !payload.pick_x.is_finite()
-                || !payload.pick_y.is_finite()
-                || !payload.pick_z.is_finite()
-            {
-                return Err("Coordinates must be finite floats".to_string());
-            }
-            if payload.drop_x.is_some_and(|x| !x.is_finite())
-                || payload.drop_y.is_some_and(|y| !y.is_finite())
-                || payload.drop_z.is_some_and(|z| !z.is_finite())
-            {
-                return Err("Coordinates must be finite floats".to_string());
-            }
-            Ok(())
-        }
-        CommandType::Ping
-        | CommandType::TeleopJointTarget
-        | CommandType::Engage
-        | CommandType::Standby => Ok(()),
-    }
-}
-
-const MIN_COMMAND_INTERVAL: std::time::Duration = std::time::Duration::from_millis(50);
-
-/// Maximum ENGAGE handshake retries after the initial attempt.
-const HANDSHAKE_MAX_RETRIES: u32 = 3;
-/// Delay between ENGAGE handshake retries.
-const HANDSHAKE_RETRY_INTERVAL: std::time::Duration = std::time::Duration::from_millis(500);
+use self::handshake::{HANDSHAKE_MAX_RETRIES, HANDSHAKE_RETRY_INTERVAL};
+use self::validation::{validate_command_payload, MIN_COMMAND_INTERVAL};
 
 /// WebSocket teleoperation endpoint handling handshake, ActiveSession exclusivity,
 /// command forwarding to DataFabric, and telemetry streaming back to client.
@@ -145,13 +92,7 @@ pub async fn teleop_ws(
         // until telemetry shows the arm left parked state (anything but STANDBY).
         let handshake_done = Arc::new(AtomicBool::new(false));
         let handshake_engaged = Arc::new(AtomicBool::new(false));
-        let engage_cmd = crate::domain::RobotCommand {
-            command_id: format!("gateway-engage-{robot_id_for_task}-{0}", current_time_ns()),
-            sender_id: "gateway".to_string(),
-            timestamp_ns: current_time_ns(),
-            r#type: crate::domain::CommandType::Engage,
-            payload: serde_json::json!({}),
-        };
+        let engage_cmd = self::handshake::engage_command(&robot_id_for_task);
         if let Err(err) = fabric_for_task
             .publish_command(&robot_id_for_task, &engage_cmd)
             .await
@@ -174,16 +115,7 @@ pub async fn teleop_ws(
                 if retry_done.load(Ordering::SeqCst) {
                     return;
                 }
-                let retry_cmd = crate::domain::RobotCommand {
-                    command_id: format!(
-                        "gateway-engage-retry-{retry_robot_id}-{attempt}-{0}",
-                        current_time_ns()
-                    ),
-                    sender_id: "gateway".to_string(),
-                    timestamp_ns: current_time_ns(),
-                    r#type: crate::domain::CommandType::Engage,
-                    payload: serde_json::json!({}),
-                };
+                let retry_cmd = self::handshake::engage_command(&retry_robot_id);
                 match retry_fabric.publish_command(&retry_robot_id, &retry_cmd).await {
                     Ok(()) => info!(
                         "Retried ENGAGE handshake for robot {retry_robot_id} (attempt {attempt}/{HANDSHAKE_MAX_RETRIES})"
@@ -362,13 +294,7 @@ pub async fn teleop_ws(
         // Abort retries (no await: awaiting delays session release); STANDBY then publishes exactly once.
         retry_handle.abort();
         handshake_done.store(true, Ordering::SeqCst);
-        let standby_cmd = crate::domain::RobotCommand {
-            command_id: format!("gateway-standby-{robot_id_for_task}-{0}", current_time_ns()),
-            sender_id: "gateway".to_string(),
-            timestamp_ns: current_time_ns(),
-            r#type: crate::domain::CommandType::Standby,
-            payload: serde_json::json!({}),
-        };
+        let standby_cmd = self::handshake::standby_command(&robot_id_for_task);
         if let Err(err) = fabric_for_task
             .publish_command(&robot_id_for_task, &standby_cmd)
             .await

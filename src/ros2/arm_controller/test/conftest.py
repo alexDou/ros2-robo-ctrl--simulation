@@ -3,9 +3,20 @@
 import itertools
 
 import pytest
+import rclpy
 from rclpy.node import Node
 
 from controller_manager_msgs.srv import SwitchController
+
+
+@pytest.fixture(autouse=True)
+def ros_context():
+    """Init/shutdown rclpy around each test (moved from per-file copies)."""
+    if not rclpy.ok():
+        rclpy.init()
+    yield
+    if rclpy.ok():
+        rclpy.shutdown()
 
 
 @pytest.fixture

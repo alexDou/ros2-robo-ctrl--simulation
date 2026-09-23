@@ -33,13 +33,13 @@ actix-web = { workspace = true }
 tokio-tungstenite = "0.24"
 
 [[test]]
-name = "domain_contract_test"
-path = "tests/domain_contract_test.rs"
+name = "domain_contract"
+path = "tests/domain_contract.rs"
 
 [[test]]
-name = "ws_gateway_test"
-path = "tests/ws_gateway_test.rs"
+name = "ws_gateway"
+path = "tests/ws_gateway.rs"
 
 [[test]]
-name = "throttler_action_test"
-path = "tests/throttler_action_test.rs"
+name = "telemetry_throttler"
+path = "tests/telemetry_throttler.rs"

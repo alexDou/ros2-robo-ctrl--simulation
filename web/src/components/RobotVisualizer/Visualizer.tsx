@@ -29,12 +29,8 @@ import {
   createSnapshotStore,
   type SnapshotStore,
 } from '@/components/RobotVisualizer/interaction/snapshot';
-import {
-  getTableCoordinates,
-  isValidSpawnTarget,
-  buildSpawnPayload,
-  type PickingContext,
-} from '@/components/RobotVisualizer/interaction/picking';
+import { getTableCoordinates } from '@/components/RobotVisualizer/interaction/picking';
+import { createPointerHandlers } from '@/components/RobotVisualizer/interaction/handlers';
 import { createFrameState, stepFrame } from '@/components/RobotVisualizer/frame';
 import { VisualizerErrorOverlay, VisualizerLoadingOverlay, type VisualizerErrorInfo } from '@/components/RobotVisualizer/overlays';
 import { createVisualizerHandle } from '@/components/RobotVisualizer/handle';
@@ -190,105 +186,24 @@ export function RobotVisualizer({
       onSceneReadyRef.current(scene, camera, controls, renderer);
     }
 
-    const raycaster = new THREE.Raycaster();
-    const pointerNdc = new THREE.Vector2();
-
-    const pickingCtx = (): PickingContext => ({
+    const pointerHandlers = createPointerHandlers({
       canvas,
       camera,
       robotGroup,
-      tableAssets,
-      raycaster,
-      pointerNdc,
+      getTableAssets: () => tableAssets,
+      isDisposed: () => isDisposed,
+      isIdle: () => !robotStatePropRef.current || robotStatePropRef.current === 'IDLE',
+      isClickLocked: () => {
+        const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+        return store.lockout || !isIdle;
+      },
+      onSpawn: (payload) => onSpawnObjectRef.current?.(payload),
+      onDirty: () => {
+        needsRender = true;
+      },
     });
+    pointerHandlers.attach();
 
-    const isClickLocked = (): boolean => {
-      const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-      return store.lockout || !isIdle;
-    };
-
-    const handlePointerMoveCoords = (x: number, y: number) => {
-      if (isDisposed || !tableAssets) return;
-      const table = tableAssets;
-      const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-      const isLocked = isClickLocked();
-
-      if (isValidSpawnTarget(table, x, y) && isIdle && !isLocked) {
-        table.reticleMesh.position.set(x, y, 0.006);
-        if (!table.reticleMesh.visible) {
-          table.reticleMesh.visible = true;
-        }
-        needsRender = true;
-      } else {
-        if (table.reticleMesh.visible) {
-          table.reticleMesh.visible = false;
-          needsRender = true;
-        }
-      }
-    };
-
-    const handlePointerLeaveAction = () => {
-      if (tableAssets && tableAssets.reticleMesh.visible) {
-        tableAssets.reticleMesh.visible = false;
-        needsRender = true;
-      }
-    };
-
-    const handleClickCoords = (x: number, y: number) => {
-      if (isDisposed || !tableAssets) return false;
-      const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-      if (isClickLocked() || !isIdle) return false;
-
-      if (isValidSpawnTarget(tableAssets, x, y)) {
-        onSpawnObjectRef.current?.(buildSpawnPayload(x, y));
-        if (tableAssets) tableAssets.reticleMesh.visible = false;
-        needsRender = true;
-        return true;
-      }
-
-      return false;
-    };
-
-    let pointerDownPos: { x: number; y: number } | null = null;
-
-    const onPointerDown = (event: PointerEvent) => {
-      pointerDownPos = { x: event.clientX, y: event.clientY };
-    };
-
-    const onPointerMove = (event: PointerEvent) => {
-      if (isDisposed || !tableAssets) return;
-      const coords = getTableCoordinates(pickingCtx(), event.clientX, event.clientY);
-      if (coords) {
-        handlePointerMoveCoords(coords.x, coords.y);
-      } else {
-        handlePointerLeaveAction();
-      }
-    };
-
-    const onPointerLeave = () => {
-      handlePointerLeaveAction();
-    };
-
-    const onCanvasClick = (event: MouseEvent) => {
-      if (isDisposed || !tableAssets) return;
-      if (pointerDownPos) {
-        const dx = event.clientX - pointerDownPos.x;
-        const dy = event.clientY - pointerDownPos.y;
-        if (dx * dx + dy * dy > 16) {
-          // Camera orbit drag was performed, ignore click
-          return;
-        }
-      }
-      const coords = getTableCoordinates(pickingCtx(), event.clientX, event.clientY);
-      if (coords) {
-        handleClickCoords(coords.x, coords.y);
-      }
-    };
-
-    canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerleave', onPointerLeave);
-    canvas.addEventListener('click', onCanvasClick);
 
     // Expose debug handle on window for testing and diagnostics
     const visualizerHandle = createVisualizerHandle({
@@ -302,18 +217,32 @@ export function RobotVisualizer({
       getPedestal: () => pedestalAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
-      isLocked: () => isClickLocked(),
+      isLocked: () => {
+        const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
+        return store.lockout || !isIdle;
+      },
       simulatePointerMove: (x: number, y: number) => {
-        handlePointerMoveCoords(x, y);
+        pointerHandlers.handleMove(x, y);
       },
       simulatePointerLeave: () => {
-        handlePointerLeaveAction();
+        pointerHandlers.handleLeave();
       },
       simulateClick: (x: number, y: number) => {
-        return handleClickCoords(x, y);
+        return pointerHandlers.handleClick(x, y);
       },
       raycastPointer: (clientX: number, clientY: number) => {
-        const coords = getTableCoordinates(pickingCtx(), clientX, clientY);
+        const coords = getTableCoordinates(
+          {
+            canvas,
+            camera,
+            robotGroup,
+            tableAssets,
+            raycaster: new THREE.Raycaster(),
+            pointerNdc: new THREE.Vector2(),
+          },
+          clientX,
+          clientY,
+        );
         if (!coords || !tableAssets) return null;
         const r = Math.sqrt(coords.x * coords.x + coords.y * coords.y);
         const isInsideMat =
@@ -429,10 +358,7 @@ export function RobotVisualizer({
         }
       }
 
-      canvas.removeEventListener('pointerdown', onPointerDown);
-      canvas.removeEventListener('pointermove', onPointerMove);
-      canvas.removeEventListener('pointerleave', onPointerLeave);
-      canvas.removeEventListener('click', onCanvasClick);
+      pointerHandlers.detach();
 
       // Dispose snapshot-reconciled gear meshes
       for (const rec of store.gears.values()) {

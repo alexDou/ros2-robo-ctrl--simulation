@@ -8,7 +8,6 @@ rejected switch leaves the arm parked with a standby error.
 import threading
 import time
 
-import pytest
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
@@ -17,14 +16,6 @@ from domain import CommandType, RobotCommand, RobotState
 
 from arm_controller.edge_bridge_node import EdgeBridgeNode
 
-
-@pytest.fixture(autouse=True)
-def ros_context():
-    if not rclpy.ok():
-        rclpy.init()
-    yield
-    if rclpy.ok():
-        rclpy.shutdown()
 
 
 def _cmd(cid: str, ctype: CommandType) -> RobotCommand:
