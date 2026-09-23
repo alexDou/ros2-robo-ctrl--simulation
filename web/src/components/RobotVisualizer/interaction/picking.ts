@@ -75,5 +75,5 @@ export function isValidSpawnTarget(table: TableProceduralAssets, x: number, y: n
 export function buildSpawnPayload(x: number, y: number): SpawnObjectPayload {
   // Workcell-authority: click sends ONLY SPAWN_OBJECT. No local mesh;
   // table gear appears on snapshot echo. Edge auto-dispatches PnP.
-  return { x, y, z: 0.0, object_type: 'GEAR' };
+  return { x, y, z: 0.0, object_type: 'GEAR', color: 'WHITE', defective: false };
 }

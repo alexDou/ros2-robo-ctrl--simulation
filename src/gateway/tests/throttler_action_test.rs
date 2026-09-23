@@ -570,6 +570,8 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
             origin_x: Some(0.45),
             origin_y: Some(0.10),
             origin_z: Some(0.0),
+            color: Default::default(),
+            defective: false,
         }],
         processed: vec![GearEntry {
             id: "gear-0".to_string(),
@@ -579,6 +581,8 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
             origin_x: Some(0.5),
             origin_y: Some(0.15),
             origin_z: Some(0.0),
+            color: Default::default(),
+            defective: false,
         }],
         active_id: Some("gear-1".to_string()),
     };

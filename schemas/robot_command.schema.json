@@ -129,6 +129,22 @@
             "GEAR"
           ],
           "description": "Type of object to spawn"
+        },
+        "color": {
+          "type": "string",
+          "title": "GearColor",
+          "enum": [
+            "WHITE",
+            "GREEN",
+            "BLUE"
+          ],
+          "default": "WHITE",
+          "description": "Gear color class routing to its spindle tower"
+        },
+        "defective": {
+          "type": "boolean",
+          "default": false,
+          "description": "True if gear is defective and must route to scrap bin"
         }
       },
       "additionalProperties": false

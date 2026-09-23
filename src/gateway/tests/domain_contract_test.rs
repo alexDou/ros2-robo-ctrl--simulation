@@ -462,6 +462,8 @@ fn test_spawn_object_payload_serialization_round_trip() {
         y: -0.1,
         z: 0.0,
         object_type: SpawnObjectType::Gear,
+        color: Default::default(),
+        defective: false,
     };
     let serialized = serde_json::to_string(&payload).expect("Serialize SpawnObjectPayload");
     assert!(serialized.contains(r#""object_type":"GEAR""#));
@@ -627,6 +629,8 @@ fn test_robot_telemetry_event_workcell_state_required_round_trip() {
                     origin_x: None,
                     origin_y: None,
                     origin_z: None,
+                    color: Default::default(),
+                    defective: false,
                 }],
                 in_progress: Vec::new(),
                 processed: Vec::new(),
@@ -667,6 +671,8 @@ fn test_robot_telemetry_event_workcell_origin_optional_round_trip() {
                 origin_x: None,
                 origin_y: None,
                 origin_z: None,
+                    color: Default::default(),
+                    defective: false,
             }],
             in_progress: vec![gateway::domain::GearEntry {
                 id: "gear-1".to_string(),
@@ -676,6 +682,8 @@ fn test_robot_telemetry_event_workcell_origin_optional_round_trip() {
                 origin_x: Some(0.45),
                 origin_y: Some(0.10),
                 origin_z: Some(0.0),
+                    color: Default::default(),
+                    defective: false,
             }],
             processed: vec![gateway::domain::GearEntry {
                 id: "gear-2".to_string(),
@@ -685,6 +693,8 @@ fn test_robot_telemetry_event_workcell_origin_optional_round_trip() {
                 origin_x: Some(0.5),
                 origin_y: Some(0.15),
                 origin_z: Some(0.0),
+                    color: Default::default(),
+                    defective: false,
             }],
             active_id: Some("gear-1".to_string()),
         },
@@ -707,4 +717,90 @@ fn test_robot_telemetry_event_workcell_origin_optional_round_trip() {
     assert_eq!(deserialized.workcell_state.spawned[0].origin_x, None);
     assert_eq!(deserialized.workcell_state.in_progress[0].origin_x, Some(0.45));
     assert_eq!(deserialized.workcell_state.processed[0].origin_y, Some(0.15));
+}
+
+#[test]
+fn test_unit70_color_defective_contracts() {
+    // Unit 7.0/hand-sim-9kw2 RED: optional color + defective with safe defaults.
+    use gateway::domain::{
+        GearColor, GearEntry, SpawnObjectPayload, SpawnObjectType, RobotTelemetryEvent,
+        RobotState, BLUE_TOWER, GREEN_TOWER, SCRAP_BIN, STACK_STEP_M, TOWER_CAPACITY,
+        WHITE_TOWER,
+    };
+    let payload = SpawnObjectPayload {
+        x: 0.5,
+        y: 0.0,
+        z: 0.0,
+        object_type: SpawnObjectType::Gear,
+        color: GearColor::White,
+        defective: false,
+    };
+    let wire = serde_json::to_string(&payload).expect("serialize");
+    let restored: SpawnObjectPayload = serde_json::from_str(&wire).expect("deserialize");
+    assert_eq!(payload, restored);
+
+    // Legacy JSON without new fields defaults to WHITE / not-defective.
+    let legacy: SpawnObjectPayload = serde_json::from_str(
+        r#"{"x":0.5,"y":0.0,"z":0.0,"object_type":"GEAR"}"#,
+    )
+    .expect("legacy deserialize");
+    assert_eq!(legacy.color, GearColor::White);
+    assert!(!legacy.defective);
+
+    for color in [GearColor::White, GearColor::Green, GearColor::Blue] {
+        for defective in [false, true] {
+            let p = SpawnObjectPayload {
+                x: 0.5,
+                y: 0.0,
+                z: 0.0,
+                object_type: SpawnObjectType::Gear,
+                color,
+                defective,
+            };
+            let w = serde_json::to_string(&p).expect("serialize");
+            let r: SpawnObjectPayload = serde_json::from_str(&w).expect("deserialize");
+            assert_eq!(p, r);
+        }
+    }
+
+    // Invalid color rejected.
+    let bad: Result<SpawnObjectPayload, _> = serde_json::from_str(
+        r#"{"x":0.5,"y":0.0,"z":0.0,"object_type":"GEAR","color":"RED"}"#,
+    );
+    assert!(bad.is_err());
+
+    // GearEntry legacy defaults on every bucket.
+    let event: RobotTelemetryEvent = serde_json::from_str(
+        r#"{"timestamp_ns":1,"robot_state":"IDLE","joint_positions":[0.0,0.0,0.0,0.0,0.0,0.0],"workcell_state":{"spawned":[{"id":"g0","x":0.1,"y":0.1,"z":0.0}],"in_progress":[{"id":"g1","x":0.1,"y":0.1,"z":0.0}],"processed":[{"id":"g2","x":0.4,"y":-0.3,"z":0.02}]}}"#,
+    )
+    .expect("event deserialize");
+    assert_eq!(event.workcell_state.spawned[0].color, GearColor::White);
+    assert!(!event.workcell_state.spawned[0].defective);
+    assert_eq!(event.workcell_state.in_progress[0].color, GearColor::White);
+    assert!(!event.workcell_state.in_progress[0].defective);
+    assert_eq!(event.workcell_state.processed[0].color, GearColor::White);
+    assert!(!event.workcell_state.processed[0].defective);
+
+    let tagged = GearEntry {
+        id: "g3".to_string(),
+        x: 0.55,
+        y: -0.3,
+        z: 0.02,
+        color: GearColor::Green,
+        defective: true,
+        origin_x: None,
+        origin_y: None,
+        origin_z: None,
+    };
+    let w = serde_json::to_string(&tagged).expect("serialize");
+    let r: GearEntry = serde_json::from_str(&w).expect("deserialize");
+    assert_eq!(tagged, r);
+    let _ = RobotState::Idle;
+
+    assert_eq!(WHITE_TOWER, [0.4, -0.3, 0.0]);
+    assert_eq!(GREEN_TOWER, [0.55, -0.3, 0.0]);
+    assert_eq!(BLUE_TOWER, [0.7, -0.3, 0.0]);
+    assert_eq!(SCRAP_BIN, [0.4, 0.28, 0.0]);
+    assert_eq!(TOWER_CAPACITY, 10);
+    assert!((STACK_STEP_M - 0.02).abs() < 1e-12);
 }

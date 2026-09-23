@@ -17,6 +17,36 @@
       "type": "string",
       "value": "arm-ur5",
       "description": "Canonical default robot identifier across all services"
+    },
+    "WHITE_TOWER": {
+      "type": "array",
+      "value": [0.4, -0.3, 0.0],
+      "description": "White spindle tower base coordinates in meters (REP-103 robot base frame)"
+    },
+    "GREEN_TOWER": {
+      "type": "array",
+      "value": [0.55, -0.3, 0.0],
+      "description": "Green spindle tower base coordinates in meters (REP-103 robot base frame)"
+    },
+    "BLUE_TOWER": {
+      "type": "array",
+      "value": [0.7, -0.3, 0.0],
+      "description": "Blue spindle tower base coordinates in meters (REP-103 robot base frame)"
+    },
+    "SCRAP_BIN": {
+      "type": "array",
+      "value": [0.4, 0.28, 0.0],
+      "description": "Scrap bin coordinates in meters (REP-103 robot base frame)"
+    },
+    "TOWER_CAPACITY": {
+      "type": "integer",
+      "value": 10,
+      "description": "Maximum gears per spindle tower"
+    },
+    "STACK_STEP_M": {
+      "type": "number",
+      "value": 0.02,
+      "description": "Vertical stacking step per gear in meters"
     }
   },
   "$defs": {
@@ -182,6 +212,18 @@
               "origin_z": {
                 "type": "number",
                 "description": "Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "color": {
+                "type": "string",
+                "title": "GearColor",
+                "enum": ["WHITE", "GREEN", "BLUE"],
+                "default": "WHITE",
+                "description": "Gear color class routing to its spindle tower"
+              },
+              "defective": {
+                "type": "boolean",
+                "default": false,
+                "description": "True if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -229,6 +271,18 @@
               "origin_z": {
                 "type": "number",
                 "description": "Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "color": {
+                "type": "string",
+                "title": "GearColor",
+                "enum": ["WHITE", "GREEN", "BLUE"],
+                "default": "WHITE",
+                "description": "Gear color class routing to its spindle tower"
+              },
+              "defective": {
+                "type": "boolean",
+                "default": false,
+                "description": "True if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -276,6 +330,18 @@
               "origin_z": {
                 "type": "number",
                 "description": "Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "color": {
+                "type": "string",
+                "title": "GearColor",
+                "enum": ["WHITE", "GREEN", "BLUE"],
+                "default": "WHITE",
+                "description": "Gear color class routing to its spindle tower"
+              },
+              "defective": {
+                "type": "boolean",
+                "default": false,
+                "description": "True if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false

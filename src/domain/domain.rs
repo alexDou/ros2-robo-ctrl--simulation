@@ -35,6 +35,21 @@ pub enum SpawnObjectType {
     Gear,
 }
 
+/// Gear color class routing to its spindle tower
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum GearColor {
+    White,
+    Green,
+    Blue,
+}
+
+impl Default for GearColor {
+    fn default() -> Self {
+        Self::White
+    }
+}
+
 /// Operational command type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -78,6 +93,24 @@ pub const CANONICAL_UR5E_JOINTS: [&str; 6] = UR5E_JOINTS;
 
 /// Canonical default robot identifier across all services
 pub const DEFAULT_ROBOT_ID: &str = "arm-ur5";
+
+/// White spindle tower base coordinates in meters (REP-103 robot base frame)
+pub const WHITE_TOWER: [f64; 3] = [0.4, -0.3, 0.0];
+
+/// Green spindle tower base coordinates in meters (REP-103 robot base frame)
+pub const GREEN_TOWER: [f64; 3] = [0.55, -0.3, 0.0];
+
+/// Blue spindle tower base coordinates in meters (REP-103 robot base frame)
+pub const BLUE_TOWER: [f64; 3] = [0.7, -0.3, 0.0];
+
+/// Scrap bin coordinates in meters (REP-103 robot base frame)
+pub const SCRAP_BIN: [f64; 3] = [0.4, 0.28, 0.0];
+
+/// Maximum gears per spindle tower
+pub const TOWER_CAPACITY: i64 = 10;
+
+/// Vertical stacking step per gear in meters
+pub const STACK_STEP_M: f64 = 0.02;
 
 /// Array of exactly 6 joint positions in radians.
 pub type ArmJointPositions = [f64; 6];
@@ -159,6 +192,10 @@ pub struct SpawnObjectPayload {
     pub y: f64,
     pub z: f64,
     pub object_type: SpawnObjectType,
+    #[serde(default)]
+    pub color: GearColor,
+    #[serde(default)]
+    pub defective: bool,
 }
 
 /// Typed payload for CLEAR_WORKSPACE command
@@ -213,6 +250,10 @@ pub struct GearEntry {
     pub origin_y: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub origin_z: Option<f64>,
+    #[serde(default)]
+    pub color: GearColor,
+    #[serde(default)]
+    pub defective: bool,
 }
 
 /// Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id

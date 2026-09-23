@@ -912,6 +912,8 @@ describe('TeleopClient Component', () => {
         y: expect.closeTo(0.1, 2),
         z: 0.0,
         object_type: 'GEAR',
+        color: 'WHITE',
+        defective: false,
       });
     });
   });
