@@ -34,7 +34,7 @@ def _engage(node):
 def test_edge_caches_workcell_state_snapshot():
     node = EdgeBridgeNode(parameter_overrides=[Parameter("robot_id", Parameter.Type.STRING, "t-wc-cache"), Parameter("auto_home_on_startup", Parameter.Type.BOOL, False), Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False), Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1)])
     try:
-        m = String(); m.data = json.dumps({"spawned": [{"id": "g1", "x": 0.45, "y": 0.10, "z": 0.0}], "in_progress": [], "processed": [], "active_id": "g1"})
+        m = String(); m.data = json.dumps({"spawned": [{"id": "g1", "x": 0.45, "y": 0.10, "z": 0.0, "color": "GREEN", "intact": True}], "in_progress": [], "processed": [], "active_id": "g1"})
         node._on_workcell_state(m)
         t = node.publish_telemetry()
         assert len(t.workcell_state.spawned) == 1 and t.workcell_state.spawned[0].id == "g1" and t.workcell_state.active_id == "g1"

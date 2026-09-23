@@ -1,7 +1,9 @@
 //! Gateway TelemetryThrottler, 30 Hz nominal tick. SIM: 5 Hz feed (passthrough); LIVE: 500 Hz RTDE feed (decimate 500->30).
 #![allow(clippy::missing_errors_doc, clippy::missing_panics_doc)]
 
-use serde::Deserialize;
+mod codec;
+
+use self::codec::{CdrJointStateMsg, RawJointStateMsgRef};
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -18,49 +20,6 @@ fn current_time_ns() -> u64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX))
-}
-
-#[derive(Debug, Deserialize)]
-struct RawStampMsg {
-    sec: i64,
-    nanosec: u32,
-}
-
-#[derive(Debug, Deserialize)]
-struct RawHeaderMsg {
-    #[serde(default)]
-    stamp: Option<RawStampMsg>,
-}
-
-#[derive(Debug, Deserialize)]
-struct RawJointStateMsgRef<'a> {
-    #[serde(borrow)]
-    name: Vec<&'a str>,
-    position: Vec<f64>,
-    #[serde(default)]
-    header: Option<RawHeaderMsg>,
-    #[serde(default)]
-    timestamp_ns: Option<u64>,
-}
-
-#[derive(Debug, Deserialize)]
-struct CdrTimeMsg {
-    sec: i32,
-    nanosec: u32,
-}
-
-#[derive(Debug, Deserialize)]
-struct CdrHeaderMsg {
-    stamp: CdrTimeMsg,
-    #[allow(dead_code)]
-    frame_id: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct CdrJointStateMsg {
-    header: CdrHeaderMsg,
-    name: Vec<String>,
-    position: Vec<f64>,
 }
 
 #[derive(Debug)]

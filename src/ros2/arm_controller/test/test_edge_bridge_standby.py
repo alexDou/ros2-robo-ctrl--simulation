@@ -4,7 +4,6 @@ import math
 import threading
 import time
 
-import pytest
 import rclpy
 from control_msgs.action import FollowJointTrajectory
 from controller_manager_msgs.srv import SwitchController
@@ -18,14 +17,6 @@ from robot_control_interfaces.action import PickAndPlace
 
 from arm_controller.edge_bridge_node import EdgeBridgeNode
 
-
-@pytest.fixture(autouse=True)
-def ros_context():
-    if not rclpy.ok():
-        rclpy.init()
-    yield
-    if rclpy.ok():
-        rclpy.shutdown()
 
 
 def _cmd(cid, ctype, payload=None):
