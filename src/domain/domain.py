@@ -27,14 +27,6 @@ class SpawnObjectType(str, Enum):
     GEAR = "GEAR"
 
 
-class GearColor(str, Enum):
-    """Gear color class routing to its spindle tower"""
-
-    WHITE = "WHITE"
-    GREEN = "GREEN"
-    BLUE = "BLUE"
-
-
 class CommandType(str, Enum):
     """Operational command type"""
 
@@ -59,6 +51,14 @@ class RobotState(str, Enum):
     IDLE = "IDLE"
     EXECUTING = "EXECUTING"
     FAULT = "FAULT"
+
+
+class GearColor(str, Enum):
+    """Gear color class routing to its spindle tower"""
+
+    WHITE = "WHITE"
+    GREEN = "GREEN"
+    BLUE = "BLUE"
 
 
 UR5E_JOINTS: list[str] = [
@@ -162,8 +162,6 @@ class SpawnObjectPayload(BaseModel):
     y: float = Field(..., description="Cartesian Y in meters (REP-103 robot base frame)")
     z: float = Field(..., description="Cartesian Z in meters (clamped to table surface 0.0m)")
     object_type: SpawnObjectType = Field(..., description="Type of object to spawn")
-    color: GearColor = Field(default=GearColor.WHITE, description="Gear color class routing to its spindle tower")
-    defective: bool = Field(default=False, description="True if gear is defective and must route to scrap bin")
 
 
 class ClearWorkspacePayload(BaseModel):
@@ -216,8 +214,8 @@ class GearEntry(BaseModel):
     origin_x: Optional[float] = Field(default=None, description="Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries")
     origin_y: Optional[float] = Field(default=None, description="Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries")
     origin_z: Optional[float] = Field(default=None, description="Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries")
-    color: GearColor = Field(default=GearColor.WHITE, description="Gear color class routing to its spindle tower")
-    defective: bool = Field(default=False, description="True if gear is defective and must route to scrap bin")
+    color: GearColor = Field(..., description="Gear color class routing to its spindle tower")
+    intact: bool = Field(...)
 
 
 class WorkcellState(BaseModel):

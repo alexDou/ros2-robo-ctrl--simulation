@@ -181,7 +181,9 @@
               "id",
               "x",
               "y",
-              "z"
+              "z",
+              "color",
+              "intact"
             ],
             "properties": {
               "id": {
@@ -217,13 +219,11 @@
                 "type": "string",
                 "title": "GearColor",
                 "enum": ["WHITE", "GREEN", "BLUE"],
-                "default": "WHITE",
                 "description": "Gear color class routing to its spindle tower"
               },
-              "defective": {
+              "intact": {
                 "type": "boolean",
-                "default": false,
-                "description": "True if gear is defective and must route to scrap bin"
+                "description": "False if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -240,7 +240,9 @@
               "id",
               "x",
               "y",
-              "z"
+              "z",
+              "color",
+              "intact"
             ],
             "properties": {
               "id": {
@@ -276,13 +278,11 @@
                 "type": "string",
                 "title": "GearColor",
                 "enum": ["WHITE", "GREEN", "BLUE"],
-                "default": "WHITE",
                 "description": "Gear color class routing to its spindle tower"
               },
-              "defective": {
+              "intact": {
                 "type": "boolean",
-                "default": false,
-                "description": "True if gear is defective and must route to scrap bin"
+                "description": "False if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -299,7 +299,9 @@
               "id",
               "x",
               "y",
-              "z"
+              "z",
+              "color",
+              "intact"
             ],
             "properties": {
               "id": {
@@ -335,13 +337,11 @@
                 "type": "string",
                 "title": "GearColor",
                 "enum": ["WHITE", "GREEN", "BLUE"],
-                "default": "WHITE",
                 "description": "Gear color class routing to its spindle tower"
               },
-              "defective": {
+              "intact": {
                 "type": "boolean",
-                "default": false,
-                "description": "True if gear is defective and must route to scrap bin"
+                "description": "False if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false

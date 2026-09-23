@@ -1092,8 +1092,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         y: 0.1,
         z: 0.0,
         object_type: 'GEAR',
-        color: 'WHITE',
-        defective: false,
       });
 
       // Workcell-authority: no local mesh before snapshot echo, no lockout.
@@ -1131,7 +1129,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
       // Backend echo: spawned entry appears at click coords verbatim.
       act(() => {
-        telemetryBufferRef.current.workcellState.spawned = [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }];
+        telemetryBufferRef.current.workcellState.spawned = [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 , color: 'WHITE', intact: true }];
         stepFrame();
       });
 
@@ -1158,7 +1156,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
     it('snapshot removal deletes mesh and lifts ClickLockout; clearWorkspace is echo-driven no-op', async () => {
       const onSpawnSpy = vi.fn();
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -1209,7 +1207,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('cleans up and disposes table, reticle, and snapshot gear geometries and materials on unmount', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
       let unmountFn: () => void;
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1398,7 +1396,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('renders spawned entry as table mesh at entry xyz verbatim', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1433,7 +1431,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('moves entry spawned->in_progress: mesh reparents to tool0 flange ride', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1465,7 +1463,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       act(() => {
         telemetryBufferRef.current.workcellState.spawned = [];
         telemetryBufferRef.current.workcellState.inProgress = [
-          { id: 'g1', x: 0.5, y: 0.0, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 },
+          { id: 'g1', x: 0.5, y: 0.0, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
         ];
         stepFrame();
       });
@@ -1478,9 +1476,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
     it('renders processed entries as tower meshes at entry xyz verbatim in order', async () => {
       const telemetryBufferRef = snapBuffer([], [], [
-        { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 },
-        { id: 'g2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.55, origin_y: 0.0, origin_z: 0.0 },
-        { id: 'g3', x: 0.4, y: -0.3, z: 0.04, origin_x: 0.6, origin_y: 0.0, origin_z: 0.0 },
+        { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
+        { id: 'g2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.55, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
+        { id: 'g3', x: 0.4, y: -0.3, z: 0.04, origin_x: 0.6, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
       ]);
 
       let resolveLoaded: () => void;
@@ -1558,9 +1556,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
     it('empty snapshot echo removes all meshes (clear)', async () => {
       const telemetryBufferRef = snapBuffer(
-        [{ id: 'g-table', x: 0.5, y: 0.0, z: 0.0 }],
+        [{ id: 'g-table', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }],
         [],
-        [{ id: 'g-tower', x: 0.4, y: -0.3, z: 0.0 }]
+        [{ id: 'g-tower', x: 0.4, y: -0.3, z: 0.0 , color: 'WHITE', intact: true }]
       );
 
       let resolveLoaded: () => void;
@@ -1641,7 +1639,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('EXECUTING/IDLE robotState transitions never mutate snapshot meshes', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
+      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -1797,7 +1795,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       // Processed echo deposits tower mesh at entry coords verbatim.
       act(() => {
         telemetryBufferRef.current.workcellState.processed = [
-          { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 },
+          { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
         ];
         stepFrame();
       });

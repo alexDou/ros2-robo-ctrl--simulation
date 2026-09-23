@@ -731,7 +731,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000050000000',
           robot_state: RobotState.IDLE,
           joint_positions: [0, 0, 0, 0, 0, 0],
-          workcell_state: { spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] },
+          workcell_state: { spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true }], in_progress: [], processed: [] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -746,7 +746,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000100000000',
           robot_state: RobotState.EXECUTING,
           joint_positions: [0, 0, 0, 0, 0, 0],
-          workcell_state: { spawned: [], in_progress: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }], processed: [] },
+          workcell_state: { spawned: [], in_progress: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0, color: 'WHITE', intact: true }], processed: [] },
           palm_state: { is_grasped: true },
         }));
       });
@@ -761,7 +761,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000200000000',
           robot_state: RobotState.IDLE,
           joint_positions: [0, 0, 0, 0, 0, 0],
-          workcell_state: { spawned: [], in_progress: [], processed: [{ id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }] },
+          workcell_state: { spawned: [], in_progress: [], processed: [{ id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0, color: 'WHITE', intact: true }] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -912,8 +912,6 @@ describe('TeleopClient Component', () => {
         y: expect.closeTo(0.1, 2),
         z: 0.0,
         object_type: 'GEAR',
-        color: 'WHITE',
-        defective: false,
       });
     });
   });
@@ -1040,7 +1038,7 @@ describe('TeleopClient Component', () => {
           timestamp_ns: '1700000000050000000',
           robot_state: RobotState.IDLE,
           joint_positions: [0, 0, 0, 0, 0, 0],
-          workcell_state: { spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] },
+          workcell_state: { spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true }], in_progress: [], processed: [] },
           palm_state: { is_grasped: false },
         }));
       });
@@ -1332,7 +1330,7 @@ describe('TeleopClient Component', () => {
 
       // Spawned echo: table mesh, not attached, tower 0
       act(() => {
-        ws.simulateMessage(telem({ spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] }));
+        ws.simulateMessage(telem({ spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true }], in_progress: [], processed: [] }));
       });
       await frame();
       expect(visualizer.getGearMesh()).not.toBeNull();
@@ -1341,7 +1339,7 @@ describe('TeleopClient Component', () => {
 
       // Grasp-bit alone (no bucket move): still table mesh, no ride
       act(() => {
-        ws.simulateMessage(telem({ spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 }], in_progress: [], processed: [] }, true));
+        ws.simulateMessage(telem({ spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true }], in_progress: [], processed: [] }, true));
       });
       await frame();
       expect(visualizer.isGearAttached()).toBe(false);
@@ -1349,7 +1347,7 @@ describe('TeleopClient Component', () => {
 
       // Bucket move spawned->in_progress: flange ride, tower stays 0
       act(() => {
-        ws.simulateMessage(telem({ spawned: [], in_progress: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }], processed: [] }, true));
+        ws.simulateMessage(telem({ spawned: [], in_progress: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0, color: 'WHITE', intact: true }], processed: [] }, true));
       });
       await frame();
       expect(visualizer.isGearAttached()).toBe(true);
@@ -1357,7 +1355,7 @@ describe('TeleopClient Component', () => {
 
       // Bucket move in_progress->processed: tower +1 verbatim
       act(() => {
-        ws.simulateMessage(telem({ spawned: [], in_progress: [], processed: [{ id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0 }] }, false));
+        ws.simulateMessage(telem({ spawned: [], in_progress: [], processed: [{ id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0, color: 'WHITE', intact: true }] }, false));
       });
       await frame();
       expect(visualizer.isGearAttached()).toBe(false);

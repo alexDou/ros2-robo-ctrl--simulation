@@ -35,21 +35,6 @@ pub enum SpawnObjectType {
     Gear,
 }
 
-/// Gear color class routing to its spindle tower
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum GearColor {
-    White,
-    Green,
-    Blue,
-}
-
-impl Default for GearColor {
-    fn default() -> Self {
-        Self::White
-    }
-}
-
 /// Operational command type
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -76,6 +61,15 @@ pub enum RobotState {
     Idle,
     Executing,
     Fault,
+}
+
+/// Gear color class routing to its spindle tower
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum GearColor {
+    White,
+    Green,
+    Blue,
 }
 
 /// Canonical UR5e 6-DoF joint names in kinematic sequence
@@ -192,10 +186,6 @@ pub struct SpawnObjectPayload {
     pub y: f64,
     pub z: f64,
     pub object_type: SpawnObjectType,
-    #[serde(default)]
-    pub color: GearColor,
-    #[serde(default)]
-    pub defective: bool,
 }
 
 /// Typed payload for CLEAR_WORKSPACE command
@@ -250,10 +240,8 @@ pub struct GearEntry {
     pub origin_y: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub origin_z: Option<f64>,
-    #[serde(default)]
     pub color: GearColor,
-    #[serde(default)]
-    pub defective: bool,
+    pub intact: bool,
 }
 
 /// Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id
