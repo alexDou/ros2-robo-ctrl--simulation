@@ -189,22 +189,22 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
 
 ## Unit 7: Multi-Color Gear Sorting & Defect QC Inspection
 
-* **Objective**: Extend pick-and-place with vision classification and automated sorting: gears spawn with randomized colors (Red, Green, Blue) and 20% defect probability (crack notch); EdgeNode routes good gears to matching color spindle towers and cracked gears to the Scrap Bin.
+* **Objective**: Extend pick-and-place with vision classification and automated sorting: gears spawn with randomized colors (White, Green, Blue) and 20% defect probability (crack notch); EdgeNode routes good gears to matching color spindle towers and cracked gears to the Scrap Bin.
 * **Architecture**: Contract-first development. Unit 7.0 locks down QC inspection schemas and tower counter telemetry. Unit 7.1 models 4 physical destinations in Three.js. Unit 7.2 implements EdgeNode vision classification pipeline. Unit 7.3 implements multi-service sorting integration.
 
 ### Sub-Unit Breakdown
 - **Unit 7.0: QC Classification & Spindle Telemetry Contracts**:
-  - Extends `RobotTelemetryEvent.inference_metrics` (`confidence`, `latency_ms`, `detected_object`) and adds spindle tower counters: `[Red: X/3] [Green: Y/3] [Blue: Z/3] [Scrap: W]`.
+  - Extends `RobotTelemetryEvent.inference_metrics` (`confidence`, `latency_ms`, `detected_object`) and adds spindle tower counters: `[White: X/3] [Green: Y/3] [Blue: Z/3] [Scrap: W]`.
 - **Unit 7.1: 3D Spindle Towers, Scrap Chute & Defect Mesh**:
-  - Adds 3 colored spindle towers (Red, Green, Blue) and Scrap Chute / Bin in Three.js workcell.
+  - Adds 3 colored spindle towers (White, Green, Blue) and Scrap Chute / Bin in Three.js workcell.
   - Implements procedural cracked gear mesh with visible notch for defective items (20% probability).
-  - Enforces tower capacity limit: max 3 gears per spindle tower ($N_{\max} = 9$ total).
+  - Enforces tower capacity limit: max 10 gears per spindle tower ($N_{\max} = 29$ total).
 - **Unit 7.2: EdgeNode Vision Classification & Sorting Trajectory Planner**:
   - Implements lightweight ONNX / rule-based classifier evaluating color and defect flag, outputting typed `inference_metrics`.
   - Routes trajectory destination: defective gears $\to$ Scrap Bin; good gears $\to$ matching color spindle tower.
   - Updates tower counters in periodic 30 Hz telemetry stream.
 - **Unit 7.3: Multi-Destination Sorting Multi-Service Suite**:
-  - Automated integration test verifying: defective gear routed to scrap, red gear routed to red spindle, green to green spindle, blue to blue spindle, and UI counters increment accurately.
+  - Automated integration test verifying: defective gear routed to scrap, white gear routed to white spindle, green to green spindle, blue to blue spindle, and UI counters increment accurately.
 
 ---
 
