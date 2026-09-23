@@ -83,6 +83,23 @@ export const spawnObjectTypeSchema = SpawnObjectTypeSchema;
 
 export type SpawnObjectType = z.infer<typeof SpawnObjectTypeSchema>;
 
+/** Gear color class routing to its spindle tower */
+export const GearColor = {
+  WHITE: 'WHITE',
+  GREEN: 'GREEN',
+  BLUE: 'BLUE',
+} as const;
+
+export const GearColorSchema = z.enum([
+  'WHITE',
+  'GREEN',
+  'BLUE',
+], { message: 'Invalid gear color' });
+
+export const gearColorSchema = GearColorSchema;
+
+export type GearColor = z.infer<typeof GearColorSchema>;
+
 /** Operational command type */
 export const CommandType = {
   PING: 'PING',
@@ -156,6 +173,24 @@ export type UR5eJoint = z.infer<typeof UR5eJointSchema>;
 
 /** Canonical default robot identifier across all services */
 export const DEFAULT_ROBOT_ID = 'arm-ur5';
+
+/** White spindle tower base coordinates in meters (REP-103 robot base frame) */
+export const WHITE_TOWER = [0.4, -0.3, 0.0] as const;
+
+/** Green spindle tower base coordinates in meters (REP-103 robot base frame) */
+export const GREEN_TOWER = [0.55, -0.3, 0.0] as const;
+
+/** Blue spindle tower base coordinates in meters (REP-103 robot base frame) */
+export const BLUE_TOWER = [0.7, -0.3, 0.0] as const;
+
+/** Scrap bin coordinates in meters (REP-103 robot base frame) */
+export const SCRAP_BIN = [0.4, 0.28, 0.0] as const;
+
+/** Maximum gears per spindle tower */
+export const TOWER_CAPACITY = 10 as const;
+
+/** Vertical stacking step per gear in meters */
+export const STACK_STEP_M = 0.02 as const;
 
 /** UR5e 6-DoF joint angles in radians */
 export type ArmJointPositions = [number, number, number, number, number, number];
@@ -263,6 +298,8 @@ export const rawSpawnObjectPayloadSchema = z.object(
     y: z.number({ message: "Field 'y' must be a number" }),
     z: z.number({ message: "Field 'z' must be a number" }),
     object_type: SpawnObjectTypeSchema,
+    color: GearColorSchema.default('WHITE'),
+    defective: z.boolean().default(false),
   },
   { message: 'SpawnObjectPayload payload must be an object' }
 ).strict();
@@ -340,6 +377,8 @@ export const rawGearEntrySchema = z.object(
     origin_x: z.number({ message: "Field 'origin_x' must be a number" }).nullish(),
     origin_y: z.number({ message: "Field 'origin_y' must be a number" }).nullish(),
     origin_z: z.number({ message: "Field 'origin_z' must be a number" }).nullish(),
+    color: GearColorSchema.default('WHITE'),
+    defective: z.boolean().default(false),
   },
   { message: 'GearEntry payload must be an object' }
 ).strict();

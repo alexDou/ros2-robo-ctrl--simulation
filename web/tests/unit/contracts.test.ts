@@ -700,7 +700,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         expect(parsed.object_type).toBe('GEAR');
 
         const fromJson = parseSpawnObjectPayload(JSON.stringify(payload));
-        expect(fromJson).toEqual(payload);
+        expect(fromJson).toEqual({ ...payload, color: 'WHITE', defective: false });
         expect(isSpawnObjectPayload(payload)).toBe(true);
         expect(SpawnObjectPayloadSchema).toBe(spawnObjectPayloadSchema);
       });
@@ -743,6 +743,8 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           y: 0.2,
           z: 0.0,
           object_type: 'GEAR',
+          color: 'WHITE',
+          defective: false,
         });
         expect(cmd.type).toBe(CommandType.SPAWN_OBJECT);
         expect(cmd.payload).toEqual({
@@ -750,6 +752,8 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           y: 0.2,
           z: 0.0,
           object_type: 'GEAR',
+          color: 'WHITE',
+          defective: false,
         });
         expect(isRobotCommand(cmd)).toBe(true);
       });
@@ -912,3 +916,29 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 });
 
 
+
+describe('Unit 7.0: color + defective (hand-sim-9kw2) RED', () => {
+  it('defaults legacy spawn payload to WHITE / not-defective and rejects RED', async () => {
+    const contracts = await import('@contracts');
+    const legacy = contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR' });
+    expect(legacy.color).toBe('WHITE');
+    expect(legacy.defective).toBe(false);
+    for (const color of ['WHITE', 'GREEN', 'BLUE'] as const) {
+      for (const defective of [false, true]) {
+        const p = contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', color, defective });
+        expect(p.color).toBe(color);
+        expect(p.defective).toBe(defective);
+      }
+    }
+    expect(() => contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', color: 'RED' })).toThrow();
+    const g = contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0 });
+    expect(g.color).toBe('WHITE');
+    expect(g.defective).toBe(false);
+    expect(contracts.WHITE_TOWER).toEqual([0.4, -0.3, 0.0]);
+    expect(contracts.GREEN_TOWER).toEqual([0.55, -0.3, 0.0]);
+    expect(contracts.BLUE_TOWER).toEqual([0.7, -0.3, 0.0]);
+    expect(contracts.SCRAP_BIN).toEqual([0.4, 0.28, 0.0]);
+    expect(contracts.TOWER_CAPACITY).toBe(10);
+    expect(contracts.STACK_STEP_M).toBe(0.02);
+  });
+});

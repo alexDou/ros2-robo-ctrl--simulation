@@ -1092,6 +1092,8 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         y: 0.1,
         z: 0.0,
         object_type: 'GEAR',
+        color: 'WHITE',
+        defective: false,
       });
 
       // Workcell-authority: no local mesh before snapshot echo, no lockout.

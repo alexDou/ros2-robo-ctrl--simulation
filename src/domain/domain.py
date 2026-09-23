@@ -27,6 +27,14 @@ class SpawnObjectType(str, Enum):
     GEAR = "GEAR"
 
 
+class GearColor(str, Enum):
+    """Gear color class routing to its spindle tower"""
+
+    WHITE = "WHITE"
+    GREEN = "GREEN"
+    BLUE = "BLUE"
+
+
 class CommandType(str, Enum):
     """Operational command type"""
 
@@ -74,6 +82,18 @@ UR5eJoint = Literal[
 ]
 
 DEFAULT_ROBOT_ID: str = "arm-ur5"
+
+WHITE_TOWER: list[float] = [0.4, -0.3, 0.0]
+
+GREEN_TOWER: list[float] = [0.55, -0.3, 0.0]
+
+BLUE_TOWER: list[float] = [0.7, -0.3, 0.0]
+
+SCRAP_BIN: list[float] = [0.4, 0.28, 0.0]
+
+TOWER_CAPACITY: int = 10
+
+STACK_STEP_M: float = 0.02
 
 
 FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]
@@ -142,6 +162,8 @@ class SpawnObjectPayload(BaseModel):
     y: float = Field(..., description="Cartesian Y in meters (REP-103 robot base frame)")
     z: float = Field(..., description="Cartesian Z in meters (clamped to table surface 0.0m)")
     object_type: SpawnObjectType = Field(..., description="Type of object to spawn")
+    color: GearColor = Field(default=GearColor.WHITE, description="Gear color class routing to its spindle tower")
+    defective: bool = Field(default=False, description="True if gear is defective and must route to scrap bin")
 
 
 class ClearWorkspacePayload(BaseModel):
@@ -194,6 +216,8 @@ class GearEntry(BaseModel):
     origin_x: Optional[float] = Field(default=None, description="Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries")
     origin_y: Optional[float] = Field(default=None, description="Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries")
     origin_z: Optional[float] = Field(default=None, description="Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries")
+    color: GearColor = Field(default=GearColor.WHITE, description="Gear color class routing to its spindle tower")
+    defective: bool = Field(default=False, description="True if gear is defective and must route to scrap bin")
 
 
 class WorkcellState(BaseModel):

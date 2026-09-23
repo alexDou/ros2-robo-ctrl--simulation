@@ -48,6 +48,8 @@ class ScalarConstantDef:
     name: str
     value: str
     description: str = ""
+    kind: str = "string"  # "string" | "integer" | "number" | "array"
+    raw: Any = None
 
 
 @dataclass
@@ -129,6 +131,7 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                 ref=enum_name,
                 required=is_required,
                 description=desc,
+                default=prop_schema.get("default"),
             )
 
         if prop_schema.get("type") == "string":
@@ -295,14 +298,26 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
             if isinstance(c_info, dict):
                 val = c_info.get("value")
                 desc = c_info.get("description", "")
+                declared = c_info.get("type", "")
             else:
                 val = c_info
                 desc = ""
+                declared = ""
             if val is not None and not any(sc.name == c_name for sc in ir.scalar_constants):
+                if declared == "array" or isinstance(val, list):
+                    kind = "array"
+                elif declared == "integer" or (isinstance(val, int) and not isinstance(val, bool)):
+                    kind = "integer"
+                elif declared == "number" or isinstance(val, float):
+                    kind = "number"
+                else:
+                    kind = "string"
                 ir.scalar_constants.append(ScalarConstantDef(
                     name=c_name,
                     value=str(val),
                     description=desc,
+                    kind=kind,
+                    raw=val,
                 ))
 
         defs = schema.get("$defs", {})
@@ -380,6 +395,17 @@ def emit_rust(ir: DomainIR) -> str:
         for v in e.variants:
             lines.append(f"    {to_pascal_case(v)},")
         lines.append("}")
+        default_val = next(
+            (f.default for m in ir.models for f in m.fields if f.kind == "enum" and f.ref == e.name and f.default is not None),
+            None,
+        )
+        if default_val is not None:
+            lines.append("")
+            lines.append(f"impl Default for {e.name} {{")
+            lines.append("    fn default() -> Self {")
+            lines.append(f"        Self::{to_pascal_case(str(default_val))}")
+            lines.append("    }")
+            lines.append("}")
 
     for c in ir.constants:
         lines.append("")
@@ -397,7 +423,15 @@ def emit_rust(ir: DomainIR) -> str:
         lines.append("")
         if sc.description:
             lines.append(f"/// {sc.description}")
-        lines.append(f'pub const {sc.name}: &str = "{sc.value}";')
+        if sc.kind == "integer":
+            lines.append(f"pub const {sc.name}: i64 = {int(sc.raw)};")
+        elif sc.kind == "number":
+            lines.append(f"pub const {sc.name}: f64 = {float(sc.raw)};")
+        elif sc.kind == "array":
+            items = ", ".join(str(float(v)) for v in sc.raw)
+            lines.append(f"pub const {sc.name}: [f64; {len(sc.raw)}] = [{items}];")
+        else:
+            lines.append(f'pub const {sc.name}: &str = "{sc.value}";')
 
     for fa in ir.fixed_arrays:
         lines.append("")
@@ -644,7 +678,15 @@ def emit_python(ir: DomainIR) -> str:
 
     for sc in ir.scalar_constants:
         lines.append("")
-        lines.append(f'{sc.name}: str = "{sc.value}"')
+        if sc.kind == "integer":
+            lines.append(f"{sc.name}: int = {int(sc.raw)}")
+        elif sc.kind == "number":
+            lines.append(f"{sc.name}: float = {float(sc.raw)}")
+        elif sc.kind == "array":
+            items = ", ".join(str(float(v)) for v in sc.raw)
+            lines.append(f"{sc.name}: list[float] = [{items}]")
+        else:
+            lines.append(f'{sc.name}: str = "{sc.value}"')
 
     if ir.fixed_arrays:
         lines.append("")
@@ -715,7 +757,10 @@ def emit_python(ir: DomainIR) -> str:
             elif f.kind in ("enum", "model"):
                 if f.name == "palm_state" or f.default is not None:
                     desc_part = f', description="{f.description}"' if f.description else ""
-                    lines.append(f"    {f.name}: {f.ref} = Field(default_factory={f.ref}{desc_part})")
+                    if f.kind == "enum" and isinstance(f.default, str):
+                        lines.append(f"    {f.name}: {f.ref} = Field(default={f.ref}.{f.default}{desc_part})")
+                    else:
+                        lines.append(f"    {f.name}: {f.ref} = Field(default_factory={f.ref}{desc_part})")
                 else:
                     args = ["default=None"] if not f.required else ["..."]
                     if f.description:
@@ -837,6 +882,8 @@ def _ts_field_to_zod(f: FieldDef) -> str:
 
     if f.kind == "enum":
         base = f"{f.ref}Schema"
+        if f.default is not None and isinstance(f.default, str):
+            return f"{base}.default('{f.default}')"
         return base if f.required else f"{base}.nullish()"
 
     if f.kind == "fixed_array":
@@ -946,7 +993,14 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append("")
         if sc.description:
             lines.append(f"/** {sc.description} */")
-        lines.append(f"export const {sc.name} = '{sc.value}';")
+        if sc.kind == "integer" or sc.kind == "number":
+            num = int(sc.raw) if sc.kind == "integer" else float(sc.raw)
+            lines.append(f"export const {sc.name} = {num} as const;")
+        elif sc.kind == "array":
+            items = ", ".join(str(float(v)) for v in sc.raw)
+            lines.append(f"export const {sc.name} = [{items}] as const;")
+        else:
+            lines.append(f"export const {sc.name} = '{sc.value}';")
 
     for fa in ir.fixed_arrays:
         types_str = ", ".join(["number"] * fa.count)
