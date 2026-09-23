@@ -55,6 +55,30 @@
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
       "computedHash": "2449db6ab1ded9581f69fcc56c1f64818112d05e271fd4c5da23c6523f9d3d9d"
     },
+    "megalinter": {
+      "source": "oxsecurity/megalinter",
+      "sourceType": "github",
+      "skillPath": "skills/megalinter/SKILL.md",
+      "computedHash": "934646fea2e509ad652c69190dadbf99ba8e6b10ce71976d3596dbabcd233d06"
+    },
+    "megalinter-check": {
+      "source": "oxsecurity/megalinter",
+      "sourceType": "github",
+      "skillPath": "skills/megalinter-check/SKILL.md",
+      "computedHash": "64db6d651679c65ea6079e0e7079c0fe2a67f9ccd0ba74c8c993ac2653a6e4c2"
+    },
+    "megalinter-fix": {
+      "source": "oxsecurity/megalinter",
+      "sourceType": "github",
+      "skillPath": "skills/megalinter-fix/SKILL.md",
+      "computedHash": "1f663e5bffdea2c8d0d306e16604fda13a63b041f086749a5efbbe423deedd3d"
+    },
+    "megalinter-setup": {
+      "source": "oxsecurity/megalinter",
+      "sourceType": "github",
+      "skillPath": "skills/megalinter-setup/SKILL.md",
+      "computedHash": "b1f0957a191e48faa9ee568bbfae2bb2605afce1f13837e395616f4f9e2ab537"
+    },
     "prototype": {
       "source": "mattpocock/skills",
       "sourceType": "github",
