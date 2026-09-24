@@ -11,7 +11,7 @@ from robot_control_interfaces.srv import (
     SpawnObject,
 )
 from workcell_manager.workcell_node import (
-    DEFAULT_SPINDLE_TOWER_COORDS,
+    SCRAP_BIN_COORDS,
     WorkcellNode,
 )
 
@@ -105,8 +105,8 @@ def test_get_drop_slot_accepts_classification_response_unchanged():
         out = node.handle_get_drop_slot(req, GetDropSlot.Response())
         assert out.slot_index == 0
         assert out.overflow_occurred is False
-        assert pytest.approx(out.drop_coords.x) == DEFAULT_SPINDLE_TOWER_COORDS[0]
-        assert pytest.approx(out.drop_coords.y) == DEFAULT_SPINDLE_TOWER_COORDS[1]
+        assert pytest.approx(out.drop_coords.x) == SCRAP_BIN_COORDS[0]
+        assert pytest.approx(out.drop_coords.y) == SCRAP_BIN_COORDS[1]
         assert node.inventory == 0
         out2 = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
         assert out2.slot_index == 0

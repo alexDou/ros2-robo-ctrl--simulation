@@ -20,6 +20,9 @@ from robot_control_interfaces.srv import (
 )
 
 DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.40, -0.30, 0.0)
+GREEN_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.55, -0.30, 0.0)
+BLUE_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.70, -0.30, 0.0)
+SCRAP_BIN_COORDS: tuple[float, float, float] = (0.40, 0.28, 0.0)
 GEAR_STACK_HEIGHT_STEP_M: float = 0.02
 MAX_TOWER_STACK_CAPACITY: int = 10
 VALID_GEAR_COLORS: tuple[str, ...] = ("WHITE", "GREEN", "BLUE")
@@ -105,9 +108,9 @@ class WorkcellNode(Node):
 
     @property
     def tower_count(self) -> int:
-        """Returns number of gears currently stacked on SpindleTower (capped at max capacity)."""
+        """Returns WHITE-tower fill capped at max capacity (compat: single-tower flows)."""
         with self._lock:
-            return min(len(self._processed), self._max_capacity)
+            return min(self._tower_fill_locked(DEFAULT_GEAR_COLOR), self._max_capacity)
 
     @property
     def has_active_workpiece(self) -> bool:
@@ -165,18 +168,75 @@ class WorkcellNode(Node):
             return count, count * self._height_step, False
         return self._max_capacity - 1, (self._max_capacity - 1) * self._height_step, True
 
+    def _destination_for(
+        self, color: str, defective: bool
+    ) -> tuple[tuple[float, float, float], bool]:
+        """Returns (base_xyz, uncapped) for a classification; defective dominates color."""
+        if defective:
+            return SCRAP_BIN_COORDS, True
+        if color == "GREEN":
+            return GREEN_SPINDLE_TOWER_COORDS, False
+        if color == "BLUE":
+            return BLUE_SPINDLE_TOWER_COORDS, False
+        return (self._tower_x, self._tower_y, self._tower_z), False
+
+    def _tower_fill_locked(self, color: str) -> int:
+        """Counts sound gears of one color resting on its tower."""
+        base = self._destination_for(color, False)[0]
+        return sum(
+            1
+            for e in self._processed
+            if e.get("color", DEFAULT_GEAR_COLOR) == color
+            and e.get("intact", True)
+            and (e["x"], e["y"]) == (base[0], base[1])
+        )
+
+    def _bin_fill_locked(self) -> int:
+        """Counts defective gears piled in the ScrapBin (uncapped)."""
+        return sum(1 for e in self._processed if not e.get("intact", True))
+
+    def _active_classification_locked(self) -> Optional[tuple[str, bool]]:
+        """Returns (color, defective) of the spawned/in-progress gear, if any."""
+        for bucket in (self._spawned, self._in_progress):
+            if bucket:
+                entry = next(iter(bucket.values()))
+                return (
+                    str(entry.get("color", DEFAULT_GEAR_COLOR)),
+                    not entry.get("intact", True),
+                )
+        return None
+
     def handle_get_drop_slot(
         self, request: GetDropSlot.Request, response: GetDropSlot.Response
     ) -> GetDropSlot.Response:
-        """Pure reservation: computes next drop slot from len(processed), no state change."""
+        """Pure reservation: routes by classification, no state change.
+
+        Default-shaped requests (WHITE/sound, e.g. the arm's bare query)
+        follow the active gear so the arm needs no classification plumbing.
+        """
+        color = str(getattr(request, "color", DEFAULT_GEAR_COLOR) or DEFAULT_GEAR_COLOR)
+        defective = bool(getattr(request, "defective", False))
         with self._lock:
-            count = len(self._processed)
-            slot_index, z_k, overflow_occurred = self._slot_for_count(count)
+            if color == DEFAULT_GEAR_COLOR and not defective:
+                active = self._active_classification_locked()
+                if active is not None:
+                    color, defective = active
+            if color not in VALID_GEAR_COLORS:
+                color = DEFAULT_GEAR_COLOR
+            base, uncapped = self._destination_for(color, defective)
+            if uncapped:
+                count = self._bin_fill_locked()
+                slot_index = count
+                z_k, overflow_occurred = count * self._height_step, False
+            else:
+                slot_index, z_k, overflow_occurred = self._slot_for_count(
+                    self._tower_fill_locked(color)
+                )
 
         response.drop_coords = Point(
-            x=float(self._tower_x),
-            y=float(self._tower_y),
-            z=float(self._tower_z + z_k),
+            x=float(base[0]),
+            y=float(base[1]),
+            z=float(base[2] + z_k),
         )
         response.slot_index = int(slot_index)
         response.overflow_occurred = bool(overflow_occurred)
@@ -278,24 +338,48 @@ class WorkcellNode(Node):
                 return response
             gear_id, entry = next(iter(self._in_progress.items()))
             del self._in_progress[gear_id]
-            count = len(self._processed)
-            slot_index, z_k, overflow_occurred = self._slot_for_count(count)
-            if overflow_occurred:
-                # FIFO bottom-drop: oldest bottom gear drops off, stack shifts
-                # down one slot, new gear lands at top slot.
-                self._processed.pop(0)
-                for i, older in enumerate(self._processed):
-                    older["z"] = float(self._tower_z + i * self._height_step)
+            color = str(entry.get("color", DEFAULT_GEAR_COLOR))
+            if color not in VALID_GEAR_COLORS:
+                color = DEFAULT_GEAR_COLOR
+            intact = bool(entry.get("intact", True))
+            base, uncapped = self._destination_for(color, not intact)
+            if uncapped:
+                count = self._bin_fill_locked()
+                slot_index = count
+                z_k, overflow_occurred = count * self._height_step, False
+            else:
+                fill = self._tower_fill_locked(color)
+                slot_index, z_k, overflow_occurred = self._slot_for_count(fill)
+                if overflow_occurred:
+                    # Per-tower FIFO: evict this tower's oldest bottom gear,
+                    # shift only this tower down one slot.
+                    for j, older in enumerate(self._processed):
+                        if (
+                            older.get("color", DEFAULT_GEAR_COLOR) == color
+                            and older.get("intact", True)
+                            and (older["x"], older["y"]) == (base[0], base[1])
+                        ):
+                            del self._processed[j]
+                            break
+                    i = 0
+                    for older in self._processed:
+                        if (
+                            older.get("color", DEFAULT_GEAR_COLOR) == color
+                            and older.get("intact", True)
+                            and (older["x"], older["y"]) == (base[0], base[1])
+                        ):
+                            older["z"] = float(base[2] + i * self._height_step)
+                            i += 1
             drop_entry = {
                 "id": gear_id,
-                "x": float(self._tower_x),
-                "y": float(self._tower_y),
-                "z": float(self._tower_z + z_k),
+                "x": float(base[0]),
+                "y": float(base[1]),
+                "z": float(base[2] + z_k),
                 "origin_x": entry["origin_x"],
                 "origin_y": entry["origin_y"],
                 "origin_z": entry["origin_z"],
-                "color": entry.get("color", DEFAULT_GEAR_COLOR),
-                "intact": entry.get("intact", True),
+                "color": color,
+                "intact": intact,
             }
             self._processed.append(drop_entry)
             new_count = len(self._processed)
