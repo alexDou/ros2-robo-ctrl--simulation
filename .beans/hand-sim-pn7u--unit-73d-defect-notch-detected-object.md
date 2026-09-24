@@ -1,13 +1,13 @@
 ---
 # hand-sim-pn7u
 title: 'Unit 7.3d: Defect notch + detected_object'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:24Z
-updated_at: 2026-09-23T17:30:59Z
+updated_at: 2026-09-24T19:37:05Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-6n92
@@ -34,3 +34,8 @@ As an operator, I want defective Gearwheels to show a visible crack notch and th
 - hand-sim-6n92 (Unit 7.2 Gateway plugin)
 - hand-sim-7839 (Unit 7.3b recolor-on-echo)
 - hand-sim-17xk (Unit 7.3c bin fixture)
+
+## Summary of Changes (commit 6c040bb)
+
+Files: edge_bridge/telemetry.py (+active_id-match inference mapper), gear.ts (crack-notch + null-preserving setGearwheelIntact), snapshot.ts (intact reconcile), handle.ts + global.d.ts (getSnapshotGearIntact probe), useTelemetryStream.ts (buffer.inferenceMetrics), TelemetryMonitor (QC detected_object row), mock_gateway.ts (WHITE on spawn, null on deposit/reset). New: test_edge_bridge_inference.py (5), defect.test.tsx (3).
+Tests: web typecheck clean, lint 0/0, full web 202/202 (38 files), py 87 passed. Review fixes: active_id-first match, null-intact no-op preserving notch.
