@@ -1,13 +1,13 @@
 ---
 # hand-sim-c682
 title: 'Unit 7.1a: Workcell service extension — persist color/defect'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:06Z
-updated_at: 2026-09-23T17:30:59Z
+updated_at: 2026-09-24T12:59:26Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-9kw2
@@ -33,3 +33,7 @@ As an operator, I want spawned Gearwheels to remember their classification from 
 ## Blocked by
 
 - hand-sim-9kw2 (Unit 7.0 domain contracts)
+
+## Summary of Changes
+
+Unit 7.1a done (commit 82cc6b1, ancestor of HEAD). Spawn + GetDropSlot requests gain color WHITE default + defective false default; response shape unchanged. WorkcellNode persists color/intact table->grasp->commit with origin intact; invalid color rejected; snapshot carries fields over existing 1 Hz channel. EdgeBridge forwards classification on spawn path. Tests: 7 classification tests green; workcell/arm/cargo suites green.
