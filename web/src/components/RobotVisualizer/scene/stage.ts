@@ -7,6 +7,7 @@ import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
 import { createWorkcellTable } from '@/components/RobotVisualizer/assets/table';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
+import type { GearColor } from '@contracts';
 
 export interface StageAssets {
   scene: THREE.Scene;
@@ -15,6 +16,7 @@ export interface StageAssets {
   pedestalAssets: PedestalProceduralAssets;
   tableAssets: TableProceduralAssets;
   spindleTowerAssets: SpindleTowerProceduralAssets;
+  spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
 }
 
 export function createStage(container: HTMLDivElement): StageAssets {
@@ -63,11 +65,18 @@ export function createStage(container: HTMLDivElement): StageAssets {
   robotGroup.add(tableAssets.borderLines);
   robotGroup.add(tableAssets.reticleMesh);
 
-  // Mount SpindleTower fixture at (x=0.40, y=-0.30, z=0.0)
-  const spindleTowerAssets = createSpindleTower();
-  robotGroup.add(spindleTowerAssets.group);
+  // Mount three color SpindleTowers at canonical WHITE/GREEN/BLUE coords.
+  // WHITE keeps legacy position so single-tower scene renders identically.
+  const whiteTower = createSpindleTower('WHITE');
+  const greenTower = createSpindleTower('GREEN');
+  const blueTower = createSpindleTower('BLUE');
+  robotGroup.add(whiteTower.group);
+  robotGroup.add(greenTower.group);
+  robotGroup.add(blueTower.group);
+  const spindleTowerAssets = whiteTower;
+  const spindleTowerAssetsByColor = { WHITE: whiteTower, GREEN: greenTower, BLUE: blueTower };
 
-  return { scene, camera, robotGroup, pedestalAssets, tableAssets, spindleTowerAssets };
+  return { scene, camera, robotGroup, pedestalAssets, tableAssets, spindleTowerAssets, spindleTowerAssetsByColor };
 }
 
 export function createRenderer(
