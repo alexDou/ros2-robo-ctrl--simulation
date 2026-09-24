@@ -1,5 +1,7 @@
 geometry_msgs/Point coords
 string object_type
+string color "WHITE"
+bool defective false
 ---
 bool success
 string message

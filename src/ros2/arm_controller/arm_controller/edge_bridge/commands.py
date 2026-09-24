@@ -138,6 +138,8 @@ class EdgeBridgeCommandsMixin:
             req = SpawnObject.Request()
             req.coords = Point(x=float(payload.x), y=float(payload.y), z=float(payload.z))
             req.object_type = payload.object_type.value
+            req.color = str(getattr(payload, "color", "WHITE") or "WHITE")
+            req.defective = bool(getattr(payload, "defective", False))
 
             with self._lock:
                 self._pending_spawn_coords = (float(payload.x), float(payload.y), float(payload.z))
