@@ -25,6 +25,7 @@ BLUE_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.70, -0.30, 0.0)
 SCRAP_BIN_COORDS: tuple[float, float, float] = (0.40, 0.28, 0.0)
 GEAR_STACK_HEIGHT_STEP_M: float = 0.02
 MAX_TOWER_STACK_CAPACITY: int = 10
+MAX_SCRAP_BIN_CAPACITY: int = 100
 VALID_GEAR_COLORS: tuple[str, ...] = ("WHITE", "GREEN", "BLUE")
 DEFAULT_GEAR_COLOR: str = "WHITE"
 
@@ -192,8 +193,19 @@ class WorkcellNode(Node):
         )
 
     def _bin_fill_locked(self) -> int:
-        """Counts unsound gears piled in the ScrapBin (uncapped)."""
+        """Counts unsound gears piled in the ScrapBin (cap-100, sharp-cut recycle)."""
         return sum(1 for e in self._processed if not e.get("intact", True))
+
+    def _bin_slot_locked(self) -> tuple[int, float]:
+        """Returns (slot_index, z_k) for next bin arrival; wraps to 0 at cap."""
+        count = self._bin_fill_locked()
+        if count >= MAX_SCRAP_BIN_CAPACITY:
+            return 0, 0.0
+        return count, count * self._height_step
+
+    def _recycle_bin_locked(self) -> None:
+        """Discards the old bin pile in place; towers untouched (sharp cut)."""
+        self._processed = [e for e in self._processed if e.get("intact", True)]
 
     def _active_classification_locked(self) -> Optional[tuple[str, bool]]:
         """Returns (color, intact) of the spawned/in-progress gear, if any."""
@@ -225,9 +237,8 @@ class WorkcellNode(Node):
                 color = DEFAULT_GEAR_COLOR
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
-                count = self._bin_fill_locked()
-                slot_index = count
-                z_k, overflow_occurred = count * self._height_step, False
+                slot_index, z_k = self._bin_slot_locked()
+                overflow_occurred = False
             else:
                 slot_index, z_k, overflow_occurred = self._slot_for_count(
                     self._tower_fill_locked(color)
@@ -344,9 +355,10 @@ class WorkcellNode(Node):
             intact = bool(entry.get("intact", True))
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
-                count = self._bin_fill_locked()
-                slot_index = count
-                z_k, overflow_occurred = count * self._height_step, False
+                if self._bin_fill_locked() >= MAX_SCRAP_BIN_CAPACITY:
+                    self._recycle_bin_locked()
+                slot_index, z_k = self._bin_slot_locked()
+                overflow_occurred = False
             else:
                 fill = self._tower_fill_locked(color)
                 slot_index, z_k, overflow_occurred = self._slot_for_count(fill)
