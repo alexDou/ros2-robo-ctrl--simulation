@@ -112,7 +112,7 @@ def test_sound_white_byte_identical_to_today():
         node.destroy_node()
 
 
-def test_intact_false_any_color_routes_to_bin_uncapped():
+def test_intact_false_any_color_routes_to_bin_capped():
     node = WorkcellNode()
     try:
         for k, color in enumerate(("WHITE", "GREEN", "BLUE")):
@@ -140,6 +140,7 @@ def test_intact_false_any_color_routes_to_bin_uncapped():
         assert pytest.approx(slot.drop_coords.z) == (
             3 + MAX_TOWER_STACK_CAPACITY
         ) * GEAR_STACK_HEIGHT_STEP_M
+        # 7.3e owns the cap-100 recycle edge; this routing test stays below cap.
     finally:
         node.destroy_node()
 
