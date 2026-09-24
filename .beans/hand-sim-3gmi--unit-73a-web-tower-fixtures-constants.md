@@ -1,13 +1,13 @@
 ---
 # hand-sim-3gmi
 title: 'Unit 7.3a: Web tower fixtures + constants'
-status: todo
+status: in-progress
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:12Z
-updated_at: 2026-09-23T17:30:59Z
+updated_at: 2026-09-24T17:35:25Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-9kw2
