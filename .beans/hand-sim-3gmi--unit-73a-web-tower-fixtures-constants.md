@@ -1,13 +1,13 @@
 ---
 # hand-sim-3gmi
 title: 'Unit 7.3a: Web tower fixtures + constants'
-status: in-progress
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:12Z
-updated_at: 2026-09-24T17:35:25Z
+updated_at: 2026-09-24T19:51:03Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-9kw2
@@ -31,3 +31,7 @@ As an operator, I want three color SpindleTowers standing on the table at their 
 ## Blocked by
 
 - hand-sim-9kw2 (Unit 7.0 domain contracts)
+
+## Summary of Changes (commit 5a2c0d1)
+
+Three color spindle towers at canonical WHITE/GREEN/BLUE coords, parameterized builder, TOWER_CAPACITY=10 shared. Proof: tower_fixtures.test.tsx green.
