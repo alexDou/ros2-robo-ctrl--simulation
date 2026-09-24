@@ -4,9 +4,11 @@ import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/p
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
+import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
 import { createWorkcellTable } from '@/components/RobotVisualizer/assets/table';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
+import { createScrapBin } from '@/components/RobotVisualizer/assets/scrapbin';
 import type { GearColor } from '@contracts';
 
 export interface StageAssets {
@@ -17,6 +19,7 @@ export interface StageAssets {
   tableAssets: TableProceduralAssets;
   spindleTowerAssets: SpindleTowerProceduralAssets;
   spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
+  scrapBinAssets: ScrapBinProceduralAssets;
 }
 
 export function createStage(container: HTMLDivElement): StageAssets {
@@ -76,7 +79,11 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const spindleTowerAssets = whiteTower;
   const spindleTowerAssetsByColor = { WHITE: whiteTower, GREEN: greenTower, BLUE: blueTower };
 
-  return { scene, camera, robotGroup, pedestalAssets, tableAssets, spindleTowerAssets, spindleTowerAssetsByColor };
+  // ScrapBin fixture at canonical SCRAP_BIN coords (open box/chute).
+  const scrapBinAssets = createScrapBin();
+  robotGroup.add(scrapBinAssets.group);
+
+  return { scene, camera, robotGroup, pedestalAssets, tableAssets, spindleTowerAssets, spindleTowerAssetsByColor, scrapBinAssets };
 }
 
 export function createRenderer(

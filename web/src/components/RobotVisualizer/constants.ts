@@ -1,4 +1,4 @@
-import { WHITE_TOWER, GREEN_TOWER, BLUE_TOWER, TOWER_CAPACITY as DOMAIN_TOWER_CAPACITY } from '@contracts';
+import { WHITE_TOWER, GREEN_TOWER, BLUE_TOWER, SCRAP_BIN, TOWER_CAPACITY as DOMAIN_TOWER_CAPACITY } from '@contracts';
 import type { GearColor } from '@contracts';
 
 export const REACHABILITY_MIN_RADIUS = 0.40;
@@ -27,3 +27,5 @@ export const SPINDLE_TOWERS: Record<GearColor, SpindleTowerCoords> = {
 };
 
 export const TOWER_CAPACITY: number = DOMAIN_TOWER_CAPACITY;
+
+export const SCRAP_BIN_COORDS: SpindleTowerCoords = toCoords(SCRAP_BIN);

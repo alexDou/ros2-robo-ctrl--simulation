@@ -45,6 +45,8 @@ export interface RobotVisualizerGlobalHandle {
   getSpindleTowerMeshByColor: (color: GearColor) => unknown;
   getSpindleBaseFlangeMesh: () => unknown;
   getSpindlePinMesh: () => unknown;
+  getScrapBinMesh: () => unknown;
+  isScrapBinNonEmpty: () => boolean;
   getSnapshotGearCount: () => number;
   getSnapshotGearPosition: (id: string) => { x: number; y: number; z: number; bucket: string } | null;
   getSnapshotGearIds: () => string[];
