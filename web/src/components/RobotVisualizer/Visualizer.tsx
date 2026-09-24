@@ -8,6 +8,7 @@ import {
   REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
+  SCRAP_BIN_COORDS,
   TOWER_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 } from '@/components/RobotVisualizer/constants';
@@ -20,6 +21,7 @@ import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/p
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
+import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import {
   createStage,
   createRenderer,
@@ -44,6 +46,7 @@ export {
   REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
+  SCRAP_BIN_COORDS,
   TOWER_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 };
@@ -67,6 +70,7 @@ export function RobotVisualizer({
 
   const [errorInfo, setErrorInfo] = useState<VisualizerErrorInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [binNonEmpty, setBinNonEmpty] = useState<boolean>(false);
 
   const jointPositionsRefProp = useRef(jointPositionsRef);
   jointPositionsRefProp.current = jointPositionsRef;
@@ -93,6 +97,7 @@ export function RobotVisualizer({
   onSpawnObjectRef.current = onSpawnObject;
 
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
+  const binNonEmptyRef = useRef<boolean>(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -107,6 +112,7 @@ export function RobotVisualizer({
     let tableAssets: TableProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null = null;
+    let scrapBinAssets: ScrapBinProceduralAssets | null = null;
     let mountLink: THREE.Object3D | null = null;
     // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
     // id-keyed from buffer workcellState each frame: spawned -> table mesh
@@ -124,6 +130,7 @@ export function RobotVisualizer({
     tableAssets = stage.tableAssets;
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
+    scrapBinAssets = stage.scrapBinAssets;
 
     // 3. Renderer instantiation
     let renderer: THREE.WebGLRenderer;
@@ -227,6 +234,7 @@ export function RobotVisualizer({
       }),
       getTable: () => tableAssets,
       getPedestal: () => pedestalAssets,
+      getScrapBin: () => scrapBinAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
       isLocked: () => {
@@ -328,11 +336,18 @@ export function RobotVisualizer({
         robotGroup,
         mountLink,
         tableAssets,
+        scrapBin: scrapBinAssets,
         controls,
         onDirty: () => {
           needsRender = true;
         },
       });
+      // OS-trash-style binary indicator: empty vs has-items, no count.
+      // Derived from flat processed list via fixture state each frame.
+      if (scrapBinAssets && scrapBinAssets.hasItems !== binNonEmptyRef.current) {
+        binNonEmptyRef.current = scrapBinAssets.hasItems;
+        setBinNonEmpty(scrapBinAssets.hasItems);
+      }
 
       // Render only when dirty, skipping static frames
       if (needsRender) {
@@ -394,6 +409,14 @@ export function RobotVisualizer({
         spindleTowerAssetsByColor = null;
       }
       spindleTowerAssets = null;
+
+      if (scrapBinAssets) {
+        if (scrapBinAssets.group.parent) {
+          scrapBinAssets.group.parent.remove(scrapBinAssets.group);
+        }
+        scrapBinAssets.dispose();
+        scrapBinAssets = null;
+      }
 
       // Dispose procedural palm assets
       if (palmAssets) {
@@ -491,6 +514,31 @@ export function RobotVisualizer({
       />
       {errorInfo && <VisualizerErrorOverlay error={errorInfo} />}
       {isLoading && !errorInfo && <VisualizerLoadingOverlay />}
+      <div
+        data-testid="scrap-bin-indicator"
+        data-state={binNonEmpty ? 'non-empty' : 'empty'}
+        title={binNonEmpty ? 'Scrap bin: has items' : 'Scrap bin: empty'}
+        style={{
+          position: 'absolute',
+          top: '0.75rem',
+          right: '0.75rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.375rem',
+          backgroundColor: 'rgba(17, 24, 39, 0.85)',
+          border: `1px solid ${binNonEmpty ? '#f59e0b' : '#374151'}`,
+          borderRadius: '0.375rem',
+          padding: '0.375rem 0.625rem',
+          color: binNonEmpty ? '#fbbf24' : '#9ca3af',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        <span aria-hidden="true">{binNonEmpty ? '🗑️' : '🗑'}</span>
+        <span>{binNonEmpty ? 'Scrap: has items' : 'Scrap: empty'}</span>
+      </div>
     </div>
   );
 }

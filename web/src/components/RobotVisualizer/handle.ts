@@ -6,6 +6,7 @@ import type { SnapshotStore } from '@/components/RobotVisualizer/interaction/sna
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
+import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 
 export interface HandleDeps {
   isLoaded: () => boolean;
@@ -15,6 +16,7 @@ export interface HandleDeps {
   getRenderer: () => THREE.WebGLRenderer;
   getSpindle: () => SpindleTowerProceduralAssets | null;
   getSpindlesByColor: () => Record<GearColor, SpindleTowerProceduralAssets | null>;
+  getScrapBin: () => ScrapBinProceduralAssets | null;
   getTable: () => TableProceduralAssets | null;
   getPedestal: () => PedestalProceduralAssets | null;
   store: SnapshotStore;
@@ -102,6 +104,8 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
     getSpindleTowerMeshByColor: (color: GearColor) => deps.getSpindlesByColor()[color]?.group ?? null,
     getSpindleBaseFlangeMesh: () => deps.getSpindle()?.flangeMesh ?? null,
     getSpindlePinMesh: () => deps.getSpindle()?.pinMesh ?? null,
+    getScrapBinMesh: () => deps.getScrapBin()?.group ?? null,
+    isScrapBinNonEmpty: () => deps.getScrapBin()?.hasItems ?? false,
     getSnapshotGearCount: () => deps.store.gears.size,
     getSnapshotGearPosition: (id: string) => {
       const rec = deps.store.gears.get(id);

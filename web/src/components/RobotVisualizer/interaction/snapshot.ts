@@ -3,6 +3,7 @@ import type { GearEntry } from '@contracts';
 import type { WorkcellSnapshotView, TelemetryBufferLike } from '@/components/RobotVisualizer/types';
 import type { GearwheelProceduralAssets } from '@/components/RobotVisualizer/assets/gear';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
+import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import { createProceduralGearwheel, setGearwheelColor } from '@/components/RobotVisualizer/assets/gear';
 import { GRASP_RIDE_OFFSET_Z_M } from '@/components/RobotVisualizer/constants';
 
@@ -33,6 +34,7 @@ export function reconcileSnapshotGears(
     robotGroup: THREE.Group;
     mountLink: THREE.Object3D | null;
     tableAssets: TableProceduralAssets | null;
+    scrapBin?: ScrapBinProceduralAssets | null;
     onDirty: () => void;
   },
 ): void {
@@ -99,5 +101,14 @@ export function reconcileSnapshotGears(
   store.lockout = hasActive;
   if (ctx.tableAssets && hasActive) {
     ctx.tableAssets.reticleMesh.visible = false;
+  }
+  // ScrapBin binary state: non-empty iff any processed entry is defective.
+  // Defective gears render into bin pile verbatim (workcell owns coords).
+  if (ctx.scrapBin) {
+    const hasRejects = snap.processed.some((e) => e.intact === false);
+    if (ctx.scrapBin.hasItems !== hasRejects) {
+      ctx.scrapBin.setHasItems(hasRejects);
+      ctx.onDirty();
+    }
   }
 }
