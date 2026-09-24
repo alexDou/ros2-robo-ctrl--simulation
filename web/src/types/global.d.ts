@@ -51,6 +51,7 @@ export interface RobotVisualizerGlobalHandle {
   getSnapshotGearPosition: (id: string) => { x: number; y: number; z: number; bucket: string } | null;
   getSnapshotGearIds: () => string[];
   getSnapshotGearColor: (id: string) => GearColor | null;
+  getSnapshotGearIntact: (id: string) => boolean | null;
   getSpawnedGearCount: () => number;
   getTowerGears: () => unknown[];
   getTowerGearCount: () => number;

@@ -5,6 +5,7 @@ import type { GearColor } from '@contracts';
 export interface GearwheelProceduralAssets {
   group: THREE.Group;
   color: GearColor | null;
+  intact: boolean | null;
   dispose: () => void;
 }
 
@@ -29,6 +30,15 @@ export function setGearwheelColor(assets: GearwheelProceduralAssets, color: Gear
     else if (mesh.name.startsWith('gear-tooth-')) mat.color.setHex(hex ? hex.tooth : GEAR_GREY_HEX.tooth);
     else if (mesh.name === 'gear-hub') mat.color.setHex(hex ? hex.hub : GEAR_GREY_HEX.hub);
   }
+  return true;
+}
+
+export function setGearwheelIntact(assets: GearwheelProceduralAssets, intact: boolean | null | undefined): boolean {
+  if (intact == null) return false;
+  if (assets.intact === intact) return false;
+  assets.intact = intact;
+  const notch = assets.group.getObjectByName('gear-crack-notch');
+  if (notch) notch.visible = intact === false;
   return true;
 }
 
@@ -87,6 +97,21 @@ export function createProceduralGearwheel(): GearwheelProceduralAssets {
   hubMesh.position.set(0, 0, height / 2);
   group.add(hubMesh);
 
+  // Crack notch: thin dark wedge across body rim, visible only when
+  // intact === false. Separate mesh so recolor never touches it.
+  const notchGeom = new THREE.BoxGeometry(0.006, radius * 0.55, height * 1.2);
+  const notchMat = new THREE.MeshStandardMaterial({
+    color: 0x0f172a,
+    metalness: 0.1,
+    roughness: 0.9,
+  });
+  const notchMesh = new THREE.Mesh(notchGeom, notchMat);
+  notchMesh.name = 'gear-crack-notch';
+  notchMesh.position.set(radius * 0.55, 0, height / 2);
+  notchMesh.rotation.z = 0.35;
+  notchMesh.visible = false;
+  group.add(notchMesh);
+
   const dispose = () => {
     bodyGeom.dispose();
     disposeMaterial(bodyMat);
@@ -94,7 +119,9 @@ export function createProceduralGearwheel(): GearwheelProceduralAssets {
     disposeMaterial(toothMat);
     hubGeom.dispose();
     disposeMaterial(hubMat);
+    notchGeom.dispose();
+    disposeMaterial(notchMat);
   };
 
-  return { group, color: null, dispose };
+  return { group, color: null, intact: null, dispose };
 }

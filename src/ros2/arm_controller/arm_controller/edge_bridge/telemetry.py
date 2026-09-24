@@ -7,7 +7,7 @@ from typing import Any, Optional
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
 from domain import (
-    CANONICAL_UR5E_JOINTS, ErrorFrame, PalmState, RobotCommand, RobotState,
+    CANONICAL_UR5E_JOINTS, ErrorFrame, InferenceMetrics, PalmState, RobotCommand, RobotState,
     RobotTelemetryEvent, WorkcellState,
 )
 
@@ -123,6 +123,28 @@ class EdgeBridgeTelemetryMixin:
             except Exception as e:
                 self.get_logger().error(f"Failed to publish ErrorFrame to Zenoh: {e}")
 
+    @staticmethod
+    def _inference_for_workcell(workcell_state: WorkcellState) -> Optional[InferenceMetrics]:
+        """Maps the active gear classification onto the existing inference channel.
+
+        spawned/in_progress gear reports its outcome: DEFECTIVE when
+        intact is False, else its color name. Prefers the entry matching
+        active_id; falls back to bucket order. No active gear means no
+        inference (processed tower never drives the label).
+        """
+        active = workcell_state.active_id
+        buckets = (*workcell_state.spawned, *workcell_state.in_progress)
+        entry = next((e for e in buckets if e.id == active), None) if active else None
+        if entry is None:
+            for bucket in (workcell_state.spawned, workcell_state.in_progress):
+                if bucket:
+                    entry = bucket[0]
+                    break
+        if entry is None:
+            return None
+        label = "DEFECTIVE" if not entry.intact else str(entry.color.value)
+        return InferenceMetrics(latency_ms=0.0, confidence=1.0, detected_object=label)
+
     def publish_telemetry(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
         """Emits RobotTelemetryEvent over Zenoh on robot/{id}/telemetry."""
         with self._lock:
@@ -137,6 +159,7 @@ class EdgeBridgeTelemetryMixin:
             robot_state=state,
             joint_positions=joints,
             palm_state=PalmState(is_grasped=is_grasped),
+            inference_metrics=self._inference_for_workcell(workcell_state),
             workcell_state=workcell_state,
             command_id=command_id,
             phase=phase,

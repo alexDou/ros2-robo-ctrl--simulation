@@ -19,6 +19,7 @@ export interface TelemetryBuffer {
   timestampNs: string | bigint | number;
   robotState: RobotState;
   palmState?: { is_grasped: boolean };
+  inferenceMetrics?: { latency_ms: number; confidence: number; detected_object: string } | null;
   phase?: string | null;
   workcellState: WorkcellSnapshot;
   frequencyHz: number;
@@ -88,6 +89,7 @@ export function useTelemetryStream() {
     buf.jointPositions = data.joint_positions;
     buf.robotState = data.robot_state;
     buf.palmState = data.palm_state;
+    buf.inferenceMetrics = data.inference_metrics ?? null;
     buf.phase = data.phase ?? null;
     buf.workcellState = toSnapshot(data.workcell_state);
     const sig = `${buf.workcellState.spawned.length}:${buf.workcellState.inProgress.length}:${buf.workcellState.processed.length}:${buf.workcellState.activeId ?? ''}`;

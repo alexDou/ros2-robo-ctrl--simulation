@@ -69,10 +69,12 @@ export class MockGateway {
 
   private trajectoryGenerator = new PickAndPlaceTrajectoryGenerator();
   // Workcell-authority (6.7.5): mock owns bucket gear truth, emits snapshots.
+  // 7.3d: active-gear classification also drives inference_metrics label.
   private spawned: GearEntry[] = [];
   private inProgress: GearEntry[] = [];
   private processed: GearEntry[] = [];
   private activeId: string | null = null;
+  private inferenceMetrics: { latency_ms: number; confidence: number; detected_object: string } | null = null;
   private pnpExecuting = false;
   private pnpTimeout: NodeJS.Timeout | null = null;
   private autoExecutePickAndPlace = true;
@@ -138,6 +140,7 @@ export class MockGateway {
     this.inProgress = [];
     this.processed = [];
     this.activeId = null;
+    this.inferenceMetrics = null;
     this.autoExecutePickAndPlace = true;
     this.robotState = 'IDLE';
     this.palmState = { is_grasped: false };
@@ -427,6 +430,7 @@ export class MockGateway {
         this.spawned = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const }];
         this.inProgress = [];
         this.activeId = id;
+        this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: 'WHITE' };
         this.log(`[EDGE] Spawned GEAR ${id} at (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`);
         this.cancelTrajectory();
         if (this.autoExecutePickAndPlace) {
@@ -453,6 +457,7 @@ export class MockGateway {
           this.spawned = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const }];
           this.inProgress = [];
           this.activeId = id;
+          this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: 'WHITE' };
           this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z);
         } else {
           this.sendTelemetryToAll(cmd.command_id);
@@ -469,6 +474,7 @@ export class MockGateway {
         this.inProgress = [];
         this.processed = [];
         this.activeId = null;
+        this.inferenceMetrics = null;
         this.cancelTrajectory();
         this.log(`[EDGE] Workspace cleared for command ${cmd.command_id || ''}`);
         this.sendTelemetryToAll(cmd.command_id);
@@ -544,6 +550,7 @@ export class MockGateway {
       if (this.processed.length > 10) this.processed.shift();
       this.spawned = this.spawned.filter((g) => g.id !== id);
       this.activeId = null;
+      this.inferenceMetrics = null;
     };
     const executeNextStep = () => {
       if (!this.pnpExecuting || this.robotState === 'FAULT') {
@@ -674,6 +681,7 @@ export class MockGateway {
       robot_state: this.robotState,
       joint_positions: [...this.currentJoints] as ArmJointPositions,
       palm_state: { ...this.palmState },
+      inference_metrics: this.inferenceMetrics ? { ...this.inferenceMetrics } : null,
       command_id: commandId ?? null,
       workcell_state: {
         spawned: [...this.spawned],
