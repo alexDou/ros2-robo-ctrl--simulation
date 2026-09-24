@@ -4,7 +4,7 @@ import type { WorkcellSnapshotView, TelemetryBufferLike } from '@/components/Rob
 import type { GearwheelProceduralAssets } from '@/components/RobotVisualizer/assets/gear';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
-import { createProceduralGearwheel, setGearwheelColor } from '@/components/RobotVisualizer/assets/gear';
+import { createProceduralGearwheel, setGearwheelColor, setGearwheelIntact } from '@/components/RobotVisualizer/assets/gear';
 import { GRASP_RIDE_OFFSET_Z_M } from '@/components/RobotVisualizer/constants';
 
 export interface SnapshotStore {
@@ -66,8 +66,12 @@ export function reconcileSnapshotGears(
       ctx.onDirty();
     }
     // Recolor-on-echo: grey until the authoritative entry carries color,
-    // matched by gear id.
+    // matched by gear id. Notch follows intact the same way and survives
+    // every reconcile (recolor, routing, bucket moves never clear it).
     if (setGearwheelColor(rec.assets, d.entry.color)) {
+      ctx.onDirty();
+    }
+    if (setGearwheelIntact(rec.assets, d.entry.intact)) {
       ctx.onDirty();
     }
     if (d.bucket === 'spawned' || d.bucket === 'processed') {

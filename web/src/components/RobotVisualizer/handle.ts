@@ -115,6 +115,7 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
     },
     getSnapshotGearIds: () => [...deps.store.gears.keys()],
     getSnapshotGearColor: (id: string) => deps.store.gears.get(id)?.assets.color ?? null,
+    getSnapshotGearIntact: (id: string) => deps.store.gears.get(id)?.assets.intact ?? null,
     getTowerGears: () =>
       [...deps.store.gears.values()]
         .filter((r) => r.bucket === 'processed')

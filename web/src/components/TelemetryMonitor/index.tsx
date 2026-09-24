@@ -136,6 +136,15 @@ export function TelemetryMonitor({
               0 ms
             </span>
           </div>
+          <div>
+            <span style={{ color: '#9ca3af', marginRight: '0.5rem' }}>QC:</span>
+            <span
+              data-testid="telemetry-inference-label"
+              style={{ fontWeight: 600, color: isStreaming ? '#fbbf24' : '#9ca3af' }}
+            >
+              {bufferRef.current.inferenceMetrics?.detected_object ?? '—'}
+            </span>
+          </div>
         </div>
       </div>
 
