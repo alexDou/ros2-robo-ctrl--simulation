@@ -1,13 +1,13 @@
 ---
 # hand-sim-473u
 title: 'Unit 7.1b: Workcell 4-destination routing'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:06Z
-updated_at: 2026-09-23T17:30:59Z
+updated_at: 2026-09-24T11:30:24Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-c682
