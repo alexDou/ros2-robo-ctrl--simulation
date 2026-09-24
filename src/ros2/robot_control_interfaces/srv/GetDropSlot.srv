@@ -1,4 +1,6 @@
 # Request
+string color "WHITE"
+bool defective false
 ---
 # Response
 geometry_msgs/Point drop_coords

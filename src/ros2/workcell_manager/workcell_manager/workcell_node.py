@@ -22,6 +22,8 @@ from robot_control_interfaces.srv import (
 DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.40, -0.30, 0.0)
 GEAR_STACK_HEIGHT_STEP_M: float = 0.02
 MAX_TOWER_STACK_CAPACITY: int = 10
+VALID_GEAR_COLORS: tuple[str, ...] = ("WHITE", "GREEN", "BLUE")
+DEFAULT_GEAR_COLOR: str = "WHITE"
 
 
 class WorkcellNode(Node):
@@ -207,12 +209,22 @@ class WorkcellNode(Node):
                 response.gear_id = ""
                 self.get_logger().warning("Rejecting spawn_object: workcell busy")
                 return response
+            color = str(getattr(request, "color", DEFAULT_GEAR_COLOR) or DEFAULT_GEAR_COLOR)
+            if color not in VALID_GEAR_COLORS:
+                response.success = False
+                response.message = f"Invalid gear color '{color}'"
+                response.gear_id = ""
+                self.get_logger().warning(f"Rejecting spawn_object: invalid color '{color}'")
+                return response
+            defective = bool(getattr(request, "defective", False))
             gear_id = uuid.uuid4().hex
             self._spawned[gear_id] = {
                 "id": gear_id,
                 "x": float(request.coords.x),
                 "y": float(request.coords.y),
                 "z": float(request.coords.z),
+                "color": color,
+                "intact": not defective,
             }
         self._publish_state()
 
@@ -243,6 +255,8 @@ class WorkcellNode(Node):
                 "origin_x": entry["x"],
                 "origin_y": entry["y"],
                 "origin_z": entry["z"],
+                "color": entry.get("color", DEFAULT_GEAR_COLOR),
+                "intact": entry.get("intact", True),
             }
         self._publish_state()
 
@@ -280,6 +294,8 @@ class WorkcellNode(Node):
                 "origin_x": entry["origin_x"],
                 "origin_y": entry["origin_y"],
                 "origin_z": entry["origin_z"],
+                "color": entry.get("color", DEFAULT_GEAR_COLOR),
+                "intact": entry.get("intact", True),
             }
             self._processed.append(drop_entry)
             new_count = len(self._processed)
