@@ -3,7 +3,7 @@ import type { GearEntry } from '@contracts';
 import type { WorkcellSnapshotView, TelemetryBufferLike } from '@/components/RobotVisualizer/types';
 import type { GearwheelProceduralAssets } from '@/components/RobotVisualizer/assets/gear';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
-import { createProceduralGearwheel } from '@/components/RobotVisualizer/assets/gear';
+import { createProceduralGearwheel, setGearwheelColor } from '@/components/RobotVisualizer/assets/gear';
 import { GRASP_RIDE_OFFSET_Z_M } from '@/components/RobotVisualizer/constants';
 
 export interface SnapshotStore {
@@ -61,6 +61,11 @@ export function reconcileSnapshotGears(
     }
     if (rec.bucket !== d.bucket) {
       rec.bucket = d.bucket;
+      ctx.onDirty();
+    }
+    // Recolor-on-echo: grey until the authoritative entry carries color,
+    // matched by gear id.
+    if (setGearwheelColor(rec.assets, d.entry.color)) {
       ctx.onDirty();
     }
     if (d.bucket === 'spawned' || d.bucket === 'processed') {

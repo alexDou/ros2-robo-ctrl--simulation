@@ -1,9 +1,35 @@
 import * as THREE from 'three';
 import { disposeMaterial } from '@/utils/three/dispose';
+import type { GearColor } from '@contracts';
 
 export interface GearwheelProceduralAssets {
   group: THREE.Group;
+  color: GearColor | null;
   dispose: () => void;
+}
+
+// Classified body/tooth/hub hexes by gear color. Null (grey) = pre-echo default.
+export const GEAR_GREY_HEX = { body: 0x64748b, tooth: 0x475569, hub: 0x1e293b };
+export const GEAR_CLASSIFIED_HEX: Record<GearColor, { body: number; tooth: number; hub: number }> = {
+  WHITE: { body: 0xf8fafc, tooth: 0xe2e8f0, hub: 0x94a3b8 },
+  GREEN: { body: 0x22c55e, tooth: 0x15803d, hub: 0x14532d },
+  BLUE: { body: 0x3b82f6, tooth: 0x1d4ed8, hub: 0x1e3a8a },
+};
+
+export function setGearwheelColor(assets: GearwheelProceduralAssets, color: GearColor | null | undefined): boolean {
+  const next = color ?? null;
+  if (assets.color === next) return false;
+  assets.color = next;
+  const hex = next ? GEAR_CLASSIFIED_HEX[next] : null;
+  for (const child of assets.group.children) {
+    const mesh = child as THREE.Mesh;
+    const mat = mesh.material as THREE.MeshStandardMaterial | undefined;
+    if (!mat || !('color' in mat)) continue;
+    if (mesh.name === 'gear-body') mat.color.setHex(hex ? hex.body : GEAR_GREY_HEX.body);
+    else if (mesh.name.startsWith('gear-tooth-')) mat.color.setHex(hex ? hex.tooth : GEAR_GREY_HEX.tooth);
+    else if (mesh.name === 'gear-hub') mat.color.setHex(hex ? hex.hub : GEAR_GREY_HEX.hub);
+  }
+  return true;
 }
 
 export function createProceduralGearwheel(): GearwheelProceduralAssets {
@@ -70,5 +96,5 @@ export function createProceduralGearwheel(): GearwheelProceduralAssets {
     disposeMaterial(hubMat);
   };
 
-  return { group, dispose };
+  return { group, color: null, dispose };
 }
