@@ -1,13 +1,13 @@
 ---
 # hand-sim-7839
 title: 'Unit 7.3b: Web recolor-on-echo + tower counters'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:19Z
-updated_at: 2026-09-23T17:30:59Z
+updated_at: 2026-09-24T19:51:03Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-c682
@@ -35,3 +35,7 @@ As an operator, I want the grey table Gearwheel to adopt its classified color wh
 - hand-sim-c682 (Unit 7.1a service extension)
 - hand-sim-6n92 (Unit 7.2 Gateway plugin)
 - hand-sim-3gmi (Unit 7.3a tower fixtures)
+
+## Summary of Changes (commit caebfeb)
+
+Grey-until-echo recolor by gear id + per-tower n/10 counters from flat processed list, pin at 10. Proof: recolor.test.tsx, tower_buckets/disposal green.

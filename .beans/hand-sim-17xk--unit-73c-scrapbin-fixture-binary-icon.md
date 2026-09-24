@@ -1,13 +1,13 @@
 ---
 # hand-sim-17xk
 title: 'Unit 7.3c: ScrapBin fixture + binary icon'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:19Z
-updated_at: 2026-09-23T17:30:59Z
+updated_at: 2026-09-24T19:51:03Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-473u
@@ -33,3 +33,7 @@ As an operator, I want a ScrapBin fixture on the table and an OS-trash-style ind
 
 - hand-sim-473u (Unit 7.1b routing)
 - hand-sim-3gmi (Unit 7.3a tower fixtures)
+
+## Summary of Changes (commit 7e805d0)
+
+ScrapBin fixture at canonical coords, binary empty/non-empty icon, no numeric counts. Defective arrivals render into bin pile, clear returns to empty. Proof: scrapbin.test.tsx green.
