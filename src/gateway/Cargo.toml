@@ -41,5 +41,9 @@ name = "ws_gateway"
 path = "tests/ws_gateway.rs"
 
 [[test]]
+name = "qc_classifier"
+path = "tests/qc_classifier.rs"
+
+[[test]]
 name = "telemetry_throttler"
 path = "tests/telemetry_throttler.rs"

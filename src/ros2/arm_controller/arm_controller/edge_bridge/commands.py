@@ -122,8 +122,13 @@ class EdgeBridgeCommandsMixin:
                     )
                     return None
 
+            # Unit 7.2: gateway enriches after blind validation; classification
+            # rides on the same payload. Pop before blind-schema validation.
+            raw_spawn = dict(command.payload)
+            spawn_color = str(raw_spawn.pop("color", "WHITE") or "WHITE")
+            spawn_defective = bool(raw_spawn.pop("defective", False))
             try:
-                payload = SpawnObjectPayload.model_validate(command.payload)
+                payload = SpawnObjectPayload.model_validate(raw_spawn)
             except Exception as e:
                 self._publish_error("INVALID_PAYLOAD", f"SpawnObject payload invalid: {e}")
                 return None
@@ -138,8 +143,8 @@ class EdgeBridgeCommandsMixin:
             req = SpawnObject.Request()
             req.coords = Point(x=float(payload.x), y=float(payload.y), z=float(payload.z))
             req.object_type = payload.object_type.value
-            req.color = str(getattr(payload, "color", "WHITE") or "WHITE")
-            req.defective = bool(getattr(payload, "defective", False))
+            req.color = spawn_color
+            req.defective = spawn_defective
 
             with self._lock:
                 self._pending_spawn_coords = (float(payload.x), float(payload.y), float(payload.z))

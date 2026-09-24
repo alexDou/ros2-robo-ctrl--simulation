@@ -7,7 +7,7 @@ priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:19:09Z
-updated_at: 2026-09-24T12:30:56Z
+updated_at: 2026-09-24T15:18:31Z
 blocked_by:
     - hand-sim-9kw2
     - hand-sim-c682
@@ -94,3 +94,11 @@ Introduce a simulated quality-and-color classification step at spawn time plus f
 - The operator phrase driving the bin design is "like the trash icon on an OS": either empty or holding something, never a number.
 - The "sub-buckets" wording from early discussion was deliberately replaced by flat-list-plus-derived-counts to honor the freeze on data-flow changes; specs and tickets should use the derived-counts vocabulary.
 - The stale roadmap block for this unit still shows pre-decision values (old counters, old capacity math, ONNX classifier); the unit spec directory docs carry the corrected values and supersede it.
+
+## Shared Unit7 spawn-classification flow (user, 2026-09-24)
+
+- TeleopClient sends blind SPAWN_OBJECT: x,y,z,object_type only (TS Omit color/intact); never knows color/quality.
+- Gateway validates blind payload (client-supplied color/intact rejected), then enriches via QcClassifier stub (uniform WHITE/GREEN/BLUE, ~20pct defective) standing in for future real inspection node.
+- Downstream of Gateway enrichment every gear carries mandatory color + intact/defective; GearEntry requires both, no defaults.
+- Enriched spawn travels gateway->workcell classified; SpawnObject.srv already accepts color+defective.
+- spawn_clear blind-shape assertions cover inbound client->gateway shape only, not enriched gateway->fabric shape.

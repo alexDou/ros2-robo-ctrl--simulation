@@ -199,6 +199,19 @@ pub async fn teleop_ws(
                                             }
                                         }
 
+                                        // Unit 7.2 (hand-sim-6n92): spawn path only. Blind payload
+                                        // already validated above; classify then publish enriched.
+                                        // Swap this line for a real inspection source (7.4 seeds via it).
+                                        let mut command = command;
+                                        if command.r#type == crate::domain::CommandType::SpawnObject {
+                                            use crate::qc_classifier::{QcClassifier, RandomQcClassifier, enrich_spawn_payload};
+                                            let mut classifier = RandomQcClassifier::default();
+                                            command.payload = enrich_spawn_payload(
+                                                command.payload,
+                                                classifier.classify(),
+                                            );
+                                        }
+
                                         if let Err(err) = fabric_for_task.publish_command(&robot_id_for_task, &command).await {
                                             error!("Failed to forward command to DataFabric: {err}");
                                         }
