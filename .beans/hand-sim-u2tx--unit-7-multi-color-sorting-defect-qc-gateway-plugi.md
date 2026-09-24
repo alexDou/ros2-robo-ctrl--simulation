@@ -7,7 +7,7 @@ priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:19:09Z
-updated_at: 2026-09-23T17:30:59Z
+updated_at: 2026-09-24T12:30:56Z
 blocked_by:
     - hand-sim-9kw2
     - hand-sim-c682
@@ -40,7 +40,7 @@ Introduce a simulated quality-and-color classification step at spawn time plus f
 8. As an operator, I want per-tower counters showing fill against capacity (n/10), so that I know when a tower is nearly full.
 9. As an operator, I want the ScrapBin shown as empty versus non-empty with no count, so that the display stays as simple as an OS trash icon.
 10. As an operator, I want each tower to hold at most 10 Gearwheels with oldest-bottom FIFO eviction on overflow, so that stacking stays bounded and predictable.
-11. As an operator, I want the ScrapBin to accept unlimited defective Gearwheels without overflow logic, so that rejects are never blocked.
+11. As an operator, I want the ScrapBin to hold at most 100 defective Gearwheels then recycle (101st wraps to slot 0) without overflow logic, so that rejects are never blocked and memory stays bounded.
 12. As an operator, I want ClearWorkspace to wipe all three towers plus the ScrapBin and reset every counter and the bin icon, so that I can restart a run cleanly.
 13. As an operator, I want ClickLockout to keep working exactly as today while a Gearwheel is active, so that placement discipline does not regress.
 14. As an operator, I want classification results reported through the existing inference metrics channel, so that downstream consumers see WHITE, GREEN, BLUE, or DEFECTIVE labels.
@@ -58,7 +58,7 @@ Introduce a simulated quality-and-color classification step at spawn time plus f
 - Deterministic color assignment: the stub assigns WHITE, GREEN, or BLUE with equal probability, independent of the defective roll, so color coverage and defect coverage are both exercised over a run.
 - Domain contract extension: the spawn command payload and the Gearwheel entry shape each gain an optional color field (defaulting to WHITE for backward compatibility) and an optional defective flag (defaulting to false). The processed collection stays a single flat list; per-tower counts and the bin empty/non-empty state are derived by filtering, not by introducing sub-bucket containers.
 - Workcell service contract extension: the spawn and drop-slot reservation requests each gain color plus defective flag with WHITE/false defaults, so existing callers keep working. The drop-slot response shape is unchanged.
-- Routing rule: defective flag dominates color — any defective Gearwheel reserves and commits to the ScrapBin at the next pile position with no capacity cap and no overflow ever reported. Sound Gearwheels reserve and commit to the tower matching their color with slot height derived from that tower's own fill count.
+- Routing rule: defective flag dominates color — any defective Gearwheel reserves and commits to the ScrapBin at the next pile position up to a 100-item cap, then recycles (wraps to slot 0); no overflow ever reported. Sound Gearwheels reserve and commit to the tower matching their color with slot height derived from that tower's own fill count.
 - Per-tower capacity: each SpindleTower holds 10; the 11th arrival to the same tower evicts that tower's oldest bottom Gearwheel and shifts the rest down one slot, leaving the counter at 10. Towers are independent — one full tower never affects another tower or the bin.
 - Tower placement coordinates: WHITE keeps the long-established tower position; GREEN, BLUE, and the ScrapBin each receive fixed canonical coordinates locked in the domain contract constants.
 - Spawned-table behavior: a spawn is still rejected while any Gearwheel is active on the table or in transit; classification fields ride along on the stored table entry so a later grasp preserves them through to the drop commit.
@@ -74,7 +74,7 @@ Introduce a simulated quality-and-color classification step at spawn time plus f
 - What makes a good test here: assert externally observable behavior (echoed color, notch presence, drop coordinates, counter text, bin icon state, slot math) rather than implementation internals (which helper computed the slot, how the mesh was constructed, RNG call counts).
 - Domain contract layer: cross-language serialization round-trip tests covering the new color and defective fields, including defaults when fields are absent — prior art is the existing cross-language contract test suite for spawn and telemetry shapes.
 - Gateway classifier layer: distribution test asserting roughly 20 defective flags per 100 classifications within tolerance, plus determinism test asserting the seeded mock replays its fixed sequence exactly — prior art is the existing Gateway validation and rate-limit test suite.
-- Workcell layer: routing tests (sound color goes to matching tower coordinates, defective of any color goes to bin), per-tower FIFO tests (11th arrival evicts oldest, counter pins at capacity, sibling towers unaffected), bin tests (uncapped pile positions increment, overflow never set), and clearing tests (all four destinations wiped, snapshot empty) — prior art is the existing WorkcellNode bucket and slot test suite.
+- Workcell layer: routing tests (sound color goes to matching tower coordinates, defective of any color goes to bin), per-tower FIFO tests (11th arrival evicts oldest, counter pins at capacity, sibling towers unaffected), bin tests (pile positions increment to 100 then wrap to slot 0, overflow never set), and clearing tests (all four destinations wiped, snapshot empty) — prior art is the existing WorkcellNode bucket and slot test suite.
 - TeleopClient layer: recolor-on-echo tests (grey becomes classified color on snapshot), notch tests (defective shows crack marker), counter tests (n/10 per tower), bin-icon tests (empty versus non-empty toggle, no numeric count), and clear tests (all visuals reset) — prior art is the existing TeleopClient snapshot-reconciliation and tower-render test suite.
 - End-to-end layer: hermetic seeded runs through a mock Gateway asserting full click-to-stack and click-to-bin loops, per-tower FIFO at 10, bin icon flip on first defective arrival, clear-to-empty reset, and sub-50ms click-to-echo latency — prior art is the existing hermetic mock-Gateway end-to-end suite, extended with a seeded classification mirror sequence. End-to-end runs never touch real randomness and never cross their sandbox borders.
 
@@ -83,7 +83,7 @@ Introduce a simulated quality-and-color classification step at spawn time plus f
 - Any change to command rate limits, telemetry cadence, render loop rate, throttling approach, lifecycle states, or transport channels and topics.
 - A real vision or ONNX classifier — the rule-based stub plus plugin seam is the whole Unit 7 classifier story.
 - Conveyor feeding or pickup-station stepping (reserved for a later unit).
-- Numeric ScrapBin counts, bin capacity caps, bin overflow visuals, or bin FIFO eviction.
+- Numeric ScrapBin counts, bin overflow visuals, or bin FIFO eviction. (Bin cap-100 recycle is in scope via hand-sim-lilk.)
 - Sub-bucket containers in the processed collection; counts stay derived from the flat list.
 - New ROS service response shapes, new WebSocket frame types, or new DataFabric channels.
 - Migration of old payloads or snapshots beyond optional-field defaults.
