@@ -68,7 +68,7 @@ async fn test_ws_spawn_object_and_clear_workspace_handling_and_validation() {
     assert_eq!(rx_spawn.command_id, "cmd-spawn-valid");
     assert_eq!(rx_spawn.r#type, CommandType::SpawnObject);
     // Unit 7.2: gateway enriches after blind validation; fabric side carries
-    // color + defective (blind-shape assertions cover inbound only).
+    // color + intact (blind-shape assertions cover inbound only).
     let color = rx_spawn.payload["color"]
         .as_str()
         .expect("enriched color");
@@ -77,13 +77,13 @@ async fn test_ws_spawn_object_and_clear_workspace_handling_and_validation() {
         "unexpected enriched color {color}"
     );
     assert!(
-        rx_spawn.payload["defective"].is_boolean(),
-        "enriched defective flag must be boolean"
+        rx_spawn.payload["intact"].is_boolean(),
+        "enriched intact flag must be boolean"
     );
     let mut blind = rx_spawn.payload.clone();
     let obj = blind.as_object_mut().expect("payload object");
     obj.remove("color");
-    obj.remove("defective");
+    obj.remove("intact");
     let parsed_spawn: SpawnObjectPayload =
         serde_json::from_value(blind).expect("parse blind payload");
     assert!((parsed_spawn.x - 0.45).abs() < 1e-6);

@@ -35,7 +35,7 @@ def _spawn(node, x=0.45, y=0.10, z=0.0, **classification):
 def test_spawn_stores_classification():
     node = WorkcellNode()
     try:
-        out = _spawn(node, color="GREEN", defective=True)
+        out = _spawn(node, color="GREEN", intact=False)
         assert out.success is True
         entry = node.spawned[0]
         assert entry["color"] == "GREEN"
@@ -70,7 +70,7 @@ def test_spawn_rejects_invalid_color():
 def test_grasp_preserves_classification_and_origin():
     node = WorkcellNode()
     try:
-        out = _spawn(node, x=0.45, y=0.10, z=0.0, color="BLUE", defective=True)
+        out = _spawn(node, x=0.45, y=0.10, z=0.0, color="BLUE", intact=False)
         res = node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         assert res.success is True
         entry = node.in_progress[0]
@@ -85,7 +85,7 @@ def test_grasp_preserves_classification_and_origin():
 def test_commit_preserves_classification_and_origin():
     node = WorkcellNode()
     try:
-        out = _spawn(node, x=0.45, y=0.10, z=0.0, color="GREEN", defective=False)
+        out = _spawn(node, x=0.45, y=0.10, z=0.0, color="GREEN", intact=True)
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         res = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
         assert res.success is True
@@ -101,7 +101,7 @@ def test_commit_preserves_classification_and_origin():
 def test_get_drop_slot_accepts_classification_response_unchanged():
     node = WorkcellNode()
     try:
-        req = GetDropSlot.Request(color="BLUE", defective=True)
+        req = GetDropSlot.Request(color="BLUE", intact=False)
         out = node.handle_get_drop_slot(req, GetDropSlot.Response())
         assert out.slot_index == 0
         assert out.overflow_occurred is False
@@ -118,7 +118,7 @@ def test_get_drop_slot_accepts_classification_response_unchanged():
 def test_snapshot_carries_classification():
     node = WorkcellNode()
     try:
-        _spawn(node, color="GREEN", defective=True)
+        _spawn(node, color="GREEN", intact=False)
         snap = node.get_snapshot()
         assert snap["spawned"][0]["color"] == "GREEN"
         assert snap["spawned"][0]["intact"] is False

@@ -61,7 +61,7 @@ Lock down classification fields and destination constants across Python, Rust, a
      `intact` key on the spawn wire fails validation.
    - `schemas/robot_telemetry_event.schema.json`, every `GearEntry` (spawned / in_progress / processed):
      add REQUIRED `color` (`WHITE` / `GREEN` / `BLUE`, no default) + REQUIRED `intact`
-     (`boolean`, no default; `false` = defective, routes to ScrapBin). Required becomes
+     (`boolean`, no default; `false` = unsound, routes to ScrapBin). Required becomes
      `["id", "x", "y", "z", "color", "intact"]`. Missing either fails validation —
      no 4th tower, no silent WHITE fallback.
    - `consts` (telemetry schema): lock destination constants —
@@ -165,7 +165,7 @@ Notch that survives everything; per-tower eviction; bin cap-100 recycle; Clear w
    - Existing inference `detected_object` label carries `WHITE` | `GREEN` | `BLUE` | `DEFECTIVE`; no new channel.
 2. **FIFO + Clear (7.3e)**:
    - 11th arrival to one tower evicts that tower's oldest (bottom), shifts rest down one $0.02$m step, counter stays 10; sibling towers unaffected.
-   - Bin pile caps at 100; 101st defective wraps to slot 0 (sharp cut, recycle), overflow never reported; bin icon stays binary empty/filled.
+   - Bin pile caps at 100; 101st unsound wraps to slot 0 (sharp cut, recycle), overflow never reported; bin icon stays binary empty/filled.
    - `ClearWorkspace` wipes all three towers plus bin, resets every counter, bin icon returns to empty, placement lockout lifts.
 3. **TDD Verification (`vitest` + `pytest`)**: notch presence/absence + survival; per-tower eviction isolation; bin cap-100 recycle; clear-to-empty reset incl. icon and lockout.
 

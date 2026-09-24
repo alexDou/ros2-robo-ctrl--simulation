@@ -53,13 +53,13 @@ def _reserve(node, **classification):
 def test_sound_green_routes_to_green_tower():
     node = WorkcellNode()
     try:
-        slot = _reserve(node, color="GREEN", defective=False)
+        slot = _reserve(node, color="GREEN", intact=True)
         assert slot.slot_index == 0
         assert slot.overflow_occurred is False
         assert pytest.approx(slot.drop_coords.x) == GREEN_SPINDLE_TOWER_COORDS[0]
         assert pytest.approx(slot.drop_coords.y) == GREEN_SPINDLE_TOWER_COORDS[1]
         assert pytest.approx(slot.drop_coords.z) == GREEN_SPINDLE_TOWER_COORDS[2]
-        res = _cycle(node, color="GREEN", defective=False)
+        res = _cycle(node, color="GREEN", intact=True)
         assert res.success is True
         assert res.slot_index == 0
         assert res.overflow_occurred is False
@@ -69,7 +69,7 @@ def test_sound_green_routes_to_green_tower():
         assert pytest.approx(entry["x"]) == GREEN_SPINDLE_TOWER_COORDS[0]
         assert pytest.approx(entry["y"]) == GREEN_SPINDLE_TOWER_COORDS[1]
         assert pytest.approx(entry["z"]) == GREEN_SPINDLE_TOWER_COORDS[2]
-        slot2 = _reserve(node, color="GREEN", defective=False)
+        slot2 = _reserve(node, color="GREEN", intact=True)
         assert slot2.slot_index == 1
         assert pytest.approx(slot2.drop_coords.z) == GEAR_STACK_HEIGHT_STEP_M
     finally:
@@ -79,10 +79,10 @@ def test_sound_green_routes_to_green_tower():
 def test_sound_blue_routes_to_blue_tower():
     node = WorkcellNode()
     try:
-        slot = _reserve(node, color="BLUE", defective=False)
+        slot = _reserve(node, color="BLUE", intact=True)
         assert pytest.approx(slot.drop_coords.x) == BLUE_SPINDLE_TOWER_COORDS[0]
         assert pytest.approx(slot.drop_coords.y) == BLUE_SPINDLE_TOWER_COORDS[1]
-        res = _cycle(node, color="BLUE", defective=False)
+        res = _cycle(node, color="BLUE", intact=True)
         assert res.success is True
         entry = node.processed[0]
         assert entry["color"] == "BLUE"
@@ -112,17 +112,17 @@ def test_sound_white_byte_identical_to_today():
         node.destroy_node()
 
 
-def test_defective_any_color_routes_to_bin_uncapped():
+def test_intact_false_any_color_routes_to_bin_uncapped():
     node = WorkcellNode()
     try:
         for k, color in enumerate(("WHITE", "GREEN", "BLUE")):
-            slot = _reserve(node, color=color, defective=True)
+            slot = _reserve(node, color=color, intact=False)
             assert slot.slot_index == k
             assert slot.overflow_occurred is False
             assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN_COORDS[0]
             assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN_COORDS[1]
             assert pytest.approx(slot.drop_coords.z) == k * GEAR_STACK_HEIGHT_STEP_M
-            res = _cycle(node, color=color, defective=True)
+            res = _cycle(node, color=color, intact=False)
             assert res.success is True
             assert res.slot_index == k
             assert res.overflow_occurred is False
@@ -132,9 +132,9 @@ def test_defective_any_color_routes_to_bin_uncapped():
             assert pytest.approx(entry["x"]) == SCRAP_BIN_COORDS[0]
             assert pytest.approx(entry["y"]) == SCRAP_BIN_COORDS[1]
         for _ in range(MAX_TOWER_STACK_CAPACITY):
-            _cycle(node, color="BLUE", defective=True)
+            _cycle(node, color="BLUE", intact=False)
         assert len(node.processed) == 3 + MAX_TOWER_STACK_CAPACITY
-        slot = _reserve(node, color="WHITE", defective=True)
+        slot = _reserve(node, color="WHITE", intact=False)
         assert slot.slot_index == 3 + MAX_TOWER_STACK_CAPACITY
         assert slot.overflow_occurred is False
         assert pytest.approx(slot.drop_coords.z) == (
@@ -148,17 +148,17 @@ def test_towers_independent_slot_math():
     node = WorkcellNode()
     try:
         for _ in range(3):
-            _cycle(node, color="WHITE", defective=False)
-        res = _cycle(node, color="GREEN", defective=False)
+            _cycle(node, color="WHITE", intact=True)
+        res = _cycle(node, color="GREEN", intact=True)
         assert res.slot_index == 0
         green = node.processed[-1]
         assert pytest.approx(green["z"]) == GREEN_SPINDLE_TOWER_COORDS[2]
-        white_slot = _reserve(node, color="WHITE", defective=False)
+        white_slot = _reserve(node, color="WHITE", intact=True)
         assert white_slot.slot_index == 3
         assert pytest.approx(white_slot.drop_coords.z) == 3 * GEAR_STACK_HEIGHT_STEP_M
-        green_slot = _reserve(node, color="GREEN", defective=False)
+        green_slot = _reserve(node, color="GREEN", intact=True)
         assert green_slot.slot_index == 1
-        blue_slot = _reserve(node, color="BLUE", defective=False)
+        blue_slot = _reserve(node, color="BLUE", intact=True)
         assert blue_slot.slot_index == 0
     finally:
         node.destroy_node()
@@ -169,13 +169,13 @@ def test_default_reservation_follows_active_entry():
     try:
         slot = _reserve(node)
         assert pytest.approx(slot.drop_coords.x) == DEFAULT_SPINDLE_TOWER_COORDS[0]
-        _spawn(node, color="GREEN", defective=False)
+        _spawn(node, color="GREEN", intact=True)
         slot = _reserve(node)
         assert pytest.approx(slot.drop_coords.x) == GREEN_SPINDLE_TOWER_COORDS[0]
         assert pytest.approx(slot.drop_coords.y) == GREEN_SPINDLE_TOWER_COORDS[1]
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        _spawn(node, color="BLUE", defective=True)
+        _spawn(node, color="BLUE", intact=False)
         slot = _reserve(node)
         assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN_COORDS[0]
         assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN_COORDS[1]
@@ -187,7 +187,7 @@ def test_default_reservation_follows_active_entry():
 def test_invalid_color_reservation_follows_white():
     node = WorkcellNode()
     try:
-        slot = _reserve(node, color="RED", defective=False)
+        slot = _reserve(node, color="RED", intact=True)
         assert slot.slot_index == 0
         assert slot.overflow_occurred is False
         assert pytest.approx(slot.drop_coords.x) == DEFAULT_SPINDLE_TOWER_COORDS[0]
@@ -200,13 +200,13 @@ def test_overflow_evicts_oldest_of_same_tower_only():
     node = WorkcellNode()
     try:
         for _ in range(MAX_TOWER_STACK_CAPACITY):
-            _cycle(node, color="GREEN", defective=False)
-        _cycle(node, color="WHITE", defective=False)
-        _cycle(node, color="WHITE", defective=False)
+            _cycle(node, color="GREEN", intact=True)
+        _cycle(node, color="WHITE", intact=True)
+        _cycle(node, color="WHITE", intact=True)
         white_before = [
             (e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"
         ]
-        res = _cycle(node, color="GREEN", defective=False)
+        res = _cycle(node, color="GREEN", intact=True)
         assert res.success is True
         assert res.overflow_occurred is True
         assert res.slot_index == MAX_TOWER_STACK_CAPACITY - 1
