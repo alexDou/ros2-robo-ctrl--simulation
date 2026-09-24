@@ -169,10 +169,10 @@ class WorkcellNode(Node):
         return self._max_capacity - 1, (self._max_capacity - 1) * self._height_step, True
 
     def _destination_for(
-        self, color: str, defective: bool
+        self, color: str, intact: bool
     ) -> tuple[tuple[float, float, float], bool]:
-        """Returns (base_xyz, uncapped) for a classification; defective dominates color."""
-        if defective:
+        """Returns (base_xyz, uncapped) for a classification; unsound dominates color."""
+        if not intact:
             return SCRAP_BIN_COORDS, True
         if color == "GREEN":
             return GREEN_SPINDLE_TOWER_COORDS, False
@@ -182,7 +182,7 @@ class WorkcellNode(Node):
 
     def _tower_fill_locked(self, color: str) -> int:
         """Counts sound gears of one color resting on its tower."""
-        base = self._destination_for(color, False)[0]
+        base = self._destination_for(color, True)[0]
         return sum(
             1
             for e in self._processed
@@ -192,17 +192,17 @@ class WorkcellNode(Node):
         )
 
     def _bin_fill_locked(self) -> int:
-        """Counts defective gears piled in the ScrapBin (uncapped)."""
+        """Counts unsound gears piled in the ScrapBin (uncapped)."""
         return sum(1 for e in self._processed if not e.get("intact", True))
 
     def _active_classification_locked(self) -> Optional[tuple[str, bool]]:
-        """Returns (color, defective) of the spawned/in-progress gear, if any."""
+        """Returns (color, intact) of the spawned/in-progress gear, if any."""
         for bucket in (self._spawned, self._in_progress):
             if bucket:
                 entry = next(iter(bucket.values()))
                 return (
                     str(entry.get("color", DEFAULT_GEAR_COLOR)),
-                    not entry.get("intact", True),
+                    bool(entry.get("intact", True)),
                 )
         return None
 
@@ -215,15 +215,15 @@ class WorkcellNode(Node):
         follow the active gear so the arm needs no classification plumbing.
         """
         color = str(getattr(request, "color", DEFAULT_GEAR_COLOR) or DEFAULT_GEAR_COLOR)
-        defective = bool(getattr(request, "defective", False))
+        intact = bool(getattr(request, "intact", True))
         with self._lock:
-            if color == DEFAULT_GEAR_COLOR and not defective:
+            if color == DEFAULT_GEAR_COLOR and intact:
                 active = self._active_classification_locked()
                 if active is not None:
-                    color, defective = active
+                    color, intact = active
             if color not in VALID_GEAR_COLORS:
                 color = DEFAULT_GEAR_COLOR
-            base, uncapped = self._destination_for(color, defective)
+            base, uncapped = self._destination_for(color, intact)
             if uncapped:
                 count = self._bin_fill_locked()
                 slot_index = count
@@ -276,7 +276,7 @@ class WorkcellNode(Node):
                 response.gear_id = ""
                 self.get_logger().warning(f"Rejecting spawn_object: invalid color '{color}'")
                 return response
-            defective = bool(getattr(request, "defective", False))
+            intact = bool(getattr(request, "intact", True))
             gear_id = uuid.uuid4().hex
             self._spawned[gear_id] = {
                 "id": gear_id,
@@ -284,7 +284,7 @@ class WorkcellNode(Node):
                 "y": float(request.coords.y),
                 "z": float(request.coords.z),
                 "color": color,
-                "intact": not defective,
+                "intact": intact,
             }
         self._publish_state()
 
@@ -342,7 +342,7 @@ class WorkcellNode(Node):
             if color not in VALID_GEAR_COLORS:
                 color = DEFAULT_GEAR_COLOR
             intact = bool(entry.get("intact", True))
-            base, uncapped = self._destination_for(color, not intact)
+            base, uncapped = self._destination_for(color, intact)
             if uncapped:
                 count = self._bin_fill_locked()
                 slot_index = count

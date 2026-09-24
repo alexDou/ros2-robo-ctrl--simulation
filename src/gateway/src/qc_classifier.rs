@@ -10,7 +10,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 pub use crate::domain::GearColor;
 
-/// Classification outcome: tower color + soundness (`false` = defective, routes to `ScrapBin`).
+/// Classification outcome: tower color + soundness (`intact == false` routes to `ScrapBin`).
 pub type Classification = (GearColor, bool);
 
 /// One-function plugin seam for spawn classification.
@@ -101,7 +101,7 @@ impl QcClassifier for SeededQcClassifier {
 
 /// Enriches a validated blind `SPAWN_OBJECT` payload with classification.
 ///
-/// Writes `color` (`WHITE`/`GREEN`/`BLUE`) + `defective` (`!intact`) keys the
+/// Writes `color` (`WHITE`/`GREEN`/`BLUE`) + `intact` keys the
 /// `SpawnObject.srv`/`EdgeBridge` downstream expects.
 #[must_use]
 pub fn enrich_spawn_payload(
@@ -115,8 +115,8 @@ pub fn enrich_spawn_payload(
             serde_json::to_value(color).unwrap_or(serde_json::Value::Null),
         );
         obj.insert(
-            "defective".to_string(),
-            serde_json::Value::Bool(!intact),
+            "intact".to_string(),
+            serde_json::Value::Bool(intact),
         );
     }
     payload

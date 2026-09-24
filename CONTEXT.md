@@ -69,11 +69,11 @@ Linear feed mechanism advancing gearwheels one by one to a fixed pickup station 
 _Avoid_: Moving belt, continuous feeder, conveyor line
 
 **SpindleTower**:
-Physical sorting destination vertical post receiving inspected non-defective gearwheels by color.
+Physical sorting destination vertical post receiving inspected sound gearwheels by color.
 _Avoid_: Peg, stacker, pole
 
 **ScrapBin**:
-Physical disposal destination chute receiving cracked or defective gearwheels regardless of color.
+Physical disposal destination chute receiving cracked or unsound gearwheels regardless of color.
 _Avoid_: Trash, reject pile, discard box
 
 **WorkcellTable**:

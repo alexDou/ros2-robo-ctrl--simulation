@@ -126,7 +126,7 @@ class EdgeBridgeCommandsMixin:
             # rides on the same payload. Pop before blind-schema validation.
             raw_spawn = dict(command.payload)
             spawn_color = str(raw_spawn.pop("color", "WHITE") or "WHITE")
-            spawn_defective = bool(raw_spawn.pop("defective", False))
+            spawn_intact = bool(raw_spawn.pop("intact", True))
             try:
                 payload = SpawnObjectPayload.model_validate(raw_spawn)
             except Exception as e:
@@ -144,7 +144,7 @@ class EdgeBridgeCommandsMixin:
             req.coords = Point(x=float(payload.x), y=float(payload.y), z=float(payload.z))
             req.object_type = payload.object_type.value
             req.color = spawn_color
-            req.defective = spawn_defective
+            req.intact = spawn_intact
 
             with self._lock:
                 self._pending_spawn_coords = (float(payload.x), float(payload.y), float(payload.z))

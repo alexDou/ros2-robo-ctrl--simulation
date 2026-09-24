@@ -223,7 +223,7 @@
               },
               "intact": {
                 "type": "boolean",
-                "description": "False if gear is defective and must route to scrap bin"
+                "description": "False if gear is unsound and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -282,7 +282,7 @@
               },
               "intact": {
                 "type": "boolean",
-                "description": "False if gear is defective and must route to scrap bin"
+                "description": "False if gear is unsound and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -341,7 +341,7 @@
               },
               "intact": {
                 "type": "boolean",
-                "description": "False if gear is defective and must route to scrap bin"
+                "description": "False if gear is unsound and must route to scrap bin"
               }
             },
             "additionalProperties": false
