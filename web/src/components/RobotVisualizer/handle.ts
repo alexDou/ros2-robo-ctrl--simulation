@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import type { URDFRobot } from 'urdf-loader';
-import { UR5E_JOINTS } from '@contracts';
+import { UR5E_JOINTS, type GearColor } from '@contracts';
 import type { RobotVisualizerGlobalHandle } from '@/types/global';
 import type { SnapshotStore } from '@/components/RobotVisualizer/interaction/snapshot';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
@@ -14,6 +14,7 @@ export interface HandleDeps {
   getScene: () => THREE.Scene;
   getRenderer: () => THREE.WebGLRenderer;
   getSpindle: () => SpindleTowerProceduralAssets | null;
+  getSpindlesByColor: () => Record<GearColor, SpindleTowerProceduralAssets | null>;
   getTable: () => TableProceduralAssets | null;
   getPedestal: () => PedestalProceduralAssets | null;
   store: SnapshotStore;
@@ -96,6 +97,9 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
       };
     },
     getSpindleTowerMesh: () => deps.getSpindle()?.group ?? null,
+    getSpindleTowerMeshes: () =>
+      Object.values(deps.getSpindlesByColor()).map((s) => s?.group ?? null),
+    getSpindleTowerMeshByColor: (color: GearColor) => deps.getSpindlesByColor()[color]?.group ?? null,
     getSpindleBaseFlangeMesh: () => deps.getSpindle()?.flangeMesh ?? null,
     getSpindlePinMesh: () => deps.getSpindle()?.pinMesh ?? null,
     getSnapshotGearCount: () => deps.store.gears.size,

@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+import type { GearColor } from '../../domain/contracts';
 
 export interface VisualizerRendererInfo {
   memory: {
@@ -40,6 +41,8 @@ export interface RobotVisualizerGlobalHandle {
   getRobot: () => unknown;
   getPalmNozzleState: () => VisualizerNozzleState | null;
   getSpindleTowerMesh: () => unknown;
+  getSpindleTowerMeshes: () => unknown[];
+  getSpindleTowerMeshByColor: (color: GearColor) => unknown;
   getSpindleBaseFlangeMesh: () => unknown;
   getSpindlePinMesh: () => unknown;
   getSnapshotGearCount: () => number;

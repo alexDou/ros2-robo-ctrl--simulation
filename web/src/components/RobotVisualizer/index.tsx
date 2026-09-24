@@ -4,5 +4,7 @@ export {
   REACHABILITY_MIN_RADIUS,
   REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
+  SPINDLE_TOWERS,
+  TOWER_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 } from '@/components/RobotVisualizer/constants';

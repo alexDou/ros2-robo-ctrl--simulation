@@ -7,12 +7,15 @@ import {
   REACHABILITY_MIN_RADIUS,
   REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
+  SPINDLE_TOWERS,
+  TOWER_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 } from '@/components/RobotVisualizer/constants';
 import type {
   RobotVisualizerProps,
   WorkcellSnapshotView,
 } from '@/components/RobotVisualizer/types';
+import type { GearColor } from '@contracts';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
@@ -40,6 +43,8 @@ export {
   REACHABILITY_MIN_RADIUS,
   REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
+  SPINDLE_TOWERS,
+  TOWER_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 };
 
@@ -101,6 +106,7 @@ export function RobotVisualizer({
     let pedestalAssets: PedestalProceduralAssets | null = null;
     let tableAssets: TableProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
+    let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null = null;
     let mountLink: THREE.Object3D | null = null;
     // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
     // id-keyed from buffer workcellState each frame: spawned -> table mesh
@@ -117,6 +123,7 @@ export function RobotVisualizer({
     pedestalAssets = stage.pedestalAssets;
     tableAssets = stage.tableAssets;
     spindleTowerAssets = stage.spindleTowerAssets;
+    spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
 
     // 3. Renderer instantiation
     let renderer: THREE.WebGLRenderer;
@@ -213,6 +220,11 @@ export function RobotVisualizer({
       getScene: () => scene,
       getRenderer: () => renderer,
       getSpindle: () => spindleTowerAssets,
+      getSpindlesByColor: () => ({
+        WHITE: spindleTowerAssetsByColor?.WHITE ?? spindleTowerAssets,
+        GREEN: spindleTowerAssetsByColor?.GREEN ?? null,
+        BLUE: spindleTowerAssetsByColor?.BLUE ?? null,
+      }),
       getTable: () => tableAssets,
       getPedestal: () => pedestalAssets,
       store,
@@ -369,14 +381,19 @@ export function RobotVisualizer({
       }
       store.gears.clear();
 
-      // Dispose SpindleTower fixture assets
-      if (spindleTowerAssets) {
-        if (spindleTowerAssets.group.parent) {
-          spindleTowerAssets.group.parent.remove(spindleTowerAssets.group);
+      // Dispose SpindleTower fixture assets (all three color towers)
+      if (spindleTowerAssetsByColor) {
+        for (const tower of Object.values(spindleTowerAssetsByColor)) {
+          if (tower) {
+            if (tower.group.parent) {
+              tower.group.parent.remove(tower.group);
+            }
+            tower.dispose();
+          }
         }
-        spindleTowerAssets.dispose();
-        spindleTowerAssets = null;
+        spindleTowerAssetsByColor = null;
       }
+      spindleTowerAssets = null;
 
       // Dispose procedural palm assets
       if (palmAssets) {

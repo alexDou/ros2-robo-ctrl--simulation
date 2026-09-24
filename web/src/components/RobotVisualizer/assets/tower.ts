@@ -1,18 +1,22 @@
 import * as THREE from 'three';
 import { disposeMaterial } from '@/utils/three/dispose';
-import { SPINDLE_TOWER_COORDS } from '@/components/RobotVisualizer/constants';
+import { SPINDLE_TOWERS } from '@/components/RobotVisualizer/constants';
+import type { GearColor } from '@contracts';
 
 export interface SpindleTowerProceduralAssets {
   group: THREE.Group;
   flangeMesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial>;
   pinMesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial>;
+  color: GearColor;
   dispose: () => void;
 }
 
-export function createSpindleTower(): SpindleTowerProceduralAssets {
+export function createSpindleTower(color: GearColor = 'WHITE'): SpindleTowerProceduralAssets {
+  const coords = SPINDLE_TOWERS[color];
   const group = new THREE.Group();
   group.name = 'spindle-tower';
-  group.position.set(SPINDLE_TOWER_COORDS.x, SPINDLE_TOWER_COORDS.y, SPINDLE_TOWER_COORDS.z);
+  group.position.set(coords.x, coords.y, coords.z);
+  group.userData.color = color;
 
   // 1. Aluminum base flange (r=0.04m, h=0.008m)
   const flangeRadius = 0.04;
@@ -51,5 +55,5 @@ export function createSpindleTower(): SpindleTowerProceduralAssets {
     disposeMaterial(pinMat);
   };
 
-  return { group, flangeMesh, pinMesh, dispose };
+  return { group, flangeMesh, pinMesh, color, dispose };
 }
