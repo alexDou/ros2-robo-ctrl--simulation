@@ -171,6 +171,13 @@ export const ur5eJointSchema = UR5eJointSchema;
 
 export type UR5eJoint = z.infer<typeof UR5eJointSchema>;
 
+/** Gear color class routing to its spindle tower */
+export const VALID_GEAR_COLORS = [
+  'WHITE',
+  'GREEN',
+  'BLUE',
+] as const;
+
 /** Canonical default robot identifier across all services */
 export const DEFAULT_ROBOT_ID = 'arm-ur5';
 
@@ -191,6 +198,12 @@ export const TOWER_CAPACITY = 10 as const;
 
 /** Vertical stacking step per gear in meters */
 export const STACK_STEP_M = 0.02 as const;
+
+/** Maximum unsound gears piled in ScrapBin before sharp-cut recycle */
+export const MAX_SCRAP_BIN_CAPACITY = 100 as const;
+
+/** Fallback gear color class when classification is absent */
+export const DEFAULT_GEAR_COLOR = 'WHITE';
 
 /** UR5e 6-DoF joint angles in radians */
 export type ArmJointPositions = [number, number, number, number, number, number];

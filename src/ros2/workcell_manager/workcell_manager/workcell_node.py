@@ -19,15 +19,17 @@ from robot_control_interfaces.srv import (
     SpawnObject,
 )
 
-DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.40, -0.30, 0.0)
-GREEN_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.55, -0.30, 0.0)
-BLUE_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.70, -0.30, 0.0)
-SCRAP_BIN_COORDS: tuple[float, float, float] = (0.40, 0.28, 0.0)
-GEAR_STACK_HEIGHT_STEP_M: float = 0.02
-MAX_TOWER_STACK_CAPACITY: int = 10
-MAX_SCRAP_BIN_CAPACITY: int = 100
-VALID_GEAR_COLORS: tuple[str, ...] = ("WHITE", "GREEN", "BLUE")
-DEFAULT_GEAR_COLOR: str = "WHITE"
+from domain import (
+    BLUE_TOWER,
+    DEFAULT_GEAR_COLOR,
+    GREEN_TOWER,
+    MAX_SCRAP_BIN_CAPACITY,
+    SCRAP_BIN,
+    STACK_STEP_M,
+    TOWER_CAPACITY,
+    VALID_GEAR_COLORS,
+    WHITE_TOWER,
+)
 
 
 class WorkcellNode(Node):
@@ -36,11 +38,11 @@ class WorkcellNode(Node):
     def __init__(self, node_name: str = "workcell_node", **kwargs) -> None:
         super().__init__(node_name, **kwargs)
 
-        self.declare_parameter("tower_x", DEFAULT_SPINDLE_TOWER_COORDS[0])
-        self.declare_parameter("tower_y", DEFAULT_SPINDLE_TOWER_COORDS[1])
-        self.declare_parameter("tower_z", DEFAULT_SPINDLE_TOWER_COORDS[2])
-        self.declare_parameter("height_step", GEAR_STACK_HEIGHT_STEP_M)
-        self.declare_parameter("max_capacity", MAX_TOWER_STACK_CAPACITY)
+        self.declare_parameter("tower_x", WHITE_TOWER[0])
+        self.declare_parameter("tower_y", WHITE_TOWER[1])
+        self.declare_parameter("tower_z", WHITE_TOWER[2])
+        self.declare_parameter("height_step", STACK_STEP_M)
+        self.declare_parameter("max_capacity", TOWER_CAPACITY)
 
         self._tower_x = float(self.get_parameter("tower_x").value)
         self._tower_y = float(self.get_parameter("tower_y").value)
@@ -174,11 +176,11 @@ class WorkcellNode(Node):
     ) -> tuple[tuple[float, float, float], bool]:
         """Returns (base_xyz, uncapped) for a classification; unsound dominates color."""
         if not intact:
-            return SCRAP_BIN_COORDS, True
+            return SCRAP_BIN, True
         if color == "GREEN":
-            return GREEN_SPINDLE_TOWER_COORDS, False
+            return GREEN_TOWER, False
         if color == "BLUE":
-            return BLUE_SPINDLE_TOWER_COORDS, False
+            return BLUE_TOWER, False
         return (self._tower_x, self._tower_y, self._tower_z), False
 
     def _tower_fill_locked(self, color: str) -> int:

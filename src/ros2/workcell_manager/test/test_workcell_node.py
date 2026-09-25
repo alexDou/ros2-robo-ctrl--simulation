@@ -15,10 +15,12 @@ from robot_control_interfaces.srv import (
     MarkGrasped,
     SpawnObject,
 )
+from domain import (
+    STACK_STEP_M,
+    TOWER_CAPACITY,
+    WHITE_TOWER,
+)
 from workcell_manager.workcell_node import (
-    DEFAULT_SPINDLE_TOWER_COORDS,
-    GEAR_STACK_HEIGHT_STEP_M,
-    MAX_TOWER_STACK_CAPACITY,
     WorkcellNode,
 )
 
@@ -56,19 +58,19 @@ def test_get_drop_slot_incremental_height():
     node = WorkcellNode()
     try:
         # Pure reservation: repeated queries return slot 0, no state change.
-        for _ in range(MAX_TOWER_STACK_CAPACITY):
+        for _ in range(TOWER_CAPACITY):
             out_res = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
             assert out_res.slot_index == 0
-            assert pytest.approx(out_res.drop_coords.x) == DEFAULT_SPINDLE_TOWER_COORDS[0]
-            assert pytest.approx(out_res.drop_coords.y) == DEFAULT_SPINDLE_TOWER_COORDS[1]
+            assert pytest.approx(out_res.drop_coords.x) == WHITE_TOWER[0]
+            assert pytest.approx(out_res.drop_coords.y) == WHITE_TOWER[1]
             assert pytest.approx(out_res.drop_coords.z) == 0.0
             assert out_res.overflow_occurred is False
             assert node.inventory == 0
         # Height grows only via spawn->grasp->commit cycles.
-        for k in range(MAX_TOWER_STACK_CAPACITY):
+        for k in range(TOWER_CAPACITY):
             out = _full_cycle(node)
             assert out.slot_index == k
-            assert pytest.approx(out.drop_coords.z) == k * GEAR_STACK_HEIGHT_STEP_M
+            assert pytest.approx(out.drop_coords.z) == k * STACK_STEP_M
             assert node.inventory == k + 1
             assert node.tower_count == k + 1
         assert node.inventory == 10
@@ -98,7 +100,7 @@ def test_get_drop_slot_custom_tower_elevation():
 
         _full_cycle(node)
         out_res3 = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
-        assert pytest.approx(out_res3.drop_coords.z) == 0.05 + GEAR_STACK_HEIGHT_STEP_M
+        assert pytest.approx(out_res3.drop_coords.z) == 0.05 + STACK_STEP_M
         assert out_res3.slot_index == 1
     finally:
         node.destroy_node()
@@ -121,12 +123,12 @@ def test_get_drop_slot_fifo_overflow():
         out11 = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
 
         assert out11.overflow_occurred is True
-        assert out11.slot_index == MAX_TOWER_STACK_CAPACITY - 1  # 9 (top slot)
-        assert pytest.approx(out11.drop_coords.x) == DEFAULT_SPINDLE_TOWER_COORDS[0]
-        assert pytest.approx(out11.drop_coords.y) == DEFAULT_SPINDLE_TOWER_COORDS[1]
-        assert pytest.approx(out11.drop_coords.z) == (MAX_TOWER_STACK_CAPACITY - 1) * GEAR_STACK_HEIGHT_STEP_M
+        assert out11.slot_index == TOWER_CAPACITY - 1  # 9 (top slot)
+        assert pytest.approx(out11.drop_coords.x) == WHITE_TOWER[0]
+        assert pytest.approx(out11.drop_coords.y) == WHITE_TOWER[1]
+        assert pytest.approx(out11.drop_coords.z) == (TOWER_CAPACITY - 1) * STACK_STEP_M
         assert node.inventory == 10
-        assert node.tower_count == MAX_TOWER_STACK_CAPACITY
+        assert node.tower_count == TOWER_CAPACITY
 
         # 12th commit: continuing overflow
         node.handle_spawn_object(
@@ -139,7 +141,7 @@ def test_get_drop_slot_fifo_overflow():
         assert out12.slot_index == 9
         assert pytest.approx(out12.drop_coords.z) == 0.18
         assert node.inventory == 10
-        assert node.tower_count == MAX_TOWER_STACK_CAPACITY
+        assert node.tower_count == TOWER_CAPACITY
     finally:
         node.destroy_node()
 

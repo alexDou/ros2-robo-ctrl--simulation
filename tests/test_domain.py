@@ -29,6 +29,49 @@ from domain import (
 )
 
 
+def test_workcell_constants_match_schema_single_source_of_truth():
+    # hand-sim-rdbp: Stage-0 lock — generated domain owns workcell geometry.
+    from domain import (
+        BLUE_TOWER,
+        DEFAULT_GEAR_COLOR,
+        GREEN_TOWER,
+        MAX_SCRAP_BIN_CAPACITY,
+        SCRAP_BIN,
+        STACK_STEP_M,
+        TOWER_CAPACITY,
+        VALID_GEAR_COLORS,
+        WHITE_TOWER,
+    )
+
+    assert WHITE_TOWER == [0.4, -0.3, 0.0]
+    assert GREEN_TOWER == [0.55, -0.3, 0.0]
+    assert BLUE_TOWER == [0.7, -0.3, 0.0]
+    assert SCRAP_BIN == [0.4, 0.28, 0.0]
+    assert TOWER_CAPACITY == 10
+    assert STACK_STEP_M == 0.02
+    assert MAX_SCRAP_BIN_CAPACITY == 100
+    assert DEFAULT_GEAR_COLOR == "WHITE"
+    assert VALID_GEAR_COLORS == ["WHITE", "GREEN", "BLUE"]
+
+
+def test_workcell_node_imports_generated_domain_without_local_constants():
+    # hand-sim-rdbp: no re-declared constant defs in workcell_node.py.
+    import pathlib
+    import re
+
+    src = pathlib.Path("src/ros2/workcell_manager/workcell_manager/workcell_node.py").read_text()
+    for name in (
+        "DEFAULT_SPINDLE_TOWER_COORDS",
+        "GREEN_SPINDLE_TOWER_COORDS",
+        "BLUE_SPINDLE_TOWER_COORDS",
+        "SCRAP_BIN_COORDS",
+        "GEAR_STACK_HEIGHT_STEP_M",
+        "MAX_TOWER_STACK_CAPACITY",
+    ):
+        assert name not in src, f"legacy constant {name} still defined/used"
+    assert "from domain import" in src
+
+
 def test_robot_command_ping_serialization_round_trip():
     cmd = RobotCommand(
         command_id="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",

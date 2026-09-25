@@ -122,6 +122,19 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
 
         if prop_schema.get("type") == "string" and "enum" in prop_schema:
             enum_name = prop_schema.get("title") or to_pascal_case(prop_name)
+            const_name = prop_schema.get("x-constant-name")
+            const_alias = prop_schema.get("x-constant-alias")
+            existing = next((c for c in ir.constants if c.name == const_name), None) if const_name else None
+            if existing is not None and (existing.items != prop_schema["enum"] or existing.item_type != enum_name):
+                raise ValueError(f"Conflicting definitions for constant {const_name}")
+            if const_name and existing is None:
+                ir.constants.append(ConstantDef(
+                    name=const_name,
+                    alias=const_alias or const_name,
+                    item_type=enum_name,
+                    items=prop_schema["enum"],
+                    description=desc,
+                ))
             if enum_name not in seen_enums:
                 ir.enums.append(EnumDef(name=enum_name, variants=prop_schema["enum"], description=desc))
                 seen_enums.add(enum_name)
@@ -415,9 +428,10 @@ def emit_rust(ir: DomainIR) -> str:
         for item in c.items:
             lines.append(f'    "{item}",')
         lines.append("];")
-        lines.append("")
-        lines.append(f"/// Alias for canonical joint names.")
-        lines.append(f"pub const {c.alias}: [&str; {len(c.items)}] = {c.name};")
+        if c.alias != c.name:
+            lines.append("")
+            lines.append(f"/// Alias for canonical joint names.")
+            lines.append(f"pub const {c.alias}: [&str; {len(c.items)}] = {c.name};")
 
     for sc in ir.scalar_constants:
         lines.append("")
@@ -661,6 +675,7 @@ def emit_python(ir: DomainIR) -> str:
         for v in e.variants:
             lines.append(f'    {v} = "{v}"')
 
+    enum_names = {e.name for e in ir.enums}
     for c in ir.constants:
         lines.append("")
         lines.append("")
@@ -668,8 +683,11 @@ def emit_python(ir: DomainIR) -> str:
         for item in c.items:
             lines.append(f'    "{item}",')
         lines.append("]")
-        lines.append("")
-        lines.append(f"{c.alias}: list[str] = {c.name}")
+        if c.alias != c.name:
+            lines.append("")
+            lines.append(f"{c.alias}: list[str] = {c.name}")
+        if c.item_type in enum_names:
+            continue
         lines.append("")
         lines.append(f"{c.item_type} = Literal[")
         for item in c.items:
@@ -973,6 +991,7 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append("")
         lines.append(f"export type {e.name} = z.infer<typeof {e.name}Schema>;")
 
+    enum_names = {e.name for e in ir.enums}
     for c in ir.constants:
         lines.append("")
         if c.description:
@@ -981,8 +1000,11 @@ def emit_typescript(ir: DomainIR) -> str:
         for item in c.items:
             lines.append(f"  '{item}',")
         lines.append("] as const;")
-        lines.append("")
-        lines.append(f"export const {c.alias} = {c.name};")
+        if c.alias != c.name:
+            lines.append("")
+            lines.append(f"export const {c.alias} = {c.name};")
+        if c.item_type in enum_names:
+            continue
         lines.append("")
         lines.append(f"export const {c.item_type}Schema = z.enum({c.name});")
         lines.append(f"export const {to_camel_case(c.item_type)}Schema = {c.item_type}Schema;")
