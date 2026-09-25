@@ -121,6 +121,8 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
         .filter((r) => r.bucket === 'processed')
         .map((r) => r.assets.group),
     getTowerGearCount: () =>
+      // NOTE: whole `processed` bucket (towers + ScrapBin), not one tower.
+      // Per-color n/10 counters must filter by color+intact+coords, not this.
       [...deps.store.gears.values()].filter((r) => r.bucket === 'processed').length,
     isGearAttached: () => [...deps.store.gears.values()].some((r) => r.bucket === 'in_progress'),
     wasGearEverAttached: () => [...deps.store.gears.values()].some((r) => r.bucket === 'in_progress'),
