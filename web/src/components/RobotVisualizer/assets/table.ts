@@ -62,7 +62,7 @@ export function createWorkcellTable(): TableProceduralAssets {
     maxY: centerY + slabSizeY / 2, // 0.3
   };
 
-  // Dedicated landing mat across the reachable gear ingestion area (0.40m <= R <= 0.75m)
+  // Dedicated landing mat across the reachable gear ingestion area (0.40m <= R <= 0.80m)
   const matBounds = {
     minX: 0.40,
     maxX: 0.70,

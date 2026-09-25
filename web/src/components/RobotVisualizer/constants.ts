@@ -2,7 +2,7 @@ import { WHITE_TOWER, GREEN_TOWER, BLUE_TOWER, SCRAP_BIN, TOWER_CAPACITY as DOMA
 import type { GearColor } from '@contracts';
 
 export const REACHABILITY_MIN_RADIUS = 0.40;
-export const REACHABILITY_MAX_RADIUS = 0.75;
+export const REACHABILITY_MAX_RADIUS = 0.8;
 // Legacy single-tower alias (Unit 6.x): identical to SPINDLE_TOWERS.WHITE.
 // Kept so existing single-tower scene/tests render unchanged.
 export const SPINDLE_TOWER_COORDS = { x: 0.4, y: -0.3, z: 0.0 };
