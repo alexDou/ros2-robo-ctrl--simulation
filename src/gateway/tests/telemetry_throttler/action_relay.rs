@@ -75,7 +75,7 @@ async fn test_ws_pick_and_place_translates_to_action_and_relays_feedback() {
         .expect("timed out waiting for action goal")
         .expect("goal rx");
 
-    assert_eq!(received_goal.command_id, "cmd-pnp-action-42");
+    assert_eq!(received_goal.command_id, "robot-action-test/cmd-pnp-action-42");
     assert!(received_goal.use_custom_drop);
     assert!((received_goal.pick_coords.x - 0.35).abs() < 1e-6);
     assert!((received_goal.pick_coords.y - 0.15).abs() < 1e-6);

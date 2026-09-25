@@ -1,5 +1,6 @@
 """Pick-and-place action dispatch + workcell service callbacks."""
 
+import math
 import threading
 from typing import Any, Optional
 
@@ -24,7 +25,8 @@ class EdgeBridgeActionsMixin:
             try:
                 res = future.result()
             except Exception as err:
-                self._publish_error("SERVICE_ERROR", f"MarkGrasped failed: {err}")
+                self.get_logger().error(f"MarkGrasped failed: {err}")
+                self._publish_error("SERVICE_ERROR", "MarkGrasped failed")
                 self._cancel_active_pnp("MarkGrasped failed")
                 return
             if res is None or not res.success:
@@ -48,7 +50,8 @@ class EdgeBridgeActionsMixin:
             try:
                 res = future.result()
             except Exception as err:
-                self._publish_error("SERVICE_ERROR", f"CommitDrop failed: {err}")
+                self.get_logger().error(f"CommitDrop failed: {err}")
+                self._publish_error("SERVICE_ERROR", "CommitDrop failed")
                 self._cancel_active_pnp("CommitDrop failed")
                 return
             if res is None or not res.success:
@@ -74,22 +77,24 @@ class EdgeBridgeActionsMixin:
         completion_event: Optional[threading.Event] = None,
     ) -> RobotTelemetryEvent:
         """Builds PickAndPlace goal and dispatches to action server, streaming feedback to Zenoh."""
+        px, py, pz = payload.pick_x, payload.pick_y, payload.pick_z
+        if not (math.isfinite(px) and math.isfinite(py) and math.isfinite(pz)):
+            self.get_logger().error("PickAndPlace payload non-finite pick coords")
+            self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid")
+            return self.publish_telemetry(command_id=command_id)
         goal = PickAndPlace.Goal()
-        goal.pick_coords = Point(
-            x=float(payload.pick_x),
-            y=float(payload.pick_y),
-            z=float(payload.pick_z),
-        )
+        goal.pick_coords = Point(x=px, y=py, z=pz)
         if (
             payload.drop_x is not None
             and payload.drop_y is not None
             and payload.drop_z is not None
         ):
-            goal.drop_coords = Point(
-                x=float(payload.drop_x),
-                y=float(payload.drop_y),
-                z=float(payload.drop_z),
-            )
+            dx, dy, dz = payload.drop_x, payload.drop_y, payload.drop_z
+            if not (math.isfinite(dx) and math.isfinite(dy) and math.isfinite(dz)):
+                self.get_logger().error("PickAndPlace payload non-finite drop coords")
+                self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid")
+                return self.publish_telemetry(command_id=command_id)
+            goal.drop_coords = Point(x=dx, y=dy, z=dz)
             goal.use_custom_drop = True
         else:
             goal.drop_coords = Point(x=0.0, y=0.0, z=0.0)
@@ -152,7 +157,7 @@ class EdgeBridgeActionsMixin:
                 with self._lock:
                     if self._robot_state == RobotState.EXECUTING:
                         self._robot_state = RobotState.FAULT
-                self._publish_error("GOAL_ERROR", str(err))
+                self._publish_error("GOAL_ERROR", "PickAndPlace goal failed")
                 self.publish_telemetry()
                 if completion_event is not None:
                     completion_event.set()
@@ -201,12 +206,12 @@ class EdgeBridgeActionsMixin:
                                         f"PickAndPlace failed: {pnp_res.result.message}"
                                     )
                                     self._robot_state = RobotState.FAULT
-                                    self._publish_error("ACTION_FAILED", pnp_res.result.message)
+                                    self._publish_error("ACTION_FAILED", "PickAndPlace failed")
                                     should_publish_completion = True
                             except Exception as err:
                                 self.get_logger().error(f"Error reading PickAndPlace result: {err}")
                                 self._robot_state = RobotState.FAULT
-                                self._publish_error("RESULT_ERROR", str(err))
+                                self._publish_error("RESULT_ERROR", "PickAndPlace result unreadable")
                                 should_publish_completion = True
 
                 if completion_event is not None:

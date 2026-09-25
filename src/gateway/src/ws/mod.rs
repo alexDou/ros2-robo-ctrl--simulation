@@ -146,7 +146,7 @@ pub async fn teleop_ws(
                                         warn!("Malformed command payload for robot {robot_id_for_task}: {val_err}");
                                         let error_frame = ErrorFrame::new(
                                             "SCHEMA_VALIDATION_ERROR",
-                                            format!("Malformed {:?} payload: {val_err}", command.r#type),
+                                            format!("Malformed {:?} payload", command.r#type),
                                             current_time_ns(),
                                         );
                                         if let Ok(err_json) = serde_json::to_string(&error_frame) {
@@ -178,6 +178,13 @@ pub async fn teleop_ws(
                                         if command.r#type == crate::domain::CommandType::PickAndPlaceTarget {
                                             use serde::Deserialize;
                                             if let Ok(payload) = crate::domain::PickAndPlaceTargetPayload::deserialize(&command.payload) {
+                                                if payload.pick_x.is_finite()
+                                                    && payload.pick_y.is_finite()
+                                                    && payload.pick_z.is_finite()
+                                                    && payload.drop_x.is_none_or(|v| v.is_finite())
+                                                    && payload.drop_y.is_none_or(|v| v.is_finite())
+                                                    && payload.drop_z.is_none_or(|v| v.is_finite())
+                                                {
                                                 let use_custom_drop = payload.drop_x.is_some() && payload.drop_y.is_some() && payload.drop_z.is_some();
                                                 let goal = crate::action::PickAndPlaceGoal {
                                                     pick_coords: crate::action::ActionPoint::new(
@@ -195,6 +202,7 @@ pub async fn teleop_ws(
                                                 };
                                                 if let Err(err) = fabric_for_task.publish_action_goal(&robot_id_for_task, &goal).await {
                                                     error!("Failed to forward PickAndPlace action goal: {err}");
+                                                }
                                                 }
                                             }
                                         }
@@ -221,7 +229,7 @@ pub async fn teleop_ws(
                                     warn!("Malformed RobotCommand received from client: {err}");
                                     let error_frame = ErrorFrame::new(
                                         "SCHEMA_VALIDATION_ERROR",
-                                        format!("Malformed RobotCommand payload: {err}"),
+                                        "Malformed RobotCommand payload",
                                         current_time_ns(),
                                     );
                                     if let Ok(err_json) = serde_json::to_string(&error_frame) {

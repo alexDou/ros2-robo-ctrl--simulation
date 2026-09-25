@@ -85,3 +85,12 @@ fn test_clear_workspace_payload_round_trip() {
         serde_json::from_str(&cmd_json).expect("Deserialize ClearWorkspace command");
     assert_eq!(cmd_deserialized.r#type, CommandType::ClearWorkspace);
 }
+
+#[test]
+fn test_spawn_object_payload_rejects_non_finite_json() {
+    // JSON transport carries no NaN/Inf: overflow literals fail closed.
+    let overflow = r#"{"x": 1e309, "y": 0.0, "z": 0.0, "object_type": "GEAR"}"#;
+    assert!(serde_json::from_str::<SpawnObjectPayload>(overflow).is_err());
+    let neg_overflow = r#"{"x": 0.5, "y": -1e309, "z": 0.0, "object_type": "GEAR"}"#;
+    assert!(serde_json::from_str::<SpawnObjectPayload>(neg_overflow).is_err());
+}

@@ -169,9 +169,9 @@ class SpawnObjectPayload(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    x: float = Field(..., description="Cartesian X in meters (REP-103 robot base frame)")
-    y: float = Field(..., description="Cartesian Y in meters (REP-103 robot base frame)")
-    z: float = Field(..., description="Cartesian Z in meters (clamped to table surface 0.0m)")
+    x: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian X in meters (REP-103 robot base frame)")
+    y: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Y in meters (REP-103 robot base frame)")
+    z: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Z in meters (clamped to table surface 0.0m)")
     object_type: SpawnObjectType = Field(..., description="Type of object to spawn")
 
 
@@ -187,12 +187,12 @@ class PickAndPlaceTargetPayload(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    pick_x: float = Field(..., description="Cartesian X pick coordinate in robot base frame")
-    pick_y: float = Field(..., description="Cartesian Y pick coordinate in robot base frame")
-    pick_z: float = Field(..., description="Cartesian Z pick coordinate in robot base frame")
-    drop_x: Optional[float] = Field(default=None, description="Optional custom Cartesian X drop target coordinate")
-    drop_y: Optional[float] = Field(default=None, description="Optional custom Cartesian Y drop target coordinate")
-    drop_z: Optional[float] = Field(default=None, description="Optional custom Cartesian Z drop target coordinate")
+    pick_x: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian X pick coordinate in robot base frame")
+    pick_y: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Y pick coordinate in robot base frame")
+    pick_z: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Z pick coordinate in robot base frame")
+    drop_x: Optional[FiniteFloat] = Field(default=None, allow_inf_nan=False, description="Optional custom Cartesian X drop target coordinate")
+    drop_y: Optional[FiniteFloat] = Field(default=None, allow_inf_nan=False, description="Optional custom Cartesian Y drop target coordinate")
+    drop_z: Optional[FiniteFloat] = Field(default=None, allow_inf_nan=False, description="Optional custom Cartesian Z drop target coordinate")
 
 
 class PalmState(BaseModel):
@@ -208,8 +208,8 @@ class InferenceMetrics(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    latency_ms: float = Field(..., ge=0.0, description="Inference compute latency in milliseconds")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Classification detection confidence score")
+    latency_ms: FiniteFloat = Field(..., allow_inf_nan=False, ge=0.0, description="Inference compute latency in milliseconds")
+    confidence: FiniteFloat = Field(..., allow_inf_nan=False, ge=0.0, le=1.0, description="Classification detection confidence score")
     detected_object: str = Field(..., min_length=1, description="Detected object class label")
 
 
@@ -219,12 +219,12 @@ class GearEntry(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str = Field(..., min_length=1, description="Backend-assigned gear identifier, never cut")
-    x: float = Field(..., description="Cartesian X in meters (REP-103 robot base frame)")
-    y: float = Field(..., description="Cartesian Y in meters (REP-103 robot base frame)")
-    z: float = Field(..., description="Cartesian Z in meters (REP-103 robot base frame)")
-    origin_x: Optional[float] = Field(default=None, description="Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries")
-    origin_y: Optional[float] = Field(default=None, description="Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries")
-    origin_z: Optional[float] = Field(default=None, description="Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries")
+    x: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian X in meters (REP-103 robot base frame)")
+    y: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Y in meters (REP-103 robot base frame)")
+    z: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Z in meters (REP-103 robot base frame)")
+    origin_x: Optional[FiniteFloat] = Field(default=None, allow_inf_nan=False, description="Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries")
+    origin_y: Optional[FiniteFloat] = Field(default=None, allow_inf_nan=False, description="Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries")
+    origin_z: Optional[FiniteFloat] = Field(default=None, allow_inf_nan=False, description="Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries")
     color: GearColor = Field(..., description="Gear color class routing to its spindle tower")
     intact: bool = Field(...)
 

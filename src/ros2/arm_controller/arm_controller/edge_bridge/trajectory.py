@@ -58,7 +58,7 @@ class EdgeBridgeTrajectoryMixin:
                 with self._lock:
                     if self._robot_state == RobotState.EXECUTING:
                         self._robot_state = RobotState.FAULT
-                self._publish_error("GOAL_ERROR", str(err))
+                self._publish_error("GOAL_ERROR", "Trajectory goal failed")
                 self.publish_telemetry()
                 if completion_event is not None:
                     completion_event.set()

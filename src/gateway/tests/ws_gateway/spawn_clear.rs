@@ -191,13 +191,9 @@ async fn test_ws_spawn_object_and_clear_workspace_handling_and_validation() {
             let err_frame: ErrorFrame = serde_json::from_str(&txt).expect("parse error frame");
             assert_eq!(err_frame.r#type, "ERROR");
             assert_eq!(err_frame.error_code, "SCHEMA_VALIDATION_ERROR");
-            assert!(
-                err_frame.message.contains("number out of range")
-                    || err_frame.message.contains("finite floats")
-                    || err_frame.message.contains("SpawnObject"),
-                "Unexpected error message: {}",
-                err_frame.message
-            );
+            // 1e309 overflows f64 at RobotCommand parse: type unknown, static
+            // message (no serde internals on wire). Detail stays server-side.
+            assert_eq!(err_frame.message, "Malformed RobotCommand payload");
         }
         other => panic!("expected text error frame, got {other:?}"),
     }

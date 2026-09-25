@@ -1,0 +1,137 @@
+# Trust-boundary rules: WS client -> gateway -> Zenoh DataFabric -> ROS2 edge nodes.
+# Run: semgrep scan --config .semgrep/robot-security.yml
+rules:
+  - id: gateway-validation-bypass-ok
+    languages: [rust]
+    severity: ERROR
+    message: Float-bearing command arm forwards with zero payload validation (bare Ok(())). Must deserialize typed payload and is_finite()-check every float before publish_command. (Ping/Engage/Standby carry no floats, legitimately Ok.)
+    metadata:
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: CommandType::TrajectoryExecute => Ok(()),
+          - pattern: CommandType::SpawnObject => Ok(()),
+          - pattern: CommandType::PickAndPlaceTarget => Ok(()),
+          - pattern: CommandType::TeleopJointTarget => Ok(()),
+          - pattern: CommandType::PalmActuate => Ok(()),
+    paths:
+      include:
+        - src/gateway/src/ws/validation.rs
+  - id: gateway-errorframe-leaks-internal-error
+    languages: [rust]
+    severity: WARNING
+    message: Raw serde/internal error embedded in ErrorFrame.message sent to WS client. Send error_code plus static text; log detail server-side.
+    metadata:
+      category: security
+    patterns:
+      - pattern: ErrorFrame::new($CODE, format!($MSG, ...), $TS)
+      - metavariable-regex:
+          metavariable: $MSG
+          regex: (?s).*\{(err|val_err|e)\}.*
+    paths:
+      include:
+        - src/gateway/src/
+  - id: fabric-topic-built-by-hand
+    languages: [rust, python]
+    severity: ERROR
+    message: DataFabric topic built by hand, bypassing robot_id validation (path traversal). Use robot_command_topic()/robot_telemetry_topic().
+    metadata:
+      category: security
+    pattern-regex: format!\("robot/
+    paths:
+      include:
+        - src/
+      exclude:
+        - src/domain/*
+  - id: fabric-topic-built-by-hand-py
+    languages: [python]
+    severity: ERROR
+    message: DataFabric topic built by hand, bypassing robot_id validation (path traversal). Use robot_command_topic()/robot_telemetry_topic().
+    metadata:
+      category: security
+    pattern-regex: f"robot/
+    paths:
+      include:
+        - src/
+      exclude:
+        - src/domain/*
+  - id: ros2-float-coord-without-finite-guard
+    languages: [python]
+    severity: WARNING
+    message: float() on wire coords with no finite check nearby. Payloads use FiniteFloat (allow_inf_nan=False) plus math.isfinite defense-in-depth at dispatch. Keep both layers.
+    metadata:
+      category: security
+    patterns:
+      - pattern: float($ARG)
+      - metavariable-regex:
+          metavariable: $ARG
+          regex: (?s).*(payload|coords|request|positions).*
+    paths:
+      include:
+        - src/ros2/arm_controller/arm_controller/edge_bridge/commands.py
+        - src/ros2/arm_controller/arm_controller/edge_bridge/actions.py
+        - src/ros2/workcell_manager/workcell_manager/workcell_node.py
+  - id: ros2-internal-error-to-fabric
+    languages: [python]
+    severity: WARNING
+    message: Internal exception text published to Zenoh; gateway forwards telemetry verbatim to WS client (info leak). Send static code/message, log detail via get_logger().
+    metadata:
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: self._publish_error($CODE, str($ERR))
+          - patterns:
+              - pattern: self._publish_error($CODE, f"$MSG")
+              - metavariable-regex:
+                  metavariable: $MSG
+                  regex: (?s).*\{(err|e)\}.*
+    paths:
+      include:
+        - src/ros2/
+  - id: py-dangerous-deserialization
+    languages: [python]
+    severity: ERROR
+    message: Unsafe deserialization/eval. Use RobotCommand.model_validate_json / typed model_validate; never pickle/eval wire data.
+    metadata:
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: pickle.loads(...)
+          - pattern: pickle.load(...)
+          - pattern: yaml.load(...)
+          - pattern: eval(...)
+          - pattern: exec(...)
+    paths:
+      include:
+        - src/ros2/
+        - src/domain/
+        - scripts/
+  - id: py-shell-execution
+    languages: [python]
+    severity: ERROR
+    message: Shell execution from node code. Use native ROS2 CLI / arg lists; never shell=True.
+    metadata:
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: os.system(...)
+          - pattern: subprocess.$FN(..., shell=True, ...)
+    paths:
+      include:
+        - src/ros2/
+        - src/domain/
+        - scripts/
+  - id: web-html-injection-sink
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: HTML injection sink in TeleopClient/visualizer. Telemetry and ErrorFrame strings are attacker-influenced; use textContent / Preact escaping.
+    metadata:
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern-regex: dangerouslySetInnerHTML
+          - pattern: $EL.innerHTML = ...
+          - pattern: eval(...)
+    paths:
+      include:
+        - web/src/

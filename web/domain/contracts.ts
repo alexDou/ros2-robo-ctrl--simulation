@@ -307,9 +307,9 @@ export type StandbyPayload = z.infer<typeof rawStandbyPayloadSchema>;
 /** Typed payload for SPAWN_OBJECT command */
 export const rawSpawnObjectPayloadSchema = z.object(
   {
-    x: z.number({ message: "Field 'x' must be a number" }),
-    y: z.number({ message: "Field 'y' must be a number" }),
-    z: z.number({ message: "Field 'z' must be a number" }),
+    x: z.number({ message: "Field 'x' must be a number" }).refine(Number.isFinite, { message: "Field 'x' must be a finite number" }),
+    y: z.number({ message: "Field 'y' must be a number" }).refine(Number.isFinite, { message: "Field 'y' must be a finite number" }),
+    z: z.number({ message: "Field 'z' must be a number" }).refine(Number.isFinite, { message: "Field 'z' must be a finite number" }),
     object_type: SpawnObjectTypeSchema,
   },
   { message: 'SpawnObjectPayload payload must be an object' }
@@ -335,12 +335,12 @@ export type ClearWorkspacePayload = z.infer<typeof rawClearWorkspacePayloadSchem
 /** Typed payload for PICK_AND_PLACE_TARGET command */
 export const rawPickAndPlaceTargetPayloadSchema = z.object(
   {
-    pick_x: z.number({ message: "Field 'pick_x' must be a number" }),
-    pick_y: z.number({ message: "Field 'pick_y' must be a number" }),
-    pick_z: z.number({ message: "Field 'pick_z' must be a number" }),
-    drop_x: z.number({ message: "Field 'drop_x' must be a number" }).nullish(),
-    drop_y: z.number({ message: "Field 'drop_y' must be a number" }).nullish(),
-    drop_z: z.number({ message: "Field 'drop_z' must be a number" }).nullish(),
+    pick_x: z.number({ message: "Field 'pick_x' must be a number" }).refine(Number.isFinite, { message: "Field 'pick_x' must be a finite number" }),
+    pick_y: z.number({ message: "Field 'pick_y' must be a number" }).refine(Number.isFinite, { message: "Field 'pick_y' must be a finite number" }),
+    pick_z: z.number({ message: "Field 'pick_z' must be a number" }).refine(Number.isFinite, { message: "Field 'pick_z' must be a finite number" }),
+    drop_x: z.number({ message: "Field 'drop_x' must be a number" }).refine(Number.isFinite, { message: "Field 'drop_x' must be a finite number" }).nullish(),
+    drop_y: z.number({ message: "Field 'drop_y' must be a number" }).refine(Number.isFinite, { message: "Field 'drop_y' must be a finite number" }).nullish(),
+    drop_z: z.number({ message: "Field 'drop_z' must be a number" }).refine(Number.isFinite, { message: "Field 'drop_z' must be a finite number" }).nullish(),
   },
   { message: 'PickAndPlaceTargetPayload payload must be an object' }
 ).strict();
@@ -366,8 +366,8 @@ export type PalmState = z.infer<typeof rawPalmStateSchema>;
 /** Edge AI inference latency and object classification metrics */
 export const rawInferenceMetricsSchema = z.object(
   {
-    latency_ms: z.number({ message: "Field 'latency_ms' must be a number" }).min(0.0, { message: "Field 'latency_ms' must be non-negative" }),
-    confidence: z.number({ message: "Field 'confidence' must be a number" }).min(0.0, { message: "Field 'confidence' must be between 0.0 and 1.0" }).max(1.0, { message: "Field 'confidence' must be between 0.0 and 1.0" }),
+    latency_ms: z.number({ message: "Field 'latency_ms' must be a number" }).refine(Number.isFinite, { message: "Field 'latency_ms' must be a finite number" }).min(0.0, { message: "Field 'latency_ms' must be non-negative" }),
+    confidence: z.number({ message: "Field 'confidence' must be a number" }).refine(Number.isFinite, { message: "Field 'confidence' must be a finite number" }).min(0.0, { message: "Field 'confidence' must be between 0.0 and 1.0" }).max(1.0, { message: "Field 'confidence' must be between 0.0 and 1.0" }),
     detected_object: z.string({ message: "Missing required field 'detected_object'" }).min(1, { message: "Field 'detected_object' must be non-empty" }),
   },
   { message: 'InferenceMetrics payload must be an object' }
@@ -382,12 +382,12 @@ export type InferenceMetrics = z.infer<typeof rawInferenceMetricsSchema>;
 export const rawGearEntrySchema = z.object(
   {
     id: z.string({ message: "Missing required field 'id'" }).min(1, { message: "Missing required field 'id'" }),
-    x: z.number({ message: "Field 'x' must be a number" }),
-    y: z.number({ message: "Field 'y' must be a number" }),
-    z: z.number({ message: "Field 'z' must be a number" }),
-    origin_x: z.number({ message: "Field 'origin_x' must be a number" }).nullish(),
-    origin_y: z.number({ message: "Field 'origin_y' must be a number" }).nullish(),
-    origin_z: z.number({ message: "Field 'origin_z' must be a number" }).nullish(),
+    x: z.number({ message: "Field 'x' must be a number" }).refine(Number.isFinite, { message: "Field 'x' must be a finite number" }),
+    y: z.number({ message: "Field 'y' must be a number" }).refine(Number.isFinite, { message: "Field 'y' must be a finite number" }),
+    z: z.number({ message: "Field 'z' must be a number" }).refine(Number.isFinite, { message: "Field 'z' must be a finite number" }),
+    origin_x: z.number({ message: "Field 'origin_x' must be a number" }).refine(Number.isFinite, { message: "Field 'origin_x' must be a finite number" }).nullish(),
+    origin_y: z.number({ message: "Field 'origin_y' must be a number" }).refine(Number.isFinite, { message: "Field 'origin_y' must be a finite number" }).nullish(),
+    origin_z: z.number({ message: "Field 'origin_z' must be a number" }).refine(Number.isFinite, { message: "Field 'origin_z' must be a finite number" }).nullish(),
     color: GearColorSchema,
     intact: z.boolean(),
   },

@@ -1,6 +1,7 @@
 """Standalone WorkcellNode and SpindleTower inventory tracker per ADR 0004 and Refactor-A.1."""
 
 import json
+import math
 import threading
 import uuid
 from typing import Optional
@@ -310,12 +311,19 @@ class WorkcellNode(Node):
                 self.get_logger().warning(f"Rejecting spawn_object: {response.message}")
                 return response
             intact = bool(getattr(request, "intact", False))
+            cx, cy, cz = request.coords.x, request.coords.y, request.coords.z
+            if not (math.isfinite(cx) and math.isfinite(cy) and math.isfinite(cz)):
+                response.success = False
+                response.message = "Spawn coordinates must be finite floats"
+                response.gear_id = ""
+                self.get_logger().warning("Rejecting spawn_object: non-finite coords")
+                return response
             gear_id = uuid.uuid4().hex
             self._spawned[gear_id] = {
                 "id": gear_id,
-                "x": float(request.coords.x),
-                "y": float(request.coords.y),
-                "z": float(request.coords.z),
+                "x": cx,
+                "y": cy,
+                "z": cz,
                 "color": color,
                 "intact": intact,
             }

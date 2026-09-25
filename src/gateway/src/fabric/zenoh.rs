@@ -218,10 +218,17 @@ impl ZenohFabric {
     /// Returns [`FabricError`] on serialization or Zenoh put failure.
     pub async fn publish_action_goal(
         &self,
-        _robot_id: &str,
+        robot_id: &str,
         goal: &PickAndPlaceGoal,
     ) -> Result<(), FabricError> {
-        let json_payload = serde_json::to_string(goal)?;
+        // Bind goal to command_id: dual-publish stays (ROS2 bridge compat) but the
+        // edge must ignore goals whose command_id it did not originate.
+        let mut goal = goal.clone();
+        goal.command_id = format!("{robot_id}/{}", goal.command_id);
+        let json_payload = serde_json::to_string(&goal)?;
+        // Ownership bound via "{robot_id}/{command_id}" prefix above; no edge
+        // subscriber consumes this topic today; future consumer must verify
+        // prefix before dispatch (prevents cross-robot goal steal).
         let res1 = self
             .session
             .put(ACTION_GOAL_TOPIC, json_payload.clone())
