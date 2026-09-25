@@ -5,7 +5,14 @@ import { WebSocketServer, WebSocket } from 'ws';
 import {
   CANONICAL_POSES,
   RobotCommandSchema,
+  WHITE_TOWER,
+  GREEN_TOWER,
+  BLUE_TOWER,
+  SCRAP_BIN,
+  STACK_STEP_M,
+  TOWER_CAPACITY,
   type ArmJointPositions,
+  type GearColor,
   type GearEntry,
   type PoseName,
   type RobotState,
@@ -16,6 +23,11 @@ import {
   PickAndPlaceTrajectoryGenerator,
   type WaypointStep,
 } from './kinematics';
+
+export interface SeededClassification {
+  color: GearColor;
+  intact: boolean;
+}
 
 export interface MockGatewayOptions {
   port?: number;
@@ -78,6 +90,11 @@ export class MockGateway {
   private pnpExecuting = false;
   private pnpTimeout: NodeJS.Timeout | null = null;
   private autoExecutePickAndPlace = true;
+  // Unit 7.4: seeded hermetic classification. Empty sequence = legacy
+  // WHITE/sound default so pre-7.4 callers run unchanged.
+  private classificationSequence: SeededClassification[] = [];
+  private classificationIndex = 0;
+  private spawnCounter = 0;
 
   constructor(options: MockGatewayOptions = {}) {
     this.port = options.port ?? 8085;
@@ -142,11 +159,42 @@ export class MockGateway {
     this.activeId = null;
     this.inferenceMetrics = null;
     this.autoExecutePickAndPlace = true;
+    this.classificationIndex = 0;
+    this.spawnCounter = 0;
     this.robotState = 'IDLE';
     this.palmState = { is_grasped: false };
     this.currentPhase = null;
     this.currentJoints = [...CANONICAL_POSES.HOME];
     this.clearCapturedLogs();
+  }
+
+  public setClassificationSequence(sequence: SeededClassification[]): void {
+    this.classificationSequence = [...sequence];
+    this.classificationIndex = 0;
+  }
+
+  public seedProcessed(entries: GearEntry[]): void {
+    this.processed = [...entries];
+  }
+
+  private nextClassification(): SeededClassification {
+    if (this.classificationSequence.length === 0) {
+      return { color: 'WHITE', intact: true };
+    }
+    const item = this.classificationSequence[this.classificationIndex % this.classificationSequence.length];
+    this.classificationIndex += 1;
+    return item;
+  }
+
+  private destinationFor(color: GearColor, intact: boolean): readonly [number, number, number] {
+    if (!intact) return SCRAP_BIN;
+    if (color === 'GREEN') return GREEN_TOWER;
+    if (color === 'BLUE') return BLUE_TOWER;
+    return WHITE_TOWER;
+  }
+
+  private inferenceLabel(color: GearColor, intact: boolean): string {
+    return intact ? color : 'DEFECTIVE';
   }
 
   public getTowerGearsCount(): number {
@@ -426,15 +474,17 @@ export class MockGateway {
         const x = Number(cmd.payload?.x ?? 0.5);
         const y = Number(cmd.payload?.y ?? 0.0);
         const z = Number(cmd.payload?.z ?? 0.0);
-        const id = `gear-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-        this.spawned = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const }];
+        const cls = this.nextClassification();
+        this.spawnCounter += 1;
+        const id = `gear-seed-${this.spawnCounter}`;
+        this.spawned = [{ id, x, y, z, color: cls.color, intact: cls.intact }];
         this.inProgress = [];
         this.activeId = id;
-        this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: 'WHITE' };
+        this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: this.inferenceLabel(cls.color, cls.intact) };
         this.log(`[EDGE] Spawned GEAR ${id} at (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`);
         this.cancelTrajectory();
         if (this.autoExecutePickAndPlace) {
-          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z);
+          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z, cls);
         } else {
           this.sendTelemetryToAll(cmd.command_id);
         }
@@ -453,12 +503,14 @@ export class MockGateway {
         this.log(`[EDGE] Spawned GEAR at (${x.toFixed(3)}, ${y.toFixed(3)}, 0.000)`);
         this.cancelTrajectory();
         if (this.autoExecutePickAndPlace) {
-          const id = `gear-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-          this.spawned = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const }];
+          const cls = this.nextClassification();
+          this.spawnCounter += 1;
+          const id = `gear-seed-${this.spawnCounter}`;
+          this.spawned = [{ id, x, y, z, color: cls.color, intact: cls.intact }];
           this.inProgress = [];
           this.activeId = id;
-          this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: 'WHITE' };
-          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z);
+          this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: this.inferenceLabel(cls.color, cls.intact) };
+          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z, cls);
         } else {
           this.sendTelemetryToAll(cmd.command_id);
         }
@@ -511,9 +563,23 @@ export class MockGateway {
     }
   }
 
-  private executePickAndPlaceSequence(commandId: string | undefined, id: string, x: number, y: number, z: number): void {
-    const dropZ = Math.min(this.processed.length, 9) * 0.02;
-    const dropCoords: [number, number, number] = [0.40, -0.30, dropZ];
+  private executePickAndPlaceSequence(commandId: string | undefined, id: string, x: number, y: number, z: number, cls: SeededClassification): void {
+    // Bin cap-100 sharp-cut recycle mirrors WorkcellNode.commit_drop:
+    // recycle BEFORE slot so the 101st arrival wraps to z=0, towers untouched.
+    if (!cls.intact && this.processed.filter((e) => !e.intact).length >= 100) {
+      this.processed = this.processed.filter((e) => e.intact);
+    }
+    const base = this.destinationFor(cls.color, cls.intact);
+    const sameTower = (e: GearEntry): boolean =>
+      e.intact === cls.intact &&
+      e.color === cls.color &&
+      Math.abs(e.x - base[0]) < 1e-6 &&
+      Math.abs(e.y - base[1]) < 1e-6;
+    const towerFill = cls.intact
+      ? this.processed.filter(sameTower).length
+      : this.processed.filter((e) => !e.intact).length;
+    const dropZ = (cls.intact ? Math.min(towerFill, TOWER_CAPACITY - 1) : towerFill) * STACK_STEP_M;
+    const dropCoords: [number, number, number] = [base[0], base[1], dropZ];
 
     let steps: WaypointStep[];
     try {
@@ -535,7 +601,7 @@ export class MockGateway {
       const entry =
         idx >= 0
           ? this.inProgress.splice(idx, 1)[0]
-          : { id, x, y, z, color: 'WHITE' as const, intact: true as const, origin_x: x, origin_y: y, origin_z: z };
+          : { id, x, y, z, color: cls.color, intact: cls.intact, origin_x: x, origin_y: y, origin_z: z };
       this.processed.push({
         id,
         x: dropCoords[0],
@@ -547,7 +613,23 @@ export class MockGateway {
         origin_y: entry.origin_y ?? y,
         origin_z: entry.origin_z ?? z,
       });
-      if (this.processed.length > 10) this.processed.shift();
+      if (cls.intact) {
+        // Per-tower FIFO: evict oldest of this tower only, re-z survivors.
+        const towerIdx = this.processed
+          .map((e, i) => ({ e, i }))
+          .filter(({ e }) => e.intact && e.color === cls.color && Math.abs(e.x - base[0]) < 1e-6 && Math.abs(e.y - base[1]) < 1e-6)
+          .map(({ i }) => i);
+        if (towerIdx.length > TOWER_CAPACITY) {
+          this.processed.splice(towerIdx[0], 1);
+        }
+        let fill = 0;
+        for (const e of this.processed) {
+          if (e.intact && e.color === cls.color && Math.abs(e.x - base[0]) < 1e-6 && Math.abs(e.y - base[1]) < 1e-6) {
+            e.z = fill * STACK_STEP_M;
+            fill++;
+          }
+        }
+      }
       this.spawned = this.spawned.filter((g) => g.id !== id);
       this.activeId = null;
       this.inferenceMetrics = null;
@@ -579,7 +661,7 @@ export class MockGateway {
       if (step.isGrasped && !grasped) {
         grasped = true;
         this.spawned = this.spawned.filter((g) => g.id !== id);
-        this.inProgress = [{ id, x, y, z, color: 'WHITE' as const, intact: true as const, origin_x: x, origin_y: y, origin_z: z }];
+        this.inProgress = [{ id, x, y, z, color: cls.color, intact: cls.intact, origin_x: x, origin_y: y, origin_z: z }];
         this.activeId = id;
       }
 

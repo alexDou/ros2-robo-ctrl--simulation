@@ -1,13 +1,13 @@
 ---
 # hand-sim-fuvh
 title: 'Unit 7.4: Seeded hermetic E2E'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:28Z
-updated_at: 2026-09-23T17:31:00Z
+updated_at: 2026-09-25T09:47:00Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-7839
@@ -26,11 +26,11 @@ As a test engineer, I want hermetic end-to-end runs driven by a seeded classific
 
 ## Acceptance criteria
 
-- [ ] Mock Gateway mirrors the seeded classification sequence; no real randomness, runs never cross sandbox borders
-- [ ] Full click grey-to-stack loop and click grey-to-bin loop pass
-- [ ] Per-tower FIFO at 10 and bin icon flip on first defective arrival covered
-- [ ] Clear-to-empty reset covered
-- [ ] Click-to-echo latency under 50ms asserted
+- [x] Mock Gateway mirrors the seeded classification sequence; no real randomness, runs never cross sandbox borders
+- [x] Full click grey-to-stack loop and click grey-to-bin loop pass
+- [x] Per-tower FIFO at 10 and bin icon flip on first defective arrival covered
+- [x] Clear-to-empty reset covered
+- [x] Click-to-echo latency under 50ms asserted
 
 ## Blocked by
 
@@ -38,3 +38,7 @@ As a test engineer, I want hermetic end-to-end runs driven by a seeded classific
 - hand-sim-17xk (Unit 7.3c bin fixture)
 - hand-sim-pn7u (Unit 7.3d notch)
 - hand-sim-lilk (Unit 7.3e FIFO + Clear)
+
+## Summary of Changes
+
+Seeded hermetic E2E green: mock mirrors classification sequence (deterministic gear-seed-N ids, wrap replay, WHITE/sound default), per-tower FIFO + bin cap-100 recycle mirror WorkcellNode, CLEAR wipes all buckets, click-to-echo <50ms. 9 seeded tests + 11 legacy + 211 full suite pass; typecheck + lint clean.
