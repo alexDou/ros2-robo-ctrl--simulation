@@ -1,7 +1,9 @@
 geometry_msgs/Point coords
 string object_type
-string color "WHITE"
-bool intact true
+# REQUIRED color {WHITE, GREEN, BLUE}; empty/unknown rejected, no silent fallback.
+string color
+# REQUIRED intact flag; no default.
+bool intact
 ---
 bool success
 string message

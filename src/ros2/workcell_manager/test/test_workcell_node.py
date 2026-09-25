@@ -34,9 +34,9 @@ def ros_context():
         rclpy.shutdown()
 
 
-def _full_cycle(node, x=0.45, y=0.10, z=0.0):
+def _full_cycle(node, x=0.45, y=0.10, z=0.0, color="WHITE", intact=True):
     node.handle_spawn_object(
-        SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR"),
+        SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR", color=color, intact=intact),
         SpawnObject.Response(),
     )
     node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
@@ -59,7 +59,7 @@ def test_get_drop_slot_incremental_height():
     try:
         # Pure reservation: repeated queries return slot 0, no state change.
         for _ in range(TOWER_CAPACITY):
-            out_res = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+            out_res = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
             assert out_res.slot_index == 0
             assert pytest.approx(out_res.drop_coords.x) == WHITE_TOWER[0]
             assert pytest.approx(out_res.drop_coords.y) == WHITE_TOWER[1]
@@ -89,17 +89,17 @@ def test_get_drop_slot_custom_tower_elevation():
     )
     try:
         assert pytest.approx(node.tower_coords[2]) == 0.05
-        out_res = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+        out_res = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
         assert pytest.approx(out_res.drop_coords.z) == 0.05
         assert out_res.slot_index == 0
 
         # Pure: second query unchanged until a commit lands.
-        out_res2 = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+        out_res2 = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
         assert pytest.approx(out_res2.drop_coords.z) == 0.05
         assert out_res2.slot_index == 0
 
         _full_cycle(node)
-        out_res3 = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+        out_res3 = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
         assert pytest.approx(out_res3.drop_coords.z) == 0.05 + STACK_STEP_M
         assert out_res3.slot_index == 1
     finally:
@@ -116,7 +116,7 @@ def test_get_drop_slot_fifo_overflow():
 
         # 11th commit: FIFO bottom-drop on overflow (k > 10)
         node.handle_spawn_object(
-            SpawnObject.Request(coords=Point(x=0.50, y=0.20, z=0.0), object_type="GEAR"),
+            SpawnObject.Request(coords=Point(x=0.50, y=0.20, z=0.0), object_type="GEAR", color="WHITE", intact=True),
             SpawnObject.Response(),
         )
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
@@ -132,7 +132,7 @@ def test_get_drop_slot_fifo_overflow():
 
         # 12th commit: continuing overflow
         node.handle_spawn_object(
-            SpawnObject.Request(coords=Point(x=0.50, y=0.20, z=0.0), object_type="GEAR"),
+            SpawnObject.Request(coords=Point(x=0.50, y=0.20, z=0.0), object_type="GEAR", color="WHITE", intact=True),
             SpawnObject.Response(),
         )
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
@@ -152,7 +152,7 @@ def test_clear_workspace_resets_inventory():
         for _ in range(3):
             _full_cycle(node)
         node.handle_spawn_object(
-            SpawnObject.Request(coords=Point(x=0.45, y=0.10, z=0.0), object_type="GEAR"),
+            SpawnObject.Request(coords=Point(x=0.45, y=0.10, z=0.0), object_type="GEAR", color="WHITE", intact=True),
             SpawnObject.Response(),
         )
 
@@ -173,7 +173,7 @@ def test_clear_workspace_resets_inventory():
         assert node.active_workpiece_coords is None
 
         # Next reservation starts from slot 0
-        out_next = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+        out_next = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
         assert out_next.slot_index == 0
         assert pytest.approx(out_next.drop_coords.z) == 0.0
         assert out_next.overflow_occurred is False
@@ -219,13 +219,13 @@ def test_workcell_node_ros_services_and_topic_integration():
         assert commit_client.wait_for_service(timeout_sec=2.0)
 
         # Pure reservation: no inventory publication
-        res = _call(drop_slot_client, GetDropSlot.Request())
+        res = _call(drop_slot_client, GetDropSlot.Request(color="", intact=True))
         assert res.slot_index == 0
         assert pytest.approx(res.drop_coords.z) == 0.0
         assert res.overflow_occurred is False
 
         # Full cycle publishes inventory 1
-        _call(spawn_client, SpawnObject.Request(coords=Point(x=0.45, y=0.1, z=0.0), object_type="GEAR"))
+        _call(spawn_client, SpawnObject.Request(coords=Point(x=0.45, y=0.1, z=0.0), object_type="GEAR", color="WHITE", intact=True))
         _call(grasp_client, MarkGrasped.Request())
         commit_res = _call(commit_client, CommitDrop.Request())
         assert commit_res.success is True
@@ -257,7 +257,7 @@ def test_workcell_spawn_object_service():
         assert node.has_active_workpiece is False
 
         # First spawn succeeds with backend uuid
-        req = SpawnObject.Request(coords=Point(x=0.45, y=0.1, z=0.0), object_type="GEAR")
+        req = SpawnObject.Request(coords=Point(x=0.45, y=0.1, z=0.0), object_type="GEAR", color="WHITE", intact=True)
         out_res = node.handle_spawn_object(req, SpawnObject.Response())
         assert out_res.success is True
         assert out_res.gear_id != ""
@@ -265,7 +265,7 @@ def test_workcell_spawn_object_service():
         assert node.active_workpiece_coords == (0.45, 0.1, 0.0)
 
         # Second spawn while active is rejected
-        req2 = SpawnObject.Request(coords=Point(x=0.55, y=0.15, z=0.0), object_type="GEAR")
+        req2 = SpawnObject.Request(coords=Point(x=0.55, y=0.15, z=0.0), object_type="GEAR", color="WHITE", intact=True)
         out_res2 = node.handle_spawn_object(req2, SpawnObject.Response())
         assert out_res2.success is False
         assert out_res2.gear_id == ""

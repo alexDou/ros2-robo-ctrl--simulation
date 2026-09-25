@@ -225,18 +225,34 @@ class WorkcellNode(Node):
     ) -> GetDropSlot.Response:
         """Pure reservation: routes by classification, no state change.
 
-        Default-shaped requests (WHITE/sound, e.g. the arm's bare query)
-        follow the active gear so the arm needs no classification plumbing.
+        Bare-query sentinel: arm client sends empty color + intact=True (no
+        classification plumbing). Empty color follows the active gear; when
+        idle the intact bit is honored (sound->WHITE tower, unsound->bin).
+        Non-empty color must be WHITE, GREEN, or BLUE; unknown rejected
+        with slot_index=-1 and zero coords (no slot).
         """
-        color = str(getattr(request, "color", DEFAULT_GEAR_COLOR) or DEFAULT_GEAR_COLOR)
+        raw_color = str(getattr(request, "color", "") or "")
         intact = bool(getattr(request, "intact", True))
         with self._lock:
-            if color == DEFAULT_GEAR_COLOR and intact:
+            if raw_color == "":
                 active = self._active_classification_locked()
                 if active is not None:
                     color, intact = active
-            if color not in VALID_GEAR_COLORS:
-                color = DEFAULT_GEAR_COLOR
+                else:
+                    # Idle sentinel: color unclassified->WHITE, intact as sent.
+                    # (Documented sentinel sends intact=True; zero-init
+                    # intact=False fails safe toward the bin, never the tower.)
+                    color = DEFAULT_GEAR_COLOR
+            else:
+                color = raw_color
+                if color not in VALID_GEAR_COLORS:
+                    response.drop_coords = Point(x=0.0, y=0.0, z=0.0)
+                    response.slot_index = -1
+                    response.overflow_occurred = False
+                    self.get_logger().warning(
+                        f"Rejecting get_drop_slot: invalid color '{color}'"
+                    )
+                    return response
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
                 slot_index, z_k = self._bin_slot_locked()
@@ -282,14 +298,18 @@ class WorkcellNode(Node):
                 response.gear_id = ""
                 self.get_logger().warning("Rejecting spawn_object: workcell busy")
                 return response
-            color = str(getattr(request, "color", DEFAULT_GEAR_COLOR) or DEFAULT_GEAR_COLOR)
+            color = str(getattr(request, "color", "") or "")
             if color not in VALID_GEAR_COLORS:
                 response.success = False
-                response.message = f"Invalid gear color '{color}'"
+                response.message = (
+                    f"Missing gear color (REQUIRED color + intact)"
+                    if not color
+                    else f"Invalid gear color '{color}'"
+                )
                 response.gear_id = ""
-                self.get_logger().warning(f"Rejecting spawn_object: invalid color '{color}'")
+                self.get_logger().warning(f"Rejecting spawn_object: {response.message}")
                 return response
-            intact = bool(getattr(request, "intact", True))
+            intact = bool(getattr(request, "intact", False))
             gear_id = uuid.uuid4().hex
             self._spawned[gear_id] = {
                 "id": gear_id,
@@ -351,10 +371,15 @@ class WorkcellNode(Node):
                 return response
             gear_id, entry = next(iter(self._in_progress.items()))
             del self._in_progress[gear_id]
-            color = str(entry.get("color", DEFAULT_GEAR_COLOR))
+            color = str(entry.get("color", ""))
             if color not in VALID_GEAR_COLORS:
-                color = DEFAULT_GEAR_COLOR
-            intact = bool(entry.get("intact", True))
+                response.success = False
+                response.message = f"Invalid stored gear color '{color}'"
+                response.slot_index = -1
+                response.overflow_occurred = False
+                self.get_logger().error(f"Aborting commit_drop: {response.message}")
+                return response
+            intact = bool(entry.get("intact", False))
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
                 if self._bin_fill_locked() >= MAX_SCRAP_BIN_CAPACITY:

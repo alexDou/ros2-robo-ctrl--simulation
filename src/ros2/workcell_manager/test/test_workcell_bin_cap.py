@@ -34,9 +34,10 @@ def _cycle(node, x=0.45, y=0.10, z=0.0, **classification):
     node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
     return node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
 
-def _reserve(node, **classification):
+def _reserve(node, color="", intact=True, **classification):
     return node.handle_get_drop_slot(
-        GetDropSlot.Request(**classification), GetDropSlot.Response()
+        GetDropSlot.Request(color=color, intact=intact, **classification),
+        GetDropSlot.Response(),
     )
 
 def _bin_entries(node):

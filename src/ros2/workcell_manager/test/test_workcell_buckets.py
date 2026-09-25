@@ -35,8 +35,8 @@ def ros_context():
         rclpy.shutdown()
 
 
-def _spawn(node, x=0.45, y=0.10, z=0.0):
-    req = SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR")
+def _spawn(node, x=0.45, y=0.10, z=0.0, color="WHITE", intact=True):
+    req = SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR", color=color, intact=intact)
     return node.handle_spawn_object(req, SpawnObject.Response())
 
 
@@ -148,7 +148,7 @@ def test_get_drop_slot_pure_reservation():
     node = WorkcellNode()
     try:
         for _ in range(3):
-            out = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+            out = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
             assert out.slot_index == 0
             assert out.overflow_occurred is False
         assert node.processed == []
@@ -156,7 +156,7 @@ def test_get_drop_slot_pure_reservation():
         _spawn(node)
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        out = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+        out = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
         assert out.slot_index == 1
         assert pytest.approx(out.drop_coords.z) == STACK_STEP_M
         assert node.inventory == 1
