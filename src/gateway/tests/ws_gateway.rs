@@ -15,6 +15,8 @@ mod rate_limit;
 mod spawn_clear;
 #[path = "ws_gateway/support.rs"]
 mod support;
+#[path = "ws_gateway/teleop_reject.rs"]
+mod teleop_reject;
 #[path = "ws_gateway/teardown.rs"]
 mod teardown;
 #[path = "ws_gateway/telemetry.rs"]

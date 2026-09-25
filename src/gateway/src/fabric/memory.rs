@@ -151,8 +151,12 @@ impl MemoryFabric {
         robot_id: &str,
         goal: &PickAndPlaceGoal,
     ) -> Result<(), FabricError> {
+        // Bind goal to owner: future edge subscriber must ignore goals whose
+        // command_id it did not originate (no consumer today; prevents steal).
+        let mut goal = goal.clone();
+        goal.command_id = format!("{robot_id}/{}", goal.command_id);
         let tx = self.get_or_create_action_goal_tx(robot_id);
-        let _ = tx.send(goal.clone());
+        let _ = tx.send(goal);
         Ok(())
     }
 

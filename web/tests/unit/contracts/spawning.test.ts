@@ -101,3 +101,14 @@ describe('TypeScript Domain Schemas & Contracts', () => {
     });
   });
 });
+
+describe('Finite-float guards (semgrep ros2-float-coord)', () => {
+  it('rejects non-finite SpawnObjectPayload coordinates', async () => {
+    const { parseSpawnObjectPayload } = await import('@domain/parsers');
+    for (const bad of [Infinity, -Infinity, NaN]) {
+      expect(() => parseSpawnObjectPayload({ x: bad, y: 0, z: 0, object_type: 'GEAR' })).toThrow(
+        /finite|must be a number/
+      );
+    }
+  });
+});

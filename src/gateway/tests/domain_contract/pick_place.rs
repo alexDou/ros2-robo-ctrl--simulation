@@ -70,3 +70,11 @@ fn test_pick_and_place_target_payload_round_trip() {
         serde_json::from_str(&cmd_json).expect("Deserialize PickAndPlaceTarget command");
     assert_eq!(cmd_deserialized.r#type, CommandType::PickAndPlaceTarget);
 }
+
+#[test]
+fn test_pick_and_place_payload_rejects_non_finite_json() {
+    let overflow = r#"{"pick_x": 1e309, "pick_y": 0.1, "pick_z": 0.0}"#;
+    assert!(serde_json::from_str::<PickAndPlaceTargetPayload>(overflow).is_err());
+    let drop_overflow = r#"{"pick_x": 0.5, "pick_y": 0.1, "pick_z": 0.0, "drop_x": 1e309}"#;
+    assert!(serde_json::from_str::<PickAndPlaceTargetPayload>(drop_overflow).is_err());
+}

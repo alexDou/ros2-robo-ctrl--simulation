@@ -39,3 +39,9 @@ fn test_trajectory_execute_payload_serialization_round_trip() {
         serde_json::from_str(r#"{"pose_name":"INVALID_POSE"}"#);
     assert!(invalid_pose.is_err());
 }
+
+#[test]
+fn test_trajectory_waypoints_reject_non_finite_json() {
+    let overflow = r#"{"waypoints": [[1e309, 0.0, 0.0, 0.0, 0.0, 0.0]]}"#;
+    assert!(serde_json::from_str::<TrajectoryExecutePayload>(overflow).is_err());
+}

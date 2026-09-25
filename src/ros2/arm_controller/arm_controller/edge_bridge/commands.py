@@ -1,5 +1,6 @@
 """Command ingress: payload validation + per-type dispatch."""
 
+import math
 from typing import Any, Optional
 
 from geometry_msgs.msg import Point
@@ -18,13 +19,15 @@ class EdgeBridgeCommandsMixin:
             try:
                 raw_payload = raw_payload.decode("utf-8")
             except Exception as e:
-                self._publish_error("MALFORMED_PAYLOAD", f"UTF-8 decode failed: {e}")
+                self.get_logger().error(f"UTF-8 decode failed: {e}")
+                self._publish_error("MALFORMED_PAYLOAD", "UTF-8 decode failed")
                 return None
 
         try:
             command = RobotCommand.model_validate_json(raw_payload)
         except Exception as e:
-            self._publish_error("SCHEMA_VALIDATION_ERROR", f"Invalid RobotCommand schema: {e}")
+            self.get_logger().error(f"Invalid RobotCommand schema: {e}")
+            self._publish_error("SCHEMA_VALIDATION_ERROR", "Invalid RobotCommand schema")
             return None
 
         return self.handle_command(command)
@@ -85,7 +88,8 @@ class EdgeBridgeCommandsMixin:
                 try:
                     payload = TrajectoryExecutePayload.model_validate(command.payload)
                 except Exception as e:
-                    self._publish_error("INVALID_PAYLOAD", f"TrajectoryExecute payload invalid: {e}")
+                    self.get_logger().error(f"TrajectoryExecute payload invalid: {e}")
+                    self._publish_error("INVALID_PAYLOAD", "TrajectoryExecute payload invalid")
                     return None
 
                 waypoints_to_execute = []
@@ -130,7 +134,8 @@ class EdgeBridgeCommandsMixin:
             try:
                 payload = SpawnObjectPayload.model_validate(raw_spawn)
             except Exception as e:
-                self._publish_error("INVALID_PAYLOAD", f"SpawnObject payload invalid: {e}")
+                self.get_logger().error(f"SpawnObject payload invalid: {e}")
+                self._publish_error("INVALID_PAYLOAD", "SpawnObject payload invalid")
                 return None
 
             if not self._spawn_object_client.wait_for_service(timeout_sec=1.0):
@@ -141,13 +146,18 @@ class EdgeBridgeCommandsMixin:
                 return None
 
             req = SpawnObject.Request()
-            req.coords = Point(x=float(payload.x), y=float(payload.y), z=float(payload.z))
+            sx, sy, sz = payload.x, payload.y, payload.z
+            if not (math.isfinite(sx) and math.isfinite(sy) and math.isfinite(sz)):
+                self.get_logger().error("SpawnObject payload non-finite coords")
+                self._publish_error("INVALID_PAYLOAD", "SpawnObject payload invalid")
+                return None
+            req.coords = Point(x=sx, y=sy, z=sz)
             req.object_type = payload.object_type.value
             req.color = spawn_color
             req.intact = spawn_intact
 
             with self._lock:
-                self._pending_spawn_coords = (float(payload.x), float(payload.y), float(payload.z))
+                self._pending_spawn_coords = (sx, sy, sz)
                 self._pending_spawn_command_id = command.command_id
             spawn_command_id = command.command_id
 
@@ -159,7 +169,7 @@ class EdgeBridgeCommandsMixin:
                     with self._lock:
                         self._pending_spawn_coords = None
                         self._pending_spawn_command_id = None
-                    self._publish_error("SERVICE_ERROR", str(err))
+                    self._publish_error("SERVICE_ERROR", "SpawnObject call failed")
                     return
                 if res is None or not res.success:
                     msg = res.message if res else "Unknown service failure"
@@ -205,7 +215,8 @@ class EdgeBridgeCommandsMixin:
             try:
                 ClearWorkspacePayload.model_validate(command.payload)
             except Exception as e:
-                self._publish_error("INVALID_PAYLOAD", f"ClearWorkspace payload invalid: {e}")
+                self.get_logger().error(f"ClearWorkspace payload invalid: {e}")
+                self._publish_error("INVALID_PAYLOAD", "ClearWorkspace payload invalid")
                 return None
 
             if not self._clear_workspace_client.wait_for_service(timeout_sec=1.0):
@@ -223,11 +234,11 @@ class EdgeBridgeCommandsMixin:
                     res = future.result()
                 except Exception as err:
                     self.get_logger().error(f"ClearWorkspace call failed: {err}")
-                    self._publish_error("SERVICE_ERROR", str(err))
+                    self._publish_error("SERVICE_ERROR", "ClearWorkspace call failed")
                     return
                 if res is None or not res.success:
-                    msg = res.message if res else "Unknown service failure"
-                    self._publish_error("SERVICE_ERROR", msg)
+                    self.get_logger().error(f"ClearWorkspace rejected: {res}")
+                    self._publish_error("SERVICE_ERROR", "ClearWorkspace rejected")
                     return
                 with self._lock:
                     self._is_grasped = False
@@ -262,7 +273,8 @@ class EdgeBridgeCommandsMixin:
                 try:
                     payload = PickAndPlaceTargetPayload.model_validate(command.payload)
                 except Exception as e:
-                    self._publish_error("INVALID_PAYLOAD", f"PickAndPlaceTarget payload invalid: {e}")
+                    self.get_logger().error(f"PickAndPlaceTarget payload invalid: {e}")
+                    self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid")
                     return None
 
                 self._robot_state = RobotState.EXECUTING

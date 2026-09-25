@@ -47,10 +47,12 @@ pub(super) fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Res
             }
             Ok(())
         }
-        CommandType::Ping
-        | CommandType::TeleopJointTarget
-        | CommandType::Engage
-        | CommandType::Standby => Ok(()),
+        CommandType::Ping | CommandType::Engage | CommandType::Standby => Ok(()),
+        // No EdgeNode handler exists (edge falls through to UNSUPPORTED_COMMAND);
+        // fail fast here so the frame never reaches the DataFabric.
+        CommandType::TeleopJointTarget => {
+            Err("TeleopJointTarget not supported by EdgeNode; use TRAJECTORY_EXECUTE".to_string())
+        }
     }
 }
 

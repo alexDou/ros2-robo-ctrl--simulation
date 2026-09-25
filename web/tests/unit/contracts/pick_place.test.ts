@@ -161,3 +161,17 @@ describe('TypeScript Domain Schemas & Contracts', () => {
     });
   });
 });
+
+describe('Finite-float guards (semgrep ros2-float-coord)', () => {
+  it('rejects non-finite PickAndPlaceTargetPayload coordinates', async () => {
+    const { parsePickAndPlaceTargetPayload } = await import('@domain/parsers');
+    for (const bad of [Infinity, -Infinity, NaN]) {
+      expect(() => parsePickAndPlaceTargetPayload({ pick_x: bad, pick_y: 0.1, pick_z: 0.0 })).toThrow(
+        /finite|must be a number/
+      );
+      expect(() =>
+        parsePickAndPlaceTargetPayload({ pick_x: 0.5, pick_y: 0.1, pick_z: 0.0, drop_x: bad })
+      ).toThrow(/finite|must be a number/);
+    }
+  });
+});

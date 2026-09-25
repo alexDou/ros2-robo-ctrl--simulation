@@ -706,10 +706,10 @@ def emit_python(ir: DomainIR) -> str:
         else:
             lines.append(f'{sc.name}: str = "{sc.value}"')
 
+    lines.append("")
+    lines.append("")
+    lines.append("FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]")
     if ir.fixed_arrays:
-        lines.append("")
-        lines.append("")
-        lines.append("FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]")
         for fa in ir.fixed_arrays:
             lines.append(
                 f'{fa.name} = Annotated[list[FiniteFloat], Field(min_length={fa.count}, max_length={fa.count}, description="{fa.description}")]'
@@ -757,13 +757,14 @@ def emit_python(ir: DomainIR) -> str:
                 lines.append(f"    {f.name}: {type_str} = Field({', '.join(args)})")
             elif f.kind == "float":
                 args = ["default=None"] if not f.required else ["..."]
+                args.append("allow_inf_nan=False")
                 if f.minimum is not None:
                     args.append(f"ge={f.minimum}")
                 if f.maximum is not None:
                     args.append(f"le={f.maximum}")
                 if f.description:
                     args.append(f'description="{f.description}"')
-                type_str = "Optional[float]" if not f.required else "float"
+                type_str = "Optional[FiniteFloat]" if not f.required else "FiniteFloat"
                 lines.append(f"    {f.name}: {type_str} = Field({', '.join(args)})")
             elif f.kind == "bool":
                 if f.default is not None:
@@ -883,6 +884,7 @@ def _ts_field_to_zod(f: FieldDef) -> str:
 
     if f.kind == "float":
         parts = [f"z.number({{ message: \"Field '{f.name}' must be a number\" }})"]
+        parts.append(f".refine(Number.isFinite, {{ message: \"Field '{f.name}' must be a finite number\" }})")
         if f.minimum is not None and f.maximum is not None:
             parts.append(f".min({f.minimum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})")
             parts.append(f".max({f.maximum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})")

@@ -282,3 +282,21 @@ def test_workcell_spawn_object_service():
         assert node.has_active_workpiece is True
     finally:
         node.destroy_node()
+
+
+def test_spawn_object_rejects_non_finite_coords():
+    import math
+
+    node = WorkcellNode()
+    try:
+        for bad in (math.inf, -math.inf, math.nan):
+            res = node.handle_spawn_object(
+                SpawnObject.Request(coords=Point(x=bad, y=0.1, z=0.0), object_type="GEAR", color="WHITE", intact=True),
+                SpawnObject.Response(),
+            )
+            assert res.success is False
+            assert "finite" in res.message
+        assert node.inventory == 0
+        assert node.has_active_workpiece is False
+    finally:
+        node.destroy_node()
