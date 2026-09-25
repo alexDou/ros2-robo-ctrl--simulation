@@ -1,6 +1,8 @@
 # Request
-string color "WHITE"
-bool intact true
+# Empty color = bare-query sentinel (arm client): follows active gear,
+# WHITE tower when idle. Non-empty color must be WHITE, GREEN, or BLUE.
+string color
+bool intact
 ---
 # Response
 geometry_msgs/Point drop_coords

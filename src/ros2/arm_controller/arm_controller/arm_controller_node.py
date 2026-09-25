@@ -274,6 +274,10 @@ class ArmControllerNode(Node):
                     return result
 
                 get_drop_req = GetDropSlot.Request()
+                # Bare-query sentinel: empty color + intact=True follows the
+                # active gear (WHITE tower when idle). No classification here.
+                get_drop_req.color = ""
+                get_drop_req.intact = True
                 drop_future = self._drop_slot_client.call_async(get_drop_req)
                 drop_arrived = threading.Event()
                 drop_store: dict = {}
@@ -304,6 +308,14 @@ class ArmControllerNode(Node):
                     return result
 
                 drop_res = drop_store["result"]
+                if drop_res.slot_index < 0:
+                    self.get_logger().error(
+                        "GetDropSlot rejected query (invalid classification)"
+                    )
+                    goal_handle.abort()
+                    result.success = False
+                    result.message = "Drop slot rejected query: invalid classification"
+                    return result
                 drop_coords = (drop_res.drop_coords.x, drop_res.drop_coords.y, drop_res.drop_coords.z)
                 self.get_logger().info(
                     f"Queried drop slot: ({drop_res.drop_coords.x:.3f}, {drop_res.drop_coords.y:.3f}, {drop_res.drop_coords.z:.3f}), "

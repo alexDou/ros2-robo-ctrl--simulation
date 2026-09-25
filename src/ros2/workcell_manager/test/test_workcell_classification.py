@@ -46,14 +46,13 @@ def test_spawn_stores_classification():
         node.destroy_node()
 
 
-def test_spawn_defaults_white_intact_for_old_callers():
+def test_spawn_rejects_bare_request_without_classification():
     node = WorkcellNode()
     try:
         out = _spawn(node)
-        assert out.success is True
-        entry = node.spawned[0]
-        assert entry["color"] == "WHITE"
-        assert entry["intact"] is True
+        assert out.success is False
+        assert out.gear_id == ""
+        assert node.spawned == []
     finally:
         node.destroy_node()
 
@@ -110,7 +109,7 @@ def test_get_drop_slot_accepts_classification_response_unchanged():
         assert pytest.approx(out.drop_coords.x) == SCRAP_BIN[0]
         assert pytest.approx(out.drop_coords.y) == SCRAP_BIN[1]
         assert node.inventory == 0
-        out2 = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
+        out2 = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
         assert out2.slot_index == 0
         assert out2.overflow_occurred is False
     finally:

@@ -46,9 +46,10 @@ def _cycle(node, x=0.45, y=0.10, z=0.0, **classification):
     return node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
 
 
-def _reserve(node, **classification):
+def _reserve(node, color="", intact=True, **classification):
     return node.handle_get_drop_slot(
-        GetDropSlot.Request(**classification), GetDropSlot.Response()
+        GetDropSlot.Request(color=color, intact=intact, **classification),
+        GetDropSlot.Response(),
     )
 
 
@@ -103,7 +104,7 @@ def test_sound_white_byte_identical_to_today():
         assert pytest.approx(slot.drop_coords.x) == WHITE_TOWER[0]
         assert pytest.approx(slot.drop_coords.y) == WHITE_TOWER[1]
         assert pytest.approx(slot.drop_coords.z) == WHITE_TOWER[2]
-        res = _cycle(node)
+        res = _cycle(node, color="WHITE", intact=True)
         assert res.slot_index == 0
         assert res.overflow_occurred is False
         entry = node.processed[0]
@@ -187,14 +188,13 @@ def test_default_reservation_follows_active_entry():
         node.destroy_node()
 
 
-def test_invalid_color_reservation_follows_white():
+def test_invalid_color_reservation_rejected():
     node = WorkcellNode()
     try:
         slot = _reserve(node, color="RED", intact=True)
-        assert slot.slot_index == 0
+        assert slot.slot_index == -1
         assert slot.overflow_occurred is False
-        assert pytest.approx(slot.drop_coords.x) == WHITE_TOWER[0]
-        assert pytest.approx(slot.drop_coords.y) == WHITE_TOWER[1]
+        assert node.inventory == 0
     finally:
         node.destroy_node()
 
