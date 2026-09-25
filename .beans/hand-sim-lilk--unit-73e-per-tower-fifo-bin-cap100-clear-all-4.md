@@ -1,13 +1,13 @@
 ---
 # hand-sim-lilk
 title: 'Unit 7.3e: Per-tower FIFO + bin cap-100 recycle + Clear all-4'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-22T22:22:24Z
-updated_at: 2026-09-24T12:30:56Z
+updated_at: 2026-09-24T20:09:46Z
 parent: hand-sim-u2tx
 blocked_by:
     - hand-sim-473u
