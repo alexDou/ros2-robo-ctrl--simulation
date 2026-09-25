@@ -47,6 +47,16 @@
       "type": "number",
       "value": 0.02,
       "description": "Vertical stacking step per gear in meters"
+    },
+    "MAX_SCRAP_BIN_CAPACITY": {
+      "type": "integer",
+      "value": 100,
+      "description": "Maximum unsound gears piled in ScrapBin before sharp-cut recycle"
+    },
+    "DEFAULT_GEAR_COLOR": {
+      "type": "string",
+      "value": "WHITE",
+      "description": "Fallback gear color class when classification is absent"
     }
   },
   "$defs": {
@@ -219,7 +229,9 @@
                 "type": "string",
                 "title": "GearColor",
                 "enum": ["WHITE", "GREEN", "BLUE"],
-                "description": "Gear color class routing to its spindle tower"
+                "description": "Gear color class routing to its spindle tower",
+                "x-constant-name": "VALID_GEAR_COLORS",
+                "x-constant-alias": "VALID_GEAR_COLORS"
               },
               "intact": {
                 "type": "boolean",
@@ -278,7 +290,9 @@
                 "type": "string",
                 "title": "GearColor",
                 "enum": ["WHITE", "GREEN", "BLUE"],
-                "description": "Gear color class routing to its spindle tower"
+                "description": "Gear color class routing to its spindle tower",
+                "x-constant-name": "VALID_GEAR_COLORS",
+                "x-constant-alias": "VALID_GEAR_COLORS"
               },
               "intact": {
                 "type": "boolean",
@@ -337,7 +351,9 @@
                 "type": "string",
                 "title": "GearColor",
                 "enum": ["WHITE", "GREEN", "BLUE"],
-                "description": "Gear color class routing to its spindle tower"
+                "description": "Gear color class routing to its spindle tower",
+                "x-constant-name": "VALID_GEAR_COLORS",
+                "x-constant-alias": "VALID_GEAR_COLORS"
               },
               "intact": {
                 "type": "boolean",

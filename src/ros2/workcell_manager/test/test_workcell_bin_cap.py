@@ -5,14 +5,14 @@ from geometry_msgs.msg import Point
 from robot_control_interfaces.srv import (
     ClearWorkspace, CommitDrop, GetDropSlot, MarkGrasped, SpawnObject,
 )
-from workcell_manager.workcell_node import (
-    DEFAULT_SPINDLE_TOWER_COORDS,
-    GEAR_STACK_HEIGHT_STEP_M,
-    GREEN_SPINDLE_TOWER_COORDS,
+from domain import (
+    GREEN_TOWER,
     MAX_SCRAP_BIN_CAPACITY,
-    SCRAP_BIN_COORDS,
-    WorkcellNode,
+    SCRAP_BIN,
+    STACK_STEP_M,
+    WHITE_TOWER,
 )
+from workcell_manager.workcell_node import WorkcellNode
 
 @pytest.fixture(autouse=True)
 def ros_context():
@@ -53,9 +53,9 @@ def test_bin_piles_to_cap_with_overflow_never_set():
             assert res.success is True
             assert res.slot_index == k
             assert res.overflow_occurred is False
-            assert pytest.approx(res.drop_coords.x) == SCRAP_BIN_COORDS[0]
-            assert pytest.approx(res.drop_coords.y) == SCRAP_BIN_COORDS[1]
-            assert pytest.approx(res.drop_coords.z) == k * GEAR_STACK_HEIGHT_STEP_M
+            assert pytest.approx(res.drop_coords.x) == SCRAP_BIN[0]
+            assert pytest.approx(res.drop_coords.y) == SCRAP_BIN[1]
+            assert pytest.approx(res.drop_coords.z) == k * STACK_STEP_M
         assert len(_bin_entries(node)) == MAX_SCRAP_BIN_CAPACITY
     finally:
         node.destroy_node()
@@ -70,9 +70,9 @@ def test_101st_defective_recycles_pile_to_slot_0():
         assert res.success is True
         assert res.slot_index == 0
         assert res.overflow_occurred is False
-        assert pytest.approx(res.drop_coords.x) == SCRAP_BIN_COORDS[0]
-        assert pytest.approx(res.drop_coords.y) == SCRAP_BIN_COORDS[1]
-        assert pytest.approx(res.drop_coords.z) == SCRAP_BIN_COORDS[2]
+        assert pytest.approx(res.drop_coords.x) == SCRAP_BIN[0]
+        assert pytest.approx(res.drop_coords.y) == SCRAP_BIN[1]
+        assert pytest.approx(res.drop_coords.z) == SCRAP_BIN[2]
         remaining = _bin_entries(node)
         assert len(remaining) == 1
         assert remaining[0]["color"] == "BLUE"
@@ -98,7 +98,7 @@ def test_bin_recycle_leaves_towers_untouched():
                 if e["color"] == "WHITE" and e.get("intact", True)] == white_before
         assert [(e["x"], e["y"], e["z"]) for e in node.processed
                 if e["color"] == "GREEN"] == green_before
-        assert pytest.approx(node.processed[-1]["x"]) == SCRAP_BIN_COORDS[0]
+        assert pytest.approx(node.processed[-1]["x"]) == SCRAP_BIN[0]
     finally:
         node.destroy_node()
 
@@ -110,9 +110,9 @@ def test_full_bin_reservation_points_at_slot_0_no_overflow():
         slot = _reserve(node, color="GREEN", intact=False)
         assert slot.slot_index == 0
         assert slot.overflow_occurred is False
-        assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN_COORDS[0]
-        assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN_COORDS[1]
-        assert pytest.approx(slot.drop_coords.z) == SCRAP_BIN_COORDS[2]
+        assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN[0]
+        assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN[1]
+        assert pytest.approx(slot.drop_coords.z) == SCRAP_BIN[2]
         assert len(node.processed) == MAX_SCRAP_BIN_CAPACITY
     finally:
         node.destroy_node()
@@ -138,7 +138,7 @@ def test_clear_wipes_towers_plus_bin_and_restarts_pile():
         assert len(_bin_entries(node)) == 1
         tower_slot = _reserve(node, color="WHITE", intact=True)
         assert tower_slot.slot_index == 0
-        assert pytest.approx(tower_slot.drop_coords.x) == DEFAULT_SPINDLE_TOWER_COORDS[0]
+        assert pytest.approx(tower_slot.drop_coords.x) == WHITE_TOWER[0]
     finally:
         node.destroy_node()
 
@@ -156,8 +156,8 @@ def test_tower_fifo_still_pins_at_10_after_bin_recycle():
         greens = [e for e in node.processed if e["color"] == "GREEN"]
         assert len(greens) == 10
         for i, entry in enumerate(greens):
-            assert pytest.approx(entry["z"]) == GREEN_SPINDLE_TOWER_COORDS[2] + i * GEAR_STACK_HEIGHT_STEP_M
+            assert pytest.approx(entry["z"]) == GREEN_TOWER[2] + i * STACK_STEP_M
         assert len(_bin_entries(node)) == 1
-        assert pytest.approx(_bin_entries(node)[0]["x"]) == SCRAP_BIN_COORDS[0]
+        assert pytest.approx(_bin_entries(node)[0]["x"]) == SCRAP_BIN[0]
     finally:
         node.destroy_node()

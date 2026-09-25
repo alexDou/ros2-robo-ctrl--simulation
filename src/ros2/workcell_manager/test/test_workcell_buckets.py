@@ -16,10 +16,12 @@ from robot_control_interfaces.srv import (
     MarkGrasped,
     SpawnObject,
 )
+from domain import (
+    STACK_STEP_M,
+    TOWER_CAPACITY,
+    WHITE_TOWER,
+)
 from workcell_manager.workcell_node import (
-    DEFAULT_SPINDLE_TOWER_COORDS,
-    GEAR_STACK_HEIGHT_STEP_M,
-    MAX_TOWER_STACK_CAPACITY,
     WorkcellNode,
 )
 
@@ -121,9 +123,9 @@ def test_commit_drop_moves_with_drop_xyz_and_origin():
         assert len(node.processed) == 1
         entry = node.processed[0]
         assert entry["id"] == out.gear_id
-        assert pytest.approx(entry["x"]) == DEFAULT_SPINDLE_TOWER_COORDS[0]
-        assert pytest.approx(entry["y"]) == DEFAULT_SPINDLE_TOWER_COORDS[1]
-        assert pytest.approx(entry["z"]) == DEFAULT_SPINDLE_TOWER_COORDS[2]
+        assert pytest.approx(entry["x"]) == WHITE_TOWER[0]
+        assert pytest.approx(entry["y"]) == WHITE_TOWER[1]
+        assert pytest.approx(entry["z"]) == WHITE_TOWER[2]
         assert (entry["origin_x"], entry["origin_y"], entry["origin_z"]) == (0.45, 0.10, 0.0)
         assert pytest.approx(res.drop_coords.z) == entry["z"]
         assert node.inventory == 1
@@ -156,7 +158,7 @@ def test_get_drop_slot_pure_reservation():
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
         out = node.handle_get_drop_slot(GetDropSlot.Request(), GetDropSlot.Response())
         assert out.slot_index == 1
-        assert pytest.approx(out.drop_coords.z) == GEAR_STACK_HEIGHT_STEP_M
+        assert pytest.approx(out.drop_coords.z) == STACK_STEP_M
         assert node.inventory == 1
     finally:
         node.destroy_node()
@@ -165,19 +167,19 @@ def test_get_drop_slot_pure_reservation():
 def test_commit_drop_fifo_overflow():
     node = WorkcellNode()
     try:
-        for _ in range(MAX_TOWER_STACK_CAPACITY):
+        for _ in range(TOWER_CAPACITY):
             _spawn(node)
             node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
             node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        assert len(node.processed) == MAX_TOWER_STACK_CAPACITY
+        assert len(node.processed) == TOWER_CAPACITY
         _spawn(node, x=0.50, y=0.20)
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         res = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
         assert res.success is True
         assert res.overflow_occurred is True
-        assert res.slot_index == MAX_TOWER_STACK_CAPACITY - 1
-        assert len(node.processed) == MAX_TOWER_STACK_CAPACITY
-        assert node.tower_count == MAX_TOWER_STACK_CAPACITY
+        assert res.slot_index == TOWER_CAPACITY - 1
+        assert len(node.processed) == TOWER_CAPACITY
+        assert node.tower_count == TOWER_CAPACITY
     finally:
         node.destroy_node()
 

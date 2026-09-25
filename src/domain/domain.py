@@ -81,6 +81,13 @@ UR5eJoint = Literal[
     "wrist_3_joint",
 ]
 
+
+VALID_GEAR_COLORS: list[str] = [
+    "WHITE",
+    "GREEN",
+    "BLUE",
+]
+
 DEFAULT_ROBOT_ID: str = "arm-ur5"
 
 WHITE_TOWER: list[float] = [0.4, -0.3, 0.0]
@@ -94,6 +101,10 @@ SCRAP_BIN: list[float] = [0.4, 0.28, 0.0]
 TOWER_CAPACITY: int = 10
 
 STACK_STEP_M: float = 0.02
+
+MAX_SCRAP_BIN_CAPACITY: int = 100
+
+DEFAULT_GEAR_COLOR: str = "WHITE"
 
 
 FiniteFloat = Annotated[float, Field(allow_inf_nan=False)]

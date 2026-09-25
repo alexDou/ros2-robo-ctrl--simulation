@@ -85,6 +85,13 @@ pub const UR5E_JOINTS: [&str; 6] = [
 /// Alias for canonical joint names.
 pub const CANONICAL_UR5E_JOINTS: [&str; 6] = UR5E_JOINTS;
 
+/// Gear color class routing to its spindle tower
+pub const VALID_GEAR_COLORS: [&str; 3] = [
+    "WHITE",
+    "GREEN",
+    "BLUE",
+];
+
 /// Canonical default robot identifier across all services
 pub const DEFAULT_ROBOT_ID: &str = "arm-ur5";
 
@@ -105,6 +112,12 @@ pub const TOWER_CAPACITY: i64 = 10;
 
 /// Vertical stacking step per gear in meters
 pub const STACK_STEP_M: f64 = 0.02;
+
+/// Maximum unsound gears piled in ScrapBin before sharp-cut recycle
+pub const MAX_SCRAP_BIN_CAPACITY: i64 = 100;
+
+/// Fallback gear color class when classification is absent
+pub const DEFAULT_GEAR_COLOR: &str = "WHITE";
 
 /// Array of exactly 6 joint positions in radians.
 pub type ArmJointPositions = [f64; 6];

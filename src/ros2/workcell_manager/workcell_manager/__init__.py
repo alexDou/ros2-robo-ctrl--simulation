@@ -1,25 +1,27 @@
 """Workcell manager package for ROS2 native robot simulation."""
 
-from workcell_manager.workcell_node import (
-    BLUE_SPINDLE_TOWER_COORDS,
+from domain import (
+    BLUE_TOWER,
     DEFAULT_GEAR_COLOR,
-    DEFAULT_SPINDLE_TOWER_COORDS,
-    GEAR_STACK_HEIGHT_STEP_M,
-    GREEN_SPINDLE_TOWER_COORDS,
-    MAX_TOWER_STACK_CAPACITY,
-    SCRAP_BIN_COORDS,
+    GREEN_TOWER,
+    MAX_SCRAP_BIN_CAPACITY,
+    SCRAP_BIN,
+    STACK_STEP_M,
+    TOWER_CAPACITY,
     VALID_GEAR_COLORS,
-    WorkcellNode,
+    WHITE_TOWER,
 )
+from workcell_manager.workcell_node import WorkcellNode
 
 __all__ = [
-    "BLUE_SPINDLE_TOWER_COORDS",
+    "BLUE_TOWER",
     "DEFAULT_GEAR_COLOR",
-    "DEFAULT_SPINDLE_TOWER_COORDS",
-    "GEAR_STACK_HEIGHT_STEP_M",
-    "GREEN_SPINDLE_TOWER_COORDS",
-    "MAX_TOWER_STACK_CAPACITY",
-    "SCRAP_BIN_COORDS",
+    "GREEN_TOWER",
+    "MAX_SCRAP_BIN_CAPACITY",
+    "SCRAP_BIN",
+    "STACK_STEP_M",
+    "TOWER_CAPACITY",
     "VALID_GEAR_COLORS",
+    "WHITE_TOWER",
     "WorkcellNode",
 ]
