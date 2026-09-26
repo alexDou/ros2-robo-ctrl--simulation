@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'preact/hooks';
+import { useState, useCallback, useEffect, useRef } from 'preact/hooks';
 import { resolveGatewayWsUrl } from '@utils/url';
 import { DEFAULT_ROBOT_ID, type SpawnObjectPayload } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
@@ -87,6 +87,23 @@ export function TeleopClient({
   const handleClearWorkspace = useCallback(() => {
     clearWorkspace(workcellHasGears);
   }, [clearWorkspace, workcellHasGears]);
+
+  // FAULT is terminal (7hbf): auto-disconnect so the gateway STANDBY
+  // parks the arm; Connect restores. Deferred one tick so the FAULT frame
+  // (Reset Fault affordance + error toast) renders before teardown.
+  // Guarded to fire once per FAULT entry.
+  const faultDisconnectRef = useRef(false);
+  useEffect(() => {
+    if (robotState === 'FAULT' && connectionState === 'CONNECTED' && !faultDisconnectRef.current) {
+      faultDisconnectRef.current = true;
+      const timer = setTimeout(() => disconnect(), 0);
+      return () => clearTimeout(timer);
+    }
+    if (robotState !== 'FAULT') {
+      faultDisconnectRef.current = false;
+    }
+    return undefined;
+  }, [robotState, connectionState, disconnect]);
 
   // BOOTING window: activation (switch + sub + home) takes seconds.
   // Fall back to STANDBY display when no telemetry arrives within the budget.

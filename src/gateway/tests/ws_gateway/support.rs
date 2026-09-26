@@ -92,6 +92,9 @@ where
                 let err: ErrorFrame = serde_json::from_str(&txt).expect("parse error frame");
                 assert_eq!(err.r#type, "ERROR");
                 assert_eq!(err.error_code, "RATE_LIMIT_EXCEEDED");
+                // 7hbf audit: rate-limit frames carry the throttled command_id;
+                // a burst of these is a send-path bug signal, not user error.
+                assert_eq!(err.command_id.as_deref(), Some(second.command_id.as_str()));
                 assert_no_client_command(rx, "throttled command must not reach fabric").await;
                 return got;
             }

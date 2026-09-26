@@ -96,7 +96,7 @@ def test_edge_spawn_failure_no_dispatch_no_retry():
     mw.create_service(SpawnObject, "/t_fail/spawn", lambda rq, rs: (calls.append(1), setattr(rs, "success", False), setattr(rs, "message", "busy"), setattr(rs, "gear_id", ""), rs)[-1])
     node = EdgeBridgeNode(parameter_overrides=[Parameter("robot_id", Parameter.Type.STRING, "t-fail"), Parameter("spawn_object_service_name", Parameter.Type.STRING, "/t_fail/spawn"), Parameter("auto_home_on_startup", Parameter.Type.BOOL, False), Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False), Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1)])
     errs = []
-    node._publish_error = lambda code, msg: errs.append((code, msg))
+    node._publish_error = lambda code, msg, **kw: errs.append((code, msg))
     ex = MultiThreadedExecutor(); ex.add_node(mw); ex.add_node(node); f = _sw(ex)
     th = threading.Thread(target=ex.spin, daemon=True); th.start()
     try:

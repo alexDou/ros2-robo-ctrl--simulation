@@ -56,6 +56,7 @@ export interface ActionProgress {
 export interface ErrorBannerInfo {
   errorCode: string;
   message: string;
+  commandId?: string;
 }
 
 export interface UseTeleopSessionOptions {
@@ -153,7 +154,19 @@ export function useTeleopSession({
           if (errorBannerTimerRef.current) {
             clearTimeout(errorBannerTimerRef.current);
           }
-          setErrorBanner({ errorCode: parsed.error_code, message: parsed.message });
+          // Root-cause surfacing (7hbf): backend log + toast + console.error,
+          // all keyed by command_id so ros2/gateway/browser logs join on
+          // (command_id, timestamp_ns). Probe log covers silent-drop audit.
+          setErrorBanner({ errorCode: parsed.error_code, message: parsed.message, commandId: parsed.command_id ?? undefined });
+          // eslint-disable-next-line no-console
+          console.error(`[teleop-error] ${parsed.error_code}: ${parsed.message}`, { commandId: parsed.command_id ?? null, timestampNs: parsed.timestamp_ns });
+          const probeEntry: LogEntry = {
+            id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            type: 'probe',
+            timestamp: new Date().toLocaleTimeString(),
+            data: { status: parsed.error_code, detail: `cmd=${parsed.command_id ?? 'n/a'} ts=${String(parsed.timestamp_ns)} :: ${parsed.message}` },
+          };
+          setLogs((prev) => [probeEntry, ...prev].slice(0, 100));
           errorBannerTimerRef.current = setTimeout(() => {
             setErrorBanner(null);
             errorBannerTimerRef.current = null;

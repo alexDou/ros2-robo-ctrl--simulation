@@ -30,6 +30,11 @@
       "type": "integer",
       "minimum": 0,
       "description": "Nanoseconds since Unix epoch when error was generated"
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Originating command identifier for root-cause correlation (timestamp_ns joins ros2/gateway/browser logs)"
     }
   },
   "additionalProperties": false

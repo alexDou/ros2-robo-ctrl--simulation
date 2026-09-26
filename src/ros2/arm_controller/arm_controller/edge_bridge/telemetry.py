@@ -109,12 +109,13 @@ class EdgeBridgeTelemetryMixin:
                         float(positions[idx]) for idx in self._cached_joint_indices
                     ]
 
-    def _publish_error(self, error_code: str, message: str) -> None:
+    def _publish_error(self, error_code: str, message: str, command_id: Optional[str] = None) -> None:
         """Publishes structured ErrorFrame over Zenoh on schema or state validation failures."""
         err = ErrorFrame(
             error_code=error_code,
             message=message,
             timestamp_ns=time.time_ns(),
+            command_id=command_id,
         )
         self.get_logger().warning(f"ErrorFrame: [{error_code}] {message}")
         if self._zenoh_pub is not None:

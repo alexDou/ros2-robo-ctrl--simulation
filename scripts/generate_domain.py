@@ -564,7 +564,10 @@ def emit_rust(ir: DomainIR) -> str:
             params = []
             for f in non_literal_fields:
                 if f.kind == "string":
-                    params.append(f"{f.name}: impl Into<String>")
+                    if f.required:
+                        params.append(f"{f.name}: impl Into<String>")
+                    else:
+                        params.append(f"{f.name}: Option<String>")
                 elif f.kind == "int":
                     int_t = "u64" if f.minimum is not None and f.minimum >= 0 else "i64"
                     params.append(f"{f.name}: {int_t}")
@@ -584,7 +587,10 @@ def emit_rust(ir: DomainIR) -> str:
                 if f.kind == "literal":
                     lines.append(f'            {fname}: "{f.ref}".to_string(),')
                 elif f.kind == "string":
-                    lines.append(f"            {fname}: {f.name}.into(),")
+                    if f.required:
+                        lines.append(f"            {fname}: {f.name}.into(),")
+                    else:
+                        lines.append(f"            {fname}: {f.name}.map(Into::into),")
                 elif fname == f.name:
                     lines.append(f"            {fname},")
                 else:

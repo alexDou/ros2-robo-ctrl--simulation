@@ -148,6 +148,7 @@ pub async fn teleop_ws(
                                             "SCHEMA_VALIDATION_ERROR",
                                             format!("Malformed {:?} payload", command.r#type),
                                             current_time_ns(),
+                                            Some(command.command_id.clone()),
                                         );
                                         if let Ok(err_json) = serde_json::to_string(&error_frame) {
                                             if session.text(err_json).await.is_err() {
@@ -162,6 +163,7 @@ pub async fn teleop_ws(
                                             "RATE_LIMIT_EXCEEDED",
                                             "Command rate limit exceeded (maximum 20 Hz / 50ms minimum interval)",
                                             current_time_ns(),
+                                            Some(command.command_id.clone()),
                                         );
                                         if let Ok(err_json) = serde_json::to_string(&error_frame) {
                                             if session.text(err_json).await.is_err() {
@@ -231,6 +233,7 @@ pub async fn teleop_ws(
                                         "SCHEMA_VALIDATION_ERROR",
                                         "Malformed RobotCommand payload",
                                         current_time_ns(),
+                                        None,
                                     );
                                     if let Ok(err_json) = serde_json::to_string(&error_frame) {
                                         if session.text(err_json).await.is_err() {
