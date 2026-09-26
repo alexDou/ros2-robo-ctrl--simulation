@@ -19,9 +19,9 @@ def test_payload_shape_base64_data_uri():
     content = payload["messages"][0]["content"]
     assert content[0] == {"type": "text", "text": "what?"}
     assert content[1]["image_url"]["url"].startswith("data:image/png;base64,")
-def test_default_model_is_free_vision():
+def test_default_model_is_working_vision():
     mod = load_imgask()
-    assert mod.DEFAULT_MODEL.endswith(":free")
+    assert mod.DEFAULT_MODEL == "deepseek/deepseek-v4-flash-vision-exp"
 def test_missing_key_raises():
     mod = load_imgask()
     with mock.patch.dict(os.environ, {}, clear=True):
