@@ -102,8 +102,8 @@ class TestInverseKinematics:
     def test_solve_cartesian_downward_normal_constraint(self, solver: UR5eKinematics) -> None:
         """Asserts solve_ik enforces vertical downward normal orientation."""
         test_points = [
-            (0.40, -0.30, 0.0),   # SpindleTower base
-            (0.40, -0.30, 0.10),  # SpindleTower approach
+            (0.40, -0.42, 0.0),   # SpindleTower base (GREEN)
+            (0.40, -0.42, 0.10),  # SpindleTower approach
             (0.35, 0.15, 0.0),    # Workcell table pickup
             (0.50, -0.10, 0.05),  # Intermediate workspace point
         ]
@@ -340,4 +340,53 @@ class TestPickAndPlaceTrajectoryGenerator:
             dz = T_tcp[2][3] - step.cartesian_position[2]
             err = math.sqrt(dx * dx + dy * dy + dz * dz)
             assert err < 0.001, f"Step {step.name} FK error {err*1000:.3f}mm exceeds 1mm limit"
+
+
+class TestOffTableTowerRack:
+    """hand-sim-yl4e: towers on off-table rack behind table (y=-0.42)."""
+
+    def test_rack_coords_match_domain(self) -> None:
+        from domain import BLUE_TOWER, GREEN_TOWER, WHITE_TOWER
+
+        assert WHITE_TOWER == [0.25, -0.42, 0.0]
+        assert GREEN_TOWER == [0.40, -0.42, 0.0]
+        assert BLUE_TOWER == [0.55, -0.42, 0.0]
+
+    def test_blue_branch_natural_motion_and_home_end_pose(
+        self, solver: UR5eKinematics
+    ) -> None:
+        """BLUE drop runs without wrist flip and returns to HOME end pose."""
+        from domain import BLUE_TOWER, CANONICAL_POSES
+        from domain import PoseName as DomainPoseName
+
+        generator = PickAndPlaceTrajectoryGenerator()
+        pick = (0.45, 0.10, 0.0)
+        drop = (BLUE_TOWER[0], BLUE_TOWER[1], BLUE_TOWER[2])
+        steps = generator.generate_trajectory(pick_coords=pick, drop_coords=drop)
+        assert len(steps) == 10
+
+        # Natural motion: every IK-driven motion step displaces < pi
+        # (tower_retreat->home is the canonical return-home swing, excluded).
+        for i in range(1, len(steps) - 2):
+            disp = solver.angular_distance(
+                steps[i - 1].joint_positions, steps[i].joint_positions
+            )
+            assert disp < math.pi, (
+                f"Step {steps[i-1].name}->{steps[i].name} flips "
+                f"({disp:.3f} rad >= pi)"
+            )
+
+        home = CANONICAL_POSES[DomainPoseName.HOME]
+        for i, q in enumerate(steps[-1].joint_positions):
+            assert abs(q - home[i]) < 1e-4
+
+        drop_step = steps[5]
+        T_tcp = generator.solver.forward_kinematics(
+            drop_step.joint_positions, with_tcp=True
+        )
+        z_axis = [T_tcp[0][2], T_tcp[1][2], T_tcp[2][2]]
+        assert abs(z_axis[0]) < 1e-3
+        assert abs(z_axis[1]) < 1e-3
+        assert abs(z_axis[2] - (-1.0)) < 1e-3
+
 

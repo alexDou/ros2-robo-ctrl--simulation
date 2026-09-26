@@ -20,18 +20,18 @@
     },
     "WHITE_TOWER": {
       "type": "array",
-      "value": [0.4, -0.3, 0.0],
-      "description": "White spindle tower base coordinates in meters (REP-103 robot base frame)"
+      "value": [0.25, -0.42, 0.0],
+      "description": "White spindle tower base coordinates in meters (REP-103 robot base frame, off-table rack)"
     },
     "GREEN_TOWER": {
       "type": "array",
-      "value": [0.55, -0.3, 0.0],
-      "description": "Green spindle tower base coordinates in meters (REP-103 robot base frame)"
+      "value": [0.4, -0.42, 0.0],
+      "description": "Green spindle tower base coordinates in meters (REP-103 robot base frame, off-table rack)"
     },
     "BLUE_TOWER": {
       "type": "array",
-      "value": [0.7, -0.3, 0.0],
-      "description": "Blue spindle tower base coordinates in meters (REP-103 robot base frame)"
+      "value": [0.55, -0.42, 0.0],
+      "description": "Blue spindle tower base coordinates in meters (REP-103 robot base frame, off-table rack)"
     },
     "SCRAP_BIN": {
       "type": "array",

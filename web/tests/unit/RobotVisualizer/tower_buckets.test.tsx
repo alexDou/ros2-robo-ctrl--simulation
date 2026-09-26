@@ -93,7 +93,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot as any);
     });
 
-    it('mounts SpindleTower 3D fixture at (x=0.40, y=-0.30, z=0.0) with base flange and 0.20m spindle pin', async () => {
+    it('mounts SpindleTower 3D fixture at (x=0.25, y=-0.42, z=0.0) with base flange and 0.20m spindle pin', async () => {
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -116,8 +116,8 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(towerMesh).toBeDefined();
       expect(towerMesh).not.toBeNull();
       expect(towerMesh.name).toBe('spindle-tower');
-      expect(towerMesh.position.x).toBeCloseTo(0.40, 2);
-      expect(towerMesh.position.y).toBeCloseTo(-0.30, 2);
+      expect(towerMesh.position.x).toBeCloseTo(0.25, 2);
+      expect(towerMesh.position.y).toBeCloseTo(-0.42, 2);
       expect(towerMesh.position.z).toBeCloseTo(0.0, 2);
 
       const baseFlange = visualizer.getSpindleBaseFlangeMesh();
