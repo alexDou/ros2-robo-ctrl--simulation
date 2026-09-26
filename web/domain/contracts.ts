@@ -181,14 +181,14 @@ export const VALID_GEAR_COLORS = [
 /** Canonical default robot identifier across all services */
 export const DEFAULT_ROBOT_ID = 'arm-ur5';
 
-/** White spindle tower base coordinates in meters (REP-103 robot base frame) */
-export const WHITE_TOWER = [0.4, -0.3, 0.0] as const;
+/** White spindle tower base coordinates in meters (REP-103 robot base frame, off-table rack) */
+export const WHITE_TOWER = [0.25, -0.42, 0.0] as const;
 
-/** Green spindle tower base coordinates in meters (REP-103 robot base frame) */
-export const GREEN_TOWER = [0.55, -0.3, 0.0] as const;
+/** Green spindle tower base coordinates in meters (REP-103 robot base frame, off-table rack) */
+export const GREEN_TOWER = [0.4, -0.42, 0.0] as const;
 
-/** Blue spindle tower base coordinates in meters (REP-103 robot base frame) */
-export const BLUE_TOWER = [0.7, -0.3, 0.0] as const;
+/** Blue spindle tower base coordinates in meters (REP-103 robot base frame, off-table rack) */
+export const BLUE_TOWER = [0.55, -0.42, 0.0] as const;
 
 /** Scrap bin coordinates in meters (REP-103 robot base frame) */
 export const SCRAP_BIN = [0.4, 0.28, 0.0] as const;

@@ -90,11 +90,11 @@ VALID_GEAR_COLORS: list[str] = [
 
 DEFAULT_ROBOT_ID: str = "arm-ur5"
 
-WHITE_TOWER: list[float] = [0.4, -0.3, 0.0]
+WHITE_TOWER: list[float] = [0.25, -0.42, 0.0]
 
-GREEN_TOWER: list[float] = [0.55, -0.3, 0.0]
+GREEN_TOWER: list[float] = [0.4, -0.42, 0.0]
 
-BLUE_TOWER: list[float] = [0.7, -0.3, 0.0]
+BLUE_TOWER: list[float] = [0.55, -0.42, 0.0]
 
 SCRAP_BIN: list[float] = [0.4, 0.28, 0.0]
 

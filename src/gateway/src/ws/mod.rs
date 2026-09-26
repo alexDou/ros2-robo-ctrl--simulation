@@ -193,9 +193,9 @@ pub async fn teleop_ws(
                                                         payload.pick_z,
                                                     ),
                                                     drop_coords: crate::action::ActionPoint::new(
-                                                        payload.drop_x.unwrap_or(0.40),
-                                                        payload.drop_y.unwrap_or(-0.30),
-                                                        payload.drop_z.unwrap_or(0.0),
+                                                        payload.drop_x.unwrap_or(crate::domain::WHITE_TOWER[0]),
+                                                        payload.drop_y.unwrap_or(crate::domain::WHITE_TOWER[1]),
+                                                        payload.drop_z.unwrap_or(crate::domain::WHITE_TOWER[2]),
                                                     ),
                                                     use_custom_drop,
                                                     command_id: command.command_id.clone(),

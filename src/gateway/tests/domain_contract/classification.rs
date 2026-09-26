@@ -64,9 +64,9 @@ fn test_unit70_required_color_intact() {
     assert!(event.workcell_state.processed[0].intact);
     let _ = RobotState::Idle;
 
-    assert_eq!(WHITE_TOWER, [0.4, -0.3, 0.0]);
-    assert_eq!(GREEN_TOWER, [0.55, -0.3, 0.0]);
-    assert_eq!(BLUE_TOWER, [0.7, -0.3, 0.0]);
+    assert_eq!(WHITE_TOWER, [0.25, -0.42, 0.0]);
+    assert_eq!(GREEN_TOWER, [0.4, -0.42, 0.0]);
+    assert_eq!(BLUE_TOWER, [0.55, -0.42, 0.0]);
     assert_eq!(SCRAP_BIN, [0.4, 0.28, 0.0]);
     assert_eq!(TOWER_CAPACITY, 10);
     assert!((STACK_STEP_M - 0.02).abs() < 1e-12);

@@ -43,9 +43,9 @@ def test_workcell_constants_match_schema_single_source_of_truth():
         WHITE_TOWER,
     )
 
-    assert WHITE_TOWER == [0.4, -0.3, 0.0]
-    assert GREEN_TOWER == [0.55, -0.3, 0.0]
-    assert BLUE_TOWER == [0.7, -0.3, 0.0]
+    assert WHITE_TOWER == [0.25, -0.42, 0.0]
+    assert GREEN_TOWER == [0.4, -0.42, 0.0]
+    assert BLUE_TOWER == [0.55, -0.42, 0.0]
     assert SCRAP_BIN == [0.4, 0.28, 0.0]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02
@@ -680,9 +680,9 @@ def test_unit70_required_color_intact():
     assert event.workcell_state.processed[0].color == GearColor.BLUE
     assert event.workcell_state.processed[0].intact is True
 
-    assert WHITE_TOWER == [0.4, -0.3, 0.0]
-    assert GREEN_TOWER == [0.55, -0.3, 0.0]
-    assert BLUE_TOWER == [0.7, -0.3, 0.0]
+    assert WHITE_TOWER == [0.25, -0.42, 0.0]
+    assert GREEN_TOWER == [0.4, -0.42, 0.0]
+    assert BLUE_TOWER == [0.55, -0.42, 0.0]
     assert SCRAP_BIN == [0.4, 0.28, 0.0]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02

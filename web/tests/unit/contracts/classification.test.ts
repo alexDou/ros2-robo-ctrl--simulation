@@ -21,9 +21,9 @@ describe('Unit 7.0: required color + intact on GearEntry (hand-sim-9kw2)', () =>
       contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0, color: 'RED', intact: true })
     ).toThrow();
     expect(() => contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0 })).toThrow();
-    expect(contracts.WHITE_TOWER).toEqual([0.4, -0.3, 0.0]);
-    expect(contracts.GREEN_TOWER).toEqual([0.55, -0.3, 0.0]);
-    expect(contracts.BLUE_TOWER).toEqual([0.7, -0.3, 0.0]);
+    expect(contracts.WHITE_TOWER).toEqual([0.25, -0.42, 0.0]);
+    expect(contracts.GREEN_TOWER).toEqual([0.4, -0.42, 0.0]);
+    expect(contracts.BLUE_TOWER).toEqual([0.55, -0.42, 0.0]);
     expect(contracts.SCRAP_BIN).toEqual([0.4, 0.28, 0.0]);
     expect(contracts.TOWER_CAPACITY).toBe(10);
     expect(contracts.STACK_STEP_M).toBe(0.02);
