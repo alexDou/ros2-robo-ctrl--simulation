@@ -85,8 +85,8 @@ export function TeleopClient({
     (snap?.processed?.length ?? 0) > 0;
 
   const handleClearWorkspace = useCallback(() => {
-    clearWorkspace();
-  }, [clearWorkspace]);
+    clearWorkspace(workcellHasGears);
+  }, [clearWorkspace, workcellHasGears]);
 
   // BOOTING window: activation (switch + sub + home) takes seconds.
   // Fall back to STANDBY display when no telemetry arrives within the budget.

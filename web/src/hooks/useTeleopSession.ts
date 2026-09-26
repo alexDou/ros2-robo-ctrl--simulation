@@ -274,13 +274,14 @@ export function useTeleopSession({
     [robotState, hasActiveGear]
   );
 
-  const clearWorkspace = useCallback(() => {
+  const clearWorkspace = useCallback((snapshotHasGears = false) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     const currentRobotState = robotState ?? 'STANDBY';
     if (currentRobotState !== 'IDLE') return;
-    // Workcell-authority: workspace clears on snapshot echo. Session flag
-    // alone gates the send; TeleopClient derives button state from snapshot.
-    if (!hasActiveGear) return;
+    // Snapshot-gated (i78q): session flag is false after reload, but snapshot
+    // buckets carry gear truth. Send when either source reports gears so
+    // reload-simulated clears fire; button state already uses the same OR.
+    if (!hasActiveGear && !snapshotHasGears) return;
     setActionProgress(null);
     const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));
