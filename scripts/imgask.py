@@ -14,7 +14,7 @@ import sys
 import urllib.request
 
 DEFAULT_MODEL = os.environ.get(
-    "IMGASK_MODEL", "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free")
+    "IMGASK_MODEL", "deepseek/deepseek-v4-flash-vision-exp")
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 MAX_BYTES = 2_000_000
 
@@ -59,7 +59,7 @@ def build_payload(raw: bytes, mime: str, question: str, model: str) -> dict:
 
 
 def ask(raw: bytes, mime: str, question: str, model: str,
-        max_tokens: int = 500) -> str:
+        max_tokens: int = 1500) -> str:
     body = build_payload(raw, mime, question, model)
     body["max_tokens"] = max_tokens
     req = urllib.request.Request(
@@ -68,7 +68,22 @@ def ask(raw: bytes, mime: str, question: str, model: str,
                  "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=120) as fp:
         resp = json.load(fp)
-    return resp["choices"][0]["message"]["content"]
+    msg = resp["choices"][0]["message"]
+    content = msg.get("content")
+    if isinstance(content, str) and content.strip():
+        return content
+    # Reasoning models (deepseek-v4-flash-vision-exp) may return content=None
+    # with finish_reason='length' when max_tokens caps reasoning. Fall back
+    # to reasoning text so callers still get signal; retry with bigger budget.
+    reasoning = msg.get("reasoning") or ""
+    if isinstance(reasoning, str) and reasoning.strip():
+        return reasoning
+    details = msg.get("reasoning_details") or []
+    texts = [d.get("text", "") for d in details if isinstance(d, dict)]
+    joined = "\n".join(t for t in texts if t).strip()
+    if joined:
+        return joined
+    return repr(msg)[:500]
 
 
 def ask_file(path: str, question: str, model: str = DEFAULT_MODEL,
@@ -82,7 +97,7 @@ def main(argv=None) -> int:
     ap.add_argument("image")
     ap.add_argument("question")
     ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--max-tokens", type=int, default=500)
+    ap.add_argument("--max-tokens", type=int, default=1500)
     args = ap.parse_args(argv)
     try:
         print(ask_file(args.image, args.question, args.model,
