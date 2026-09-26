@@ -686,3 +686,19 @@ def test_unit70_required_color_intact():
     assert SCRAP_BIN == [0.4, 0.28, 0.0]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02
+
+
+def test_error_frame_optional_command_id_correlation():
+    """7hbf Stage-0 lock: ErrorFrame carries optional command_id; legacy frames parse."""
+    err = ErrorFrame(
+        error_code="ACTION_FAILED",
+        message="PickAndPlace failed: GetDropSlot rejected",
+        timestamp_ns=1_725_894_942_000_000_000,
+        command_id="cmd-pnp-7",
+    )
+    restored = ErrorFrame.model_validate_json(err.model_dump_json())
+    assert restored.command_id == "cmd-pnp-7"
+    legacy = ErrorFrame.model_validate(
+        {"type": "ERROR", "error_code": "ROBOT_BUSY", "message": "busy", "timestamp_ns": 1}
+    )
+    assert legacy.command_id is None

@@ -276,16 +276,19 @@ pub struct ErrorFrame {
     pub error_code: String,
     pub message: String,
     pub timestamp_ns: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub command_id: Option<String>,
 }
 
 impl ErrorFrame {
     #[must_use]
-    pub fn new(error_code: impl Into<String>, message: impl Into<String>, timestamp_ns: u64) -> Self {
+    pub fn new(error_code: impl Into<String>, message: impl Into<String>, timestamp_ns: u64, command_id: Option<String>) -> Self {
         Self {
             r#type: "ERROR".to_string(),
             error_code: error_code.into(),
             message: message.into(),
             timestamp_ns,
+            command_id: command_id.map(Into::into),
         }
     }
 }

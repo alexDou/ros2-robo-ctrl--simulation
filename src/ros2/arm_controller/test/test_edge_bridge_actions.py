@@ -233,3 +233,82 @@ def test_edge_bridge_pick_and_place_custom_drop_coords(make_switch_server):
         mock_arm.destroy_node()
         node.close()
         node.destroy_node()
+
+
+def test_edge_bridge_pnp_abort_carries_command_id_and_root_cause(make_switch_server):
+    """7hbf: ACTION_FAILED abort log + ErrorFrame carry command_id and backend root cause."""
+    import logging
+    mock_arm = Node("mock_arm_pnp_abort")
+    errors: list = []
+
+    def handle_pnp_execute(goal_handle):
+        goal_handle.abort()
+        res = PickAndPlace.Result()
+        res.success = False
+        res.message = "GetDropSlot rejected query: invalid classification"
+        return res
+
+    mock_action_server = ActionServer(
+        mock_arm,
+        PickAndPlace,
+        "/test_arm/pnp_abort_cause",
+        execute_callback=handle_pnp_execute,
+    )
+
+    node = EdgeBridgeNode(
+        parameter_overrides=[
+            Parameter("robot_id", Parameter.Type.STRING, "test-pnp-abort"),
+            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pnp_abort_cause"),
+            Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
+            Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
+        ]
+    )
+    node._publish_error = lambda code, msg, **kw: errors.append((code, msg, kw.get("command_id")))  # type: ignore[method-assign]
+
+    executor = MultiThreadedExecutor()
+    executor.add_node(mock_arm)
+    executor.add_node(node)
+    _fake = make_switch_server(executor)
+
+    spin_thread = threading.Thread(target=executor.spin, daemon=True)
+    spin_thread.start()
+
+    try:
+        node.handle_command(
+            RobotCommand(
+                command_id="engage-abort-01",
+                sender_id="test-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.ENGAGE,
+                payload={},
+            )
+        )
+        node.handle_command(
+            RobotCommand(
+                command_id="cmd-pnp-abort-7",
+                sender_id="test-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.PICK_AND_PLACE_TARGET,
+                payload={"pick_x": 0.45, "pick_y": 0.10, "pick_z": 0.0},
+            )
+        )
+        start_t = time.time()
+        while node.robot_state != RobotState.FAULT and time.time() - start_t < 4.0:
+            time.sleep(0.02)
+        assert node.robot_state == RobotState.FAULT
+        fails = [e for e in errors if e[0] == "ACTION_FAILED"]
+        assert len(fails) == 1
+        assert fails[0][2] == "cmd-pnp-abort-7"
+        assert "GetDropSlot" in fails[0][1] or "invalid classification" in fails[0][1]
+    finally:
+        executor.shutdown()
+        spin_thread.join(timeout=1.0)
+        try:
+            _fake.destroy_node()
+        except Exception:
+            pass
+        mock_action_server.destroy()
+        mock_arm.destroy_node()
+        node.close()
+        node.destroy_node()

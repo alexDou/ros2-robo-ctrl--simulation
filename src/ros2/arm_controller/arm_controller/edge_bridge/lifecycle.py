@@ -115,7 +115,8 @@ class EdgeBridgeLifecycleMixin:
             if self._robot_state not in (RobotState.STANDBY, RobotState.BOOTING):
                 self._publish_error(
                     "ROBOT_BUSY",
-                    f"Robot is currently {self._robot_state.value}; ENGAGE rejected",
+                    f"Robot is currently {self._robot_state.value}; ENGAGE rejected (cmd={command_id})",
+                    command_id=command_id,
                 )
                 return self.publish_telemetry(command_id=command_id)
             self._robot_state = RobotState.BOOTING
@@ -141,7 +142,8 @@ class EdgeBridgeLifecycleMixin:
             self._homing_done_event.set()
             self._publish_error(
                 "SWITCH_CONTROLLER_FAILED",
-                "switch_controller activation failed; arm stays parked in STANDBY",
+                f"switch_controller activation failed; arm stays parked in STANDBY (cmd={command_id})",
+                command_id=command_id,
             )
             return self.publish_telemetry(command_id=command_id)
         self.get_logger().info("ENGAGE step 1/3 done: controllers active")

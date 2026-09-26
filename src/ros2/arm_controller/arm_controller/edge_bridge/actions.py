@@ -11,12 +11,26 @@ from robot_control_interfaces.srv import CommitDrop, MarkGrasped
 
 
 class EdgeBridgeActionsMixin:
+    def _active_command_id(self) -> Optional[str]:
+        """Best-effort command correlation for async workcell callbacks."""
+        with self._lock:
+            handle = self._active_pnp_handle
+            pending = self._pending_spawn_command_id
+        cmd = getattr(handle, "command_id", None) if handle is not None else None
+        if isinstance(cmd, str) and cmd:
+            return cmd
+        goal = getattr(getattr(handle, "request", None), "command_id", None)
+        if isinstance(goal, str) and goal:
+            return goal
+        return pending
+
     def _call_mark_grasped_async(self) -> None:
         """Fires MarkGrasped once; failure -> ErrorFrame + cancel active goal, no retry."""
         if not self._mark_grasped_client.wait_for_service(timeout_sec=1.0):
             self._publish_error(
                 "SERVICE_UNAVAILABLE",
                 f"MarkGrasped service not available at '{self._mark_grasped_service_name}'",
+                command_id=self._active_command_id(),
             )
             self._cancel_active_pnp("MarkGrasped unavailable")
             return
@@ -26,12 +40,12 @@ class EdgeBridgeActionsMixin:
                 res = future.result()
             except Exception as err:
                 self.get_logger().error(f"MarkGrasped failed: {err}")
-                self._publish_error("SERVICE_ERROR", "MarkGrasped failed")
+                self._publish_error("SERVICE_ERROR", "MarkGrasped failed", command_id=self._active_command_id())
                 self._cancel_active_pnp("MarkGrasped failed")
                 return
             if res is None or not res.success:
                 msg = res.message if res else "Unknown service failure"
-                self._publish_error("GRASP_FAILED", msg)
+                self._publish_error("GRASP_FAILED", msg, command_id=self._active_command_id())
                 self._cancel_active_pnp("MarkGrasped rejected")
 
         self._mark_grasped_client.call_async(MarkGrasped.Request()).add_done_callback(_on_done)
@@ -42,6 +56,7 @@ class EdgeBridgeActionsMixin:
             self._publish_error(
                 "SERVICE_UNAVAILABLE",
                 f"CommitDrop service not available at '{self._commit_drop_service_name}'",
+                command_id=self._active_command_id(),
             )
             self._cancel_active_pnp("CommitDrop unavailable")
             return
@@ -51,12 +66,12 @@ class EdgeBridgeActionsMixin:
                 res = future.result()
             except Exception as err:
                 self.get_logger().error(f"CommitDrop failed: {err}")
-                self._publish_error("SERVICE_ERROR", "CommitDrop failed")
+                self._publish_error("SERVICE_ERROR", "CommitDrop failed", command_id=self._active_command_id())
                 self._cancel_active_pnp("CommitDrop failed")
                 return
             if res is None or not res.success:
                 msg = res.message if res else "Unknown service failure"
-                self._publish_error("COMMIT_FAILED", msg)
+                self._publish_error("COMMIT_FAILED", msg, command_id=self._active_command_id())
                 self._cancel_active_pnp("CommitDrop rejected")
 
         self._commit_drop_client.call_async(CommitDrop.Request()).add_done_callback(_on_done)
@@ -80,7 +95,7 @@ class EdgeBridgeActionsMixin:
         px, py, pz = payload.pick_x, payload.pick_y, payload.pick_z
         if not (math.isfinite(px) and math.isfinite(py) and math.isfinite(pz)):
             self.get_logger().error("PickAndPlace payload non-finite pick coords")
-            self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid")
+            self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid", command_id=command_id)
             return self.publish_telemetry(command_id=command_id)
         goal = PickAndPlace.Goal()
         goal.pick_coords = Point(x=px, y=py, z=pz)
@@ -92,7 +107,7 @@ class EdgeBridgeActionsMixin:
             dx, dy, dz = payload.drop_x, payload.drop_y, payload.drop_z
             if not (math.isfinite(dx) and math.isfinite(dy) and math.isfinite(dz)):
                 self.get_logger().error("PickAndPlace payload non-finite drop coords")
-                self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid")
+                self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid", command_id=command_id)
                 return self.publish_telemetry(command_id=command_id)
             goal.drop_coords = Point(x=dx, y=dy, z=dz)
             goal.use_custom_drop = True
@@ -153,22 +168,22 @@ class EdgeBridgeActionsMixin:
             try:
                 goal_handle = future.result()
             except Exception as err:
-                self.get_logger().error(f"Error obtaining PickAndPlace goal handle: {err}")
+                self.get_logger().error(f"Error obtaining PickAndPlace goal handle (cmd={command_id}): {err}")
                 with self._lock:
                     if self._robot_state == RobotState.EXECUTING:
                         self._robot_state = RobotState.FAULT
-                self._publish_error("GOAL_ERROR", "PickAndPlace goal failed")
+                self._publish_error("GOAL_ERROR", "PickAndPlace goal failed", command_id=command_id)
                 self.publish_telemetry()
                 if completion_event is not None:
                     completion_event.set()
                 return
 
             if not goal_handle or not goal_handle.accepted:
-                self.get_logger().error("PickAndPlace goal rejected by server")
+                self.get_logger().error(f"PickAndPlace goal rejected by server (cmd={command_id})")
                 with self._lock:
                     if self._robot_state == RobotState.EXECUTING:
                         self._robot_state = RobotState.FAULT
-                self._publish_error("GOAL_REJECTED", "PickAndPlace goal was rejected by action server")
+                self._publish_error("GOAL_REJECTED", "PickAndPlace goal was rejected by action server", command_id=command_id)
                 self.publish_telemetry()
                 if completion_event is not None:
                     completion_event.set()
@@ -202,16 +217,17 @@ class EdgeBridgeActionsMixin:
                                     self._current_phase = None
                                     should_publish_completion = True
                                 else:
+                                    root = pnp_res.result.message or "no root-cause message"
                                     self.get_logger().error(
-                                        f"PickAndPlace failed: {pnp_res.result.message}"
+                                        f"PickAndPlace failed (cmd={command_id}): {root}"
                                     )
                                     self._robot_state = RobotState.FAULT
-                                    self._publish_error("ACTION_FAILED", "PickAndPlace failed")
+                                    self._publish_error("ACTION_FAILED", f"PickAndPlace failed: {root}", command_id=command_id)
                                     should_publish_completion = True
                             except Exception as err:
-                                self.get_logger().error(f"Error reading PickAndPlace result: {err}")
+                                self.get_logger().error(f"Error reading PickAndPlace result (cmd={command_id}): {err}")
                                 self._robot_state = RobotState.FAULT
-                                self._publish_error("RESULT_ERROR", "PickAndPlace result unreadable")
+                                self._publish_error("RESULT_ERROR", f"PickAndPlace result unreadable (cmd={command_id})", command_id=command_id)
                                 should_publish_completion = True
 
                 if completion_event is not None:

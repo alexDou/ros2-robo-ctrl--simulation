@@ -124,7 +124,7 @@ def test_engage_switch_unavailable_stays_parked_with_error(make_switch_server):
     """ENGAGE with no switch service keeps arm parked: no sub, no homing, standby error."""
     node = _make_node("test-hs-switch-down")
     errors: list = []
-    node._publish_error = lambda code, msg: errors.append((code, msg))  # type: ignore[method-assign]
+    node._publish_error = lambda code, msg, **kw: errors.append((code, msg))  # type: ignore[method-assign]
     try:
         telem = node.handle_command(_cmd("e-switch-down", CommandType.ENGAGE))
         assert node.robot_state == RobotState.STANDBY
@@ -142,7 +142,7 @@ def test_engage_switch_rejected_stays_parked_with_error(make_switch_server):
     """ENGAGE with switch rejected (ok=False) keeps arm parked with standby error."""
     node = _make_node("test-hs-switch-reject")
     errors: list = []
-    node._publish_error = lambda code, msg: errors.append((code, msg))  # type: ignore[method-assign]
+    node._publish_error = lambda code, msg, **kw: errors.append((code, msg))  # type: ignore[method-assign]
     executor = MultiThreadedExecutor()
     executor.add_node(node)
     make_switch_server(executor, ok=False, message="fake reject")

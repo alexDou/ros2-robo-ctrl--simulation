@@ -422,6 +422,7 @@ export const rawErrorFrameSchema = z.object(
     error_code: z.string({ message: "Missing required field 'error_code'" }).min(1, { message: "Missing required field 'error_code'" }),
     message: z.string({ message: "Missing required field 'message'" }).min(1, { message: "Missing required field 'message'" }),
     timestamp_ns: timestampNsSchema,
+    command_id: z.string().min(1).nullish(),
   },
   { message: 'ErrorFrame payload must be an object' }
 ).strict();
