@@ -90,11 +90,11 @@ VALID_GEAR_COLORS: list[str] = [
 
 DEFAULT_ROBOT_ID: str = "arm-ur5"
 
-WHITE_TOWER: list[float] = [0.25, -0.42, 0.0]
+WHITE_TOWER: list[float] = [0.4, -0.3, 0.0]
 
-GREEN_TOWER: list[float] = [0.4, -0.42, 0.0]
+GREEN_TOWER: list[float] = [0.55, -0.3, 0.0]
 
-BLUE_TOWER: list[float] = [0.55, -0.42, 0.0]
+BLUE_TOWER: list[float] = [0.7, -0.3, 0.0]
 
 SCRAP_BIN: list[float] = [0.4, 0.28, 0.0]
 
@@ -249,7 +249,6 @@ class ErrorFrame(BaseModel):
     error_code: str = Field(..., min_length=1, description="Structured diagnostic error code")
     message: str = Field(..., min_length=1, description="Human-readable diagnostic error description")
     timestamp_ns: int = Field(..., ge=0, description="Nanoseconds since Unix epoch when error was generated")
-    command_id: Optional[str] = Field(default=None, min_length=1, description="Originating command identifier for root-cause correlation (timestamp_ns joins ros2/gateway/browser logs)")
 
 
 class RobotCommand(BaseModel):

@@ -80,8 +80,8 @@ fn test_robot_telemetry_event_workcell_origin_optional_round_trip() {
             }],
             processed: vec![gateway::domain::GearEntry {
                 id: "gear-2".to_string(),
-                x: 0.25,
-                y: -0.42,
+                x: 0.4,
+                y: -0.3,
                 z: 0.02,
                 origin_x: Some(0.5),
                 origin_y: Some(0.15),

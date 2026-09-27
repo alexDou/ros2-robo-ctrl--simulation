@@ -118,7 +118,7 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services(make_switch_serve
         )
         errs: list = []
         _orig_err = node._publish_error
-        node._publish_error = lambda code, msg, **kw: errs.append((code, msg))  # type: ignore[method-assign]
+        node._publish_error = lambda code, msg: errs.append((code, msg))  # type: ignore[method-assign]
 
         def _wait_for(pred, timeout=3.0):
             start = time.time()
