@@ -56,7 +56,6 @@ export interface ActionProgress {
 export interface ErrorBannerInfo {
   errorCode: string;
   message: string;
-  commandId?: string;
 }
 
 export interface UseTeleopSessionOptions {
@@ -154,19 +153,7 @@ export function useTeleopSession({
           if (errorBannerTimerRef.current) {
             clearTimeout(errorBannerTimerRef.current);
           }
-          // Root-cause surfacing (7hbf): backend log + toast + console.error,
-          // all keyed by command_id so ros2/gateway/browser logs join on
-          // (command_id, timestamp_ns). Probe log covers silent-drop audit.
-          setErrorBanner({ errorCode: parsed.error_code, message: parsed.message, commandId: parsed.command_id ?? undefined });
-          // eslint-disable-next-line no-console
-          console.error(`[teleop-error] ${parsed.error_code}: ${parsed.message}`, { commandId: parsed.command_id ?? null, timestampNs: parsed.timestamp_ns });
-          const probeEntry: LogEntry = {
-            id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-            type: 'probe',
-            timestamp: new Date().toLocaleTimeString(),
-            data: { status: parsed.error_code, detail: `cmd=${parsed.command_id ?? 'n/a'} ts=${String(parsed.timestamp_ns)} :: ${parsed.message}` },
-          };
-          setLogs((prev) => [probeEntry, ...prev].slice(0, 100));
+          setErrorBanner({ errorCode: parsed.error_code, message: parsed.message });
           errorBannerTimerRef.current = setTimeout(() => {
             setErrorBanner(null);
             errorBannerTimerRef.current = null;
@@ -287,14 +274,13 @@ export function useTeleopSession({
     [robotState, hasActiveGear]
   );
 
-  const clearWorkspace = useCallback((snapshotHasGears = false) => {
+  const clearWorkspace = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     const currentRobotState = robotState ?? 'STANDBY';
     if (currentRobotState !== 'IDLE') return;
-    // Snapshot-gated (i78q): session flag is false after reload, but snapshot
-    // buckets carry gear truth. Send when either source reports gears so
-    // reload-simulated clears fire; button state already uses the same OR.
-    if (!hasActiveGear && !snapshotHasGears) return;
+    // Workcell-authority: workspace clears on snapshot echo. Session flag
+    // alone gates the send; TeleopClient derives button state from snapshot.
+    if (!hasActiveGear) return;
     setActionProgress(null);
     const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));

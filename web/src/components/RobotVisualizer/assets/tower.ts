@@ -18,21 +18,6 @@ export function createSpindleTower(color: GearColor = 'WHITE'): SpindleTowerProc
   group.position.set(coords.x, coords.y, coords.z);
   group.userData.color = color;
 
-  // Off-table rack bar (hand-sim-yl4e): shared rail behind table at y=-0.42.
-  // Sized from domain WHITE..BLUE span so all three towers sit on one rail.
-  const rackSpanX = Math.abs(SPINDLE_TOWERS.BLUE.x - SPINDLE_TOWERS.WHITE.x);
-  const rackCenterX = (SPINDLE_TOWERS.WHITE.x + SPINDLE_TOWERS.BLUE.x) / 2;
-  const rackGeom = new THREE.BoxGeometry(rackSpanX + 0.2, 0.1, 0.02);
-  const rackMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b,
-    metalness: 0.3,
-    roughness: 0.7,
-  });
-  const rackMesh = new THREE.Mesh(rackGeom, rackMat);
-  rackMesh.name = 'spindle-rack-bar';
-  rackMesh.position.set(rackCenterX - coords.x, 0, -0.01);
-  group.add(rackMesh);
-
   // 1. Aluminum base flange (r=0.04m, h=0.008m)
   const flangeRadius = 0.04;
   const flangeHeight = 0.008;
@@ -64,8 +49,6 @@ export function createSpindleTower(color: GearColor = 'WHITE'): SpindleTowerProc
   group.add(pinMesh);
 
   const dispose = () => {
-    rackGeom.dispose();
-    disposeMaterial(rackMat);
     flangeGeom.dispose();
     disposeMaterial(flangeMat);
     pinGeom.dispose();

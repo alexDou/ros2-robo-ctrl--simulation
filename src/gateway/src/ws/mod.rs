@@ -148,7 +148,6 @@ pub async fn teleop_ws(
                                             "SCHEMA_VALIDATION_ERROR",
                                             format!("Malformed {:?} payload", command.r#type),
                                             current_time_ns(),
-                                            Some(command.command_id.clone()),
                                         );
                                         if let Ok(err_json) = serde_json::to_string(&error_frame) {
                                             if session.text(err_json).await.is_err() {
@@ -163,7 +162,6 @@ pub async fn teleop_ws(
                                             "RATE_LIMIT_EXCEEDED",
                                             "Command rate limit exceeded (maximum 20 Hz / 50ms minimum interval)",
                                             current_time_ns(),
-                                            Some(command.command_id.clone()),
                                         );
                                         if let Ok(err_json) = serde_json::to_string(&error_frame) {
                                             if session.text(err_json).await.is_err() {
@@ -195,9 +193,9 @@ pub async fn teleop_ws(
                                                         payload.pick_z,
                                                     ),
                                                     drop_coords: crate::action::ActionPoint::new(
-                                                        payload.drop_x.unwrap_or(crate::domain::WHITE_TOWER[0]),
-                                                        payload.drop_y.unwrap_or(crate::domain::WHITE_TOWER[1]),
-                                                        payload.drop_z.unwrap_or(crate::domain::WHITE_TOWER[2]),
+                                                        payload.drop_x.unwrap_or(0.40),
+                                                        payload.drop_y.unwrap_or(-0.30),
+                                                        payload.drop_z.unwrap_or(0.0),
                                                     ),
                                                     use_custom_drop,
                                                     command_id: command.command_id.clone(),
@@ -233,7 +231,6 @@ pub async fn teleop_ws(
                                         "SCHEMA_VALIDATION_ERROR",
                                         "Malformed RobotCommand payload",
                                         current_time_ns(),
-                                        None,
                                     );
                                     if let Ok(err_json) = serde_json::to_string(&error_frame) {
                                         if session.text(err_json).await.is_err() {

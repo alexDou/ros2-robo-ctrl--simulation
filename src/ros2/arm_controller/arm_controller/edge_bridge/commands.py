@@ -20,14 +20,14 @@ class EdgeBridgeCommandsMixin:
                 raw_payload = raw_payload.decode("utf-8")
             except Exception as e:
                 self.get_logger().error(f"UTF-8 decode failed: {e}")
-                self._publish_error("MALFORMED_PAYLOAD", "UTF-8 decode failed", command_id=None)
+                self._publish_error("MALFORMED_PAYLOAD", "UTF-8 decode failed")
                 return None
 
         try:
             command = RobotCommand.model_validate_json(raw_payload)
         except Exception as e:
             self.get_logger().error(f"Invalid RobotCommand schema: {e}")
-            self._publish_error("SCHEMA_VALIDATION_ERROR", "Invalid RobotCommand schema", command_id=None)
+            self._publish_error("SCHEMA_VALIDATION_ERROR", "Invalid RobotCommand schema")
             return None
 
         return self.handle_command(command)
@@ -59,7 +59,6 @@ class EdgeBridgeCommandsMixin:
             self._publish_error(
                 "ROBOT_STANDBY",
                 "Robot is in STANDBY; send ENGAGE handshake before motion commands",
-                command_id=command.command_id,
             )
             return None
 
@@ -69,14 +68,12 @@ class EdgeBridgeCommandsMixin:
                     self._publish_error(
                         "ROBOT_IN_FAULT",
                         "Robot is in FAULT state; must RESET_FAULT before commanding trajectories",
-                        command_id=command.command_id,
                     )
                     return None
                 if self._robot_state != RobotState.IDLE:
                     self._publish_error(
                         "ROBOT_BUSY",
                         f"Robot is currently {self._robot_state.value}; command rejected",
-                        command_id=command.command_id,
                     )
                     return None
 
@@ -85,7 +82,6 @@ class EdgeBridgeCommandsMixin:
                     self._publish_error(
                         "CONTROLLER_UNAVAILABLE",
                         "FollowJointTrajectory action server is not available",
-                        command_id=command.command_id,
                     )
                     return None
 
@@ -93,7 +89,7 @@ class EdgeBridgeCommandsMixin:
                     payload = TrajectoryExecutePayload.model_validate(command.payload)
                 except Exception as e:
                     self.get_logger().error(f"TrajectoryExecute payload invalid: {e}")
-                    self._publish_error("INVALID_PAYLOAD", "TrajectoryExecute payload invalid", command_id=command.command_id)
+                    self._publish_error("INVALID_PAYLOAD", "TrajectoryExecute payload invalid")
                     return None
 
                 waypoints_to_execute = []
@@ -102,7 +98,6 @@ class EdgeBridgeCommandsMixin:
                         self._publish_error(
                             "INVALID_POSE_NAME",
                             f"Unknown pose name '{payload.pose_name}'",
-                            command_id=command.command_id,
                         )
                         return None
                     waypoints_to_execute = [CANONICAL_POSES[payload.pose_name]]
@@ -112,7 +107,6 @@ class EdgeBridgeCommandsMixin:
                     self._publish_error(
                         "INVALID_PAYLOAD",
                         "Neither pose_name nor waypoints provided in TRAJECTORY_EXECUTE payload",
-                        command_id=command.command_id,
                     )
                     return None
 
@@ -129,7 +123,6 @@ class EdgeBridgeCommandsMixin:
                     self._publish_error(
                         "ROBOT_BUSY",
                         f"Robot is currently {self._robot_state.value}; cannot spawn object",
-                        command_id=command.command_id,
                     )
                     return None
 
@@ -142,22 +135,21 @@ class EdgeBridgeCommandsMixin:
                 payload = SpawnObjectPayload.model_validate(raw_spawn)
             except Exception as e:
                 self.get_logger().error(f"SpawnObject payload invalid: {e}")
-                self._publish_error("INVALID_PAYLOAD", f"SpawnObject payload invalid (cmd={command.command_id})", command_id=command.command_id)
+                self._publish_error("INVALID_PAYLOAD", "SpawnObject payload invalid")
                 return None
 
             if not self._spawn_object_client.wait_for_service(timeout_sec=1.0):
                 self._publish_error(
                     "SERVICE_UNAVAILABLE",
-                    f"SpawnObject service not available at '{self._spawn_object_service_name}' (cmd={command.command_id})",
-                    command_id=command.command_id,
+                    f"SpawnObject service not available at '{self._spawn_object_service_name}'",
                 )
                 return None
 
             req = SpawnObject.Request()
             sx, sy, sz = payload.x, payload.y, payload.z
             if not (math.isfinite(sx) and math.isfinite(sy) and math.isfinite(sz)):
-                self.get_logger().error(f"SpawnObject payload non-finite coords (cmd={command.command_id})")
-                self._publish_error("INVALID_PAYLOAD", f"SpawnObject payload invalid (cmd={command.command_id})", command_id=command.command_id)
+                self.get_logger().error("SpawnObject payload non-finite coords")
+                self._publish_error("INVALID_PAYLOAD", "SpawnObject payload invalid")
                 return None
             req.coords = Point(x=sx, y=sy, z=sz)
             req.object_type = payload.object_type.value
@@ -177,14 +169,14 @@ class EdgeBridgeCommandsMixin:
                     with self._lock:
                         self._pending_spawn_coords = None
                         self._pending_spawn_command_id = None
-                    self._publish_error("SERVICE_ERROR", f"SpawnObject call failed (cmd={spawn_command_id})", command_id=spawn_command_id)
+                    self._publish_error("SERVICE_ERROR", "SpawnObject call failed")
                     return
                 if res is None or not res.success:
                     msg = res.message if res else "Unknown service failure"
                     with self._lock:
                         self._pending_spawn_coords = None
                         self._pending_spawn_command_id = None
-                    self._publish_error("WORKCELL_OCCUPIED", f"{msg} (cmd={spawn_command_id})", command_id=spawn_command_id)
+                    self._publish_error("WORKCELL_OCCUPIED", msg)
                     self.publish_telemetry(command_id=spawn_command_id)
                     return
                 with self._lock:
@@ -217,7 +209,6 @@ class EdgeBridgeCommandsMixin:
                     self._publish_error(
                         "ROBOT_BUSY",
                         f"Robot is currently {self._robot_state.value}; cannot clear workspace",
-                        command_id=command.command_id,
                     )
                     return None
 
@@ -225,14 +216,13 @@ class EdgeBridgeCommandsMixin:
                 ClearWorkspacePayload.model_validate(command.payload)
             except Exception as e:
                 self.get_logger().error(f"ClearWorkspace payload invalid: {e}")
-                self._publish_error("INVALID_PAYLOAD", f"ClearWorkspace payload invalid (cmd={command.command_id})", command_id=command.command_id)
+                self._publish_error("INVALID_PAYLOAD", "ClearWorkspace payload invalid")
                 return None
 
             if not self._clear_workspace_client.wait_for_service(timeout_sec=1.0):
                 self._publish_error(
                     "SERVICE_UNAVAILABLE",
-                    f"ClearWorkspace service not available at '{self._clear_workspace_service_name}' (cmd={command.command_id})",
-                    command_id=command.command_id,
+                    f"ClearWorkspace service not available at '{self._clear_workspace_service_name}'",
                 )
                 return None
 
@@ -244,11 +234,11 @@ class EdgeBridgeCommandsMixin:
                     res = future.result()
                 except Exception as err:
                     self.get_logger().error(f"ClearWorkspace call failed: {err}")
-                    self._publish_error("SERVICE_ERROR", f"ClearWorkspace call failed (cmd={clear_command_id})", command_id=clear_command_id)
+                    self._publish_error("SERVICE_ERROR", "ClearWorkspace call failed")
                     return
                 if res is None or not res.success:
                     self.get_logger().error(f"ClearWorkspace rejected: {res}")
-                    self._publish_error("SERVICE_ERROR", f"ClearWorkspace rejected (cmd={clear_command_id})", command_id=clear_command_id)
+                    self._publish_error("SERVICE_ERROR", "ClearWorkspace rejected")
                     return
                 with self._lock:
                     self._is_grasped = False
@@ -264,14 +254,12 @@ class EdgeBridgeCommandsMixin:
                     self._publish_error(
                         "ROBOT_IN_FAULT",
                         "Robot is in FAULT state; must RESET_FAULT before commanding pick and place",
-                        command_id=command.command_id,
                     )
                     return None
                 if self._robot_state != RobotState.IDLE:
                     self._publish_error(
                         "ROBOT_BUSY",
                         f"Robot is currently {self._robot_state.value}; command rejected",
-                        command_id=command.command_id,
                     )
                     return None
 
@@ -279,7 +267,6 @@ class EdgeBridgeCommandsMixin:
                     self._publish_error(
                         "CONTROLLER_UNAVAILABLE",
                         "PickAndPlace action server is not available",
-                        command_id=command.command_id,
                     )
                     return None
 
@@ -287,7 +274,7 @@ class EdgeBridgeCommandsMixin:
                     payload = PickAndPlaceTargetPayload.model_validate(command.payload)
                 except Exception as e:
                     self.get_logger().error(f"PickAndPlaceTarget payload invalid: {e}")
-                    self._publish_error("INVALID_PAYLOAD", f"PickAndPlaceTarget payload invalid (cmd={command.command_id})", command_id=command.command_id)
+                    self._publish_error("INVALID_PAYLOAD", "PickAndPlaceTarget payload invalid")
                     return None
 
                 self._robot_state = RobotState.EXECUTING
@@ -302,7 +289,6 @@ class EdgeBridgeCommandsMixin:
         self._publish_error(
             "UNSUPPORTED_COMMAND",
             f"Unsupported command type '{command.type.value}'",
-            command_id=command.command_id,
         )
         return None
 

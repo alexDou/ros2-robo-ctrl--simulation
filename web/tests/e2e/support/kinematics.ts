@@ -17,7 +17,7 @@ export const UR5E_DH_ALPHA: readonly number[] = [
 export const DEFAULT_TCP_OFFSET_M = 0.108;
 export const MIN_REACH_M = 0.20;
 export const MAX_REACH_M = 0.85;
-export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [0.25, -0.42, 0.0];
+export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [0.40, -0.30, 0.0];
 export const APPROACH_LIFT_OFFSET_M = 0.10;
 
 export const HOME_JOINT_POSITIONS: readonly number[] = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];

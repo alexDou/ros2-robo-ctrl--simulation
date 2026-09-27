@@ -43,9 +43,9 @@ def test_workcell_constants_match_schema_single_source_of_truth():
         WHITE_TOWER,
     )
 
-    assert WHITE_TOWER == [0.25, -0.42, 0.0]
-    assert GREEN_TOWER == [0.4, -0.42, 0.0]
-    assert BLUE_TOWER == [0.55, -0.42, 0.0]
+    assert WHITE_TOWER == [0.4, -0.3, 0.0]
+    assert GREEN_TOWER == [0.55, -0.3, 0.0]
+    assert BLUE_TOWER == [0.7, -0.3, 0.0]
     assert SCRAP_BIN == [0.4, 0.28, 0.0]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02
@@ -680,25 +680,9 @@ def test_unit70_required_color_intact():
     assert event.workcell_state.processed[0].color == GearColor.BLUE
     assert event.workcell_state.processed[0].intact is True
 
-    assert WHITE_TOWER == [0.25, -0.42, 0.0]
-    assert GREEN_TOWER == [0.4, -0.42, 0.0]
-    assert BLUE_TOWER == [0.55, -0.42, 0.0]
+    assert WHITE_TOWER == [0.4, -0.3, 0.0]
+    assert GREEN_TOWER == [0.55, -0.3, 0.0]
+    assert BLUE_TOWER == [0.7, -0.3, 0.0]
     assert SCRAP_BIN == [0.4, 0.28, 0.0]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02
-
-
-def test_error_frame_optional_command_id_correlation():
-    """7hbf Stage-0 lock: ErrorFrame carries optional command_id; legacy frames parse."""
-    err = ErrorFrame(
-        error_code="ACTION_FAILED",
-        message="PickAndPlace failed: GetDropSlot rejected",
-        timestamp_ns=1_725_894_942_000_000_000,
-        command_id="cmd-pnp-7",
-    )
-    restored = ErrorFrame.model_validate_json(err.model_dump_json())
-    assert restored.command_id == "cmd-pnp-7"
-    legacy = ErrorFrame.model_validate(
-        {"type": "ERROR", "error_code": "ROBOT_BUSY", "message": "busy", "timestamp_ns": 1}
-    )
-    assert legacy.command_id is None

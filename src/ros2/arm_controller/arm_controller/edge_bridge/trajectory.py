@@ -54,22 +54,22 @@ class EdgeBridgeTrajectoryMixin:
             try:
                 goal_handle = future.result()
             except Exception as err:
-                self.get_logger().error(f"Error obtaining goal handle (cmd={command_id}): {err}")
+                self.get_logger().error(f"Error obtaining goal handle: {err}")
                 with self._lock:
                     if self._robot_state == RobotState.EXECUTING:
                         self._robot_state = RobotState.FAULT
-                self._publish_error("GOAL_ERROR", f"Trajectory goal failed (cmd={command_id})", command_id=command_id)
+                self._publish_error("GOAL_ERROR", "Trajectory goal failed")
                 self.publish_telemetry()
                 if completion_event is not None:
                     completion_event.set()
                 return
 
             if not goal_handle or not goal_handle.accepted:
-                self.get_logger().error(f"Trajectory goal rejected by controller (cmd={command_id})")
+                self.get_logger().error("Trajectory goal rejected by controller")
                 with self._lock:
                     if self._robot_state == RobotState.EXECUTING:
                         self._robot_state = RobotState.FAULT
-                self._publish_error("GOAL_REJECTED", f"Trajectory goal was rejected by controller (cmd={command_id})", command_id=command_id)
+                self._publish_error("GOAL_REJECTED", "Trajectory goal was rejected by controller")
                 self.publish_telemetry()
                 if completion_event is not None:
                     completion_event.set()
@@ -102,11 +102,11 @@ class EdgeBridgeTrajectoryMixin:
                                     should_publish_completion = True
                                 else:
                                     self.get_logger().error(
-                                        f"Trajectory failed (cmd={command_id}) with code {traj_res.result.error_code}"
+                                        f"Trajectory failed with code {traj_res.result.error_code}"
                                     )
                                     self._robot_state = RobotState.FAULT
                             except Exception as err:
-                                self.get_logger().error(f"Error reading trajectory result (cmd={command_id}): {err}")
+                                self.get_logger().error(f"Error reading trajectory result: {err}")
                                 self._robot_state = RobotState.FAULT
 
                 if completion_event is not None:

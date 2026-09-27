@@ -10,7 +10,7 @@ export interface OperatorToolbarProps {
   onDisconnect: () => void;
   onResetFault: () => void;
   onClearWorkspace: () => void;
-  errorBanner?: { errorCode: string; message: string; commandId?: string } | null;
+  errorBanner?: { errorCode: string; message: string } | null;
   disabled?: boolean;
   disabledReason?: string | null;
 }
@@ -68,7 +68,7 @@ export function OperatorToolbar({
           }}
         >
           <span style={{ fontWeight: 'bold' }}>⚠ [{errorBanner.errorCode}]</span>
-          <span>{errorBanner.message}{errorBanner.commandId ? ` (cmd=${errorBanner.commandId})` : ''}</span>
+          <span>{errorBanner.message}</span>
         </div>
       )}
       {disabledReason && (

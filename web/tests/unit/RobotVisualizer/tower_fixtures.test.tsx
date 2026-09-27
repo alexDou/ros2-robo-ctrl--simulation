@@ -27,14 +27,13 @@ describe('Unit 7.3a: Web tower fixtures + constants', () => {
     const white = createSpindleTower('WHITE');
     const green = createSpindleTower('GREEN');
     const blue = createSpindleTower('BLUE');
-    expect(white.group.position.x).toBeCloseTo(0.25, 4);
-    expect(green.group.position.x).toBeCloseTo(0.4, 4);
-    expect(blue.group.position.x).toBeCloseTo(0.55, 4);
+    expect(white.group.position.x).toBeCloseTo(0.4, 4);
+    expect(green.group.position.x).toBeCloseTo(0.55, 4);
+    expect(blue.group.position.x).toBeCloseTo(0.7, 4);
     for (const t of [white, green, blue]) {
-      expect(t.group.position.y).toBeCloseTo(-0.42, 4);
+      expect(t.group.position.y).toBeCloseTo(-0.3, 4);
       expect(t.group.position.z).toBeCloseTo(0.0, 4);
       expect((t.pinMesh.geometry as THREE.CylinderGeometry).parameters.height).toBeCloseTo(0.2, 4);
-      expect(t.group.getObjectByName('spindle-rack-bar')).toBeDefined();
     }
     expect(white.group.name).toBe('spindle-tower');
     expect(white.group.userData.color).toBe('WHITE');
@@ -124,12 +123,12 @@ describe('Unit 7.3a: Web tower fixtures + constants', () => {
       const towers = visualizer.getSpindleTowerMeshes();
       expect(towers).toHaveLength(3);
       const byColor = visualizer.getSpindleTowerMeshByColor.bind(visualizer);
-      expect(byColor('WHITE').position.x).toBeCloseTo(0.25, 2);
-      expect(byColor('GREEN').position.x).toBeCloseTo(0.4, 2);
-      expect(byColor('BLUE').position.x).toBeCloseTo(0.55, 2);
+      expect(byColor('WHITE').position.x).toBeCloseTo(0.4, 2);
+      expect(byColor('GREEN').position.x).toBeCloseTo(0.55, 2);
+      expect(byColor('BLUE').position.x).toBeCloseTo(0.7, 2);
       const legacy = visualizer.getSpindleTowerMesh();
-      expect(legacy.position.x).toBeCloseTo(0.25, 2);
-      expect(legacy.position.y).toBeCloseTo(-0.42, 2);
+      expect(legacy.position.x).toBeCloseTo(0.4, 2);
+      expect(legacy.position.y).toBeCloseTo(-0.3, 2);
       expect(legacy).toBe(byColor('WHITE'));
     });
   });

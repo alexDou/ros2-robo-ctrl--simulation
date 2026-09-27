@@ -19,7 +19,7 @@ UR5E_DH_ALPHA: tuple[float, ...] = (
 DEFAULT_TCP_OFFSET_M: float = 0.108  # DexterousPalm tool center point offset (baseplate + rod + nozzle)
 MIN_REACH_M: float = 0.20           # Inner reachability limit / base clearance boundary
 MAX_REACH_M: float = 0.85           # Outer operational boundary / reach limit
-DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.25, -0.42, 0.0)
+DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.40, -0.30, 0.0)
 APPROACH_LIFT_OFFSET_M: float = 0.10  # Vertical approach and lift clearance offset
 
 # Canonical UR5e joint names matching ROS2 ros2_control / URDF

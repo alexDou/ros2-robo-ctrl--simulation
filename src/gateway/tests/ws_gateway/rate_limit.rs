@@ -111,8 +111,6 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
             let err_frame: ErrorFrame = serde_json::from_str(&txt).expect("parse error frame");
             assert_eq!(err_frame.r#type, "ERROR");
             assert_eq!(err_frame.error_code, "SCHEMA_VALIDATION_ERROR");
-            // 7hbf: schema frames carry command_id for ros2/gateway/browser correlation.
-            assert_eq!(err_frame.command_id.as_deref(), Some("cmd-bad-palm"));
         }
         other => panic!("expected text message with SCHEMA_VALIDATION_ERROR, got {other:?}"),
     }

@@ -6,7 +6,6 @@ fn test_error_frame_serialization_round_trip() {
         "SCHEMA_VIOLATION",
         "Payload missing command_id",
         1_725_894_942_000,
-        Some("cmd-1234".to_string()),
     );
     let serialized = serde_json::to_string(&err).expect("Serialization failed");
     let deserialized: ErrorFrame =
