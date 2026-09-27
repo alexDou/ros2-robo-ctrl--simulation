@@ -101,7 +101,7 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
         rendererFactory={() => mockRenderer}
         controlsFactory={() => mockControls}
         onRobotLoaded={() => resolveLoaded()}
-      />
+      />,
     );
     await act(async () => {
       await loadedPromise;
@@ -156,7 +156,17 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
     act(() => {
       telemetryBufferRef.current.workcellState.spawned = [];
       telemetryBufferRef.current.workcellState.inProgress = [
-        { id: 'g1', x: 0.5, y: 0.0, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0, color: 'BLUE', intact: true },
+        {
+          id: 'g1',
+          x: 0.5,
+          y: 0.0,
+          z: 0.0,
+          origin_x: 0.5,
+          origin_y: 0.0,
+          origin_z: 0.0,
+          color: 'BLUE',
+          intact: true,
+        },
       ];
       stepFrame();
     });
@@ -165,7 +175,17 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
     act(() => {
       telemetryBufferRef.current.workcellState.inProgress = [];
       telemetryBufferRef.current.workcellState.processed = [
-        { id: 'g1', x: SPINDLE_TOWERS.BLUE.x, y: SPINDLE_TOWERS.BLUE.y, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0, color: 'BLUE', intact: true },
+        {
+          id: 'g1',
+          x: SPINDLE_TOWERS.BLUE.x,
+          y: SPINDLE_TOWERS.BLUE.y,
+          z: 0.0,
+          origin_x: 0.5,
+          origin_y: 0.0,
+          origin_z: 0.0,
+          color: 'BLUE',
+          intact: true,
+        },
       ];
       stepFrame();
     });
@@ -174,11 +194,36 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
   });
 
   it('processed gears render at tower positions by classification with matching colors', async () => {
-    const telemetryBufferRef = snapBuffer([], [], [
-      { id: 'w1', x: SPINDLE_TOWERS.WHITE.x, y: SPINDLE_TOWERS.WHITE.y, z: 0.0, color: 'WHITE', intact: true },
-      { id: 'g1', x: SPINDLE_TOWERS.GREEN.x, y: SPINDLE_TOWERS.GREEN.y, z: 0.0, color: 'GREEN', intact: true },
-      { id: 'b1', x: SPINDLE_TOWERS.BLUE.x, y: SPINDLE_TOWERS.BLUE.y, z: 0.0, color: 'BLUE', intact: true },
-    ]);
+    const telemetryBufferRef = snapBuffer(
+      [],
+      [],
+      [
+        {
+          id: 'w1',
+          x: SPINDLE_TOWERS.WHITE.x,
+          y: SPINDLE_TOWERS.WHITE.y,
+          z: 0.0,
+          color: 'WHITE',
+          intact: true,
+        },
+        {
+          id: 'g1',
+          x: SPINDLE_TOWERS.GREEN.x,
+          y: SPINDLE_TOWERS.GREEN.y,
+          z: 0.0,
+          color: 'GREEN',
+          intact: true,
+        },
+        {
+          id: 'b1',
+          x: SPINDLE_TOWERS.BLUE.x,
+          y: SPINDLE_TOWERS.BLUE.y,
+          z: 0.0,
+          color: 'BLUE',
+          intact: true,
+        },
+      ],
+    );
     const visualizer = await mountVisualizer(telemetryBufferRef);
     act(() => {
       stepFrame();
@@ -191,7 +236,11 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
     expect(pos('b1')!.x).toBeCloseTo(SPINDLE_TOWERS.BLUE.x, 4);
     const gears = visualizer.getTowerGears() as THREE.Group[];
     const hexes = gears.map((gr) => bodyHex(gr)).sort();
-    const expected = [GEAR_CLASSIFIED_HEX.WHITE.body, GEAR_CLASSIFIED_HEX.GREEN.body, GEAR_CLASSIFIED_HEX.BLUE.body].sort();
+    const expected = [
+      GEAR_CLASSIFIED_HEX.WHITE.body,
+      GEAR_CLASSIFIED_HEX.GREEN.body,
+      GEAR_CLASSIFIED_HEX.BLUE.body,
+    ].sort();
     expect(hexes).toEqual(expected);
   });
 });

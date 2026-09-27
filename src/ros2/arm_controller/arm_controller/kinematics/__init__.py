@@ -1,4 +1,10 @@
 """UR5e kinematics subpackage; `__init__` re-exports the public surface."""
+
+from arm_controller.kinematics.angles import (
+    normalize_angle,
+    unwrap_joint_angles,
+    unwrap_joint_angles_within_limits,
+)
 from arm_controller.kinematics.constants import (
     APPROACH_LIFT_OFFSET_M,
     CANONICAL_UR5E_JOINTS,
@@ -13,16 +19,17 @@ from arm_controller.kinematics.constants import (
     UR5E_DH_A,
     UR5E_DH_ALPHA,
     UR5E_DH_D,
+    UR5E_JOINT_LIMITS,
 )
-from arm_controller.kinematics.phases import ActionPhase
 from arm_controller.kinematics.errors import (
+    JointLimitError,
     KinematicsError,
     KinematicSingularityError,
     OutOfReachError,
     UnreachableTargetError,
 )
-from arm_controller.kinematics.angles import normalize_angle, unwrap_joint_angles
-from arm_controller.kinematics.solver import UR5eKinematics, AnalyticalInverseKinematics
+from arm_controller.kinematics.phases import ActionPhase
+from arm_controller.kinematics.solver import AnalyticalInverseKinematics, UR5eKinematics
 from arm_controller.kinematics.trajectory import (
     PickAndPlaceTrajectoryGenerator,
     WaypointStep,
@@ -32,6 +39,7 @@ __all__ = [
     "APPROACH_LIFT_OFFSET_M",
     "ActionPhase",
     "AnalyticalInverseKinematics",
+    "JointLimitError",
     "KinematicSingularityError",
     "KinematicsError",
     "OutOfReachError",
@@ -52,5 +60,7 @@ __all__ = [
     "UR5E_DH_A",
     "UR5E_DH_ALPHA",
     "UR5E_DH_D",
+    "UR5E_JOINT_LIMITS",
     "unwrap_joint_angles",
+    "unwrap_joint_angles_within_limits",
 ]

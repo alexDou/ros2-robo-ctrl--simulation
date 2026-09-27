@@ -14,7 +14,6 @@ function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[
   };
 }
 
-
 describe('Unit 3.2: RobotVisualizer Component', () => {
   let mockRenderer: any;
   let mockControls: any;
@@ -72,7 +71,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     cbs.forEach((cb) => cb(performance.now()));
   };
 
-
   describe('Unit 6.4: TeleopClient SpindleTower 3D Fixture, KinematicLinkAttachment & Tower Stacking', () => {
     let fakeTool0Link: THREE.Object3D;
     let fakeRobot: any;
@@ -93,7 +91,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot as any);
     });
 
-    it('mounts SpindleTower 3D fixture at (x=0.40, y=-0.30, z=0.0) with base flange and 0.20m spindle pin', async () => {
+    it('mounts SpindleTower 3D fixture at (x=0.68, y=-0.16, z=0.0) with base flange and 0.20m spindle pin', async () => {
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -104,7 +102,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -116,8 +114,8 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(towerMesh).toBeDefined();
       expect(towerMesh).not.toBeNull();
       expect(towerMesh.name).toBe('spindle-tower');
-      expect(towerMesh.position.x).toBeCloseTo(0.40, 2);
-      expect(towerMesh.position.y).toBeCloseTo(-0.30, 2);
+      expect(towerMesh.position.x).toBeCloseTo(0.68, 2);
+      expect(towerMesh.position.y).toBeCloseTo(-0.16, 2);
       expect(towerMesh.position.z).toBeCloseTo(0.0, 2);
 
       const baseFlange = visualizer.getSpindleBaseFlangeMesh();
@@ -131,12 +129,14 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(pin.name).toBe('spindle-pin');
       // Verify spindle pin height is 0.20m (parameters.height or geometry parameters)
       const pinGeom = pin.geometry as THREE.CylinderGeometry;
-      expect(pinGeom.parameters.height).toBeCloseTo(0.20, 2);
+      expect(pinGeom.parameters.height).toBeCloseTo(0.2, 2);
       expect(pinGeom.parameters.radiusTop).toBeCloseTo(0.007, 3);
     });
 
     it('renders spawned entry as table mesh at entry xyz verbatim', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
+      const telemetryBufferRef = snapBuffer([
+        { id: 'g1', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true },
+      ]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -149,7 +149,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -171,7 +171,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('moves entry spawned->in_progress: mesh reparents to tool0 flange ride', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
+      const telemetryBufferRef = snapBuffer([
+        { id: 'g1', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true },
+      ]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -184,7 +186,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -203,7 +205,17 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       act(() => {
         telemetryBufferRef.current.workcellState.spawned = [];
         telemetryBufferRef.current.workcellState.inProgress = [
-          { id: 'g1', x: 0.5, y: 0.0, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
+          {
+            id: 'g1',
+            x: 0.5,
+            y: 0.0,
+            z: 0.0,
+            origin_x: 0.5,
+            origin_y: 0.0,
+            origin_z: 0.0,
+            color: 'WHITE',
+            intact: true,
+          },
         ];
         stepFrame();
       });
@@ -215,11 +227,45 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('renders processed entries as tower meshes at entry xyz verbatim in order', async () => {
-      const telemetryBufferRef = snapBuffer([], [], [
-        { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
-        { id: 'g2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.55, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
-        { id: 'g3', x: 0.4, y: -0.3, z: 0.04, origin_x: 0.6, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
-      ]);
+      const telemetryBufferRef = snapBuffer(
+        [],
+        [],
+        [
+          {
+            id: 'g1',
+            x: 0.4,
+            y: -0.3,
+            z: 0.0,
+            origin_x: 0.5,
+            origin_y: 0.0,
+            origin_z: 0.0,
+            color: 'WHITE',
+            intact: true,
+          },
+          {
+            id: 'g2',
+            x: 0.4,
+            y: -0.3,
+            z: 0.02,
+            origin_x: 0.55,
+            origin_y: 0.0,
+            origin_z: 0.0,
+            color: 'WHITE',
+            intact: true,
+          },
+          {
+            id: 'g3',
+            x: 0.4,
+            y: -0.3,
+            z: 0.04,
+            origin_x: 0.6,
+            origin_y: 0.0,
+            origin_z: 0.0,
+            color: 'WHITE',
+            intact: true,
+          },
+        ],
+      );
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -232,7 +278,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -278,7 +324,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -296,9 +342,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
     it('empty snapshot echo removes all meshes (clear)', async () => {
       const telemetryBufferRef = snapBuffer(
-        [{ id: 'g-table', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }],
+        [{ id: 'g-table', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true }],
         [],
-        [{ id: 'g-tower', x: 0.4, y: -0.3, z: 0.0 , color: 'WHITE', intact: true }]
+        [{ id: 'g-tower', x: 0.68, y: -0.16, z: 0.0, color: 'WHITE', intact: true }],
       );
 
       let resolveLoaded: () => void;
@@ -312,7 +358,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -352,7 +398,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -377,6 +423,5 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(visualizer.getTowerGearCount()).toBe(0);
       expect(visualizer.isGearAttached()).toBe(false);
     });
-
   });
 });

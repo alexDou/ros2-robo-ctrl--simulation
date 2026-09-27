@@ -1,10 +1,7 @@
-import pytest
-
-
 def test_import_robot_control_interfaces():
+    from geometry_msgs.msg import Point
     from robot_control_interfaces.action import PickAndPlace
     from robot_control_interfaces.srv import ClearWorkspace, GetDropSlot
-    from geometry_msgs.msg import Point
 
     # Test PickAndPlace Goal
     goal = PickAndPlace.Goal()
@@ -65,6 +62,7 @@ def test_import_robot_control_interfaces():
 
     # Test SpawnObject Request & Response
     from robot_control_interfaces.srv import SpawnObject
+
     spawn_req = SpawnObject.Request(coords=Point(x=0.5, y=0.1, z=0.0), object_type="GEAR")
     assert hasattr(spawn_req, "coords")
     assert hasattr(spawn_req, "object_type")
@@ -82,6 +80,7 @@ def test_import_robot_control_interfaces():
 
     # Test MarkGrasped Request & Response (id-free, empty request)
     from robot_control_interfaces.srv import CommitDrop, MarkGrasped
+
     grasp_req = MarkGrasped.Request()
     assert isinstance(grasp_req, MarkGrasped.Request)
     grasp_res = MarkGrasped.Response(success=True, message="grasped")
@@ -105,5 +104,3 @@ def test_import_robot_control_interfaces():
     assert drop_res.drop_coords.x == 0.4
     assert drop_res.slot_index == 4
     assert drop_res.overflow_occurred is False
-
-

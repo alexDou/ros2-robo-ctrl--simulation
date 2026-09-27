@@ -46,6 +46,7 @@ ruff is an extremely fast Python linter implementing 900+ rules from Pyflakes, p
 
 ```python
 import os  # noqa: F401  (re-exported for package API)
+
 l = get_length()  # noqa: E741, F841
 ```
 

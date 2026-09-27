@@ -9,13 +9,24 @@ import {
   SPINDLE_TOWER_COORDS,
   TOWER_CAPACITY,
 } from '@components/RobotVisualizer/constants';
-import { WHITE_TOWER, GREEN_TOWER, BLUE_TOWER, TOWER_CAPACITY as DOMAIN_CAPACITY } from '@contracts';
+import {
+  WHITE_TOWER,
+  GREEN_TOWER,
+  BLUE_TOWER,
+  TOWER_CAPACITY as DOMAIN_CAPACITY,
+} from '@contracts';
 
 describe('Unit 7.3a: Web tower fixtures + constants', () => {
   it('canonical tower coords match domain WHITE/GREEN/BLUE bindings', () => {
-    expect([SPINDLE_TOWERS.WHITE.x, SPINDLE_TOWERS.WHITE.y, SPINDLE_TOWERS.WHITE.z]).toEqual([...WHITE_TOWER]);
-    expect([SPINDLE_TOWERS.GREEN.x, SPINDLE_TOWERS.GREEN.y, SPINDLE_TOWERS.GREEN.z]).toEqual([...GREEN_TOWER]);
-    expect([SPINDLE_TOWERS.BLUE.x, SPINDLE_TOWERS.BLUE.y, SPINDLE_TOWERS.BLUE.z]).toEqual([...BLUE_TOWER]);
+    expect([SPINDLE_TOWERS.WHITE.x, SPINDLE_TOWERS.WHITE.y, SPINDLE_TOWERS.WHITE.z]).toEqual([
+      ...WHITE_TOWER,
+    ]);
+    expect([SPINDLE_TOWERS.GREEN.x, SPINDLE_TOWERS.GREEN.y, SPINDLE_TOWERS.GREEN.z]).toEqual([
+      ...GREEN_TOWER,
+    ]);
+    expect([SPINDLE_TOWERS.BLUE.x, SPINDLE_TOWERS.BLUE.y, SPINDLE_TOWERS.BLUE.z]).toEqual([
+      ...BLUE_TOWER,
+    ]);
   });
 
   it('capacity constant 10 shared with domain bindings', () => {
@@ -27,11 +38,13 @@ describe('Unit 7.3a: Web tower fixtures + constants', () => {
     const white = createSpindleTower('WHITE');
     const green = createSpindleTower('GREEN');
     const blue = createSpindleTower('BLUE');
-    expect(white.group.position.x).toBeCloseTo(0.4, 4);
-    expect(green.group.position.x).toBeCloseTo(0.55, 4);
-    expect(blue.group.position.x).toBeCloseTo(0.7, 4);
+    expect(white.group.position.x).toBeCloseTo(0.68, 4);
+    expect(green.group.position.x).toBeCloseTo(0.68, 4);
+    expect(blue.group.position.x).toBeCloseTo(0.68, 4);
+    expect(white.group.position.y).toBeCloseTo(-0.16, 4);
+    expect(green.group.position.y).toBeCloseTo(0.0, 4);
+    expect(blue.group.position.y).toBeCloseTo(0.16, 4);
     for (const t of [white, green, blue]) {
-      expect(t.group.position.y).toBeCloseTo(-0.3, 4);
       expect(t.group.position.z).toBeCloseTo(0.0, 4);
       expect((t.pinMesh.geometry as THREE.CylinderGeometry).parameters.height).toBeCloseTo(0.2, 4);
     }
@@ -114,7 +127,7 @@ describe('Unit 7.3a: Web tower fixtures + constants', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
       await act(async () => {
         await loadedPromise;
@@ -123,12 +136,15 @@ describe('Unit 7.3a: Web tower fixtures + constants', () => {
       const towers = visualizer.getSpindleTowerMeshes();
       expect(towers).toHaveLength(3);
       const byColor = visualizer.getSpindleTowerMeshByColor.bind(visualizer);
-      expect(byColor('WHITE').position.x).toBeCloseTo(0.4, 2);
-      expect(byColor('GREEN').position.x).toBeCloseTo(0.55, 2);
-      expect(byColor('BLUE').position.x).toBeCloseTo(0.7, 2);
+      expect(byColor('WHITE').position.x).toBeCloseTo(0.68, 2);
+      expect(byColor('WHITE').position.y).toBeCloseTo(-0.16, 2);
+      expect(byColor('GREEN').position.x).toBeCloseTo(0.68, 2);
+      expect(byColor('GREEN').position.y).toBeCloseTo(0.0, 2);
+      expect(byColor('BLUE').position.x).toBeCloseTo(0.68, 2);
+      expect(byColor('BLUE').position.y).toBeCloseTo(0.16, 2);
       const legacy = visualizer.getSpindleTowerMesh();
-      expect(legacy.position.x).toBeCloseTo(0.4, 2);
-      expect(legacy.position.y).toBeCloseTo(-0.3, 2);
+      expect(legacy.position.x).toBeCloseTo(0.68, 2);
+      expect(legacy.position.y).toBeCloseTo(-0.16, 2);
       expect(legacy).toBe(byColor('WHITE'));
     });
   });

@@ -8,14 +8,11 @@ rejected switch leaves the arm parked with a standby error.
 import threading
 import time
 
-import rclpy
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
 
 from domain import CommandType, RobotCommand, RobotState
-
-from arm_controller.edge_bridge_node import EdgeBridgeNode
-
 
 
 def _cmd(cid: str, ctype: CommandType) -> RobotCommand:

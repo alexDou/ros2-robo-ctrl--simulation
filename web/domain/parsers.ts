@@ -40,7 +40,7 @@ export function createTrajectoryExecuteCommand(
     senderId?: string;
     commandId?: string;
     timestampNs?: bigint | number;
-  }
+  },
 ): RobotCommand {
   return {
     command_id: generateCommandId(params?.commandId),
@@ -57,7 +57,7 @@ export function createPalmActuateCommand(
     senderId?: string;
     commandId?: string;
     timestampNs?: bigint | number;
-  }
+  },
 ): RobotCommand {
   return {
     command_id: generateCommandId(params?.commandId),
@@ -103,7 +103,7 @@ export function createSpawnObjectCommand(
     senderId?: string;
     commandId?: string;
     timestampNs?: bigint | number;
-  }
+  },
 ): RobotCommand {
   return {
     command_id: generateCommandId(params?.commandId),
@@ -134,7 +134,7 @@ export function createPickAndPlaceTargetCommand(
     senderId?: string;
     commandId?: string;
     timestampNs?: bigint | number;
-  }
+  },
 ): RobotCommand;
 export function createPickAndPlaceTargetCommand(
   pick: { x: number; y: number; z: number },
@@ -142,7 +142,7 @@ export function createPickAndPlaceTargetCommand(
     senderId?: string;
     commandId?: string;
     timestampNs?: bigint | number;
-  }
+  },
 ): RobotCommand;
 export function createPickAndPlaceTargetCommand(
   pick: { x: number; y: number; z: number },
@@ -151,7 +151,7 @@ export function createPickAndPlaceTargetCommand(
     senderId?: string;
     commandId?: string;
     timestampNs?: bigint | number;
-  }
+  },
 ): RobotCommand;
 export function createPickAndPlaceTargetCommand(
   pickOrPayload: { x: number; y: number; z: number } | PickAndPlaceTargetPayload,
@@ -166,7 +166,7 @@ export function createPickAndPlaceTargetCommand(
     senderId?: string;
     commandId?: string;
     timestampNs?: bigint | number;
-  }
+  },
 ): RobotCommand {
   let payload: PickAndPlaceTargetPayload;
   let options: { senderId?: string; commandId?: string; timestampNs?: bigint | number } | undefined;
@@ -178,8 +178,8 @@ export function createPickAndPlaceTargetCommand(
     const isOptions = (val: unknown): val is typeof options =>
       Boolean(
         val &&
-          typeof val === 'object' &&
-          ('senderId' in val || 'commandId' in val || 'timestampNs' in val)
+        typeof val === 'object' &&
+        ('senderId' in val || 'commandId' in val || 'timestampNs' in val),
       );
 
     let drop: { x?: number; y?: number; z?: number } | undefined;

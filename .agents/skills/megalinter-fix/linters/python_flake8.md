@@ -48,6 +48,7 @@ code(s); a bare `# noqa` silences every violation on the line:
 
 ```python
 import config_loader  # noqa: F401  (imported for its side effects)
+
 callback = lambda x: x + 1  # noqa: E731,E501
 ```
 

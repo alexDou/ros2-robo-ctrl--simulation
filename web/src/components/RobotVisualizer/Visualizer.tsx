@@ -37,7 +37,11 @@ import {
 import { getTableCoordinates } from '@/components/RobotVisualizer/interaction/picking';
 import { createPointerHandlers } from '@/components/RobotVisualizer/interaction/handlers';
 import { createFrameState, stepFrame } from '@/components/RobotVisualizer/frame';
-import { VisualizerErrorOverlay, VisualizerLoadingOverlay, type VisualizerErrorInfo } from '@/components/RobotVisualizer/overlays';
+import {
+  VisualizerErrorOverlay,
+  VisualizerLoadingOverlay,
+  type VisualizerErrorInfo,
+} from '@/components/RobotVisualizer/overlays';
 import { createVisualizerHandle } from '@/components/RobotVisualizer/handle';
 
 export type { WorkcellSnapshotView };
@@ -111,7 +115,8 @@ export function RobotVisualizer({
     let pedestalAssets: PedestalProceduralAssets | null = null;
     let tableAssets: TableProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
-    let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null = null;
+    let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
+      null;
     let scrapBinAssets: ScrapBinProceduralAssets | null = null;
     let mountLink: THREE.Object3D | null = null;
     // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
@@ -217,7 +222,6 @@ export function RobotVisualizer({
       },
     });
     pointerHandlers.attach();
-
 
     // Expose debug handle on window for testing and diagnostics
     const visualizerHandle = createVisualizerHandle({

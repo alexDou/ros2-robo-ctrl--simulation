@@ -43,7 +43,7 @@ export function createRobotPedestal(): PedestalProceduralAssets {
 
   // 3. Central heavy-duty support column
   const colRadius = 0.09;
-  const colHeight = 0.20;
+  const colHeight = 0.2;
   const colGeom = new THREE.CylinderGeometry(colRadius, colRadius, colHeight, 32);
   colGeom.rotateX(Math.PI / 2);
   const colMat = new THREE.MeshStandardMaterial({

@@ -4,11 +4,11 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass, field
 import json
-from pathlib import Path
 import re
 import sys
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 
@@ -105,7 +105,7 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
     schema_files = sorted(schemas_dir.glob("*.schema.json"))
     raw_schemas = []
     for sf in schema_files:
-        with open(sf, "r", encoding="utf-8") as f:
+        with open(sf, encoding="utf-8") as f:
             data = json.load(f)
             raw_schemas.append(data)
 
@@ -124,19 +124,29 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
             enum_name = prop_schema.get("title") or to_pascal_case(prop_name)
             const_name = prop_schema.get("x-constant-name")
             const_alias = prop_schema.get("x-constant-alias")
-            existing = next((c for c in ir.constants if c.name == const_name), None) if const_name else None
-            if existing is not None and (existing.items != prop_schema["enum"] or existing.item_type != enum_name):
+            existing = (
+                next((c for c in ir.constants if c.name == const_name), None)
+                if const_name
+                else None
+            )
+            if existing is not None and (
+                existing.items != prop_schema["enum"] or existing.item_type != enum_name
+            ):
                 raise ValueError(f"Conflicting definitions for constant {const_name}")
             if const_name and existing is None:
-                ir.constants.append(ConstantDef(
-                    name=const_name,
-                    alias=const_alias or const_name,
-                    item_type=enum_name,
-                    items=prop_schema["enum"],
-                    description=desc,
-                ))
+                ir.constants.append(
+                    ConstantDef(
+                        name=const_name,
+                        alias=const_alias or const_name,
+                        item_type=enum_name,
+                        items=prop_schema["enum"],
+                        description=desc,
+                    )
+                )
             if enum_name not in seen_enums:
-                ir.enums.append(EnumDef(name=enum_name, variants=prop_schema["enum"], description=desc))
+                ir.enums.append(
+                    EnumDef(name=enum_name, variants=prop_schema["enum"], description=desc)
+                )
                 seen_enums.add(enum_name)
             return FieldDef(
                 name=prop_name,
@@ -196,12 +206,14 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
             if min_items is not None and min_items == max_items:
                 array_title = prop_schema.get("title") or to_pascal_case(prop_name)
                 if array_title not in seen_fixed_arrays:
-                    ir.fixed_arrays.append(FixedArrayDef(
-                        name=array_title,
-                        item_type="float",
-                        count=min_items,
-                        description=desc,
-                    ))
+                    ir.fixed_arrays.append(
+                        FixedArrayDef(
+                            name=array_title,
+                            item_type="float",
+                            count=min_items,
+                            description=desc,
+                        )
+                    )
                     seen_fixed_arrays.add(array_title)
                 return FieldDef(
                     name=prop_name,
@@ -220,12 +232,14 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                 if item_min is not None and item_min == item_max:
                     array_title = items_schema.get("title") or "ArmJointPositions"
                     if array_title not in seen_fixed_arrays:
-                        ir.fixed_arrays.append(FixedArrayDef(
-                            name=array_title,
-                            item_type="float",
-                            count=item_min,
-                            description=items_schema.get("description", ""),
-                        ))
+                        ir.fixed_arrays.append(
+                            FixedArrayDef(
+                                name=array_title,
+                                item_type="float",
+                                count=item_min,
+                                description=items_schema.get("description", ""),
+                            )
+                        )
                         seen_fixed_arrays.add(array_title)
                     return FieldDef(
                         name=prop_name,
@@ -285,7 +299,9 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
 
         raise ValueError(f"Unknown property schema for {prop_name}: {prop_schema}")
 
-    def parse_object_model(name: str, schema: dict, is_submodel: bool = False, channel: str | None = None) -> ModelDef:
+    def parse_object_model(
+        name: str, schema: dict, is_submodel: bool = False, channel: str | None = None
+    ) -> ModelDef:
         if name in seen_models:
             return seen_models[name]
 
@@ -325,13 +341,15 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                     kind = "number"
                 else:
                     kind = "string"
-                ir.scalar_constants.append(ScalarConstantDef(
-                    name=c_name,
-                    value=str(val),
-                    description=desc,
-                    kind=kind,
-                    raw=val,
-                ))
+                ir.scalar_constants.append(
+                    ScalarConstantDef(
+                        name=c_name,
+                        value=str(val),
+                        description=desc,
+                        kind=kind,
+                        raw=val,
+                    )
+                )
 
         defs = schema.get("$defs", {})
         for d_name, d_schema in defs.items():
@@ -340,25 +358,35 @@ def parse_schemas(schemas_dir: Path) -> DomainIR:
                 const_val = str(d_schema["const"])
                 desc = d_schema.get("description", "")
                 if not any(sc.name == const_name for sc in ir.scalar_constants):
-                    ir.scalar_constants.append(ScalarConstantDef(
-                        name=const_name,
-                        value=const_val,
-                        description=desc,
-                    ))
+                    ir.scalar_constants.append(
+                        ScalarConstantDef(
+                            name=const_name,
+                            value=const_val,
+                            description=desc,
+                        )
+                    )
             elif d_schema.get("type") == "string" and "enum" in d_schema:
                 enum_name = d_schema.get("title") or to_pascal_case(d_name)
                 const_name = d_schema.get("x-constant-name")
                 const_alias = d_schema.get("x-constant-alias")
                 if const_name:
-                    ir.constants.append(ConstantDef(
-                        name=const_name,
-                        alias=const_alias or const_name,
-                        item_type=enum_name,
-                        items=d_schema["enum"],
-                        description=d_schema.get("description", ""),
-                    ))
+                    ir.constants.append(
+                        ConstantDef(
+                            name=const_name,
+                            alias=const_alias or const_name,
+                            item_type=enum_name,
+                            items=d_schema["enum"],
+                            description=d_schema.get("description", ""),
+                        )
+                    )
                 elif enum_name not in seen_enums:
-                    ir.enums.append(EnumDef(name=enum_name, variants=d_schema["enum"], description=d_schema.get("description", "")))
+                    ir.enums.append(
+                        EnumDef(
+                            name=enum_name,
+                            variants=d_schema["enum"],
+                            description=d_schema.get("description", ""),
+                        )
+                    )
                     seen_enums.add(enum_name)
             elif d_schema.get("type") == "object":
                 sub_name = d_schema.get("title") or to_pascal_case(d_name)
@@ -409,7 +437,12 @@ def emit_rust(ir: DomainIR) -> str:
             lines.append(f"    {to_pascal_case(v)},")
         lines.append("}")
         default_val = next(
-            (f.default for m in ir.models for f in m.fields if f.kind == "enum" and f.ref == e.name and f.default is not None),
+            (
+                f.default
+                for m in ir.models
+                for f in m.fields
+                if f.kind == "enum" and f.ref == e.name and f.default is not None
+            ),
             None,
         )
         if default_val is not None:
@@ -430,7 +463,7 @@ def emit_rust(ir: DomainIR) -> str:
         lines.append("];")
         if c.alias != c.name:
             lines.append("")
-            lines.append(f"/// Alias for canonical joint names.")
+            lines.append("/// Alias for canonical joint names.")
             lines.append(f"pub const {c.alias}: [&str; {len(c.items)}] = {c.name};")
 
     for sc in ir.scalar_constants:
@@ -454,7 +487,9 @@ def emit_rust(ir: DomainIR) -> str:
 
     if ir.fixed_arrays:
         lines.append("")
-        lines.append("fn deserialize_finite_joints<'de, D>(deserializer: D) -> Result<ArmJointPositions, D::Error>")
+        lines.append(
+            "fn deserialize_finite_joints<'de, D>(deserializer: D) -> Result<ArmJointPositions, D::Error>"
+        )
         lines.append("where")
         lines.append("    D: Deserializer<'de>,")
         lines.append("{")
@@ -472,8 +507,12 @@ def emit_rust(ir: DomainIR) -> str:
         lines.append("/// Validates that an array of joint positions contains only finite floats.")
         lines.append("///")
         lines.append("/// # Errors")
-        lines.append("/// Returns [`DomainError::InvalidJointPositions`] if any joint position is non-finite (NaN or Inf).")
-        lines.append("pub fn validate_joint_positions(joint_positions: &ArmJointPositions) -> Result<(), DomainError> {")
+        lines.append(
+            "/// Returns [`DomainError::InvalidJointPositions`] if any joint position is non-finite (NaN or Inf)."
+        )
+        lines.append(
+            "pub fn validate_joint_positions(joint_positions: &ArmJointPositions) -> Result<(), DomainError> {"
+        )
         lines.append("    if !joint_positions.iter().all(|&p| p.is_finite()) {")
         lines.append("        return Err(DomainError::InvalidJointPositions);")
         lines.append("    }")
@@ -492,14 +531,25 @@ def emit_rust(ir: DomainIR) -> str:
             for f in m.fields:
                 if f.kind == "array":
                     ref_model = next((x for x in ir.models if x.name == f.ref), None)
-                    if ref_model is not None and any(
-                        ff.kind == "float" for ff in ref_model.fields
-                    ):
+                    if ref_model is not None and any(ff.kind == "float" for ff in ref_model.fields):
                         has_float = True
                         break
         eq_derive = "" if has_float else ", Eq"
-        default_derive = ", Default" if m.name in ("PalmState", "ResetFaultPayload", "EmergencyStopPayload", "TrajectoryExecutePayload", "ClearWorkspacePayload") else ""
-        lines.append(f"#[derive(Debug, Clone, PartialEq{eq_derive}, Serialize, Deserialize{default_derive})]")
+        default_derive = (
+            ", Default"
+            if m.name
+            in (
+                "PalmState",
+                "ResetFaultPayload",
+                "EmergencyStopPayload",
+                "TrajectoryExecutePayload",
+                "ClearWorkspacePayload",
+            )
+            else ""
+        )
+        lines.append(
+            f"#[derive(Debug, Clone, PartialEq{eq_derive}, Serialize, Deserialize{default_derive})]"
+        )
         if not m.additional_properties:
             lines.append("#[serde(deny_unknown_fields)]")
         lines.append(f"pub struct {m.name} {{")
@@ -509,37 +559,61 @@ def emit_rust(ir: DomainIR) -> str:
                 lines.append(f"    pub {fname}: String,")
             elif f.kind == "string":
                 t = "Option<String>" if not f.required else "String"
-                attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                attr = (
+                    '#[serde(default, skip_serializing_if = "Option::is_none")]\n    '
+                    if not f.required
+                    else ""
+                )
                 lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "int":
                 int_t = "u64" if f.minimum is not None and f.minimum >= 0 else "i64"
                 t = f"Option<{int_t}>" if not f.required else int_t
-                attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                attr = (
+                    '#[serde(default, skip_serializing_if = "Option::is_none")]\n    '
+                    if not f.required
+                    else ""
+                )
                 lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "float":
                 t = "Option<f64>" if not f.required else "f64"
-                attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                attr = (
+                    '#[serde(default, skip_serializing_if = "Option::is_none")]\n    '
+                    if not f.required
+                    else ""
+                )
                 lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "bool":
                 if f.default is not None:
                     lines.append(f"    #[serde(default)]\n    pub {fname}: bool,")
                 else:
                     t = "Option<bool>" if not f.required else "bool"
-                    attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                    attr = (
+                        '#[serde(default, skip_serializing_if = "Option::is_none")]\n    '
+                        if not f.required
+                        else ""
+                    )
                     lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind in ("enum", "model"):
                 if f.name == "palm_state" or f.default is not None:
                     lines.append(f"    #[serde(default)]\n    pub {fname}: {f.ref},")
                 else:
                     t = f"Option<{f.ref}>" if not f.required else f.ref
-                    attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                    attr = (
+                        '#[serde(default, skip_serializing_if = "Option::is_none")]\n    '
+                        if not f.required
+                        else ""
+                    )
                     lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "fixed_array":
                 lines.append('    #[serde(deserialize_with = "deserialize_finite_joints")]')
                 lines.append(f"    pub {fname}: {f.ref},")
             elif f.kind == "array":
                 t = f"Option<Vec<{f.ref}>>" if not f.required else f"Vec<{f.ref}>"
-                attr = '#[serde(default, skip_serializing_if = "Option::is_none")]\n    ' if not f.required else ""
+                attr = (
+                    '#[serde(default, skip_serializing_if = "Option::is_none")]\n    '
+                    if not f.required
+                    else ""
+                )
                 lines.append(f"    {attr}pub {fname}: {t},")
             elif f.kind == "generic_map":
                 lines.append(f"    pub {fname}: serde_json::Value,")
@@ -549,10 +623,14 @@ def emit_rust(ir: DomainIR) -> str:
         if has_fixed_array:
             lines.append("")
             lines.append(f"impl {m.name} {{")
-            lines.append("    /// Validates domain invariants (e.g., all joint positions are finite numbers).")
+            lines.append(
+                "    /// Validates domain invariants (e.g., all joint positions are finite numbers)."
+            )
             lines.append("    ///")
             lines.append("    /// # Errors")
-            lines.append("    /// Returns [`DomainError::InvalidJointPositions`] if any joint position is non-finite (NaN or Inf).")
+            lines.append(
+                "    /// Returns [`DomainError::InvalidJointPositions`] if any joint position is non-finite (NaN or Inf)."
+            )
             lines.append("    pub fn validate(&self) -> Result<(), DomainError> {")
             lines.append("        validate_joint_positions(&self.joint_positions)")
             lines.append("    }")
@@ -597,7 +675,9 @@ def emit_rust(ir: DomainIR) -> str:
         lines.append("")
         lines.append("/// Validates that a robot identifier is structurally valid.")
         lines.append("fn validate_robot_id(robot_id: &str) -> Result<(), DomainError> {")
-        lines.append("    if robot_id.is_empty() || robot_id.contains('/') || robot_id.contains('\\\\') || robot_id.contains(' ') {")
+        lines.append(
+            "    if robot_id.is_empty() || robot_id.contains('/') || robot_id.contains('\\\\') || robot_id.contains(' ') {"
+        )
         lines.append("        return Err(DomainError::InvalidRobotId);")
         lines.append("    }")
         lines.append("    Ok(())")
@@ -608,8 +688,12 @@ def emit_rust(ir: DomainIR) -> str:
             lines.append(f"/// Returns the locked DataFabric {ch} key expression for a robot.")
             lines.append("///")
             lines.append("/// # Errors")
-            lines.append("/// Returns [`DomainError::InvalidRobotId`] if `robot_id` is empty or contains path delimiters.")
-            lines.append(f"pub fn robot_{ch}_topic(robot_id: &str) -> Result<String, DomainError> {{")
+            lines.append(
+                "/// Returns [`DomainError::InvalidRobotId`] if `robot_id` is empty or contains path delimiters."
+            )
+            lines.append(
+                f"pub fn robot_{ch}_topic(robot_id: &str) -> Result<String, DomainError> {{"
+            )
             lines.append("    validate_robot_id(robot_id)?;")
             lines.append(f'    Ok(format!("robot/{{robot_id}}/{ch}"))')
             lines.append("}")
@@ -635,11 +719,17 @@ def emit_rust(ir: DomainIR) -> str:
         lines.append("")
         lines.append("/// Canonical UR5e joint postures in radians")
         lines.append("#[allow(clippy::approx_constant)]")
-        lines.append("pub const CANONICAL_POSE_HOME: ArmJointPositions = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];")
+        lines.append(
+            "pub const CANONICAL_POSE_HOME: ArmJointPositions = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];"
+        )
         lines.append("#[allow(clippy::approx_constant)]")
-        lines.append("pub const CANONICAL_POSE_READY: ArmJointPositions = [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0];")
+        lines.append(
+            "pub const CANONICAL_POSE_READY: ArmJointPositions = [0.0, -0.7854, 1.5708, -0.7854, -1.5708, 0.0];"
+        )
         lines.append("#[allow(clippy::approx_constant)]")
-        lines.append("pub const CANONICAL_POSE_INSPECT_POSE: ArmJointPositions = [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0];")
+        lines.append(
+            "pub const CANONICAL_POSE_INSPECT_POSE: ArmJointPositions = [0.0, -1.0472, 1.3963, -1.9198, -1.5708, 0.0];"
+        )
         lines.append("")
         lines.append("/// Returns the canonical joint positions for a pre-defined posture.")
         lines.append("#[must_use]")
@@ -777,9 +867,13 @@ def emit_python(ir: DomainIR) -> str:
                 if f.name == "palm_state" or f.default is not None:
                     desc_part = f', description="{f.description}"' if f.description else ""
                     if f.kind == "enum" and isinstance(f.default, str):
-                        lines.append(f"    {f.name}: {f.ref} = Field(default={f.ref}.{f.default}{desc_part})")
+                        lines.append(
+                            f"    {f.name}: {f.ref} = Field(default={f.ref}.{f.default}{desc_part})"
+                        )
                     else:
-                        lines.append(f"    {f.name}: {f.ref} = Field(default_factory={f.ref}{desc_part})")
+                        lines.append(
+                            f"    {f.name}: {f.ref} = Field(default_factory={f.ref}{desc_part})"
+                        )
                 else:
                     args = ["default=None"] if not f.required else ["..."]
                     if f.description:
@@ -807,14 +901,20 @@ def emit_python(ir: DomainIR) -> str:
         lines.append("")
         lines.append("")
         lines.append("def _validate_robot_id(robot_id: str) -> None:")
-        lines.append('    if not robot_id or "/" in robot_id or "\\\\" in robot_id or " " in robot_id:')
-        lines.append('        raise ValueError(f"Invalid robot ID \'{robot_id}\': must be non-empty and not contain slashes or whitespace")')
+        lines.append(
+            '    if not robot_id or "/" in robot_id or "\\\\" in robot_id or " " in robot_id:'
+        )
+        lines.append(
+            "        raise ValueError(f\"Invalid robot ID '{robot_id}': must be non-empty and not contain slashes or whitespace\")"
+        )
 
         for ch in ir.channels:
             lines.append("")
             lines.append("")
             lines.append(f"def robot_{ch}_topic(robot_id: str) -> str:")
-            lines.append(f'    """Returns the locked DataFabric {ch} key expression for a robot."""')
+            lines.append(
+                f'    """Returns the locked DataFabric {ch} key expression for a robot."""'
+            )
             lines.append("    _validate_robot_id(robot_id)")
             lines.append(f'    return f"robot/{{robot_id}}/{ch}"')
 
@@ -822,7 +922,9 @@ def emit_python(ir: DomainIR) -> str:
         lines.append("")
         lines.append("")
         lines.append("def parse_robot_topic(topic: str) -> tuple[str, str] | None:")
-        lines.append('    """Parses a DataFabric key expression into (robot_id, channel) or returns None if invalid."""')
+        lines.append(
+            '    """Parses a DataFabric key expression into (robot_id, channel) or returns None if invalid."""'
+        )
         lines.append('    parts = topic.split("/")')
         lines.append('    if len(parts) != 3 or parts[0] != "robot" or not parts[1]:')
         lines.append("        return None")
@@ -848,8 +950,12 @@ def _ts_field_to_zod(f: FieldDef) -> str:
 
         if f.min_length is not None:
             if f.required and f.min_length >= 1:
-                desc = f"Field '{f.name}' must be non-empty" if f.name == "detected_object" else f"Missing required field '{f.name}'"
-                parts.append(f".min({f.min_length}, {{ message: \"{desc}\" }})")
+                desc = (
+                    f"Field '{f.name}' must be non-empty"
+                    if f.name == "detected_object"
+                    else f"Missing required field '{f.name}'"
+                )
+                parts.append(f'.min({f.min_length}, {{ message: "{desc}" }})')
             else:
                 parts.append(f".min({f.min_length})")
 
@@ -865,7 +971,9 @@ def _ts_field_to_zod(f: FieldDef) -> str:
     if f.kind == "int":
         if f.name == "timestamp_ns":
             return "timestampNsSchema" if f.required else "timestampNsSchema.nullish()"
-        parts = [f"z.union([z.bigint(), z.number(), z.string()], {{ message: \"Missing required field '{f.name}'\" }})"]
+        parts = [
+            f"z.union([z.bigint(), z.number(), z.string()], {{ message: \"Missing required field '{f.name}'\" }})"
+        ]
         if f.minimum is not None:
             parts.append(f""".refine(
       (val) => {{
@@ -884,12 +992,20 @@ def _ts_field_to_zod(f: FieldDef) -> str:
 
     if f.kind == "float":
         parts = [f"z.number({{ message: \"Field '{f.name}' must be a number\" }})"]
-        parts.append(f".refine(Number.isFinite, {{ message: \"Field '{f.name}' must be a finite number\" }})")
+        parts.append(
+            f".refine(Number.isFinite, {{ message: \"Field '{f.name}' must be a finite number\" }})"
+        )
         if f.minimum is not None and f.maximum is not None:
-            parts.append(f".min({f.minimum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})")
-            parts.append(f".max({f.maximum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})")
+            parts.append(
+                f".min({f.minimum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})"
+            )
+            parts.append(
+                f".max({f.maximum}, {{ message: \"Field '{f.name}' must be between {f.minimum} and {f.maximum}\" }})"
+            )
         elif f.minimum is not None:
-            parts.append(f".min({f.minimum}, {{ message: \"Field '{f.name}' must be non-negative\" }})")
+            parts.append(
+                f".min({f.minimum}, {{ message: \"Field '{f.name}' must be non-negative\" }})"
+            )
         elif f.maximum is not None:
             parts.append(f".max({f.maximum})")
         res = "".join(parts)
@@ -965,13 +1081,15 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append("        const ts =")
         lines.append("          typeof val === 'bigint'")
         lines.append("            ? val")
-        lines.append("            : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));")
+        lines.append(
+            "            : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));"
+        )
         lines.append("        return ts >= 0n;")
         lines.append("      } catch {")
         lines.append("        return false;")
         lines.append("      }")
         lines.append("    },")
-        lines.append('    { message: "Field \'timestamp_ns\' must be a non-negative integer" }')
+        lines.append("    { message: \"Field 'timestamp_ns' must be a non-negative integer\" }")
         lines.append("  );")
 
     for e in ir.enums:
@@ -1036,7 +1154,9 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append(f"export const {fa.name}Schema = z")
         lines.append("  .array(")
         lines.append("    z.unknown().refine(")
-        lines.append("      (val): val is number => typeof val === 'number' && Number.isFinite(val),")
+        lines.append(
+            "      (val): val is number => typeof val === 'number' && Number.isFinite(val),"
+        )
         lines.append("      { message: 'Joint position is not a valid finite number' }")
         lines.append("    )")
         lines.append("  )")
@@ -1094,7 +1214,9 @@ def emit_typescript(ir: DomainIR) -> str:
     for m in ir.models:
         lines.append("")
         lines.append(f"export function parse{m.name}(input: unknown): {m.name} {{")
-        lines.append(f"  return unwrapZod<{m.name}>({to_camel_case(m.name)}Schema.safeParse(input));")
+        lines.append(
+            f"  return unwrapZod<{m.name}>({to_camel_case(m.name)}Schema.safeParse(input));"
+        )
         lines.append("}")
         lines.append("")
         lines.append(f"export function is{m.name}(input: unknown): input is {m.name} {{")
@@ -1107,13 +1229,19 @@ def emit_typescript(ir: DomainIR) -> str:
         lines.append("")
         lines.append("export const robotIdSchema = z")
         lines.append("  .string({")
-        lines.append('    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",')
+        lines.append(
+            '    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",'
+        )
         lines.append("  })")
         lines.append("  .min(1, {")
-        lines.append('    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",')
+        lines.append(
+            '    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",'
+        )
         lines.append("  })")
         lines.append("  .regex(/^[^/\\\\\\s]+$/, {")
-        lines.append('    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",')
+        lines.append(
+            '    message: "Invalid robot ID: must be non-empty and not contain slashes or whitespace",'
+        )
         lines.append("  });")
         lines.append("")
         lines.append("export const robotTopicSchema = z")
@@ -1158,7 +1286,9 @@ def emit_typescript(ir: DomainIR) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate domain models from JSON schemas")
-    parser.add_argument("--check", action="store_true", help="Verify generated files match without writing")
+    parser.add_argument(
+        "--check", action="store_true", help="Verify generated files match without writing"
+    )
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parent.parent

@@ -111,7 +111,7 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
         rendererFactory={() => mockRenderer}
         controlsFactory={() => mockControls}
         onRobotLoaded={() => resolveLoaded()}
-      />
+      />,
     );
     await act(async () => {
       await loadedPromise;
@@ -164,7 +164,17 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
     act(() => {
       telemetryBufferRef.current.workcellState.spawned = [];
       telemetryBufferRef.current.workcellState.inProgress = [
-        { id: 'g1', x: 0.5, y: 0.0, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0, color: 'BLUE', intact: false },
+        {
+          id: 'g1',
+          x: 0.5,
+          y: 0.0,
+          z: 0.0,
+          origin_x: 0.5,
+          origin_y: 0.0,
+          origin_z: 0.0,
+          color: 'BLUE',
+          intact: false,
+        },
       ];
       stepFrame();
     });
@@ -174,7 +184,17 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
     act(() => {
       telemetryBufferRef.current.workcellState.inProgress = [];
       telemetryBufferRef.current.workcellState.processed = [
-        { id: 'g1', x: SCRAP_BIN[0], y: SCRAP_BIN[1], z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0, color: 'BLUE', intact: false },
+        {
+          id: 'g1',
+          x: SCRAP_BIN[0],
+          y: SCRAP_BIN[1],
+          z: 0.0,
+          origin_x: 0.5,
+          origin_y: 0.0,
+          origin_z: 0.0,
+          color: 'BLUE',
+          intact: false,
+        },
       ];
       stepFrame();
     });
@@ -186,9 +206,11 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
   });
 
   it('clearing workspace removes notch mesh with the gear', async () => {
-    const telemetryBufferRef = snapBuffer([], [], [
-      { id: 'd1', x: SCRAP_BIN[0], y: SCRAP_BIN[1], z: 0.0, color: 'BLUE', intact: false },
-    ]);
+    const telemetryBufferRef = snapBuffer(
+      [],
+      [],
+      [{ id: 'd1', x: SCRAP_BIN[0], y: SCRAP_BIN[1], z: 0.0, color: 'BLUE', intact: false }],
+    );
     const visualizer = await mountVisualizer(telemetryBufferRef);
     act(() => {
       stepFrame();

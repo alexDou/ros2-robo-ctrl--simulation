@@ -11,34 +11,23 @@ Covers Unit 6.5-Bugfix.2.2 (hand-sim-1h63):
 - Error handling: schema validation, robot busy, robot in fault, service unavailable, and goal rejection.
 """
 
+import contextlib
 import math
 import threading
 import time
 
-from geometry_msgs.msg import Point
-import rclpy
-from rclpy.action import ActionServer, CancelResponse, GoalResponse
+from arm_controller.edge_bridge_node import EdgeBridgeNode
+from rclpy.action import ActionServer
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.parameter import Parameter
+from robot_control_interfaces.srv import ClearWorkspace, SpawnObject
 
 from domain import (
     CommandType,
-    ErrorFrame,
-    PickAndPlaceTargetPayload,
     RobotCommand,
     RobotState,
-    RobotTelemetryEvent,
-    SpawnObjectPayload,
-    robot_command_topic,
-    robot_telemetry_topic,
 )
-from robot_control_interfaces.action import PickAndPlace
-from robot_control_interfaces.srv import ClearWorkspace, SpawnObject
-
-from arm_controller.edge_bridge_node import EdgeBridgeNode
-
-
 
 
 def test_edge_bridge_spawn_object_and_clear_workspace_services(make_switch_server):
@@ -58,14 +47,20 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services(make_switch_serve
         res.gear_id = "test-gear-1"
         return res
 
-    def handle_clear(req: ClearWorkspace.Request, res: ClearWorkspace.Response) -> ClearWorkspace.Response:
+    def handle_clear(
+        req: ClearWorkspace.Request, res: ClearWorkspace.Response
+    ) -> ClearWorkspace.Response:
         active_workpiece.clear()
         res.success = True
         res.message = "Workspace reset"
         return res
 
-    spawn_srv = mock_workcell.create_service(SpawnObject, "/test_workcell/spawn_object", handle_spawn)
-    clear_srv = mock_workcell.create_service(ClearWorkspace, "/test_workcell/clear_workspace", handle_clear)
+    spawn_srv = mock_workcell.create_service(
+        SpawnObject, "/test_workcell/spawn_object", handle_spawn
+    )
+    clear_srv = mock_workcell.create_service(
+        ClearWorkspace, "/test_workcell/clear_workspace", handle_clear
+    )
 
     from robot_control_interfaces.action import PickAndPlace as _Pnp
 
@@ -75,13 +70,21 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services(make_switch_serve
         gh.succeed()
         return _Pnp.Result(success=True, message="done")
 
-    pnp_srv = ActionServer(mock_arm, _Pnp, "/arm_controller/pick_and_place", execute_callback=_handle_pnp)
+    pnp_srv = ActionServer(
+        mock_arm, _Pnp, "/arm_controller/pick_and_place", execute_callback=_handle_pnp
+    )
 
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-wc-arm"),
-            Parameter("spawn_object_service_name", Parameter.Type.STRING, "/test_workcell/spawn_object"),
-            Parameter("clear_workspace_service_name", Parameter.Type.STRING, "/test_workcell/clear_workspace"),
+            Parameter(
+                "spawn_object_service_name", Parameter.Type.STRING, "/test_workcell/spawn_object"
+            ),
+            Parameter(
+                "clear_workspace_service_name",
+                Parameter.Type.STRING,
+                "/test_workcell/clear_workspace",
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
             Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
@@ -132,7 +135,9 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services(make_switch_serve
         assert telem is not None
         assert telem.command_id == "cmd-spawn-01"
         assert _wait_for(lambda: len(active_workpiece) == 1), "async spawn must reach workcell"
-        assert _wait_for(lambda: node.robot_state == RobotState.IDLE), "auto-dispatched PnP must complete"
+        assert _wait_for(lambda: node.robot_state == RobotState.IDLE), (
+            "auto-dispatched PnP must complete"
+        )
         assert math.isclose(active_workpiece[0][0], 0.45, abs_tol=1e-4)
 
         # 2. Second SPAWN_OBJECT command when occupied -> async WORKCELL_OCCUPIED error
@@ -144,11 +149,16 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services(make_switch_serve
             payload={"x": 0.50, "y": 0.15, "z": 0.0, "object_type": "GEAR"},
         )
         # Auto-dispatch puts robot EXECUTING; second spawn rejected sync as busy.
-        assert _wait_for(lambda: node.robot_state == RobotState.EXECUTING, timeout=1.0) or node.robot_state == RobotState.IDLE
+        assert (
+            _wait_for(lambda: node.robot_state == RobotState.EXECUTING, timeout=1.0)
+            or node.robot_state == RobotState.IDLE
+        )
         res_occupied = node.handle_command(cmd_spawn_occupied)
         if node.robot_state == RobotState.EXECUTING:
             assert res_occupied is None
-            assert _wait_for(lambda: node.robot_state == RobotState.IDLE), "auto-dispatched PnP must complete"
+            assert _wait_for(lambda: node.robot_state == RobotState.IDLE), (
+                "auto-dispatched PnP must complete"
+            )
         else:
             assert _wait_for(lambda: len(errs) > 0), "occupied spawn must emit ErrorFrame"
             assert errs[-1][0] == "WORKCELL_OCCUPIED"
@@ -173,10 +183,8 @@ def test_edge_bridge_spawn_object_and_clear_workspace_services(make_switch_serve
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         spawn_srv.destroy()
         clear_srv.destroy()
         pnp_srv.destroy()

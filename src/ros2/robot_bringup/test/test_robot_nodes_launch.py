@@ -30,27 +30,19 @@ import os
 import time
 import unittest
 
+import launch_testing
+import launch_testing.actions
+import pytest
+import rclpy
 from ament_index_python.packages import get_package_share_directory
-
 from control_msgs.action import FollowJointTrajectory
-
 from controller_manager_msgs.srv import SwitchController
-
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-
-import launch_testing
-import launch_testing.actions
-
-import pytest
-
-import rclpy
 from rclpy.action import ActionClient
 from rclpy.qos import qos_profile_sensor_data
-
 from robot_control_interfaces.action import PickAndPlace
-
 from sensor_msgs.msg import JointState
 
 
@@ -58,26 +50,24 @@ from sensor_msgs.msg import JointState
 def generate_test_description():
     """Generate launch description for testing robot bringup."""
     try:
-        bringup_share = get_package_share_directory('robot_bringup')
-        launch_path = os.path.join(
-            bringup_share, 'launch', 'robot_nodes.launch.py'
-        )
+        bringup_share = get_package_share_directory("robot_bringup")
+        launch_path = os.path.join(bringup_share, "launch", "robot_nodes.launch.py")
     except Exception:
         candidates = [
             os.path.join(
                 os.path.dirname(__file__),
-                '..',
-                'launch',
-                'robot_nodes.launch.py',
+                "..",
+                "launch",
+                "robot_nodes.launch.py",
             ),
             os.path.join(
                 os.path.dirname(__file__),
-                '..',
-                'src',
-                'ros2',
-                'robot_bringup',
-                'launch',
-                'robot_nodes.launch.py',
+                "..",
+                "src",
+                "ros2",
+                "robot_bringup",
+                "launch",
+                "robot_nodes.launch.py",
             ),
         ]
         launch_path = next(
@@ -90,7 +80,7 @@ def generate_test_description():
             [
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource(launch_path),
-                    launch_arguments={'use_fake_hardware': 'true'}.items(),
+                    launch_arguments={"use_fake_hardware": "true"}.items(),
                 ),
                 launch_testing.actions.ReadyToTest(),
             ]
@@ -116,7 +106,7 @@ class TestRobotNodesBringup(unittest.TestCase):
 
     def setUp(self):
         """Create monitor test node."""
-        self.node = rclpy.create_node('test_robot_nodes_monitor')
+        self.node = rclpy.create_node("test_robot_nodes_monitor")
 
     def tearDown(self):
         """Destroy monitor test node."""
@@ -125,10 +115,10 @@ class TestRobotNodesBringup(unittest.TestCase):
     def test_nodes_and_services_active(self):
         """Assert all expected nodes and services are active."""
         expected_nodes = {
-            'controller_manager',
-            'robot_state_publisher',
-            'workcell_node',
-            'arm_controller_node',
+            "controller_manager",
+            "robot_state_publisher",
+            "workcell_node",
+            "arm_controller_node",
         }
 
         # Poll node list until all appear or 15s timeout
@@ -144,14 +134,14 @@ class TestRobotNodesBringup(unittest.TestCase):
         self.assertEqual(
             found_nodes,
             expected_nodes,
-            f'Missing nodes: {expected_nodes - found_nodes}. '
-            f'Current nodes: {self.node.get_node_names()}',
+            f"Missing nodes: {expected_nodes - found_nodes}. "
+            f"Current nodes: {self.node.get_node_names()}",
         )
 
         # Check workcell services
         services = dict(self.node.get_service_names_and_types())
-        self.assertIn('/workcell/get_drop_slot', services)
-        self.assertIn('/workcell/clear_workspace', services)
+        self.assertIn("/workcell/get_drop_slot", services)
+        self.assertIn("/workcell/clear_workspace", services)
 
     def test_controllers_and_action_servers_ready(self):
         """Assert controllers and action servers are ready."""
@@ -159,41 +149,41 @@ class TestRobotNodesBringup(unittest.TestCase):
         sjtc_client = ActionClient(
             self.node,
             FollowJointTrajectory,
-            '/scaled_joint_trajectory_controller/follow_joint_trajectory',
+            "/scaled_joint_trajectory_controller/follow_joint_trajectory",
         )
         sjtc_ready = sjtc_client.wait_for_server(timeout_sec=15.0)
         sjtc_client.destroy()
         self.assertTrue(
             sjtc_ready,
-            'scaled_joint_trajectory_controller action server not ready',
+            "scaled_joint_trajectory_controller action server not ready",
         )
 
         # Check arm_controller pick_and_place action
         pap_client = ActionClient(
             self.node,
             PickAndPlace,
-            '/arm_controller/pick_and_place',
+            "/arm_controller/pick_and_place",
         )
         pap_ready = pap_client.wait_for_server(timeout_sec=15.0)
         pap_client.destroy()
         self.assertTrue(
             pap_ready,
-            'arm_controller pick_and_place action server not ready',
+            "arm_controller pick_and_place action server not ready",
         )
 
     def test_joint_states_5hz_sim_frequency(self):
         """Assert /joint_states streams at 5 Hz sim loop (activate parked first)."""
         switch_client = self.node.create_client(
-            SwitchController, '/controller_manager/switch_controller'
+            SwitchController, "/controller_manager/switch_controller"
         )
         self.assertTrue(
             switch_client.wait_for_service(timeout_sec=15.0),
-            'switch_controller service not ready',
+            "switch_controller service not ready",
         )
         req = SwitchController.Request()
         req.activate_controllers = [
-            'joint_state_broadcaster',
-            'scaled_joint_trajectory_controller',
+            "joint_state_broadcaster",
+            "scaled_joint_trajectory_controller",
         ]
         req.deactivate_controllers = []
         req.strictness = SwitchController.Request.BEST_EFFORT
@@ -201,10 +191,10 @@ class TestRobotNodesBringup(unittest.TestCase):
         req.timeout.sec = 5
         future = switch_client.call_async(req)
         rclpy.spin_until_future_complete(self.node, future, timeout_sec=10.0)
-        self.assertTrue(future.done(), 'switch_controller call timed out')
+        self.assertTrue(future.done(), "switch_controller call timed out")
         self.assertTrue(
             future.result().ok,
-            f'ENGAGE switch failed: {future.result().message}',
+            f"ENGAGE switch failed: {future.result().message}",
         )
         received_stamps = []
         received_wall_times = []
@@ -216,7 +206,7 @@ class TestRobotNodesBringup(unittest.TestCase):
 
         sub = self.node.create_subscription(
             JointState,
-            '/joint_states',
+            "/joint_states",
             js_callback,
             qos_profile_sensor_data,
         )
@@ -226,9 +216,7 @@ class TestRobotNodesBringup(unittest.TestCase):
         start_time = time.time()
         timeout = 15.0
 
-        while len(received_stamps) < target_samples and (
-            time.time() - start_time < timeout
-        ):
+        while len(received_stamps) < target_samples and (time.time() - start_time < timeout):
             rclpy.spin_once(self.node, timeout_sec=0.01)
 
         self.node.destroy_subscription(sub)
@@ -237,32 +225,31 @@ class TestRobotNodesBringup(unittest.TestCase):
         self.assertGreaterEqual(
             sample_count,
             target_samples,
-            f'Received only {sample_count} samples in {timeout}s',
+            f"Received only {sample_count} samples in {timeout}s",
         )
 
         # Calculate frequency from message timestamps (header.stamp)
         stamp_duration = received_stamps[-1] - received_stamps[0]
-        self.assertGreater(stamp_duration, 0.0, 'Stamp duration must be > 0')
+        self.assertGreater(stamp_duration, 0.0, "Stamp duration must be > 0")
         stamp_hz = (len(received_stamps) - 1) / stamp_duration
 
         # Calculate frequency from reception wall time
         wall_duration = received_wall_times[-1] - received_wall_times[0]
-        self.assertGreater(wall_duration, 0.0, 'Wall duration must be > 0')
+        self.assertGreater(wall_duration, 0.0, "Wall duration must be > 0")
         wall_hz = (len(received_wall_times) - 1) / wall_duration
 
         self.node.get_logger().info(
-            f'Measured /joint_states frequency: '
-            f'stamp_hz={stamp_hz:.2f}, wall_hz={wall_hz:.2f}'
+            f"Measured /joint_states frequency: stamp_hz={stamp_hz:.2f}, wall_hz={wall_hz:.2f}"
         )
 
         # Sim loop target is 5 Hz (non-RT host floor proven zero-overrun).
         self.assertGreaterEqual(
             stamp_hz,
             3.0,
-            f'Expected /joint_states rate >= 3 Hz sim, got {stamp_hz:.2f} Hz',
+            f"Expected /joint_states rate >= 3 Hz sim, got {stamp_hz:.2f} Hz",
         )
         self.assertLessEqual(
             stamp_hz,
             8.0,
-            f'Expected /joint_states rate <= 8 Hz sim, got {stamp_hz:.2f} Hz',
+            f"Expected /joint_states rate <= 8 Hz sim, got {stamp_hz:.2f} Hz",
         )

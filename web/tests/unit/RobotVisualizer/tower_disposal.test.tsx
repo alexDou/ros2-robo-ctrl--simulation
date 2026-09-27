@@ -14,7 +14,6 @@ function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[
   };
 }
 
-
 describe('Unit 3.2: RobotVisualizer Component', () => {
   let mockRenderer: any;
   let mockControls: any;
@@ -72,7 +71,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     cbs.forEach((cb) => cb(performance.now()));
   };
 
-
   describe('Unit 6.4: TeleopClient SpindleTower 3D Fixture, KinematicLinkAttachment & Tower Stacking', () => {
     let fakeTool0Link: THREE.Object3D;
     let fakeRobot: any;
@@ -94,7 +92,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('EXECUTING/IDLE robotState transitions never mutate snapshot meshes', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
+      const telemetryBufferRef = snapBuffer([
+        { id: 'g1', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true },
+      ]);
 
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -108,7 +108,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -128,7 +128,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             telemetryBufferRef={telemetryBufferRef}
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
-          />
+          />,
         );
       });
       act(() => {
@@ -144,7 +144,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             telemetryBufferRef={telemetryBufferRef}
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
-          />
+          />,
         );
       });
       act(() => {
@@ -167,7 +167,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
         unmountFn = res.unmount;
       });
@@ -210,7 +210,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -250,7 +250,17 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       // Processed echo deposits tower mesh at entry coords verbatim.
       act(() => {
         telemetryBufferRef.current.workcellState.processed = [
-          { id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.0, origin_z: 0.0 , color: 'WHITE', intact: true },
+          {
+            id: 'g1',
+            x: 0.4,
+            y: -0.3,
+            z: 0.0,
+            origin_x: 0.5,
+            origin_y: 0.0,
+            origin_z: 0.0,
+            color: 'WHITE',
+            intact: true,
+          },
         ];
         stepFrame();
       });

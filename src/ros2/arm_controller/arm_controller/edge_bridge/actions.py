@@ -2,12 +2,13 @@
 
 import math
 import threading
-from typing import Any, Optional
+from typing import Any
 
 from geometry_msgs.msg import Point
-from domain import PickAndPlaceTargetPayload, RobotState, RobotTelemetryEvent
 from robot_control_interfaces.action import PickAndPlace
 from robot_control_interfaces.srv import CommitDrop, MarkGrasped
+
+from domain import PickAndPlaceTargetPayload, RobotState, RobotTelemetryEvent
 
 
 class EdgeBridgeActionsMixin:
@@ -73,8 +74,8 @@ class EdgeBridgeActionsMixin:
     def _dispatch_pick_and_place_goal(
         self,
         payload: PickAndPlaceTargetPayload,
-        command_id: Optional[str] = None,
-        completion_event: Optional[threading.Event] = None,
+        command_id: str | None = None,
+        completion_event: threading.Event | None = None,
     ) -> RobotTelemetryEvent:
         """Builds PickAndPlace goal and dispatches to action server, streaming feedback to Zenoh."""
         px, py, pz = payload.pick_x, payload.pick_y, payload.pick_z
@@ -84,11 +85,7 @@ class EdgeBridgeActionsMixin:
             return self.publish_telemetry(command_id=command_id)
         goal = PickAndPlace.Goal()
         goal.pick_coords = Point(x=px, y=py, z=pz)
-        if (
-            payload.drop_x is not None
-            and payload.drop_y is not None
-            and payload.drop_z is not None
-        ):
+        if payload.drop_x is not None and payload.drop_y is not None and payload.drop_z is not None:
             dx, dy, dz = payload.drop_x, payload.drop_y, payload.drop_z
             if not (math.isfinite(dx) and math.isfinite(dy) and math.isfinite(dz)):
                 self.get_logger().error("PickAndPlace payload non-finite drop coords")
@@ -145,9 +142,7 @@ class EdgeBridgeActionsMixin:
                     completion_event.set()
                 return event
 
-            send_goal_future = self._pnp_client.send_goal_async(
-                goal, feedback_callback=on_feedback
-            )
+            send_goal_future = self._pnp_client.send_goal_async(goal, feedback_callback=on_feedback)
 
         def on_goal_response(future: Any) -> None:
             try:
@@ -168,7 +163,9 @@ class EdgeBridgeActionsMixin:
                 with self._lock:
                     if self._robot_state == RobotState.EXECUTING:
                         self._robot_state = RobotState.FAULT
-                self._publish_error("GOAL_REJECTED", "PickAndPlace goal was rejected by action server")
+                self._publish_error(
+                    "GOAL_REJECTED", "PickAndPlace goal was rejected by action server"
+                )
                 self.publish_telemetry()
                 if completion_event is not None:
                     completion_event.set()
@@ -211,7 +208,9 @@ class EdgeBridgeActionsMixin:
                             except Exception as err:
                                 self.get_logger().error(f"Error reading PickAndPlace result: {err}")
                                 self._robot_state = RobotState.FAULT
-                                self._publish_error("RESULT_ERROR", "PickAndPlace result unreadable")
+                                self._publish_error(
+                                    "RESULT_ERROR", "PickAndPlace result unreadable"
+                                )
                                 should_publish_completion = True
 
                 if completion_event is not None:
@@ -224,4 +223,3 @@ class EdgeBridgeActionsMixin:
 
         send_goal_future.add_done_callback(on_goal_response)
         return event
-

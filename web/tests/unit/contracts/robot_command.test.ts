@@ -1,11 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import {
-  CommandType,
-} from '@contracts';
-import {
-  parseRobotCommand,
-  createPingCommand,
-} from '@domain/parsers';
+import { CommandType } from '@contracts';
+import { parseRobotCommand, createPingCommand } from '@domain/parsers';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
   describe('RobotCommand', () => {
@@ -20,9 +15,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
       expect(cmd.sender_id).toBe('ui-client');
       expect(cmd.payload).toEqual({});
 
-      const serialized = JSON.stringify(cmd, (_, v) =>
-        typeof v === 'bigint' ? v.toString() : v
-      );
+      const serialized = JSON.stringify(cmd, (_, v) => (typeof v === 'bigint' ? v.toString() : v));
       const parsed = parseRobotCommand(serialized);
       expect(parsed.command_id).toBe('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d');
       expect(parsed.type).toBe(CommandType.PING);

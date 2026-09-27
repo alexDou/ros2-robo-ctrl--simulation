@@ -1,7 +1,6 @@
 """Kinematics exception hierarchy."""
 
 
-
 class KinematicsError(Exception):
     """Base exception for kinematics errors."""
 
@@ -15,3 +14,7 @@ UnreachableTargetError = OutOfReachError
 
 class KinematicSingularityError(KinematicsError):
     """Raised when target pose is near a kinematic singularity with no valid solution."""
+
+
+class JointLimitError(KinematicsError):
+    """Raised when a waypoint has no joint-angle representation inside the URDF joint limits."""

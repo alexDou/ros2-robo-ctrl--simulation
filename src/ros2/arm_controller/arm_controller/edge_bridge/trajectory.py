@@ -1,20 +1,21 @@
 """Trajectory dispatch to FollowJointTrajectory action server."""
 
 import threading
-from typing import Any, Optional
+from typing import Any
 
 from control_msgs.action import FollowJointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
-from domain import CANONICAL_UR5E_JOINTS, RobotState, RobotTelemetryEvent
+
 from arm_controller.arm_controller_node import seconds_to_duration
+from domain import CANONICAL_UR5E_JOINTS, RobotState, RobotTelemetryEvent
 
 
 class EdgeBridgeTrajectoryMixin:
     def _dispatch_trajectory_points(
         self,
         waypoints: list[list[float]],
-        command_id: Optional[str] = None,
-        completion_event: Optional[threading.Event] = None,
+        command_id: str | None = None,
+        completion_event: threading.Event | None = None,
     ) -> RobotTelemetryEvent:
         """Builds multi-point trajectory with cumulative durations and dispatches to controller."""
         with self._lock:
@@ -29,7 +30,9 @@ class EdgeBridgeTrajectoryMixin:
             max_dq = max(abs(wp[i] - prev_q[i]) for i in range(6))
             seg_dur = max(
                 self._step_duration,
-                max_dq / self._max_joint_velocity if self._max_joint_velocity > 0 else self._step_duration,
+                max_dq / self._max_joint_velocity
+                if self._max_joint_velocity > 0
+                else self._step_duration,
             )
             cumulative_time += seg_dur
             prev_q = wp
@@ -97,7 +100,10 @@ class EdgeBridgeTrajectoryMixin:
                         if self._robot_state == RobotState.EXECUTING:
                             try:
                                 traj_res = r_future.result()
-                                if traj_res.result.error_code == FollowJointTrajectory.Result.SUCCESSFUL:
+                                if (
+                                    traj_res.result.error_code
+                                    == FollowJointTrajectory.Result.SUCCESSFUL
+                                ):
                                     self._robot_state = RobotState.IDLE
                                     should_publish_completion = True
                                 else:
@@ -119,4 +125,3 @@ class EdgeBridgeTrajectoryMixin:
 
         send_goal_future.add_done_callback(on_goal_response)
         return event
-

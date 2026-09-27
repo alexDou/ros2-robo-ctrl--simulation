@@ -9,6 +9,10 @@ use tokio_tungstenite::connect_async;
 use tokio_tungstenite::tungstenite::Message;
 
 #[tokio::test]
+// Single sequential end-to-end scenario (connect -> PING -> malformed frame ->
+// telemetry -> disconnect -> reconnect); splitting it across helpers would just
+// thread the same five handles through each one for no readability gain.
+#[allow(clippy::too_many_lines)]
 async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
     let registry = web::Data::new(ActiveSessionRegistry::default());
     let fabric = web::Data::new(DataFabricPort::memory());

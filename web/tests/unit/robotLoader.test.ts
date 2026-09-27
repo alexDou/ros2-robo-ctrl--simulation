@@ -20,10 +20,7 @@ import {
 const REPO_ROOT = path.resolve(__dirname, '../../../');
 const PUBLIC_DIR = path.resolve(REPO_ROOT, 'web/public');
 const URDF_PATH = path.resolve(PUBLIC_DIR, 'models/ur5e/ur5e.urdf');
-const MESHES_DIR = path.resolve(
-  PUBLIC_DIR,
-  'models/ur_description/meshes/ur5e/visual'
-);
+const MESHES_DIR = path.resolve(PUBLIC_DIR, 'models/ur_description/meshes/ur5e/visual');
 
 const EXPECTED_MESHES = [
   'base.dae',
@@ -58,9 +55,7 @@ describe('Unit 3.0: URDF Model Extraction & Static Mesh Asset Distribution', () 
 
       // Visual meshes must use package://ur_description/ URIs
       for (const meshName of EXPECTED_MESHES) {
-        expect(content).toContain(
-          `package://ur_description/meshes/ur5e/visual/${meshName}`
-        );
+        expect(content).toContain(`package://ur_description/meshes/ur5e/visual/${meshName}`);
       }
     });
 
@@ -123,9 +118,9 @@ describe('Unit 3.0: URDF Model Extraction & Static Mesh Asset Distribution', () 
     });
 
     it('throws error when target package is not found in package map', () => {
-      expect(() =>
-        resolvePackageUri('package://unknown_pkg/meshes/link.dae')
-      ).toThrowError(/Package not found in package map: unknown_pkg/);
+      expect(() => resolvePackageUri('package://unknown_pkg/meshes/link.dae')).toThrowError(
+        /Package not found in package map: unknown_pkg/,
+      );
     });
   });
 
@@ -311,7 +306,7 @@ describe('Unit 3.0: URDF Model Extraction & Static Mesh Asset Distribution', () 
 
       expect(verifyCanonicalJoints(dummyRobot)).toBe(false);
       expect(() => getCanonicalJoints(dummyRobot)).toThrowError(
-        /Missing canonical UR5e joint: shoulder_lift_joint/
+        /Missing canonical UR5e joint: shoulder_lift_joint/,
       );
     });
 
@@ -380,9 +375,9 @@ describe('Unit 3.0: URDF Model Extraction & Static Mesh Asset Distribution', () 
 
       try {
         const loader = createRobotLoader();
-        await expect(
-          loadRobotModel('/models/nonexistent.urdf', loader)
-        ).rejects.toThrowError(/Failed to load url|404/);
+        await expect(loadRobotModel('/models/nonexistent.urdf', loader)).rejects.toThrowError(
+          /Failed to load url|404/,
+        );
       } finally {
         globalThis.fetch = origFetch;
       }
@@ -417,9 +412,9 @@ describe('Unit 3.0: URDF Model Extraction & Static Mesh Asset Distribution', () 
           },
         });
 
-        await expect(
-          loadRobotModel(DEFAULT_UR5E_URDF_PATH, loader)
-        ).rejects.toThrowError(/Failed to load robot asset.*base\.dae/);
+        await expect(loadRobotModel(DEFAULT_UR5E_URDF_PATH, loader)).rejects.toThrowError(
+          /Failed to load robot asset.*base\.dae/,
+        );
 
         // Verify LoadingManager callbacks were restored to prevent memory leaks
         expect(customManager.onLoad).toBe(sentinelOnLoad);

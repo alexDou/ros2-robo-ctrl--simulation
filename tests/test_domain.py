@@ -4,7 +4,6 @@ from pydantic import ValidationError
 from domain import (
     CANONICAL_UR5E_JOINTS,
     UR5E_JOINTS,
-    ArmJointPositions,
     ClearWorkspacePayload,
     CommandType,
     EmergencyStopPayload,
@@ -43,9 +42,9 @@ def test_workcell_constants_match_schema_single_source_of_truth():
         WHITE_TOWER,
     )
 
-    assert WHITE_TOWER == [0.4, -0.3, 0.0]
-    assert GREEN_TOWER == [0.55, -0.3, 0.0]
-    assert BLUE_TOWER == [0.7, -0.3, 0.0]
+    assert WHITE_TOWER == [0.68, -0.16, 0.0]
+    assert GREEN_TOWER == [0.68, 0.0, 0.0]
+    assert BLUE_TOWER == [0.68, 0.16, 0.0]
     assert SCRAP_BIN == [0.4, 0.28, 0.0]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02
@@ -57,7 +56,6 @@ def test_workcell_constants_match_schema_single_source_of_truth():
 def test_workcell_node_imports_generated_domain_without_local_constants():
     # hand-sim-rdbp: no re-declared constant defs in workcell_node.py.
     import pathlib
-    import re
 
     src = pathlib.Path("src/ros2/workcell_manager/workcell_manager/workcell_node.py").read_text()
     for name in (
@@ -311,7 +309,7 @@ def test_palm_actuate_payload_serialization():
         PalmActuatePayload.model_validate_json('{"action": "INVALID_ACTION"}')
 
     with pytest.raises(ValidationError):
-        PalmActuatePayload.model_validate_json('{}')
+        PalmActuatePayload.model_validate_json("{}")
 
 
 def test_trajectory_execute_payload_serialization():
@@ -371,7 +369,10 @@ def test_robot_telemetry_event_palm_state():
     )
     assert event_grasped.palm_state.is_grasped is True
     json_data = event_grasped.model_dump_json()
-    assert '"palm_state":{"is_grasped":true}' in json_data or '"palm_state": {"is_grasped": true}' in json_data
+    assert (
+        '"palm_state":{"is_grasped":true}' in json_data
+        or '"palm_state": {"is_grasped": true}' in json_data
+    )
 
     restored = RobotTelemetryEvent.model_validate_json(json_data)
     assert restored.palm_state.is_grasped is True
@@ -423,7 +424,9 @@ def test_spawn_object_payload_serialization():
 
     # Invalid object_type
     with pytest.raises(ValidationError):
-        SpawnObjectPayload.model_validate_json('{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "INVALID"}')
+        SpawnObjectPayload.model_validate_json(
+            '{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "INVALID"}'
+        )
 
     # Missing required field
     with pytest.raises(ValidationError):
@@ -431,7 +434,9 @@ def test_spawn_object_payload_serialization():
 
     # Extra fields rejected (strict)
     with pytest.raises(ValidationError):
-        SpawnObjectPayload.model_validate_json('{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "extra": 1}')
+        SpawnObjectPayload.model_validate_json(
+            '{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "extra": 1}'
+        )
 
 
 def test_clear_workspace_payload_serialization():
@@ -516,7 +521,9 @@ def test_pick_and_place_target_payload_serialization():
 
     # Invalid non-numeric type
     with pytest.raises(ValidationError):
-        PickAndPlaceTargetPayload.model_validate_json('{"pick_x": "not_a_number", "pick_y": 0.0, "pick_z": 0.0}')
+        PickAndPlaceTargetPayload.model_validate_json(
+            '{"pick_x": "not_a_number", "pick_y": 0.0, "pick_z": 0.0}'
+        )
 
     # Extra fields rejected (strict extra="forbid")
     with pytest.raises(ValidationError):
@@ -533,9 +540,20 @@ def test_robot_telemetry_event_workcell_state_required_round_trip():
             "robot_state": RobotState.IDLE,
             "joint_positions": [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
             "workcell_state": {
-                "spawned": [{"id": "gear-1", "x": 0.5, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}],
+                "spawned": [
+                    {"id": "gear-1", "x": 0.5, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}
+                ],
                 "in_progress": [],
-                "processed": [{"id": "gear-0", "x": 0.4, "y": -0.3, "z": 0.02, "color": "WHITE", "intact": True}],
+                "processed": [
+                    {
+                        "id": "gear-0",
+                        "x": 0.4,
+                        "y": -0.3,
+                        "z": 0.02,
+                        "color": "WHITE",
+                        "intact": True,
+                    }
+                ],
                 "active_id": "gear-1",
             },
         }
@@ -561,10 +579,6 @@ def test_robot_telemetry_event_workcell_state_required_round_trip():
         )
 
 
-
-
-
-
 def test_robot_telemetry_event_workcell_origin_optional_round_trip():
     # Unit 6.7.4: origin_* optional on GearEntry, coords verbatim incl origin.
     event = RobotTelemetryEvent.model_validate(
@@ -573,16 +587,41 @@ def test_robot_telemetry_event_workcell_origin_optional_round_trip():
             "robot_state": RobotState.IDLE,
             "joint_positions": [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
             "workcell_state": {
-                "spawned": [{"id": "gear-0", "x": 0.45, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}],
+                "spawned": [
+                    {
+                        "id": "gear-0",
+                        "x": 0.45,
+                        "y": 0.1,
+                        "z": 0.0,
+                        "color": "WHITE",
+                        "intact": True,
+                    }
+                ],
                 "in_progress": [
-                    {"id": "gear-1", "x": 0.45, "y": 0.1, "z": 0.0,
-                     "origin_x": 0.45, "origin_y": 0.1, "origin_z": 0.0,
-                     "color": "GREEN", "intact": True}
+                    {
+                        "id": "gear-1",
+                        "x": 0.45,
+                        "y": 0.1,
+                        "z": 0.0,
+                        "origin_x": 0.45,
+                        "origin_y": 0.1,
+                        "origin_z": 0.0,
+                        "color": "GREEN",
+                        "intact": True,
+                    }
                 ],
                 "processed": [
-                    {"id": "gear-2", "x": 0.4, "y": -0.3, "z": 0.02,
-                     "origin_x": 0.5, "origin_y": 0.15, "origin_z": 0.0,
-                     "color": "BLUE", "intact": False}
+                    {
+                        "id": "gear-2",
+                        "x": 0.4,
+                        "y": -0.3,
+                        "z": 0.02,
+                        "origin_x": 0.5,
+                        "origin_y": 0.15,
+                        "origin_z": 0.0,
+                        "color": "BLUE",
+                        "intact": False,
+                    }
                 ],
                 "active_id": "gear-1",
             },
@@ -649,9 +688,7 @@ def test_unit70_required_color_intact():
 
     for color in (GearColor.WHITE, GearColor.GREEN, GearColor.BLUE):
         for intact in (False, True):
-            g = GearEntry(
-                id="g0", x=0.1, y=0.1, z=0.0, color=color, intact=intact
-            )
+            g = GearEntry(id="g0", x=0.1, y=0.1, z=0.0, color=color, intact=intact)
             assert GearEntry.model_validate_json(g.model_dump_json()) == g
 
     with pytest.raises(ValidationError):
@@ -667,9 +704,15 @@ def test_unit70_required_color_intact():
             "robot_state": RobotState.IDLE,
             "joint_positions": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
             "workcell_state": {
-                "spawned": [{"id": "g0", "x": 0.1, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}],
-                "in_progress": [{"id": "g1", "x": 0.1, "y": 0.1, "z": 0.0, "color": "GREEN", "intact": False}],
-                "processed": [{"id": "g2", "x": 0.4, "y": -0.3, "z": 0.02, "color": "BLUE", "intact": True}],
+                "spawned": [
+                    {"id": "g0", "x": 0.1, "y": 0.1, "z": 0.0, "color": "WHITE", "intact": True}
+                ],
+                "in_progress": [
+                    {"id": "g1", "x": 0.1, "y": 0.1, "z": 0.0, "color": "GREEN", "intact": False}
+                ],
+                "processed": [
+                    {"id": "g2", "x": 0.68, "y": 0.16, "z": 0.02, "color": "BLUE", "intact": True}
+                ],
             },
         }
     )
@@ -680,9 +723,9 @@ def test_unit70_required_color_intact():
     assert event.workcell_state.processed[0].color == GearColor.BLUE
     assert event.workcell_state.processed[0].intact is True
 
-    assert WHITE_TOWER == [0.4, -0.3, 0.0]
-    assert GREEN_TOWER == [0.55, -0.3, 0.0]
-    assert BLUE_TOWER == [0.7, -0.3, 0.0]
+    assert WHITE_TOWER == [0.68, -0.16, 0.0]
+    assert GREEN_TOWER == [0.68, 0.0, 0.0]
+    assert BLUE_TOWER == [0.68, 0.16, 0.0]
     assert SCRAP_BIN == [0.4, 0.28, 0.0]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02

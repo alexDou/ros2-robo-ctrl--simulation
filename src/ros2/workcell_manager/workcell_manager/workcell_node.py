@@ -4,14 +4,11 @@ import json
 import math
 import threading
 import uuid
-from typing import Optional
 
 import rclpy
+from geometry_msgs.msg import Point
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
-from geometry_msgs.msg import Point
-from std_msgs.msg import Int32, String
-
 from robot_control_interfaces.srv import (
     ClearWorkspace,
     CommitDrop,
@@ -19,6 +16,7 @@ from robot_control_interfaces.srv import (
     MarkGrasped,
     SpawnObject,
 )
+from std_msgs.msg import Int32, String
 
 from domain import (
     BLUE_TOWER,
@@ -123,7 +121,7 @@ class WorkcellNode(Node):
             return bool(self._spawned or self._in_progress)
 
     @property
-    def active_workpiece_coords(self) -> Optional[tuple[float, float, float]]:
+    def active_workpiece_coords(self) -> tuple[float, float, float] | None:
         """Returns active gear (x, y, z) coordinates or None."""
         with self._lock:
             for entry in list(self._spawned.values()) + list(self._in_progress.values()):
@@ -141,7 +139,7 @@ class WorkcellNode(Node):
             return self._snapshot_locked()
 
     def _snapshot_locked(self) -> dict:
-        active_id: Optional[str] = None
+        active_id: str | None = None
         for bucket in (self._spawned, self._in_progress):
             if bucket:
                 active_id = next(iter(bucket))
@@ -172,9 +170,7 @@ class WorkcellNode(Node):
             return count, count * self._height_step, False
         return self._max_capacity - 1, (self._max_capacity - 1) * self._height_step, True
 
-    def _destination_for(
-        self, color: str, intact: bool
-    ) -> tuple[tuple[float, float, float], bool]:
+    def _destination_for(self, color: str, intact: bool) -> tuple[tuple[float, float, float], bool]:
         """Returns (base_xyz, uncapped) for a classification; unsound dominates color."""
         if not intact:
             return SCRAP_BIN, True
@@ -210,7 +206,7 @@ class WorkcellNode(Node):
         """Discards the old bin pile in place; towers untouched (sharp cut)."""
         self._processed = [e for e in self._processed if e.get("intact", True)]
 
-    def _active_classification_locked(self) -> Optional[tuple[str, bool]]:
+    def _active_classification_locked(self) -> tuple[str, bool] | None:
         """Returns (color, intact) of the spawned/in-progress gear, if any."""
         for bucket in (self._spawned, self._in_progress):
             if bucket:
@@ -250,9 +246,7 @@ class WorkcellNode(Node):
                     response.drop_coords = Point(x=0.0, y=0.0, z=0.0)
                     response.slot_index = -1
                     response.overflow_occurred = False
-                    self.get_logger().warning(
-                        f"Rejecting get_drop_slot: invalid color '{color}'"
-                    )
+                    self.get_logger().warning(f"Rejecting get_drop_slot: invalid color '{color}'")
                     return response
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
@@ -303,7 +297,7 @@ class WorkcellNode(Node):
             if color not in VALID_GEAR_COLORS:
                 response.success = False
                 response.message = (
-                    f"Missing gear color (REQUIRED color + intact)"
+                    "Missing gear color (REQUIRED color + intact)"
                     if not color
                     else f"Invalid gear color '{color}'"
                 )
@@ -443,7 +437,6 @@ class WorkcellNode(Node):
             f"{drop_entry['y']:.2f}, {drop_entry['z']:.3f}), overflow={overflow_occurred}"
         )
         return response
-
 
 
 def main(args: list[str] | None = None) -> None:

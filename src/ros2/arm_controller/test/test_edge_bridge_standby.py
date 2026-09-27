@@ -4,31 +4,35 @@ import math
 import threading
 import time
 
-import rclpy
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from control_msgs.action import FollowJointTrajectory
 from controller_manager_msgs.srv import SwitchController
 from rclpy.action import ActionServer, CancelResponse
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.parameter import Parameter
-
-from domain import CANONICAL_POSES, CommandType, PoseName, RobotCommand, RobotState
 from robot_control_interfaces.action import PickAndPlace
 
-from arm_controller.edge_bridge_node import EdgeBridgeNode
-
+from domain import CANONICAL_POSES, CommandType, PoseName, RobotCommand, RobotState
 
 
 def _cmd(cid, ctype, payload=None):
     return RobotCommand(
-        command_id=cid, sender_id="test-client",
-        timestamp_ns=time.time_ns(), type=ctype, payload=payload or {},
+        command_id=cid,
+        sender_id="test-client",
+        timestamp_ns=time.time_ns(),
+        type=ctype,
+        payload=payload or {},
     )
 
 
-def _make_node(name, action_name="/test_standby/follow_joint_trajectory",
-               pnp_action_name="/test_standby/pick_and_place",
-               traj_timeout=2.0, park_timeout=5.0):
+def _make_node(
+    name,
+    action_name="/test_standby/follow_joint_trajectory",
+    pnp_action_name="/test_standby/pick_and_place",
+    traj_timeout=2.0,
+    park_timeout=5.0,
+):
     return EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, name),
@@ -47,7 +51,8 @@ def _make_node(name, action_name="/test_standby/follow_joint_trajectory",
 def _is_home(positions):
     return all(
         math.isclose(q, h, abs_tol=1e-4)
-        for q, h in zip(positions, CANONICAL_POSES[PoseName.HOME]))
+        for q, h in zip(positions, CANONICAL_POSES[PoseName.HOME], strict=True)
+    )
 
 
 def _add_traj_server(executor, tag, action_name, hold_pose=None):
@@ -61,7 +66,8 @@ def _add_traj_server(executor, tag, action_name, hold_pose=None):
         received.append(req)
         target = list(req.trajectory.points[0].positions)
         if hold_pose is not None and all(
-                math.isclose(q, h, abs_tol=1e-4) for q, h in zip(target, hold_pose)):
+            math.isclose(q, h, abs_tol=1e-4) for q, h in zip(target, hold_pose, strict=True)
+        ):
             hold_started.set()
             for _ in range(100):
                 if goal_handle.is_cancel_requested:
@@ -77,9 +83,12 @@ def _add_traj_server(executor, tag, action_name, hold_pose=None):
         return res
 
     server = ActionServer(
-        mock, FollowJointTrajectory, action_name,
+        mock,
+        FollowJointTrajectory,
+        action_name,
         execute_callback=_execute,
-        cancel_callback=lambda req: CancelResponse.ACCEPT)
+        cancel_callback=lambda req: CancelResponse.ACCEPT,
+    )
     executor.add_node(mock)
     return mock, server, received, hold_started, hold_cancelled
 
@@ -101,9 +110,12 @@ def _add_pnp_server(executor, tag, action_name):
         return PickAndPlace.Result(success=True, message="OK")
 
     server = ActionServer(
-        mock, PickAndPlace, action_name,
+        mock,
+        PickAndPlace,
+        action_name,
         execute_callback=_execute,
-        cancel_callback=lambda req: CancelResponse.ACCEPT)
+        cancel_callback=lambda req: CancelResponse.ACCEPT,
+    )
     executor.add_node(mock)
     return mock, server, exec_started, cancel_received
 
@@ -114,8 +126,11 @@ def test_standby_during_motion_parks_home_once(make_switch_server):
     executor.add_node(node)
     make_switch_server(executor, ok=True)
     traj_node, traj_srv, received, hold_started, hold_cancelled = _add_traj_server(
-        executor, "motion", "/test_standby/follow_joint_trajectory",
-        hold_pose=list(CANONICAL_POSES[PoseName.READY]))
+        executor,
+        "motion",
+        "/test_standby/follow_joint_trajectory",
+        hold_pose=list(CANONICAL_POSES[PoseName.READY]),
+    )
     spin = threading.Thread(target=executor.spin, daemon=True)
     spin.start()
     try:
@@ -129,7 +144,7 @@ def test_standby_during_motion_parks_home_once(make_switch_server):
         assert node.robot_state == RobotState.STANDBY
         assert node._joint_sub is None
         assert hold_cancelled.wait(timeout=2.0), "active trajectory goal was not cancelled"
-        assert len(received) == 1, "expected exactly one park goal, got %d" % len(received)
+        assert len(received) == 1, f"expected exactly one park goal, got {len(received)}"
         assert _is_home(received[0].trajectory.points[0].positions)
         assert telem is not None and telem.robot_state == RobotState.STANDBY
     finally:
@@ -157,7 +172,8 @@ def test_standby_while_ready_skips_park_but_deactivates():
     switch_node.create_service(SwitchController, "/controller_manager/switch_controller", _cb)
     executor.add_node(switch_node)
     traj_node, traj_srv, received, _, _ = _add_traj_server(
-        executor, "ready", "/test_standby/follow_joint_trajectory")
+        executor, "ready", "/test_standby/follow_joint_trajectory"
+    )
     spin = threading.Thread(target=executor.spin, daemon=True)
     spin.start()
     try:
@@ -184,16 +200,19 @@ def test_standby_while_ready_skips_park_but_deactivates():
 
 
 def test_standby_bounded_when_servers_down():
-    node = _make_node("test-sb-bounded",
-                      action_name="/test_standby_missing/follow_joint_trajectory",
-                      traj_timeout=0.2, park_timeout=0.5)
+    node = _make_node(
+        "test-sb-bounded",
+        action_name="/test_standby_missing/follow_joint_trajectory",
+        traj_timeout=0.2,
+        park_timeout=0.5,
+    )
     try:
         with node._lock:
             node._robot_state = RobotState.EXECUTING
         start = time.monotonic()
         telem = node.handle_command(_cmd("s1", CommandType.STANDBY))
         elapsed = time.monotonic() - start
-        assert elapsed < 4.0, "STANDBY blocked %.2fs without servers" % elapsed
+        assert elapsed < 4.0, f"STANDBY blocked {elapsed:.2f}s without servers"
         assert node.robot_state == RobotState.STANDBY
         assert node._joint_sub is None
         assert telem is not None and telem.robot_state == RobotState.STANDBY
@@ -208,16 +227,23 @@ def test_standby_cancels_active_pick_and_place_first(make_switch_server):
     executor.add_node(node)
     make_switch_server(executor, ok=True)
     traj_node, traj_srv, received, _, _ = _add_traj_server(
-        executor, "pnp_park", "/test_standby/follow_joint_trajectory")
+        executor, "pnp_park", "/test_standby/follow_joint_trajectory"
+    )
     pnp_node, pnp_srv, pnp_started, pnp_cancelled = _add_pnp_server(
-        executor, "pnp", "/test_standby/pick_and_place")
+        executor, "pnp", "/test_standby/pick_and_place"
+    )
     spin = threading.Thread(target=executor.spin, daemon=True)
     spin.start()
     try:
         node.handle_command(_cmd("e1", CommandType.ENGAGE))
         assert node.robot_state == RobotState.IDLE
-        node.handle_command(_cmd("p1", CommandType.PICK_AND_PLACE_TARGET,
-                                 {"pick_x": 0.45, "pick_y": 0.10, "pick_z": 0.0}))
+        node.handle_command(
+            _cmd(
+                "p1",
+                CommandType.PICK_AND_PLACE_TARGET,
+                {"pick_x": 0.45, "pick_y": 0.10, "pick_z": 0.0},
+            )
+        )
         assert pnp_started.wait(timeout=3.0)
         assert node.robot_state == RobotState.EXECUTING
         received.clear()

@@ -16,10 +16,12 @@ UR5E_DH_ALPHA: tuple[float, ...] = (
 
 
 # Workcell Geometry & Physical Tool Parameters
-DEFAULT_TCP_OFFSET_M: float = 0.108  # DexterousPalm tool center point offset (baseplate + rod + nozzle)
-MIN_REACH_M: float = 0.20           # Inner reachability limit / base clearance boundary
-MAX_REACH_M: float = 0.85           # Outer operational boundary / reach limit
-DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.40, -0.30, 0.0)
+DEFAULT_TCP_OFFSET_M: float = (
+    0.108  # DexterousPalm tool center point offset (baseplate + rod + nozzle)
+)
+MIN_REACH_M: float = 0.20  # Inner reachability limit / base clearance boundary
+MAX_REACH_M: float = 0.85  # Outer operational boundary / reach limit
+DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.68, -0.16, 0.0)
 APPROACH_LIFT_OFFSET_M: float = 0.10  # Vertical approach and lift clearance offset
 
 # Canonical UR5e joint names matching ROS2 ros2_control / URDF
@@ -31,6 +33,17 @@ CANONICAL_UR5E_JOINTS: list[str] = [
     "wrist_2_joint",
     "wrist_3_joint",
 ]
+
+# UR5e URDF joint position limits (lower, upper) in radians, in CANONICAL_UR5E_JOINTS order.
+# Same values as ur_description/urdf/ur5e.urdf; the real controller rejects anything outside.
+UR5E_JOINT_LIMITS: tuple[tuple[float, float], ...] = (
+    (-2.0 * math.pi, 2.0 * math.pi),  # shoulder_pan_joint
+    (-2.0 * math.pi, 2.0 * math.pi),  # shoulder_lift_joint
+    (-math.pi, math.pi),  # elbow_joint
+    (-2.0 * math.pi, 2.0 * math.pi),  # wrist_1_joint
+    (-2.0 * math.pi, 2.0 * math.pi),  # wrist_2_joint
+    (-2.0 * math.pi, 2.0 * math.pi),  # wrist_3_joint
+)
 
 # Canonical UR5e joint postures
 HOME_JOINT_POSITIONS: list[float] = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0]

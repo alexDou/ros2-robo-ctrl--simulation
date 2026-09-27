@@ -1,5 +1,10 @@
 """Arm controller and analytical inverse kinematics dispatcher package."""
 
+from arm_controller.arm_controller_node import (
+    ArmControllerNode,
+    seconds_to_duration,
+)
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from arm_controller.kinematics import (
     APPROACH_LIFT_OFFSET_M,
     CANONICAL_UR5E_JOINTS,
@@ -13,8 +18,8 @@ from arm_controller.kinematics import (
     READY_JOINT_POSITIONS,
     ActionPhase,
     AnalyticalInverseKinematics,
-    KinematicSingularityError,
     KinematicsError,
+    KinematicSingularityError,
     OutOfReachError,
     PickAndPlaceTrajectoryGenerator,
     UnreachableTargetError,
@@ -23,12 +28,6 @@ from arm_controller.kinematics import (
     normalize_angle,
     unwrap_joint_angles,
 )
-
-from arm_controller.arm_controller_node import (
-    ArmControllerNode,
-    seconds_to_duration,
-)
-from arm_controller.edge_bridge_node import EdgeBridgeNode
 
 __all__ = [
     "APPROACH_LIFT_OFFSET_M",
@@ -56,5 +55,3 @@ __all__ = [
     "seconds_to_duration",
     "unwrap_joint_angles",
 ]
-
-

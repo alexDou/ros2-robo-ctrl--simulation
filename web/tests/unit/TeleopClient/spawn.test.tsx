@@ -52,11 +52,15 @@ class MockWebSocket {
       this.onerror(new Event('error'));
     }
     if (this.onclose) {
-      this.onclose(new CloseEvent('close', { code: isConflict ? 4409 : 1006, reason: isConflict ? 'Conflict' : 'Abnormal Closure' }));
+      this.onclose(
+        new CloseEvent('close', {
+          code: isConflict ? 4409 : 1006,
+          reason: isConflict ? 'Conflict' : 'Abnormal Closure',
+        }),
+      );
     }
   }
 }
-
 
 describe('TeleopClient Component', () => {
   let originalWebSocket: typeof WebSocket;
@@ -73,26 +77,32 @@ describe('TeleopClient Component', () => {
     vi.restoreAllMocks();
   });
 
-
   describe('Unit 6.4: TeleopClient Pick-and-Place Target Dispatch & ClickLockout Lifecycle', () => {
     it('dispatches SPAWN_OBJECT command when valid reachable table spot is clicked', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
 
       // B.7 seed: handshake complete -> IDLE enables toolbar
       act(() => {
-              ws.simulateMessage(JSON.stringify({
-                timestamp_ns: '1700000000000000000',
-                robot_state: RobotState.IDLE,
-                joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-                palm_state: { is_grasped: false },
-              }));
-            });
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
 
       const visualizer = (window as any).__robot_visualizer;
       expect(visualizer).toBeDefined();
@@ -111,23 +121,30 @@ describe('TeleopClient Component', () => {
     });
 
     it('enforces client-side ClickLockout preventing second SPAWN_OBJECT command dispatch', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
 
       // B.7 seed: handshake complete -> IDLE enables toolbar
       act(() => {
-              ws.simulateMessage(JSON.stringify({
-                timestamp_ns: '1700000000000000000',
-                robot_state: RobotState.IDLE,
-                joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-                palm_state: { is_grasped: false },
-              }));
-            });
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
 
       const visualizer = (window as any).__robot_visualizer;
 
@@ -145,9 +162,14 @@ describe('TeleopClient Component', () => {
     });
 
     it('does not dispatch SPAWN_OBJECT command when robot_state is not IDLE', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
@@ -157,7 +179,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000000000000',
         robot_state: RobotState.EXECUTING,
         joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -173,23 +195,30 @@ describe('TeleopClient Component', () => {
     });
 
     it('lifts ClickLockout automatically when robot returns to IDLE and gear has been deposited', async () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
 
       // B.7 seed: handshake complete -> IDLE enables toolbar
       act(() => {
-              ws.simulateMessage(JSON.stringify({
-                timestamp_ns: '1700000000000000000',
-                robot_state: RobotState.IDLE,
-                joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-                palm_state: { is_grasped: false },
-              }));
-            });
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
 
       const visualizer = (window as any).__robot_visualizer;
 
@@ -201,13 +230,19 @@ describe('TeleopClient Component', () => {
 
       // Snapshot echo: spawned entry appears -> visualizer lockout engages
       act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000050000000',
-          robot_state: RobotState.IDLE,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-          workcell_state: { spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true }], in_progress: [], processed: [] },
-          palm_state: { is_grasped: false },
-        }));
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000050000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: {
+              spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true }],
+              in_progress: [],
+              processed: [],
+            },
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
       await act(async () => {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -216,13 +251,31 @@ describe('TeleopClient Component', () => {
 
       // Transition to EXECUTING with in_progress bucket (grasped)
       act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000100000000',
-          robot_state: RobotState.EXECUTING,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-          workcell_state: { spawned: [], in_progress: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0, color: 'WHITE', intact: true }], processed: [] },
-          palm_state: { is_grasped: true },
-        }));
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000100000000',
+            robot_state: RobotState.EXECUTING,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: {
+              spawned: [],
+              in_progress: [
+                {
+                  id: 'g1',
+                  x: 0.5,
+                  y: 0.1,
+                  z: 0.0,
+                  origin_x: 0.5,
+                  origin_y: 0.1,
+                  origin_z: 0.0,
+                  color: 'WHITE',
+                  intact: true,
+                },
+              ],
+              processed: [],
+            },
+            palm_state: { is_grasped: true },
+          }),
+        );
       });
       await act(async () => {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -231,13 +284,31 @@ describe('TeleopClient Component', () => {
 
       // Release: processed echo, robot back to IDLE -> lockout lifts (tower never locks)
       act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000200000000',
-          robot_state: RobotState.IDLE,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-          workcell_state: { spawned: [], in_progress: [], processed: [{ id: 'g1', x: 0.4, y: -0.3, z: 0.0, origin_x: 0.5, origin_y: 0.1, origin_z: 0.0, color: 'WHITE', intact: true }] },
-          palm_state: { is_grasped: false },
-        }));
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000200000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: {
+              spawned: [],
+              in_progress: [],
+              processed: [
+                {
+                  id: 'g1',
+                  x: 0.68,
+                  y: -0.16,
+                  z: 0.0,
+                  origin_x: 0.5,
+                  origin_y: 0.1,
+                  origin_z: 0.0,
+                  color: 'WHITE',
+                  intact: true,
+                },
+              ],
+            },
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
       await act(async () => {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -256,23 +327,30 @@ describe('TeleopClient Component', () => {
     });
 
     it('auto-resets hasActiveGear to false and keeps COMPLETED progress visible when robot_state returns to IDLE', async () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
 
       // B.7 seed: handshake complete -> IDLE enables toolbar
       act(() => {
-              ws.simulateMessage(JSON.stringify({
-                timestamp_ns: '1700000000000000000',
-                robot_state: RobotState.IDLE,
-                joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-                palm_state: { is_grasped: false },
-              }));
-            });
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
 
       const visualizer = (window as any).__robot_visualizer;
 
@@ -284,25 +362,29 @@ describe('TeleopClient Component', () => {
 
       // 2. Simulate ACTION_FEEDBACK progress
       act(() => {
-        ws.simulateMessage(JSON.stringify({
-          type: 'ACTION_FEEDBACK',
-          command_id: 'cmd-pnp-1',
-          phase: 'APPROACHING',
-          percent_complete: 20.0,
-          timestamp_ns: '1700000000000000000',
-        }));
+        ws.simulateMessage(
+          JSON.stringify({
+            type: 'ACTION_FEEDBACK',
+            command_id: 'cmd-pnp-1',
+            phase: 'APPROACHING',
+            percent_complete: 20.0,
+            timestamp_ns: '1700000000000000000',
+          }),
+        );
       });
       expect(screen.queryByTestId('action-progress-container')).not.toBeNull();
 
       // 3. Robot state transitions to EXECUTING
       act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000100000000',
-          robot_state: RobotState.EXECUTING,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-          palm_state: { is_grasped: true },
-        }));
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000100000000',
+            robot_state: RobotState.EXECUTING,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: true },
+          }),
+        );
       });
       expect(screen.queryByTestId('action-progress-container')).not.toBeNull();
 
@@ -311,13 +393,15 @@ describe('TeleopClient Component', () => {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
       });
       act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000150000000',
-          robot_state: RobotState.EXECUTING,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-          palm_state: { is_grasped: false },
-        }));
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000150000000',
+            robot_state: RobotState.EXECUTING,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
       await act(async () => {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
@@ -325,13 +409,15 @@ describe('TeleopClient Component', () => {
 
       // 4. Robot finishes sequence and transitions back to IDLE
       act(() => {
-        ws.simulateMessage(JSON.stringify({
-          timestamp_ns: '1700000000200000000',
-          robot_state: RobotState.IDLE,
-          joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-          palm_state: { is_grasped: false },
-        }));
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000200000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
 
       // COMPLETED progress stays visible across final IDLE telemetry;
@@ -356,9 +442,9 @@ describe('TeleopClient Component', () => {
           robotId="robot-0"
           gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
           onSpawnObject={onSpawnSpy}
-        />
+        />,
       );
-      fireEvent.click(screen.getByTestId("connect-button"));
+      fireEvent.click(screen.getByTestId('connect-button'));
       const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
@@ -366,14 +452,16 @@ describe('TeleopClient Component', () => {
 
       // B.7 seed: handshake complete -> IDLE enables toolbar
       act(() => {
-              ws.simulateMessage(JSON.stringify({
-                timestamp_ns: '1700000000000000000',
-                robot_state: RobotState.IDLE,
-                joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-                palm_state: { is_grasped: false },
-              }));
-            });
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
 
       const visualizer = (window as any).__robot_visualizer;
 

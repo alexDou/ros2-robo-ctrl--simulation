@@ -32,13 +32,11 @@ export class ServiceHarness {
   constructor(config: HarnessConfig = {}) {
     this.isLive = process.env.E2E_LIVE === '1' || process.env.E2E_LIVE === 'true';
     const defaultGatewayPort = this.isLive ? 8080 : 8085;
-    this.gatewayPort = config.gatewayPort ?? Number(process.env.E2E_GATEWAY_PORT || defaultGatewayPort);
+    this.gatewayPort =
+      config.gatewayPort ?? Number(process.env.E2E_GATEWAY_PORT || defaultGatewayPort);
     this.webPort = config.webPort ?? Number(process.env.E2E_WEB_PORT || 3005);
     this.robotId = config.robotId ?? DEFAULT_ROBOT_ID;
-    this.publisherScript =
-      config.publisherScript ??
-      process.env.E2E_PUBLISHER_SCRIPT ??
-      'mock';
+    this.publisherScript = config.publisherScript ?? process.env.E2E_PUBLISHER_SCRIPT ?? 'mock';
     this.publishRateHz = config.publishRateHz ?? 30.0;
     this.baseUrl = `http://127.0.0.1:${this.webPort}/?robot_id=${this.robotId}&gateway_port=${this.gatewayPort}`;
   }
@@ -91,7 +89,7 @@ export class ServiceHarness {
     }
     throw new Error(
       `Live Gateway health check failed at ${url}: ${lastError}. ` +
-        `Boot scripts/launch_ros2.sh and scripts/launch_gateway.sh first.`
+        `Boot scripts/launch_ros2.sh and scripts/launch_gateway.sh first.`,
     );
   }
 

@@ -19,10 +19,7 @@ import {
   type RobotTelemetryEvent,
   type ErrorFrame,
 } from '../../../domain/contracts';
-import {
-  PickAndPlaceTrajectoryGenerator,
-  type WaypointStep,
-} from './kinematics';
+import { PickAndPlaceTrajectoryGenerator, type WaypointStep } from './kinematics';
 
 export interface SeededClassification {
   color: GearColor;
@@ -43,11 +40,11 @@ interface JointSinusoid {
 }
 
 const SINUSOID_CONFIGS: JointSinusoid[] = [
-  { freq: 0.11, amp: 1.20, phase: 0.0, center: 0.0 },
-  { freq: 0.17, amp: 0.70, phase: Math.PI / 4, center: -1.5708 },
-  { freq: 0.23, amp: 0.90, phase: Math.PI / 2, center: 1.5708 },
-  { freq: 0.29, amp: 0.85, phase: 3 * Math.PI / 4, center: -1.5708 },
-  { freq: 0.37, amp: 1.10, phase: Math.PI / 3, center: 0.0 },
+  { freq: 0.11, amp: 1.2, phase: 0.0, center: 0.0 },
+  { freq: 0.17, amp: 0.7, phase: Math.PI / 4, center: -1.5708 },
+  { freq: 0.23, amp: 0.9, phase: Math.PI / 2, center: 1.5708 },
+  { freq: 0.29, amp: 0.85, phase: (3 * Math.PI) / 4, center: -1.5708 },
+  { freq: 0.37, amp: 1.1, phase: Math.PI / 3, center: 0.0 },
   { freq: 0.43, amp: 1.35, phase: Math.PI / 6, center: 0.0 },
 ];
 
@@ -86,7 +83,11 @@ export class MockGateway {
   private inProgress: GearEntry[] = [];
   private processed: GearEntry[] = [];
   private activeId: string | null = null;
-  private inferenceMetrics: { latency_ms: number; confidence: number; detected_object: string } | null = null;
+  private inferenceMetrics: {
+    latency_ms: number;
+    confidence: number;
+    detected_object: string;
+  } | null = null;
   private pnpExecuting = false;
   private pnpTimeout: NodeJS.Timeout | null = null;
   private autoExecutePickAndPlace = true;
@@ -181,7 +182,8 @@ export class MockGateway {
     if (this.classificationSequence.length === 0) {
       return { color: 'WHITE', intact: true };
     }
-    const item = this.classificationSequence[this.classificationIndex % this.classificationSequence.length];
+    const item =
+      this.classificationSequence[this.classificationIndex % this.classificationSequence.length];
     this.classificationIndex += 1;
     return item;
   }
@@ -205,13 +207,13 @@ export class MockGateway {
     // Legacy alias: synthesize processed entries at tower coords verbatim.
     this.processed = Array.from({ length: Math.max(0, count) }, (_, i) => ({
       id: `legacy-tower-${i}`,
-      x: 0.40,
-      y: -0.30,
+      x: 0.68,
+      y: -0.16,
       z: i * 0.02,
       color: 'WHITE' as const,
       intact: true as const,
-      origin_x: 0.40,
-      origin_y: -0.30,
+      origin_x: 0.68,
+      origin_y: -0.16,
       origin_z: 0,
     }));
   }
@@ -342,9 +344,9 @@ export class MockGateway {
     if (existing && existing.readyState === WebSocket.OPEN) {
       socket.end(
         'HTTP/1.1 409 Conflict\r\n' +
-        'Content-Type: text/plain\r\n' +
-        'Connection: close\r\n\r\n' +
-        'Active session already exists for robot\r\n'
+          'Content-Type: text/plain\r\n' +
+          'Connection: close\r\n\r\n' +
+          'Active session already exists for robot\r\n',
       );
       return;
     }
@@ -480,8 +482,14 @@ export class MockGateway {
         this.spawned = [{ id, x, y, z, color: cls.color, intact: cls.intact }];
         this.inProgress = [];
         this.activeId = id;
-        this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: this.inferenceLabel(cls.color, cls.intact) };
-        this.log(`[EDGE] Spawned GEAR ${id} at (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`);
+        this.inferenceMetrics = {
+          latency_ms: 0,
+          confidence: 1,
+          detected_object: this.inferenceLabel(cls.color, cls.intact),
+        };
+        this.log(
+          `[EDGE] Spawned GEAR ${id} at (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`,
+        );
         this.cancelTrajectory();
         if (this.autoExecutePickAndPlace) {
           this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z, cls);
@@ -509,7 +517,11 @@ export class MockGateway {
           this.spawned = [{ id, x, y, z, color: cls.color, intact: cls.intact }];
           this.inProgress = [];
           this.activeId = id;
-          this.inferenceMetrics = { latency_ms: 0, confidence: 1, detected_object: this.inferenceLabel(cls.color, cls.intact) };
+          this.inferenceMetrics = {
+            latency_ms: 0,
+            confidence: 1,
+            detected_object: this.inferenceLabel(cls.color, cls.intact),
+          };
           this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z, cls);
         } else {
           this.sendTelemetryToAll(cmd.command_id);
@@ -563,7 +575,14 @@ export class MockGateway {
     }
   }
 
-  private executePickAndPlaceSequence(commandId: string | undefined, id: string, x: number, y: number, z: number, cls: SeededClassification): void {
+  private executePickAndPlaceSequence(
+    commandId: string | undefined,
+    id: string,
+    x: number,
+    y: number,
+    z: number,
+    cls: SeededClassification,
+  ): void {
     // Bin cap-100 sharp-cut recycle mirrors WorkcellNode.commit_drop:
     // recycle BEFORE slot so the 101st arrival wraps to z=0, towers untouched.
     if (!cls.intact && this.processed.filter((e) => !e.intact).length >= 100) {
@@ -583,7 +602,11 @@ export class MockGateway {
 
     let steps: WaypointStep[];
     try {
-      steps = this.trajectoryGenerator.generateTrajectory([x, y, z], dropCoords, this.currentJoints);
+      steps = this.trajectoryGenerator.generateTrajectory(
+        [x, y, z],
+        dropCoords,
+        this.currentJoints,
+      );
     } catch (err) {
       this.log(`[EDGE] Trajectory generation failed: ${err}`);
       this.sendTelemetryToAll(commandId);
@@ -601,7 +624,17 @@ export class MockGateway {
       const entry =
         idx >= 0
           ? this.inProgress.splice(idx, 1)[0]
-          : { id, x, y, z, color: cls.color, intact: cls.intact, origin_x: x, origin_y: y, origin_z: z };
+          : {
+              id,
+              x,
+              y,
+              z,
+              color: cls.color,
+              intact: cls.intact,
+              origin_x: x,
+              origin_y: y,
+              origin_z: z,
+            };
       this.processed.push({
         id,
         x: dropCoords[0],
@@ -617,14 +650,25 @@ export class MockGateway {
         // Per-tower FIFO: evict oldest of this tower only, re-z survivors.
         const towerIdx = this.processed
           .map((e, i) => ({ e, i }))
-          .filter(({ e }) => e.intact && e.color === cls.color && Math.abs(e.x - base[0]) < 1e-6 && Math.abs(e.y - base[1]) < 1e-6)
+          .filter(
+            ({ e }) =>
+              e.intact &&
+              e.color === cls.color &&
+              Math.abs(e.x - base[0]) < 1e-6 &&
+              Math.abs(e.y - base[1]) < 1e-6,
+          )
           .map(({ i }) => i);
         if (towerIdx.length > TOWER_CAPACITY) {
           this.processed.splice(towerIdx[0], 1);
         }
         let fill = 0;
         for (const e of this.processed) {
-          if (e.intact && e.color === cls.color && Math.abs(e.x - base[0]) < 1e-6 && Math.abs(e.y - base[1]) < 1e-6) {
+          if (
+            e.intact &&
+            e.color === cls.color &&
+            Math.abs(e.x - base[0]) < 1e-6 &&
+            Math.abs(e.y - base[1]) < 1e-6
+          ) {
             e.z = fill * STACK_STEP_M;
             fill++;
           }
@@ -661,7 +705,19 @@ export class MockGateway {
       if (step.isGrasped && !grasped) {
         grasped = true;
         this.spawned = this.spawned.filter((g) => g.id !== id);
-        this.inProgress = [{ id, x, y, z, color: cls.color, intact: cls.intact, origin_x: x, origin_y: y, origin_z: z }];
+        this.inProgress = [
+          {
+            id,
+            x,
+            y,
+            z,
+            color: cls.color,
+            intact: cls.intact,
+            origin_x: x,
+            origin_y: y,
+            origin_z: z,
+          },
+        ];
         this.activeId = id;
       }
 

@@ -14,60 +14,34 @@ Per Unit 6.5-Bugfix.2.1 (hand-sim-o5es) & Unit 6.5-Bugfix.2.2 (hand-sim-1h63):
 - Emits RobotTelemetryEvent and ErrorFrame over Zenoh on robot/{id}/telemetry.
 """
 
-import json
 import threading
-import time
-from typing import Any, Optional
+from typing import Any
 
+import rclpy
 from control_msgs.action import FollowJointTrajectory
 from controller_manager_msgs.srv import SwitchController
-from geometry_msgs.msg import Point
-import rclpy
 from rclpy.action import ActionClient
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
-from sensor_msgs.msg import JointState
+from robot_control_interfaces.action import PickAndPlace
+from robot_control_interfaces.srv import ClearWorkspace, CommitDrop, MarkGrasped, SpawnObject
 from std_msgs.msg import String
-from trajectory_msgs.msg import JointTrajectoryPoint
 
-from arm_controller.arm_controller_node import seconds_to_duration
+from arm_controller.edge_bridge.actions import EdgeBridgeActionsMixin
+from arm_controller.edge_bridge.commands import EdgeBridgeCommandsMixin
+from arm_controller.edge_bridge.lifecycle import EdgeBridgeLifecycleMixin
+from arm_controller.edge_bridge.telemetry import EdgeBridgeTelemetryMixin
+from arm_controller.edge_bridge.trajectory import EdgeBridgeTrajectoryMixin
 from domain import (
     CANONICAL_POSES,
-    CANONICAL_UR5E_JOINTS,
     DEFAULT_ROBOT_ID,
-    ClearWorkspacePayload,
-    CommandType,
-    ErrorFrame,
-    PalmState,
-    PickAndPlaceTargetPayload,
     PoseName,
-    RobotCommand,
     RobotState,
-    RobotTelemetryEvent,
-    SpawnObjectPayload,
-    TrajectoryExecutePayload,
     WorkcellState,
     robot_command_topic,
     robot_telemetry_topic,
 )
-from robot_control_interfaces.action import PickAndPlace
-from robot_control_interfaces.srv import ClearWorkspace, CommitDrop, MarkGrasped, SpawnObject
-
-
-
-from arm_controller.edge_bridge.commands import EdgeBridgeCommandsMixin
-from arm_controller.edge_bridge.trajectory import EdgeBridgeTrajectoryMixin
-from arm_controller.edge_bridge.actions import EdgeBridgeActionsMixin
-from arm_controller.edge_bridge.telemetry import EdgeBridgeTelemetryMixin
-
-
-from arm_controller.edge_bridge.lifecycle import EdgeBridgeLifecycleMixin
-from arm_controller.edge_bridge.commands import EdgeBridgeCommandsMixin
-from arm_controller.edge_bridge.trajectory import EdgeBridgeTrajectoryMixin
-from arm_controller.edge_bridge.actions import EdgeBridgeActionsMixin
-from arm_controller.edge_bridge.telemetry import EdgeBridgeTelemetryMixin
 
 
 class EdgeBridgeNode(
@@ -83,7 +57,7 @@ class EdgeBridgeNode(
     def __init__(
         self,
         node_name: str = "edge_bridge_node",
-        zenoh_session: Optional[Any] = None,
+        zenoh_session: Any | None = None,
         **kwargs,
     ) -> None:
         super().__init__(node_name, **kwargs)
@@ -134,15 +108,11 @@ class EdgeBridgeNode(
         self._pick_and_place_action_name = str(
             self.get_parameter("pick_and_place_action_name").value
         )
-        self._spawn_object_service_name = str(
-            self.get_parameter("spawn_object_service_name").value
-        )
+        self._spawn_object_service_name = str(self.get_parameter("spawn_object_service_name").value)
         self._clear_workspace_service_name = str(
             self.get_parameter("clear_workspace_service_name").value
         )
-        self._action_feedback_topic = str(
-            self.get_parameter("action_feedback_topic").value
-        )
+        self._action_feedback_topic = str(self.get_parameter("action_feedback_topic").value)
         self._joint_states_topic = str(self.get_parameter("joint_states_topic").value)
         self._auto_home_on_startup = bool(self.get_parameter("auto_home_on_startup").value)
         self._auto_connect_zenoh = bool(self.get_parameter("auto_connect_zenoh").value)
@@ -153,12 +123,8 @@ class EdgeBridgeNode(
         self._switch_timeout = float(self.get_parameter("switch_timeout").value)
         self._standby_park_timeout = float(self.get_parameter("standby_park_timeout").value)
         self._workcell_state_topic = str(self.get_parameter("workcell_state_topic").value)
-        self._mark_grasped_service_name = str(
-            self.get_parameter("mark_grasped_service_name").value
-        )
-        self._commit_drop_service_name = str(
-            self.get_parameter("commit_drop_service_name").value
-        )
+        self._mark_grasped_service_name = str(self.get_parameter("mark_grasped_service_name").value)
+        self._commit_drop_service_name = str(self.get_parameter("commit_drop_service_name").value)
 
         self._lock = threading.RLock()
         self._cb_group = ReentrantCallbackGroup()
@@ -168,21 +134,23 @@ class EdgeBridgeNode(
         # IDLE means engaged-ready; motion cmds rejected while STANDBY.
         self._robot_state: RobotState = RobotState.STANDBY
         self._is_grasped: bool = False
-        self._current_phase: Optional[str] = None
-        self._workcell_state: WorkcellState = WorkcellState(spawned=[], in_progress=[], processed=[])
+        self._current_phase: str | None = None
+        self._workcell_state: WorkcellState = WorkcellState(
+            spawned=[], in_progress=[], processed=[]
+        )
         self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
-        self._active_traj_handle: Optional[Any] = None
-        self._active_pnp_handle: Optional[Any] = None
+        self._active_traj_handle: Any | None = None
+        self._active_pnp_handle: Any | None = None
         self._homing_done_event = threading.Event()
         self._startup_motion_event = threading.Event()
-        self._pending_spawn_coords: Optional[tuple[float, float, float]] = None
-        self._pending_spawn_command_id: Optional[str] = None
+        self._pending_spawn_coords: tuple[float, float, float] | None = None
+        self._pending_spawn_command_id: str | None = None
         self._grasp_notified = False
         self._commit_notified = False
 
         # Zero-alloc JointState parsing cache
-        self._cached_joint_names: Optional[list[str]] = None
-        self._cached_joint_indices: Optional[list[int]] = None
+        self._cached_joint_names: list[str] | None = None
+        self._cached_joint_indices: list[int] | None = None
 
         # ROS2 Subscriptions & Action Clients (joint sub lazy: created on ENGAGE)
         self._joint_sub = None
@@ -263,7 +231,7 @@ class EdgeBridgeNode(
 
         # No auto-homing on startup: homing deferred until ENGAGE handshake.
         # _auto_home_on_startup now means "home on ENGAGE" (True) vs "IDLE on ENGAGE" (False).
-        self._startup_thread: Optional[threading.Thread] = None
+        self._startup_thread: threading.Thread | None = None
 
     @property
     def robot_id(self) -> str:
@@ -285,7 +253,7 @@ class EdgeBridgeNode(
             return self._is_grasped
 
     @property
-    def current_phase(self) -> Optional[str]:
+    def current_phase(self) -> str | None:
         with self._lock:
             return self._current_phase
 

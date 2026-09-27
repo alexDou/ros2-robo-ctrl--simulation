@@ -52,11 +52,15 @@ class MockWebSocket {
       this.onerror(new Event('error'));
     }
     if (this.onclose) {
-      this.onclose(new CloseEvent('close', { code: isConflict ? 4409 : 1006, reason: isConflict ? 'Conflict' : 'Abnormal Closure' }));
+      this.onclose(
+        new CloseEvent('close', {
+          code: isConflict ? 4409 : 1006,
+          reason: isConflict ? 'Conflict' : 'Abnormal Closure',
+        }),
+      );
     }
   }
 }
-
 
 describe('TeleopClient Component', () => {
   let originalWebSocket: typeof WebSocket;
@@ -73,20 +77,24 @@ describe('TeleopClient Component', () => {
     vi.restoreAllMocks();
   });
 
-
   describe('Refactor-B.7: Connect-gated WebSocket lifecycle', () => {
     const telem = (state: RobotState, commandId?: string): string =>
       JSON.stringify({
         timestamp_ns: '1700000000000000000',
         robot_state: state,
         joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
         ...(commandId ? { command_id: commandId } : {}),
       });
 
     it('stays DISCONNECTED with STANDBY parked stream and zero sockets on load', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
       expect(MockWebSocket.instances.length).toBe(0);
       expect(screen.getByTestId('connection-badge').textContent).toBe('DISCONNECTED');
       expect(screen.getByTestId('connect-button')).toBeDefined();
@@ -95,7 +103,12 @@ describe('TeleopClient Component', () => {
     });
 
     it('shows BOOTING activating badge after Connect, then IDLE streaming', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
       fireEvent.click(screen.getByTestId('connect-button'));
       const ws = MockWebSocket.instances[0];
       act(() => {
@@ -117,7 +130,12 @@ describe('TeleopClient Component', () => {
     it('falls back to STANDBY display when BOOTING times out', () => {
       vi.useFakeTimers();
       try {
-        render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+        render(
+          <TeleopClient
+            robotId="robot-0"
+            gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+          />,
+        );
         fireEvent.click(screen.getByTestId('connect-button'));
         const ws = MockWebSocket.instances[0];
         act(() => {
@@ -134,7 +152,12 @@ describe('TeleopClient Component', () => {
     });
 
     it('Disconnect closes WS, resets stream to STANDBY, returns to Connect', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
       fireEvent.click(screen.getByTestId('connect-button'));
       const ws = MockWebSocket.instances[0];
       act(() => {

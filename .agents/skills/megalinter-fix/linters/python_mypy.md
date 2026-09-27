@@ -52,6 +52,7 @@ on the line — prefer the scoped form.
 
 ```python
 from foolib import foo  # type: ignore[attr-defined]
+
 x = confusing_function()  # type: ignore[assignment, arg-type]
 ```
 

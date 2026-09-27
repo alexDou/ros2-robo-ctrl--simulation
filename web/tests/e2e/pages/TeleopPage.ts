@@ -100,7 +100,11 @@ export class TeleopPage {
     await expect(this.errorLogItem).toContainText(message);
   }
 
-  async expectTelemetryFrequencyRange(minHz: number, maxHz: number, timeout = 10000): Promise<void> {
+  async expectTelemetryFrequencyRange(
+    minHz: number,
+    maxHz: number,
+    timeout = 10000,
+  ): Promise<void> {
     await expect
       .poll(
         async () => {
@@ -108,7 +112,7 @@ export class TeleopPage {
           const match = text.match(/(\d+)\s*Hz/);
           return match ? parseInt(match[1], 10) : 0;
         },
-        { timeout, message: `Expected telemetry frequency between ${minHz} and ${maxHz} Hz` }
+        { timeout, message: `Expected telemetry frequency between ${minHz} and ${maxHz} Hz` },
       )
       .toBeGreaterThanOrEqual(minHz);
 
@@ -119,7 +123,7 @@ export class TeleopPage {
           const match = text.match(/(\d+)\s*Hz/);
           return match ? parseInt(match[1], 10) : 0;
         },
-        { timeout, message: `Expected telemetry frequency between ${minHz} and ${maxHz} Hz` }
+        { timeout, message: `Expected telemetry frequency between ${minHz} and ${maxHz} Hz` },
       )
       .toBeLessThanOrEqual(maxHz);
   }
@@ -132,7 +136,7 @@ export class TeleopPage {
           const match = text.match(/(\d+)\s*ms/);
           return match ? parseInt(match[1], 10) : 999;
         },
-        { timeout, message: `Expected telemetry latency below ${maxMs} ms` }
+        { timeout, message: `Expected telemetry latency below ${maxMs} ms` },
       )
       .toBeLessThanOrEqual(maxMs);
   }
@@ -161,7 +165,7 @@ export class TeleopPage {
         {
           timeout,
           message: 'URDF robot model failed to load into Three.js scene within timeout',
-        }
+        },
       )
       .toBe(true);
   }
@@ -173,10 +177,12 @@ export class TeleopPage {
   }
 
   async getLinkWorldPosition(
-    linkName: string
+    linkName: string,
   ): Promise<{ x: number; y: number; z: number } | null> {
     return await this.page.evaluate((name) => {
-      return window.__robot_visualizer ? window.__robot_visualizer.getLinkWorldPosition(name) : null;
+      return window.__robot_visualizer
+        ? window.__robot_visualizer.getLinkWorldPosition(name)
+        : null;
     }, linkName);
   }
 
@@ -226,7 +232,7 @@ export class TeleopPage {
   async expectLinkCoordinatesMoving(
     linkName = 'wrist_3_link',
     durationMs = 1500,
-    minDelta = 0.005
+    minDelta = 0.005,
   ): Promise<void> {
     const p1 = await this.getLinkWorldPosition(linkName);
     expect(p1).not.toBeNull();
@@ -265,12 +271,16 @@ export class TeleopPage {
         {
           timeout,
           message: `Expected sidebar readouts to sync with 3D canvas within ${toleranceRad} rad`,
-        }
+        },
       )
       .toBeLessThanOrEqual(toleranceRad);
   }
 
-  async getRendererMemoryInfo(): Promise<{ geometries: number; textures: number; calls: number } | null> {
+  async getRendererMemoryInfo(): Promise<{
+    geometries: number;
+    textures: number;
+    calls: number;
+  } | null> {
     return await this.page.evaluate(() => {
       const handle = window.__robot_visualizer;
       const info = handle?.getRendererInfo();
@@ -304,7 +314,7 @@ export class TeleopPage {
         timestamp_ns: Date.now() * 1_000_000,
         type: 'EMERGENCY_STOP',
         payload: { reason },
-      })
+      }),
     );
   }
 
@@ -352,7 +362,7 @@ export class TeleopPage {
             return state.isGrasped;
           });
         },
-        { timeout, message: `Expected palm nozzle highlight state to be ${isGrasped}` }
+        { timeout, message: `Expected palm nozzle highlight state to be ${isGrasped}` },
       )
       .toBe(isGrasped);
   }
@@ -360,7 +370,7 @@ export class TeleopPage {
   async expectRobotAtPose(
     expectedPositions: number[],
     toleranceRad = 0.05,
-    timeout = 10000
+    timeout = 10000,
   ): Promise<void> {
     await expect
       .poll(
@@ -375,7 +385,7 @@ export class TeleopPage {
           }
           return maxDiff;
         },
-        { timeout, message: `Expected robot to reach pose within ${toleranceRad} rad` }
+        { timeout, message: `Expected robot to reach pose within ${toleranceRad} rad` },
       )
       .toBeLessThanOrEqual(toleranceRad);
   }
@@ -388,7 +398,7 @@ export class TeleopPage {
             return Boolean(window.__robot_visualizer && window.__robot_visualizer.getTableMesh());
           });
         },
-        { timeout, message: 'WorkcellTable slab mesh failed to mount in 3D scene' }
+        { timeout, message: 'WorkcellTable slab mesh failed to mount in 3D scene' },
       )
       .toBe(true);
   }
@@ -405,7 +415,7 @@ export class TeleopPage {
         async () => {
           return await this.hasActiveGear();
         },
-        { timeout, message: `Expected active gear presence in 3D scene to be ${present}` }
+        { timeout, message: `Expected active gear presence in 3D scene to be ${present}` },
       )
       .toBe(present);
   }
@@ -420,7 +430,7 @@ export class TeleopPage {
     expectedX: number,
     expectedY: number,
     tolerance = 0.05,
-    timeout = 5000
+    timeout = 5000,
   ): Promise<void> {
     await expect
       .poll(
@@ -434,7 +444,7 @@ export class TeleopPage {
         {
           timeout,
           message: `Expected gearwheel mesh at (${expectedX}, ${expectedY}) within ${tolerance}m`,
-        }
+        },
       )
       .toBeLessThanOrEqual(tolerance);
   }
@@ -447,7 +457,7 @@ export class TeleopPage {
             return window.__robot_visualizer ? window.__robot_visualizer.isLockedOut() : false;
           });
         },
-        { timeout, message: `Expected visualizer isLockedOut to be ${lockedOut}` }
+        { timeout, message: `Expected visualizer isLockedOut to be ${lockedOut}` },
       )
       .toBe(lockedOut);
   }
@@ -457,7 +467,7 @@ export class TeleopPage {
       ({ targetX, targetY }) => {
         return window.__robot_visualizer?.getTableScreenCoords(targetX, targetY) ?? null;
       },
-      { targetX: x, targetY: y }
+      { targetX: x, targetY: y },
     );
 
     if (coords) {
@@ -467,7 +477,7 @@ export class TeleopPage {
         ({ targetX, targetY }) => {
           window.__robot_visualizer?.simulateClick(targetX, targetY);
         },
-        { targetX: x, targetY: y }
+        { targetX: x, targetY: y },
       );
     }
   }
@@ -477,7 +487,7 @@ export class TeleopPage {
       ({ targetX, targetY }) => {
         return window.__robot_visualizer?.getTableScreenCoords(targetX, targetY) ?? null;
       },
-      { targetX: x, targetY: y }
+      { targetX: x, targetY: y },
     );
 
     if (coords) {
@@ -487,7 +497,7 @@ export class TeleopPage {
         ({ targetX, targetY }) => {
           window.__robot_visualizer?.simulatePointerMove(targetX, targetY);
         },
-        { targetX: x, targetY: y }
+        { targetX: x, targetY: y },
       );
     }
   }
@@ -505,7 +515,7 @@ export class TeleopPage {
         async () => {
           return await this.isReticleVisible();
         },
-        { timeout, message: `Expected reticle visibility to be ${visible}` }
+        { timeout, message: `Expected reticle visibility to be ${visible}` },
       )
       .toBe(visible);
   }
@@ -529,7 +539,7 @@ export class TeleopPage {
           const val = await this.actionProgressBar.getAttribute('aria-valuenow');
           return val ? parseInt(val, 10) : 0;
         },
-        { timeout, message: `Expected action progress bar to reach at least ${minPercent}%` }
+        { timeout, message: `Expected action progress bar to reach at least ${minPercent}%` },
       )
       .toBeGreaterThanOrEqual(minPercent);
   }
@@ -541,7 +551,7 @@ export class TeleopPage {
           const val = await this.actionProgressBar.getAttribute('aria-valuenow');
           return val ? parseInt(val, 10) : 0;
         },
-        { timeout, message: 'Expected action progress bar to reach 100%' }
+        { timeout, message: 'Expected action progress bar to reach 100%' },
       )
       .toBe(100);
   }
@@ -550,7 +560,9 @@ export class TeleopPage {
     return await this.page.evaluate(() => {
       const handle = window.__robot_visualizer;
       if (!handle) return false;
-      return Boolean(handle.wasGearEverAttached ? handle.wasGearEverAttached() : handle.isGearAttached());
+      return Boolean(
+        handle.wasGearEverAttached ? handle.wasGearEverAttached() : handle.isGearAttached(),
+      );
     });
   }
 
@@ -560,7 +572,11 @@ export class TeleopPage {
         async () => {
           return await this.isGearAttached();
         },
-        { timeout, intervals: [30, 60, 100], message: `Expected gear attached to tool flange to be ${attached}` }
+        {
+          timeout,
+          intervals: [30, 60, 100],
+          message: `Expected gear attached to tool flange to be ${attached}`,
+        },
       )
       .toBe(attached);
   }
@@ -570,10 +586,12 @@ export class TeleopPage {
       .poll(
         async () => {
           return await this.page.evaluate(() => {
-            return Boolean(window.__robot_visualizer && window.__robot_visualizer.getSpindleTowerMesh());
+            return Boolean(
+              window.__robot_visualizer && window.__robot_visualizer.getSpindleTowerMesh(),
+            );
           });
         },
-        { timeout, message: 'SpindleTower fixture mesh failed to mount in 3D scene' }
+        { timeout, message: 'SpindleTower fixture mesh failed to mount in 3D scene' },
       )
       .toBe(true);
   }
@@ -590,7 +608,11 @@ export class TeleopPage {
         async () => {
           return await this.getTowerGearCount();
         },
-        { timeout, intervals: [50, 100, 200], message: `Expected ${expectedCount} gears stacked on SpindleTower` }
+        {
+          timeout,
+          intervals: [50, 100, 200],
+          message: `Expected ${expectedCount} gears stacked on SpindleTower`,
+        },
       )
       .toBe(expectedCount);
   }
@@ -605,7 +627,11 @@ export class TeleopPage {
     });
   }
 
-  async expectTowerTopGearHeight(expectedZ: number, tolerance = 0.005, timeout = 10000): Promise<void> {
+  async expectTowerTopGearHeight(
+    expectedZ: number,
+    tolerance = 0.005,
+    timeout = 10000,
+  ): Promise<void> {
     await expect
       .poll(
         async () => {
@@ -617,7 +643,7 @@ export class TeleopPage {
           timeout,
           intervals: [50, 100, 200],
           message: `Expected top gear on SpindleTower to be at z=${expectedZ}m within ${tolerance}m`,
-        }
+        },
       )
       .toBeLessThanOrEqual(tolerance);
   }

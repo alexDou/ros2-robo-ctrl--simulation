@@ -45,14 +45,14 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 
       it('rejects malformed SpawnObjectPayload', () => {
         expect(() =>
-          parseSpawnObjectPayload({ x: 'not-a-number', y: 0, z: 0, object_type: 'GEAR' })
+          parseSpawnObjectPayload({ x: 'not-a-number', y: 0, z: 0, object_type: 'GEAR' }),
         ).toThrow();
         expect(() => parseSpawnObjectPayload({ x: 0.5, y: 0 })).toThrow();
         expect(() =>
-          parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'INVALID' })
+          parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'INVALID' }),
         ).toThrow();
         expect(() =>
-          parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', extra: true })
+          parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', extra: true }),
         ).toThrow();
       });
     });
@@ -107,7 +107,7 @@ describe('Finite-float guards (semgrep ros2-float-coord)', () => {
     const { parseSpawnObjectPayload } = await import('@domain/parsers');
     for (const bad of [Infinity, -Infinity, NaN]) {
       expect(() => parseSpawnObjectPayload({ x: bad, y: 0, z: 0, object_type: 'GEAR' })).toThrow(
-        /finite|must be a number/
+        /finite|must be a number/,
       );
     }
   });

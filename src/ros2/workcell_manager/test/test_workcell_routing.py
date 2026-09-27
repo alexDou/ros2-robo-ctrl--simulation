@@ -3,13 +3,16 @@
 import pytest
 import rclpy
 from geometry_msgs.msg import Point
-
 from robot_control_interfaces.srv import (
     CommitDrop,
     GetDropSlot,
     MarkGrasped,
     SpawnObject,
 )
+from workcell_manager.workcell_node import (
+    WorkcellNode,
+)
+
 from domain import (
     BLUE_TOWER,
     GREEN_TOWER,
@@ -17,9 +20,6 @@ from domain import (
     STACK_STEP_M,
     TOWER_CAPACITY,
     WHITE_TOWER,
-)
-from workcell_manager.workcell_node import (
-    WorkcellNode,
 )
 
 
@@ -33,9 +33,7 @@ def ros_context():
 
 
 def _spawn(node, x=0.45, y=0.10, z=0.0, **classification):
-    req = SpawnObject.Request(
-        coords=Point(x=x, y=y, z=z), object_type="GEAR", **classification
-    )
+    req = SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR", **classification)
     return node.handle_spawn_object(req, SpawnObject.Response())
 
 
@@ -140,9 +138,7 @@ def test_intact_false_any_color_routes_to_bin_capped():
         slot = _reserve(node, color="WHITE", intact=False)
         assert slot.slot_index == 3 + TOWER_CAPACITY
         assert slot.overflow_occurred is False
-        assert pytest.approx(slot.drop_coords.z) == (
-            3 + TOWER_CAPACITY
-        ) * STACK_STEP_M
+        assert pytest.approx(slot.drop_coords.z) == (3 + TOWER_CAPACITY) * STACK_STEP_M
         # 7.3e owns the cap-100 recycle edge; this routing test stays below cap.
     finally:
         node.destroy_node()
@@ -206,9 +202,7 @@ def test_overflow_evicts_oldest_of_same_tower_only():
             _cycle(node, color="GREEN", intact=True)
         _cycle(node, color="WHITE", intact=True)
         _cycle(node, color="WHITE", intact=True)
-        white_before = [
-            (e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"
-        ]
+        white_before = [(e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"]
         res = _cycle(node, color="GREEN", intact=True)
         assert res.success is True
         assert res.overflow_occurred is True
@@ -216,13 +210,8 @@ def test_overflow_evicts_oldest_of_same_tower_only():
         greens = [e for e in node.processed if e["color"] == "GREEN"]
         assert len(greens) == TOWER_CAPACITY
         for i, entry in enumerate(greens):
-            assert (
-                pytest.approx(entry["z"])
-                == GREEN_TOWER[2] + i * STACK_STEP_M
-            )
-        whites = [
-            (e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"
-        ]
+            assert pytest.approx(entry["z"]) == GREEN_TOWER[2] + i * STACK_STEP_M
+        whites = [(e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"]
         assert whites == white_before
     finally:
         node.destroy_node()

@@ -2,21 +2,21 @@
 # Run: semgrep scan --config .semgrep/robot-security.yml
 rules:
   - id: gateway-validation-bypass-ok
-    languages: [rust]
+    # `languages: [rust]` + a bare match-arm AST pattern doesn't parse (semgrep's
+    # Rust grammar rejects a match arm outside a full match expression), which
+    # made this rule fail closed (semgrep --error exits nonzero on any rule
+    # parse error, before running the other 8 rules). `generic`/pattern-regex
+    # matches the exact same text with no AST needed.
+    languages: [generic]
     severity: ERROR
     message: Float-bearing command arm forwards with zero payload validation (bare Ok(())). Must deserialize typed payload and is_finite()-check every float before publish_command. (Ping/Engage/Standby carry no floats, legitimately Ok.)
     metadata:
       category: security
     patterns:
-      - pattern-either:
-          - pattern: CommandType::TrajectoryExecute => Ok(()),
-          - pattern: CommandType::SpawnObject => Ok(()),
-          - pattern: CommandType::PickAndPlaceTarget => Ok(()),
-          - pattern: CommandType::TeleopJointTarget => Ok(()),
-          - pattern: CommandType::PalmActuate => Ok(()),
+      - pattern-regex: 'CommandType::(TrajectoryExecute|SpawnObject|PickAndPlaceTarget|TeleopJointTarget|PalmActuate)\s*=>\s*Ok\(\(\)\),'
     paths:
       include:
-        - src/gateway/src/ws/validation.rs
+        - "**/src/gateway/src/ws/validation.rs"
   - id: gateway-errorframe-leaks-internal-error
     languages: [rust]
     severity: WARNING
@@ -30,7 +30,7 @@ rules:
           regex: (?s).*\{(err|val_err|e)\}.*
     paths:
       include:
-        - src/gateway/src/
+        - "**/src/gateway/src/"
   - id: fabric-topic-built-by-hand
     languages: [rust, python]
     severity: ERROR
@@ -40,9 +40,9 @@ rules:
     pattern-regex: format!\("robot/
     paths:
       include:
-        - src/
+        - "**/src/"
       exclude:
-        - src/domain/*
+        - "**/src/domain/*"
   - id: fabric-topic-built-by-hand-py
     languages: [python]
     severity: ERROR
@@ -52,9 +52,9 @@ rules:
     pattern-regex: f"robot/
     paths:
       include:
-        - src/
+        - "**/src/"
       exclude:
-        - src/domain/*
+        - "**/src/domain/*"
   - id: ros2-float-coord-without-finite-guard
     languages: [python]
     severity: WARNING
@@ -68,9 +68,9 @@ rules:
           regex: (?s).*(payload|coords|request|positions).*
     paths:
       include:
-        - src/ros2/arm_controller/arm_controller/edge_bridge/commands.py
-        - src/ros2/arm_controller/arm_controller/edge_bridge/actions.py
-        - src/ros2/workcell_manager/workcell_manager/workcell_node.py
+        - "**/src/ros2/arm_controller/arm_controller/edge_bridge/commands.py"
+        - "**/src/ros2/arm_controller/arm_controller/edge_bridge/actions.py"
+        - "**/src/ros2/workcell_manager/workcell_manager/workcell_node.py"
   - id: ros2-internal-error-to-fabric
     languages: [python]
     severity: WARNING
@@ -87,7 +87,7 @@ rules:
                   regex: (?s).*\{(err|e)\}.*
     paths:
       include:
-        - src/ros2/
+        - "**/src/ros2/"
   - id: py-dangerous-deserialization
     languages: [python]
     severity: ERROR
@@ -103,9 +103,9 @@ rules:
           - pattern: exec(...)
     paths:
       include:
-        - src/ros2/
-        - src/domain/
-        - scripts/
+        - "**/src/ros2/"
+        - "**/src/domain/"
+        - "**/scripts/"
   - id: py-shell-execution
     languages: [python]
     severity: ERROR
@@ -118,9 +118,9 @@ rules:
           - pattern: subprocess.$FN(..., shell=True, ...)
     paths:
       include:
-        - src/ros2/
-        - src/domain/
-        - scripts/
+        - "**/src/ros2/"
+        - "**/src/domain/"
+        - "**/scripts/"
   - id: web-html-injection-sink
     languages: [typescript, javascript]
     severity: ERROR
@@ -134,4 +134,4 @@ rules:
           - pattern: eval(...)
     paths:
       include:
-        - web/src/
+        - "**/web/src/"

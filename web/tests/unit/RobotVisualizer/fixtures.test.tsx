@@ -54,8 +54,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     vi.restoreAllMocks();
   });
 
-
-
   describe('Unit 5.1: 3D Workcell Table, Raycaster & Procedural Gear Ingestion', () => {
     let fakeTool0Link: THREE.Object3D;
     let fakeRobot: any;
@@ -88,7 +86,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -115,7 +113,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(tableMesh.position.z + thickness / 2).toBeCloseTo(0.0, 4);
 
       // Center position
-      expect(tableMesh.position.x).toBeCloseTo(0.55, 2);
+      expect(tableMesh.position.x).toBeCloseTo(0.5, 2);
       expect(tableMesh.position.y).toBeCloseTo(0.0, 2);
     });
 
@@ -131,7 +129,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -167,7 +165,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -181,13 +179,12 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(mat.name).toBe('workcell-landing-mat');
 
       const matGeom = mat.geometry as THREE.BoxGeometry;
-      expect(matGeom.parameters.width).toBeCloseTo(0.30, 2);
+      expect(matGeom.parameters.width).toBeCloseTo(0.2, 2);
       expect(matGeom.parameters.height).toBeCloseTo(0.44, 2);
       expect(matGeom.parameters.depth).toBeCloseTo(0.004, 3);
 
       const matMat = mat.material as THREE.MeshStandardMaterial;
       expect(matMat.color.getHex()).toBe(0x0f172a);
     });
-
   });
 });

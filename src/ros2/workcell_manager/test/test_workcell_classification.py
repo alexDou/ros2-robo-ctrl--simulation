@@ -3,18 +3,18 @@
 import pytest
 import rclpy
 from geometry_msgs.msg import Point
-
 from robot_control_interfaces.srv import (
     CommitDrop,
     GetDropSlot,
     MarkGrasped,
     SpawnObject,
 )
-from domain import (
-    SCRAP_BIN,
-)
 from workcell_manager.workcell_node import (
     WorkcellNode,
+)
+
+from domain import (
+    SCRAP_BIN,
 )
 
 
@@ -28,9 +28,7 @@ def ros_context():
 
 
 def _spawn(node, x=0.45, y=0.10, z=0.0, **classification):
-    req = SpawnObject.Request(
-        coords=Point(x=x, y=y, z=z), object_type="GEAR", **classification
-    )
+    req = SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR", **classification)
     return node.handle_spawn_object(req, SpawnObject.Response())
 
 
@@ -109,7 +107,9 @@ def test_get_drop_slot_accepts_classification_response_unchanged():
         assert pytest.approx(out.drop_coords.x) == SCRAP_BIN[0]
         assert pytest.approx(out.drop_coords.y) == SCRAP_BIN[1]
         assert node.inventory == 0
-        out2 = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
+        out2 = node.handle_get_drop_slot(
+            GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
+        )
         assert out2.slot_index == 0
         assert out2.overflow_occurred is False
     finally:

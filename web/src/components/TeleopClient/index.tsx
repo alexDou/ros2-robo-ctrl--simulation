@@ -117,7 +117,9 @@ export function TeleopClient({
           : `Robot ${effectiveRobotState}: actions resume when IDLE.`;
 
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '1.5rem', fontFamily: 'sans-serif' }}>
+    <div
+      style={{ maxWidth: '1440px', margin: '0 auto', padding: '1.5rem', fontFamily: 'sans-serif' }}
+    >
       <style>{`
         .teleop-split-layout {
           display: flex;
@@ -151,7 +153,14 @@ export function TeleopClient({
           }
         }
       `}</style>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem',
+        }}
+      >
         <div>
           <h1 style={{ margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>Teleop Control — {robotId}</h1>
           <p style={{ margin: 0, color: '#6b7280', fontSize: '0.875rem' }}>Gateway: {wsUrl}</p>
@@ -192,7 +201,16 @@ export function TeleopClient({
             position: 'relative',
           }}
         >
-          <div style={{ flex: 1, width: '100%', minHeight: '480px', position: 'relative', overflow: 'hidden' }}>
+          {actionProgress && <ActionProgressBar progress={actionProgress} />}
+          <div
+            style={{
+              flex: 1,
+              width: '100%',
+              minHeight: '480px',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
             <RobotVisualizer
               urdfUrl={urdfUrl}
               assetBaseUrl={assetBaseUrl}
@@ -204,7 +222,6 @@ export function TeleopClient({
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}
             />
-            {actionProgress && <ActionProgressBar progress={actionProgress} />}
           </div>
           <OperatorToolbar
             robotState={effectiveRobotState ?? 'STANDBY'}

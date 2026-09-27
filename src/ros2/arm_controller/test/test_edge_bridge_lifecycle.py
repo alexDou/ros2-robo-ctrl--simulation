@@ -12,12 +12,14 @@ Covers Unit 6.5-Bugfix.2.1 (hand-sim-o5es):
 - Schema validation error frame handling
 """
 
+import contextlib
 import math
 import threading
 import time
 
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from control_msgs.action import FollowJointTrajectory
-from rclpy.action import ActionServer, CancelResponse
+from rclpy.action import ActionServer
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.parameter import Parameter
@@ -35,15 +37,15 @@ from domain import (
     robot_telemetry_topic,
 )
 
-from arm_controller.edge_bridge_node import EdgeBridgeNode
-
 
 def test_edge_bridge_joint_states_subscriber(make_switch_server):
     """Asserts /joint_states message with shuffled names maps to canonical UR5e joint order."""
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-arm-js"),
-            Parameter("joint_states_topic", Parameter.Type.STRING, "/test/edge_bridge/joint_states"),
+            Parameter(
+                "joint_states_topic", Parameter.Type.STRING, "/test/edge_bridge/joint_states"
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
             Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
@@ -95,15 +97,13 @@ def test_edge_bridge_joint_states_subscriber(make_switch_server):
         time.sleep(0.1)
 
         expected_canonical = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-        for curr, exp in zip(node.current_joints, expected_canonical):
+        for curr, exp in zip(node.current_joints, expected_canonical, strict=True):
             assert math.isclose(curr, exp, abs_tol=1e-4)
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         pub_node.destroy_node()
         node.close()
         node.destroy_node()
@@ -131,7 +131,11 @@ def test_edge_bridge_startup_homing(make_switch_server):
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-arm-homing"),
-            Parameter("controller_action_name", Parameter.Type.STRING, "/test_controller/follow_joint_trajectory_homing"),
+            Parameter(
+                "controller_action_name",
+                Parameter.Type.STRING,
+                "/test_controller/follow_joint_trajectory_homing",
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, True),
             Parameter("traj_connect_timeout", Parameter.Type.DOUBLE, 2.0),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.05),
@@ -169,17 +173,15 @@ def test_edge_bridge_startup_homing(make_switch_server):
         assert goal_req.trajectory.joint_names == CANONICAL_UR5E_JOINTS
         assert len(goal_req.trajectory.points) == 1
         target_pt = goal_req.trajectory.points[0].positions
-        for target_q, home_q in zip(target_pt, CANONICAL_POSES[PoseName.HOME]):
+        for target_q, home_q in zip(target_pt, CANONICAL_POSES[PoseName.HOME], strict=True):
             assert math.isclose(target_q, home_q, abs_tol=1e-4)
 
         assert node.robot_state == RobotState.IDLE
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_traj_server.destroy()
         mock_controller.destroy_node()
         node.close()

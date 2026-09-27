@@ -13,6 +13,11 @@
 //!    arrives. `expect_rate_limited` sends the pair back-to-back (no await in
 //!    between) and retries with a settle delay, so a scheduling stall becomes
 //!    a retry instead of a failure.
+//!
+//! `pub(crate)` here is required by `unreachable_pub` (nothing outside this
+//! test binary can see these helpers), which puts it at odds with
+//! `redundant_pub_crate`'s "just use `pub`" suggestion for the same items.
+#![allow(clippy::redundant_pub_crate)]
 
 use futures_util::{SinkExt, StreamExt};
 use gateway::domain::{ErrorFrame, RobotCommand};
@@ -23,7 +28,7 @@ use tokio_tungstenite::tungstenite::Message;
 use tokio_tungstenite::WebSocketStream;
 
 /// Receives the next client command, skipping gateway ENGAGE/STANDBY frames.
-pub(super) async fn recv_client_command(
+pub(crate) async fn recv_client_command(
     rx: &mut broadcast::Receiver<RobotCommand>,
 ) -> RobotCommand {
     loop {
@@ -42,7 +47,7 @@ pub(super) async fn recv_client_command(
 /// Waits briefly first: a throttled/malformed frame may still be in flight
 /// (server hasn't processed it yet) when called, so an instant `try_recv`
 /// drain can pass vacuously.
-pub(super) async fn assert_no_client_command(
+pub(crate) async fn assert_no_client_command(
     rx: &mut broadcast::Receiver<RobotCommand>,
     msg: &str,
 ) {
@@ -63,7 +68,7 @@ pub(super) async fn assert_no_client_command(
 /// gap stays far below the 50ms limiter window. If a scheduling stall still
 /// lets `second` through (no error frame within budget), the forwarded frame
 /// is drained and the pair retried after a settle delay (max 3 attempts).
-pub(super) async fn expect_rate_limited<S>(
+pub(crate) async fn expect_rate_limited<S>(
     ws: &mut WebSocketStream<S>,
     rx: &mut broadcast::Receiver<RobotCommand>,
     first: &RobotCommand,

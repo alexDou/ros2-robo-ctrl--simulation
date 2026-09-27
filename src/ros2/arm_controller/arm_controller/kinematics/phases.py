@@ -1,8 +1,9 @@
 """Action feedback phases for pick-and-place execution."""
 
-from enum import Enum
+from enum import StrEnum
 
-class ActionPhase(str, Enum):
+
+class ActionPhase(StrEnum):
     """Real-time action feedback phases for pick-and-place execution."""
 
     APPROACHING = "APPROACHING"

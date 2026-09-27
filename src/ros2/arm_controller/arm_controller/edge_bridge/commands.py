@@ -1,19 +1,26 @@
 """Command ingress: payload validation + per-type dispatch."""
 
 import math
-from typing import Any, Optional
+from typing import Any
 
 from geometry_msgs.msg import Point
-from domain import (
-    ClearWorkspacePayload, CommandType, PickAndPlaceTargetPayload, RobotCommand,
-    RobotState, RobotTelemetryEvent, SpawnObjectPayload, TrajectoryExecutePayload,
-    CANONICAL_POSES,
-)
 from robot_control_interfaces.srv import ClearWorkspace, SpawnObject
+
+from domain import (
+    CANONICAL_POSES,
+    ClearWorkspacePayload,
+    CommandType,
+    PickAndPlaceTargetPayload,
+    RobotCommand,
+    RobotState,
+    RobotTelemetryEvent,
+    SpawnObjectPayload,
+    TrajectoryExecutePayload,
+)
 
 
 class EdgeBridgeCommandsMixin:
-    def handle_command_payload(self, raw_payload: str | bytes) -> Optional[RobotTelemetryEvent]:
+    def handle_command_payload(self, raw_payload: str | bytes) -> RobotTelemetryEvent | None:
         """Validates JSON schema and dispatches inbound RobotCommand."""
         if isinstance(raw_payload, bytes):
             try:
@@ -32,7 +39,7 @@ class EdgeBridgeCommandsMixin:
 
         return self.handle_command(command)
 
-    def handle_command(self, command: RobotCommand) -> Optional[RobotTelemetryEvent]:
+    def handle_command(self, command: RobotCommand) -> RobotTelemetryEvent | None:
         """Processes validated RobotCommand according to operational lifecycle."""
         self.get_logger().info(
             f"Received {command.type.value} command '{command.command_id}' from '{command.sender_id}'"
@@ -189,7 +196,9 @@ class EdgeBridgeCommandsMixin:
                     return
                 # Auto-dispatch: click IS dispatch; UI sends one command.
                 pnp_payload = PickAndPlaceTargetPayload(
-                    pick_x=coords[0], pick_y=coords[1], pick_z=coords[2],
+                    pick_x=coords[0],
+                    pick_y=coords[1],
+                    pick_z=coords[2],
                 )
                 with self._lock:
                     if self._robot_state != RobotState.IDLE:
@@ -281,9 +290,7 @@ class EdgeBridgeCommandsMixin:
                 self._grasp_notified = False
                 self._commit_notified = False
 
-            return self._dispatch_pick_and_place_goal(
-                payload, command_id=command.command_id
-            )
+            return self._dispatch_pick_and_place_goal(payload, command_id=command.command_id)
 
         self.get_logger().warning(f"Unsupported command type: {command.type.value}")
         self._publish_error(
@@ -292,8 +299,7 @@ class EdgeBridgeCommandsMixin:
         )
         return None
 
-
-    def handle_emergency_stop(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+    def handle_emergency_stop(self, command_id: str | None = None) -> RobotTelemetryEvent:
         """Cancels active trajectory and PickAndPlace action immediately and transitions to FAULT state."""
         self.get_logger().warn(f"EMERGENCY STOP TRIGGERED (cmd={command_id})")
 
@@ -318,7 +324,7 @@ class EdgeBridgeCommandsMixin:
 
         return self.publish_telemetry(command_id=command_id)
 
-    def handle_reset_fault(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+    def handle_reset_fault(self, command_id: str | None = None) -> RobotTelemetryEvent:
         """Clears FAULT state and returns to IDLE."""
         self.get_logger().info(f"RESET FAULT TRIGGERED (cmd={command_id})")
         with self._lock:
@@ -326,4 +332,3 @@ class EdgeBridgeCommandsMixin:
                 self._robot_state = RobotState.IDLE
 
         return self.publish_telemetry(command_id=command_id)
-

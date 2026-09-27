@@ -69,9 +69,7 @@ async fn test_ws_spawn_object_and_clear_workspace_handling_and_validation() {
     assert_eq!(rx_spawn.r#type, CommandType::SpawnObject);
     // Unit 7.2: gateway enriches after blind validation; fabric side carries
     // color + intact (blind-shape assertions cover inbound only).
-    let color = rx_spawn.payload["color"]
-        .as_str()
-        .expect("enriched color");
+    let color = rx_spawn.payload["color"].as_str().expect("enriched color");
     assert!(
         matches!(color, "WHITE" | "GREEN" | "BLUE"),
         "unexpected enriched color {color}"

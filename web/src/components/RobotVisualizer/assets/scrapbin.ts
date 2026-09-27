@@ -17,13 +17,21 @@ export function createScrapBin(): ScrapBinProceduralAssets {
 
   // Open box/chute: floor + 4 low walls (0.12m x 0.10m footprint, 0.05m walls).
   const floorGeom = new THREE.BoxGeometry(0.12, 0.1, 0.006);
-  const floorMat = new THREE.MeshStandardMaterial({ color: 0x7f1d1d, metalness: 0.4, roughness: 0.6 });
+  const floorMat = new THREE.MeshStandardMaterial({
+    color: 0x7f1d1d,
+    metalness: 0.4,
+    roughness: 0.6,
+  });
   const floorMesh = new THREE.Mesh(floorGeom, floorMat);
   floorMesh.name = 'scrap-bin-floor';
   floorMesh.position.set(0, 0, 0.003);
   group.add(floorMesh);
 
-  const wallMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, metalness: 0.4, roughness: 0.55 });
+  const wallMat = new THREE.MeshStandardMaterial({
+    color: 0x991b1b,
+    metalness: 0.4,
+    roughness: 0.55,
+  });
   const wallGeoms: THREE.BoxGeometry[] = [];
   const mkWall = (w: number, d: number, x: number, y: number, i: number) => {
     const g = new THREE.BoxGeometry(w, d, 0.05);
@@ -40,7 +48,11 @@ export function createScrapBin(): ScrapBinProceduralAssets {
 
   // Fill marker: visible only when bin holds rejects (empty vs has-items).
   const fillGeom = new THREE.BoxGeometry(0.1, 0.08, 0.03);
-  const fillMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.3, roughness: 0.6 });
+  const fillMat = new THREE.MeshStandardMaterial({
+    color: 0x475569,
+    metalness: 0.3,
+    roughness: 0.6,
+  });
   const fillMesh = new THREE.Mesh(fillGeom, fillMat);
   fillMesh.name = 'scrap-bin-fill';
   fillMesh.position.set(0, 0, 0.02);

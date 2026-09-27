@@ -146,6 +146,9 @@ impl MemoryFabric {
     }
 
     /// Publishes a PickAndPlace action goal for `robot_id`.
+    ///
+    /// # Errors
+    /// Never errors; returns [`FabricError`] only to match the port facade's signature.
     pub fn publish_action_goal(
         &self,
         robot_id: &str,
@@ -161,6 +164,9 @@ impl MemoryFabric {
     }
 
     /// Subscribes to PickAndPlace action goals for `robot_id`.
+    ///
+    /// # Errors
+    /// Never errors; returns [`FabricError`] only to match the port facade's signature.
     pub fn subscribe_action_goal(
         &self,
         robot_id: &str,
@@ -170,6 +176,9 @@ impl MemoryFabric {
     }
 
     /// Publishes Action feedback for `robot_id`.
+    ///
+    /// # Errors
+    /// Never errors; returns [`FabricError`] only to match the port facade's signature.
     pub fn publish_action_feedback(
         &self,
         robot_id: &str,
@@ -181,6 +190,9 @@ impl MemoryFabric {
     }
 
     /// Subscribes to Action feedback for `robot_id`.
+    ///
+    /// # Errors
+    /// Never errors; returns [`FabricError`] only to match the port facade's signature.
     pub fn subscribe_action_feedback(
         &self,
         robot_id: &str,

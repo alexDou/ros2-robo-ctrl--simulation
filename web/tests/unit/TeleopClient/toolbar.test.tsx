@@ -52,11 +52,15 @@ class MockWebSocket {
       this.onerror(new Event('error'));
     }
     if (this.onclose) {
-      this.onclose(new CloseEvent('close', { code: isConflict ? 4409 : 1006, reason: isConflict ? 'Conflict' : 'Abnormal Closure' }));
+      this.onclose(
+        new CloseEvent('close', {
+          code: isConflict ? 4409 : 1006,
+          reason: isConflict ? 'Conflict' : 'Abnormal Closure',
+        }),
+      );
     }
   }
 }
-
 
 describe('TeleopClient Component', () => {
   let originalWebSocket: typeof WebSocket;
@@ -73,7 +77,6 @@ describe('TeleopClient Component', () => {
     vi.restoreAllMocks();
   });
 
-
   describe('Unit 4.4: Operator Toolbar & Lifecycle Controls', () => {
     beforeEach(() => {
       vi.useFakeTimers();
@@ -84,9 +87,14 @@ describe('TeleopClient Component', () => {
     });
 
     it('renders operator toolbar with Home pose only, no palm/E-STOP/Ready/Inspect, connect toggle in toolbar', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
@@ -107,23 +115,30 @@ describe('TeleopClient Component', () => {
     });
 
     it('dispatches TRAJECTORY_EXECUTE HOME command when clicking Home pose button', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
 
       // B.7 seed: handshake complete -> IDLE enables toolbar
       act(() => {
-              ws.simulateMessage(JSON.stringify({
-                timestamp_ns: '1700000000000000000',
-                robot_state: RobotState.IDLE,
-                joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-                palm_state: { is_grasped: false },
-              }));
-            });
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
 
       // Click Home button
       const homeBtn = screen.getByTestId('pose-home-button');
@@ -135,9 +150,14 @@ describe('TeleopClient Component', () => {
     });
 
     it('toggles Connect/Disconnect from the toolbar right slot without bottom buttons', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
       // Connect lives in toolbar right slot pre-connection
-      fireEvent.click(screen.getByTestId("connect-button"));
+      fireEvent.click(screen.getByTestId('connect-button'));
       const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
@@ -154,30 +174,37 @@ describe('TeleopClient Component', () => {
     });
 
     it('enforces UI interlocks: disables Home when EXECUTING, enables Reset Fault only on FAULT', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });
 
       // B.7 seed: handshake complete -> IDLE enables toolbar
       act(() => {
-              ws.simulateMessage(JSON.stringify({
-                timestamp_ns: '1700000000000000000',
-                robot_state: RobotState.IDLE,
-                joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
-                palm_state: { is_grasped: false },
-              }));
-            });
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
 
       // 1. Robot is EXECUTING
       const telemExecuting: RobotTelemetryEvent = {
         timestamp_ns: '1700000000000000000',
         robot_state: RobotState.EXECUTING,
         joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -194,7 +221,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000100000000',
         robot_state: RobotState.FAULT,
         joint_positions: [0, 0, 0, 0, 0, 0],
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -213,9 +240,14 @@ describe('TeleopClient Component', () => {
     });
 
     it('displays transient 2-second error banner on inbound ErrorFrame', () => {
-      render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
-    const ws = MockWebSocket.instances[0];
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
       act(() => {
         ws.simulateOpen();
       });

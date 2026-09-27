@@ -60,7 +60,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     cbs.forEach((cb) => cb(performance.now()));
   };
 
-
   describe('Unit 4.1: Dexterous Palm 3D Model & Kinematic Flange Mounting', () => {
     let fakeTool0Link: THREE.Object3D;
     let fakeRobot: any;
@@ -93,7 +92,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -130,7 +129,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             controlsFactory={() => mockControls}
             telemetryBufferRef={telemetryBufferRef}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -180,7 +179,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
         unmountFn = res.unmount;
       });

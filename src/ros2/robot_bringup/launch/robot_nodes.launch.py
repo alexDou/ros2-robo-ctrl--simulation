@@ -31,13 +31,11 @@ Per ADR 0004 & Unit Refactoring-A (hand-sim-bjcw):
 """
 
 import os
-from typing import List
 
 from ament_index_python.packages import (
     PackageNotFoundError,
     get_package_share_directory,
 )
-
 from launch import LaunchContext, LaunchDescription, LaunchDescriptionEntity
 from launch.actions import (
     DeclareLaunchArgument,
@@ -51,67 +49,64 @@ from launch.substitutions import (
     LaunchConfiguration,
     PathJoinSubstitution,
 )
-
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
-def launch_setup(
-    context: LaunchContext, *args, **kwargs
-) -> List[LaunchDescriptionEntity]:
+def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescriptionEntity]:
     """Evaluate launch configurations and build ROS2 node graph."""
-    use_fake_val = LaunchConfiguration('use_fake_hardware').perform(context)
-    use_fake_hardware = use_fake_val.lower() in ('true', '1', 'yes')
-    ur_type = LaunchConfiguration('ur_type').perform(context)
-    robot_ip = LaunchConfiguration('robot_ip').perform(context)
-    controllers_file = LaunchConfiguration('controllers_file').perform(context)
-    robot_id = LaunchConfiguration('robot_id').perform(context)
+    use_fake_val = LaunchConfiguration("use_fake_hardware").perform(context)
+    use_fake_hardware = use_fake_val.lower() in ("true", "1", "yes")
+    ur_type = LaunchConfiguration("ur_type").perform(context)
+    robot_ip = LaunchConfiguration("robot_ip").perform(context)
+    controllers_file = LaunchConfiguration("controllers_file").perform(context)
+    robot_id = LaunchConfiguration("robot_id").perform(context)
 
-    if not use_fake_hardware and controllers_file.endswith('ur_controllers.yaml'):
+    if not use_fake_hardware and controllers_file.endswith("ur_controllers.yaml"):
         # Default sim config is 5 Hz; physical UR needs 500 Hz RTDE loop.
         controllers_file = controllers_file.replace(
-            'ur_controllers.yaml', 'ur_controllers_real.yaml'
+            "ur_controllers.yaml", "ur_controllers_real.yaml"
         )
 
-    entities: List[LaunchDescriptionEntity] = []
+    entities: list[LaunchDescriptionEntity] = []
 
     if use_fake_hardware:
         # 1. Generate URDF with GenericSystem mock hardware
         xacro_file = PathJoinSubstitution(
             [
-                FindPackageShare('ur_description'),
-                'urdf',
-                'ur_mocked.urdf.xacro',
+                FindPackageShare("ur_description"),
+                "urdf",
+                "ur_mocked.urdf.xacro",
             ]
         )
         robot_description_content = Command(
             [
-                FindExecutable(name='xacro'),
-                ' ',
+                FindExecutable(name="xacro"),
+                " ",
                 xacro_file,
-                ' ',
-                f'name:={ur_type}',
-                ' ',
-                f'ur_type:={ur_type}',
+                " ",
+                f"name:={ur_type}",
+                " ",
+                f"ur_type:={ur_type}",
             ]
         )
-        robot_description = {'robot_description': robot_description_content}
+        robot_description = {"robot_description": robot_description_content}
 
         # 2. Robot state publisher
         robot_state_publisher_node = Node(
-            package='robot_state_publisher',
-            executable='robot_state_publisher',
-            output='both',
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            output="both",
             parameters=[robot_description],
         )
         entities.append(robot_state_publisher_node)
 
         # 3. Controller Manager (ros2_control_node at 5 Hz sim; 500 Hz only for real UR)
         control_node = Node(
-            package='controller_manager',
-            executable='ros2_control_node',
+            package="controller_manager",
+            executable="ros2_control_node",
             parameters=[controllers_file, robot_description],
-            output='both',
+            output="both",
         )
         entities.append(control_node)
 
@@ -120,86 +115,82 @@ def launch_setup(
         # handshake (Gateway WS connect) via /controller_manager/switch_controller,
         # and deactivates again on STANDBY. Parked = zero /joint_states traffic.
         jsb_spawner = Node(
-            package='controller_manager',
-            executable='spawner',
+            package="controller_manager",
+            executable="spawner",
             arguments=[
-                'joint_state_broadcaster',
-                '--controller-manager',
-                '/controller_manager',
-                '--controller-manager-timeout',
-                '30',
-                '--inactive',
+                "joint_state_broadcaster",
+                "--controller-manager",
+                "/controller_manager",
+                "--controller-manager-timeout",
+                "30",
+                "--inactive",
             ],
-            output='both',
+            output="both",
         )
         entities.append(jsb_spawner)
 
         sjtc_spawner = Node(
-            package='controller_manager',
-            executable='spawner',
+            package="controller_manager",
+            executable="spawner",
             arguments=[
-                'scaled_joint_trajectory_controller',
-                '--controller-manager',
-                '/controller_manager',
-                '--controller-manager-timeout',
-                '30',
-                '--inactive',
+                "scaled_joint_trajectory_controller",
+                "--controller-manager",
+                "/controller_manager",
+                "--controller-manager-timeout",
+                "30",
+                "--inactive",
             ],
-            output='both',
+            output="both",
         )
         entities.append(sjtc_spawner)
     else:
         # Production mode: Physical UR robot driver
         try:
-            ur_driver_share = get_package_share_directory('ur_robot_driver')
+            ur_driver_share = get_package_share_directory("ur_robot_driver")
             driver_launch = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(
-                    os.path.join(
-                        ur_driver_share, 'launch', 'ur_control.launch.py'
-                    )
+                    os.path.join(ur_driver_share, "launch", "ur_control.launch.py")
                 ),
                 launch_arguments={
-                    'ur_type': ur_type,
-                    'robot_ip': robot_ip,
-                    'use_fake_hardware': 'false',
-                    'initial_joint_controller': (
-                        'scaled_joint_trajectory_controller'
-                    ),
-                    'controllers_file': controllers_file,
+                    "ur_type": ur_type,
+                    "robot_ip": robot_ip,
+                    "use_fake_hardware": "false",
+                    "initial_joint_controller": ("scaled_joint_trajectory_controller"),
+                    "controllers_file": controllers_file,
                 }.items(),
             )
             entities.append(driver_launch)
         except PackageNotFoundError as err:
             raise RuntimeError(
-                'Physical UR hardware requested (use_fake_hardware=false), '
-                f'but ur_robot_driver is not installed: {err}'
-            )
+                "Physical UR hardware requested (use_fake_hardware=false), "
+                f"but ur_robot_driver is not installed: {err}"
+            ) from err
 
     # 5. Standalone Workcell Node
     workcell_node = Node(
-        package='workcell_manager',
-        executable='workcell_node',
-        name='workcell_node',
-        output='both',
+        package="workcell_manager",
+        executable="workcell_node",
+        name="workcell_node",
+        output="both",
     )
     entities.append(workcell_node)
 
     # 6. Standalone Arm Controller Node
     arm_controller_node = Node(
-        package='arm_controller',
-        executable='arm_controller_node',
-        name='arm_controller_node',
-        output='both',
+        package="arm_controller",
+        executable="arm_controller_node",
+        name="arm_controller_node",
+        output="both",
     )
     entities.append(arm_controller_node)
 
     # 7. Edge Bridge Node (Zenoh DataFabric command bridge)
     edge_bridge_node = Node(
-        package='arm_controller',
-        executable='edge_bridge_node',
-        name='edge_bridge_node',
-        output='both',
-        parameters=[{'robot_id': robot_id}],
+        package="arm_controller",
+        executable="edge_bridge_node",
+        name="edge_bridge_node",
+        output="both",
+        parameters=[{"robot_id": robot_id}],
     )
     entities.append(edge_bridge_node)
 
@@ -210,43 +201,40 @@ def generate_launch_description() -> LaunchDescription:
     """Generate launch description with arguments and opaque launcher."""
     default_controllers = PathJoinSubstitution(
         [
-            FindPackageShare('robot_bringup'),
-            'config',
-            'ur_controllers.yaml',
+            FindPackageShare("robot_bringup"),
+            "config",
+            "ur_controllers.yaml",
         ]
     )
 
     declared_arguments = [
         DeclareLaunchArgument(
-            'use_fake_hardware',
-            default_value='true',
+            "use_fake_hardware",
+            default_value="true",
             description=(
-                'Start robot with fake hardware (GenericSystem mock) '
-                'if true, or physical UR driver'
+                "Start robot with fake hardware (GenericSystem mock) if true, or physical UR driver"
             ),
         ),
         DeclareLaunchArgument(
-            'ur_type',
-            default_value='ur5e',
-            description='Type of UR robot (ur3, ur5, ur5e, ur10, ur10e)',
+            "ur_type",
+            default_value="ur5e",
+            description="Type of UR robot (ur3, ur5, ur5e, ur10, ur10e)",
         ),
         DeclareLaunchArgument(
-            'robot_id',
-            default_value='arm-ur5',
-            description='Unique robotic identifier for DataFabric topics and sessions',
+            "robot_id",
+            default_value="arm-ur5",
+            description="Unique robotic identifier for DataFabric topics and sessions",
         ),
         DeclareLaunchArgument(
-            'robot_ip',
-            default_value='192.168.1.100',
-            description='IP address of physical Universal Robot',
+            "robot_ip",
+            default_value="192.168.1.100",
+            description="IP address of physical Universal Robot",
         ),
         DeclareLaunchArgument(
-            'controllers_file',
+            "controllers_file",
             default_value=default_controllers,
-            description='Path to controller configurations YAML file',
+            description="Path to controller configurations YAML file",
         ),
     ]
 
-    return LaunchDescription(
-        declared_arguments + [OpaqueFunction(function=launch_setup)]
-    )
+    return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

@@ -15,7 +15,7 @@ export function createWorkcellTable(): TableProceduralAssets {
   const slabSizeX = 0.8;
   const slabSizeY = 0.6;
   const thickness = 0.04;
-  const centerX = 0.55;
+  const centerX = 0.5;
   const centerY = 0.0;
 
   const tableGeom = new THREE.BoxGeometry(slabSizeX, slabSizeY, thickness);
@@ -56,23 +56,23 @@ export function createWorkcellTable(): TableProceduralAssets {
   }
 
   const bounds = {
-    minX: centerX - slabSizeX / 2, // 0.15
-    maxX: centerX + slabSizeX / 2, // 0.95
+    minX: centerX - slabSizeX / 2, // 0.10
+    maxX: centerX + slabSizeX / 2, // 0.90
     minY: centerY - slabSizeY / 2, // -0.3
     maxY: centerY + slabSizeY / 2, // 0.3
   };
 
   // Dedicated landing mat across the reachable gear ingestion area (0.40m <= R <= 0.80m)
   const matBounds = {
-    minX: 0.40,
-    maxX: 0.70,
+    minX: 0.4,
+    maxX: 0.6,
     minY: -0.22,
     maxY: 0.22,
   };
-  const matSizeX = matBounds.maxX - matBounds.minX; // 0.30m
+  const matSizeX = matBounds.maxX - matBounds.minX; // 0.20m
   const matSizeY = matBounds.maxY - matBounds.minY; // 0.44m
   const matThickness = 0.004;
-  const matCenterX = (matBounds.minX + matBounds.maxX) / 2; // 0.55m
+  const matCenterX = (matBounds.minX + matBounds.maxX) / 2; // 0.50m
   const matCenterY = 0.0;
 
   const matGeom = new THREE.BoxGeometry(matSizeX, matSizeY, matThickness);

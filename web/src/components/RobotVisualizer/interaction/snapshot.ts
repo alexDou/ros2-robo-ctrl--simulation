@@ -4,7 +4,11 @@ import type { WorkcellSnapshotView, TelemetryBufferLike } from '@/components/Rob
 import type { GearwheelProceduralAssets } from '@/components/RobotVisualizer/assets/gear';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
-import { createProceduralGearwheel, setGearwheelColor, setGearwheelIntact } from '@/components/RobotVisualizer/assets/gear';
+import {
+  createProceduralGearwheel,
+  setGearwheelColor,
+  setGearwheelIntact,
+} from '@/components/RobotVisualizer/assets/gear';
 import { GRASP_RIDE_OFFSET_Z_M } from '@/components/RobotVisualizer/constants';
 
 export interface SnapshotStore {

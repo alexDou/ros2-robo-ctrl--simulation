@@ -115,13 +115,15 @@ describe('MockGateway', () => {
     });
 
     const pingId = `ping-${Date.now()}`;
-    ws.send(JSON.stringify({
-      command_id: pingId,
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'PING',
-      payload: {},
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: pingId,
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'PING',
+        payload: {},
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 100));
     expect(gateway.getCapturedLogs()).toContain('Received PING command');
@@ -145,13 +147,15 @@ describe('MockGateway', () => {
       }
     });
 
-    ws.send(JSON.stringify({
-      command_id: 'traj-1',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'TRAJECTORY_EXECUTE',
-      payload: { pose_name: 'READY' },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'traj-1',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'TRAJECTORY_EXECUTE',
+        payload: { pose_name: 'READY' },
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 600));
 
@@ -169,35 +173,41 @@ describe('MockGateway', () => {
       ws.on('error', reject);
     });
 
-    ws.send(JSON.stringify({
-      command_id: 'traj-2',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'TRAJECTORY_EXECUTE',
-      payload: { pose_name: 'HOME' },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'traj-2',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'TRAJECTORY_EXECUTE',
+        payload: { pose_name: 'HOME' },
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 100));
 
-    ws.send(JSON.stringify({
-      command_id: 'estop-1',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'EMERGENCY_STOP',
-      payload: { reason: 'Test E-Stop' },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'estop-1',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'EMERGENCY_STOP',
+        payload: { reason: 'Test E-Stop' },
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 100));
     expect(gateway.getRobotState()).toBe('FAULT');
 
     // Reset Fault
-    ws.send(JSON.stringify({
-      command_id: 'reset-1',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'RESET_FAULT',
-      payload: {},
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'reset-1',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'RESET_FAULT',
+        payload: {},
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 100));
     expect(gateway.getRobotState()).toBe('IDLE');
@@ -212,24 +222,28 @@ describe('MockGateway', () => {
       ws.on('error', reject);
     });
 
-    ws.send(JSON.stringify({
-      command_id: 'palm-1',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'PALM_ACTUATE',
-      payload: { action: 'GRASP' },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'palm-1',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'PALM_ACTUATE',
+        payload: { action: 'GRASP' },
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 200));
     expect(gateway.getPalmState().is_grasped).toBe(true);
 
-    ws.send(JSON.stringify({
-      command_id: 'palm-2',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'PALM_ACTUATE',
-      payload: { action: 'RELEASE' },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'palm-2',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'PALM_ACTUATE',
+        payload: { action: 'RELEASE' },
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 200));
     expect(gateway.getPalmState().is_grasped).toBe(false);
@@ -259,13 +273,15 @@ describe('MockGateway', () => {
       }
     });
 
-    ws.send(JSON.stringify({
-      command_id: 'pnp-phase-1',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'PICK_AND_PLACE_TARGET',
-      payload: { pick_x: 0.5, pick_y: 0.0, pick_z: 0.0 },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'pnp-phase-1',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'PICK_AND_PLACE_TARGET',
+        payload: { pick_x: 0.5, pick_y: 0.0, pick_z: 0.0 },
+      }),
+    );
 
     await new Promise<void>((resolve) => {
       const check = setInterval(() => {
@@ -291,24 +307,28 @@ describe('MockGateway', () => {
       ws.on('error', reject);
     });
 
-    ws.send(JSON.stringify({
-      command_id: 'pick-1',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'PICK_AND_PLACE_TARGET',
-      payload: { pick_x: 0.5, pick_y: 0.1, pick_z: 0.0 },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'pick-1',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'PICK_AND_PLACE_TARGET',
+        payload: { pick_x: 0.5, pick_y: 0.1, pick_z: 0.0 },
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 50));
     expect(gateway.getCapturedLogs()).toMatch(/Spawned GEAR at \(0\.500,\s*0\.100,\s*0\.000\)/);
 
-    ws.send(JSON.stringify({
-      command_id: 'clear-1',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'CLEAR_WORKSPACE',
-      payload: {},
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'clear-1',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'CLEAR_WORKSPACE',
+        payload: {},
+      }),
+    );
 
     await new Promise((r) => setTimeout(r, 50));
     expect(gateway.getCapturedLogs()).toContain('Workspace cleared for command clear-1');
@@ -343,18 +363,23 @@ describe('MockGateway', () => {
 
     expect(gateway.getTowerGearsCount()).toBe(0);
 
-    ws.send(JSON.stringify({
-      command_id: 'pnp-10-step',
-      sender_id: 'ui-test',
-      timestamp_ns: Date.now() * 1_000_000,
-      type: 'PICK_AND_PLACE_TARGET',
-      payload: { pick_x: 0.50, pick_y: 0.00, pick_z: 0.00 },
-    }));
+    ws.send(
+      JSON.stringify({
+        command_id: 'pnp-10-step',
+        sender_id: 'ui-test',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'PICK_AND_PLACE_TARGET',
+        payload: { pick_x: 0.5, pick_y: 0.0, pick_z: 0.0 },
+      }),
+    );
 
     // Wait for all 10 steps to complete (~800ms)
     await new Promise<void>((resolve) => {
       const check = setInterval(() => {
-        if (receivedFeedbacks.some((f) => f.phase === 'COMPLETED') && gateway.getRobotState() === 'IDLE') {
+        if (
+          receivedFeedbacks.some((f) => f.phase === 'COMPLETED') &&
+          gateway.getRobotState() === 'IDLE'
+        ) {
           clearInterval(check);
           resolve();
         }

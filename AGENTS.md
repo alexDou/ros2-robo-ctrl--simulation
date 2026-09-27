@@ -4,7 +4,7 @@
 
 Decoupled three-tier distributed architecture following Clean Architecture & Ousterhout Deep Modules:
 
-- **Web Visualizer (`web/`)**: Preact + Vite + Three.js (`urdf-loader`) + Vitest. Linted via OXC (`oxlint`), formatted via Prettier.
+- **Web Visualizer (`web/`)**: Preact + Vite + Three.js (`urdf-loader`) + Vitest. Linted via OXC (`oxlint`), formatted via OXC (`oxfmt`).
 - **Gateway (`src/gateway/`)**: Actix-Web WebSocket service. Encapsulates Zenoh session behind deep port facade. Enforces single active session per robot (`409 Conflict` on duplicate). Translates WebSocket frames ↔ Zenoh expressions.
 - **ROS2 Subsystem (`src/ros2/`)**: ROS2 Jazzy (`rclpy`, `ros2_control`, `robot_bringup`, `arm_controller`, `workcell_manager`, `robot_control_interfaces`). SIM: 5 Hz loop (`ur_controllers.yaml`, fake hardware — what runs now). LIVE: 500 Hz RTDE (`ur_controllers_real.yaml`, physical UR5e — real-world target, deliberately kept). Direction: lower freqs, stay real-ready. Browser: connect-gated (manual Connect, BOOTING window), lazy joint sub while parked idle.
 - **DataFabric**: Zenoh pub/sub using RESTful scoping: `robot/{id}/command` and `robot/{id}/telemetry`. No direct `rosbridge`.
@@ -21,6 +21,7 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
   - Rust: `cargo check --workspace --all-targets`, `cargo clippy --workspace --all-targets`, & `cargo test` / `cargo nextest run --workspace`
   - Python: `pytest`
   - Web: `npm --prefix web run test`, `npm --prefix web run lint`, & `npm --prefix web run typecheck`
+- **End-of-Task Gate (mandatory)**: Every task that changes files ends with `scripts/verify.sh` (codegen `--check` → Rust/Python/web lanes in parallel: tests + linters + formatters → semgrep). A task is not done, and must not be committed, until it prints `verify: GREEN`. Pre-existing failures outside your diff are reported by name, never hidden or silenced.
 
 ## Domain Invariants
 

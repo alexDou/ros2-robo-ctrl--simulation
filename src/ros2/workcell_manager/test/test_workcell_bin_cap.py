@@ -1,10 +1,17 @@
 """Bin cap-100 recycle tests for WorkcellNode (hand-sim-lilk, Unit 7.3e)."""
+
 import pytest
 import rclpy
 from geometry_msgs.msg import Point
 from robot_control_interfaces.srv import (
-    ClearWorkspace, CommitDrop, GetDropSlot, MarkGrasped, SpawnObject,
+    ClearWorkspace,
+    CommitDrop,
+    GetDropSlot,
+    MarkGrasped,
+    SpawnObject,
 )
+from workcell_manager.workcell_node import WorkcellNode
+
 from domain import (
     GREEN_TOWER,
     MAX_SCRAP_BIN_CAPACITY,
@@ -12,7 +19,7 @@ from domain import (
     STACK_STEP_M,
     WHITE_TOWER,
 )
-from workcell_manager.workcell_node import WorkcellNode
+
 
 @pytest.fixture(autouse=True)
 def ros_context():
@@ -22,11 +29,11 @@ def ros_context():
     if rclpy.ok():
         rclpy.shutdown()
 
+
 def _spawn(node, x=0.45, y=0.10, z=0.0, **classification):
-    req = SpawnObject.Request(
-        coords=Point(x=x, y=y, z=z), object_type="GEAR", **classification
-    )
+    req = SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR", **classification)
     return node.handle_spawn_object(req, SpawnObject.Response())
+
 
 def _cycle(node, x=0.45, y=0.10, z=0.0, **classification):
     out = _spawn(node, x, y, z, **classification)
@@ -34,17 +41,21 @@ def _cycle(node, x=0.45, y=0.10, z=0.0, **classification):
     node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
     return node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
 
+
 def _reserve(node, color="", intact=True, **classification):
     return node.handle_get_drop_slot(
         GetDropSlot.Request(color=color, intact=intact, **classification),
         GetDropSlot.Response(),
     )
 
+
 def _bin_entries(node):
     return [e for e in node.processed if not e.get("intact", True)]
 
+
 def test_bin_cap_constant_is_100():
     assert MAX_SCRAP_BIN_CAPACITY == 100
+
 
 def test_bin_piles_to_cap_with_overflow_never_set():
     node = WorkcellNode()
@@ -60,6 +71,7 @@ def test_bin_piles_to_cap_with_overflow_never_set():
         assert len(_bin_entries(node)) == MAX_SCRAP_BIN_CAPACITY
     finally:
         node.destroy_node()
+
 
 def test_101st_defective_recycles_pile_to_slot_0():
     node = WorkcellNode()
@@ -81,6 +93,7 @@ def test_101st_defective_recycles_pile_to_slot_0():
     finally:
         node.destroy_node()
 
+
 def test_bin_recycle_leaves_towers_untouched():
     node = WorkcellNode()
     try:
@@ -89,19 +102,26 @@ def test_bin_recycle_leaves_towers_untouched():
         _cycle(node, color="GREEN", intact=True)
         for _ in range(MAX_SCRAP_BIN_CAPACITY):
             _cycle(node, color="WHITE", intact=False)
-        white_before = [(e["x"], e["y"], e["z"]) for e in node.processed
-                        if e["color"] == "WHITE" and e.get("intact", True)]
-        green_before = [(e["x"], e["y"], e["z"]) for e in node.processed
-                        if e["color"] == "GREEN"]
+        white_before = [
+            (e["x"], e["y"], e["z"])
+            for e in node.processed
+            if e["color"] == "WHITE" and e.get("intact", True)
+        ]
+        green_before = [(e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "GREEN"]
         res = _cycle(node, color="BLUE", intact=False)
         assert res.slot_index == 0
-        assert [(e["x"], e["y"], e["z"]) for e in node.processed
-                if e["color"] == "WHITE" and e.get("intact", True)] == white_before
-        assert [(e["x"], e["y"], e["z"]) for e in node.processed
-                if e["color"] == "GREEN"] == green_before
+        assert [
+            (e["x"], e["y"], e["z"])
+            for e in node.processed
+            if e["color"] == "WHITE" and e.get("intact", True)
+        ] == white_before
+        assert [
+            (e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "GREEN"
+        ] == green_before
         assert pytest.approx(node.processed[-1]["x"]) == SCRAP_BIN[0]
     finally:
         node.destroy_node()
+
 
 def test_full_bin_reservation_points_at_slot_0_no_overflow():
     node = WorkcellNode()
@@ -118,6 +138,7 @@ def test_full_bin_reservation_points_at_slot_0_no_overflow():
     finally:
         node.destroy_node()
 
+
 def test_clear_wipes_towers_plus_bin_and_restarts_pile():
     node = WorkcellNode()
     try:
@@ -126,9 +147,7 @@ def test_clear_wipes_towers_plus_bin_and_restarts_pile():
         _cycle(node, color="BLUE", intact=True)
         _cycle(node, color="WHITE", intact=False)
         assert len(node.processed) == 4
-        out = node.handle_clear_workspace(
-            ClearWorkspace.Request(), ClearWorkspace.Response()
-        )
+        out = node.handle_clear_workspace(ClearWorkspace.Request(), ClearWorkspace.Response())
         assert out.success is True
         assert node.processed == []
         assert node.inventory == 0
@@ -142,6 +161,7 @@ def test_clear_wipes_towers_plus_bin_and_restarts_pile():
         assert pytest.approx(tower_slot.drop_coords.x) == WHITE_TOWER[0]
     finally:
         node.destroy_node()
+
 
 def test_tower_fifo_still_pins_at_10_after_bin_recycle():
     node = WorkcellNode()

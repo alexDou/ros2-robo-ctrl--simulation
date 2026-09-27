@@ -38,7 +38,7 @@ export function createDexterousPalm(): PalmProceduralAssets {
   group.add(rodMesh);
 
   // 3. Industrial suction cup bellows nozzle (cylinder: radius 0.020m to 0.035m, height 0.035m, distinct industrial suction cup)
-  const nozzleGeom = new THREE.CylinderGeometry(0.020, 0.035, 0.035, 32);
+  const nozzleGeom = new THREE.CylinderGeometry(0.02, 0.035, 0.035, 32);
   nozzleGeom.rotateX(Math.PI / 2);
   const nozzleMat = new THREE.MeshStandardMaterial({
     color: 0x3b82f6,

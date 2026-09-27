@@ -114,10 +114,7 @@ pub fn enrich_spawn_payload(
             "color".to_string(),
             serde_json::to_value(color).unwrap_or(serde_json::Value::Null),
         );
-        obj.insert(
-            "intact".to_string(),
-            serde_json::Value::Bool(intact),
-        );
+        obj.insert("intact".to_string(), serde_json::Value::Bool(intact));
     }
     payload
 }

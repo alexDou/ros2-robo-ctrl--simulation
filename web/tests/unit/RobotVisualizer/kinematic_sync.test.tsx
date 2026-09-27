@@ -60,7 +60,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     cbs.forEach((cb) => cb(performance.now()));
   };
 
-
   describe('Unit 3.3: 60 FPS Telemetry Kinematic Synchronization & Dirty-Checking', () => {
     it('synchronizes all 6 canonical revolute joints by exact name using URDFRobot.setJointValue', async () => {
       const fakeRobot = new THREE.Group() as any;
@@ -88,7 +87,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             onRobotLoaded={() => {
               robotLoadedResolve();
             }}
-          />
+          />,
         );
       });
 
@@ -131,7 +130,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             onRobotLoaded={() => {
               robotLoadedResolve();
             }}
-          />
+          />,
         );
       });
 
@@ -173,7 +172,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             onRobotLoaded={() => {
               robotLoadedResolve();
             }}
-          />
+          />,
         );
       });
 
@@ -291,7 +290,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             onRobotLoaded={() => {
               robotLoadedResolve();
             }}
-          />
+          />,
         );
       });
 
@@ -314,7 +313,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
       // World matrix of shoulder_link has updated (partial ease toward target)
       const firstCalls = fakeRobot.setJointValue.mock.calls.filter(
-        (c: any[]) => c[0] === 'shoulder_pan_joint'
+        (c: any[]) => c[0] === 'shoulder_pan_joint',
       );
       const firstVal = firstCalls[firstCalls.length - 1][1] as number;
       expect(firstVal).toBeGreaterThan(0);
@@ -364,7 +363,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             onRobotLoaded={() => {
               robotLoadedResolve();
             }}
-          />
+          />,
         );
       });
 
@@ -407,7 +406,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             onRobotLoaded={() => {
               robotLoadedResolve();
             }}
-          />
+          />,
         );
       });
 
@@ -422,8 +421,14 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         stepFrame();
       });
 
-      expect(fakeRobot.setJointValue).not.toHaveBeenCalledWith('shoulder_pan_joint', expect.anything());
-      expect(fakeRobot.setJointValue).not.toHaveBeenCalledWith('shoulder_lift_joint', expect.anything());
+      expect(fakeRobot.setJointValue).not.toHaveBeenCalledWith(
+        'shoulder_pan_joint',
+        expect.anything(),
+      );
+      expect(fakeRobot.setJointValue).not.toHaveBeenCalledWith(
+        'shoulder_lift_joint',
+        expect.anything(),
+      );
       expect(fakeRobot.setJointValue).not.toHaveBeenCalledWith('elbow_joint', expect.anything());
 
       expect(mockRenderer.render).toHaveBeenCalledTimes(1);
@@ -434,6 +439,5 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
       expect(mockRenderer.render).toHaveBeenCalledTimes(1);
     });
-
   });
 });

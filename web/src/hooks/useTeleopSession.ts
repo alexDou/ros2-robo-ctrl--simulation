@@ -271,7 +271,7 @@ export function useTeleopSession({
       setHasActiveGear(true);
       setActionProgress(null);
     },
-    [robotState, hasActiveGear]
+    [robotState, hasActiveGear],
   );
 
   const clearWorkspace = useCallback(() => {
@@ -309,7 +309,10 @@ export function useTeleopSession({
           pushProbeLog(`${res.status}`, `Gateway probe ${healthUrl} returned ${res.status}`);
         }
       } catch (err) {
-        pushProbeLog('DOWN', `Gateway unreachable at ${healthUrl}: ${err instanceof Error ? err.message : String(err)}`);
+        pushProbeLog(
+          'DOWN',
+          `Gateway unreachable at ${healthUrl}: ${err instanceof Error ? err.message : String(err)}`,
+        );
       }
       return;
     }
