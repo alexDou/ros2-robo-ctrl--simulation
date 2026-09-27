@@ -52,11 +52,15 @@ class MockWebSocket {
       this.onerror(new Event('error'));
     }
     if (this.onclose) {
-      this.onclose(new CloseEvent('close', { code: isConflict ? 4409 : 1006, reason: isConflict ? 'Conflict' : 'Abnormal Closure' }));
+      this.onclose(
+        new CloseEvent('close', {
+          code: isConflict ? 4409 : 1006,
+          reason: isConflict ? 'Conflict' : 'Abnormal Closure',
+        }),
+      );
     }
   }
 }
-
 
 describe('TeleopClient Component', () => {
   let originalWebSocket: typeof WebSocket;
@@ -73,10 +77,11 @@ describe('TeleopClient Component', () => {
     vi.restoreAllMocks();
   });
 
-
   it('appends inbound RobotTelemetryEvent frames to the event log', () => {
-    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
+    fireEvent.click(screen.getByTestId('connect-button'));
     const ws = MockWebSocket.instances[0];
 
     act(() => {
@@ -103,8 +108,10 @@ describe('TeleopClient Component', () => {
   });
 
   it('appends inbound ERROR frames highlighted as error diagnostics without clearing logs', () => {
-    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
+    fireEvent.click(screen.getByTestId('connect-button'));
     const ws = MockWebSocket.instances[0];
 
     act(() => {
@@ -151,8 +158,10 @@ describe('TeleopClient Component', () => {
       text: () => Promise.resolve('Active session already exists for robot'),
     });
 
-    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
+    fireEvent.click(screen.getByTestId('connect-button'));
     const ws = MockWebSocket.instances[0];
 
     await act(async () => {
@@ -161,12 +170,16 @@ describe('TeleopClient Component', () => {
 
     expect(screen.getByTestId('connection-badge').textContent).toMatch(/CONFLICT/i);
     expect(screen.getByTestId('conflict-banner')).toBeDefined();
-    expect(screen.getByTestId('conflict-banner').textContent).toContain('Active session already exists');
+    expect(screen.getByTestId('conflict-banner').textContent).toContain(
+      'Active session already exists',
+    );
   });
 
   it('removes Ping controls from DOM once telemetry streams and transitions to CONNECTED / IDLE', () => {
-    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
+    fireEvent.click(screen.getByTestId('connect-button'));
     const ws = MockWebSocket.instances[0];
 
     act(() => {
@@ -210,7 +223,9 @@ describe('TeleopClient Component', () => {
     // Desktop width: 1280px
     window.innerWidth = 1280;
 
-    const { unmount } = render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+    const { unmount } = render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
 
     const splitLayout = screen.getByTestId('teleop-split-layout');
     const visualizerPane = screen.getByTestId('visualizer-pane');
@@ -243,8 +258,10 @@ describe('TeleopClient Component', () => {
   });
 
   it('connects telemetryBufferRef to RobotVisualizer and updates buffer on streaming frames without VDOM re-renders', () => {
-    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
+    fireEvent.click(screen.getByTestId('connect-button'));
     const ws = MockWebSocket.instances[0];
 
     act(() => {

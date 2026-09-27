@@ -15,10 +15,10 @@ export const UR5E_DH_ALPHA: readonly number[] = [
 ];
 
 export const DEFAULT_TCP_OFFSET_M = 0.108;
-export const MIN_REACH_M = 0.20;
+export const MIN_REACH_M = 0.2;
 export const MAX_REACH_M = 0.85;
-export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [0.40, -0.30, 0.0];
-export const APPROACH_LIFT_OFFSET_M = 0.10;
+export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [0.68, -0.16, 0.0];
+export const APPROACH_LIFT_OFFSET_M = 0.1;
 
 export const HOME_JOINT_POSITIONS: readonly number[] = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];
 
@@ -55,10 +55,13 @@ export interface WaypointStep {
 }
 
 export function normalizeAngle(angle: number): number {
-  return ((angle + Math.PI) % (2.0 * Math.PI) + 2.0 * Math.PI) % (2.0 * Math.PI) - Math.PI;
+  return ((((angle + Math.PI) % (2.0 * Math.PI)) + 2.0 * Math.PI) % (2.0 * Math.PI)) - Math.PI;
 }
 
-export function unwrapJointAngles(qTarget: readonly number[], qReference: readonly number[]): number[] {
+export function unwrapJointAngles(
+  qTarget: readonly number[],
+  qReference: readonly number[],
+): number[] {
   return qTarget.map((targetVal, i) => qReference[i] + normalizeAngle(targetVal - qReference[i]));
 }
 
@@ -95,7 +98,10 @@ function invertRigidTransform(t: readonly (readonly number[])[]): number[][] {
   ];
 }
 
-function matmul4x4(a: readonly (readonly number[])[], b: readonly (readonly number[])[]): number[][] {
+function matmul4x4(
+  a: readonly (readonly number[])[],
+  b: readonly (readonly number[])[],
+): number[][] {
   const res: number[][] = [
     [0, 0, 0, 0],
     [0, 0, 0, 0],
@@ -124,7 +130,7 @@ export class UR5eKinematics {
     tcpOffset = DEFAULT_TCP_OFFSET_M,
     d = UR5E_DH_D,
     a = UR5E_DH_A,
-    alpha = UR5E_DH_ALPHA
+    alpha = UR5E_DH_ALPHA,
   ) {
     this.tcpOffset = tcpOffset;
     this.d = d;
@@ -134,7 +140,9 @@ export class UR5eKinematics {
 
   checkReachability(x: number, y: number, z = 0.0): void {
     if (z < 0.0) {
-      throw new Error(`Target coordinates (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)}) penetrate table`);
+      throw new Error(
+        `Target coordinates (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)}) penetrate table`,
+      );
     }
     const rPlanar = Math.hypot(x, y);
     if (rPlanar < MIN_REACH_M) {
@@ -171,7 +179,10 @@ export class UR5eKinematics {
     return t;
   }
 
-  forwardKinematicsPosition(jointPositions: readonly number[], withTcp = true): [number, number, number] {
+  forwardKinematicsPosition(
+    jointPositions: readonly number[],
+    withTcp = true,
+  ): [number, number, number] {
     const t = this.forwardKinematics(jointPositions, withTcp);
     return [t[0][3], t[1][3], t[2][3]];
   }
@@ -199,7 +210,10 @@ export class UR5eKinematics {
       const ratio5 = val / this.d[5];
       if (Math.abs(ratio5) > 1.000001) continue;
       const phi5 = Math.acos(Math.max(-1.0, Math.min(1.0, ratio5)));
-      const th5Options = Math.abs(phi5) < 1e-6 ? [normalizeAngle(phi5)] : [normalizeAngle(phi5), normalizeAngle(-phi5)];
+      const th5Options =
+        Math.abs(phi5) < 1e-6
+          ? [normalizeAngle(phi5)]
+          : [normalizeAngle(phi5), normalizeAngle(-phi5)];
 
       const t01 = dhMatrix(th1, this.d[0], this.a[0], this.alpha[0]);
       const t10 = invertRigidTransform(t01);
@@ -207,7 +221,8 @@ export class UR5eKinematics {
 
       for (const th5 of th5Options) {
         const s5 = Math.sin(th5);
-        const th6 = Math.abs(s5) < 1e-6 ? 0.0 : normalizeAngle(Math.atan2(-t16[2][1] / s5, t16[2][0] / s5));
+        const th6 =
+          Math.abs(s5) < 1e-6 ? 0.0 : normalizeAngle(Math.atan2(-t16[2][1] / s5, t16[2][0] / s5));
 
         const t45 = dhMatrix(th5, this.d[4], this.a[4], this.alpha[4]);
         const t56 = dhMatrix(th6, this.d[5], this.a[5], this.alpha[5]);
@@ -221,7 +236,10 @@ export class UR5eKinematics {
         const ratio3 = (r2 - this.a[1] ** 2 - this.a[2] ** 2) / (2.0 * this.a[1] * this.a[2]);
         if (Math.abs(ratio3) > 1.000001) continue;
         const phi3 = Math.acos(Math.max(-1.0, Math.min(1.0, ratio3)));
-        const th3Options = Math.abs(phi3) < 1e-6 ? [normalizeAngle(phi3)] : [normalizeAngle(phi3), normalizeAngle(-phi3)];
+        const th3Options =
+          Math.abs(phi3) < 1e-6
+            ? [normalizeAngle(phi3)]
+            : [normalizeAngle(phi3), normalizeAngle(-phi3)];
 
         for (const th3 of th3Options) {
           const k1 = this.a[1] + this.a[2] * Math.cos(th3);
@@ -246,7 +264,10 @@ export class UR5eKinematics {
     return Math.sqrt(diffSq);
   }
 
-  selectMinimalDisplacement(solutions: readonly number[][], currentJoints: readonly number[]): number[] {
+  selectMinimalDisplacement(
+    solutions: readonly number[][],
+    currentJoints: readonly number[],
+  ): number[] {
     if (!solutions || solutions.length === 0) {
       throw new Error('No inverse kinematics solutions available');
     }
@@ -268,7 +289,7 @@ export class UR5eKinematics {
     z: number,
     currentJoints?: readonly number[],
     rotationMatrix?: readonly (readonly number[])[],
-    applyTcpOffset = true
+    applyTcpOffset = true,
   ): number[] {
     this.checkReachability(x, y, z);
     const rot = rotationMatrix ?? DEFAULT_DOWNWARD_ORIENTATION;
@@ -301,7 +322,7 @@ export class PickAndPlaceTrajectoryGenerator {
   generateTrajectory(
     pickCoords: [number, number, number],
     dropCoords?: [number, number, number],
-    currentJoints?: readonly number[]
+    currentJoints?: readonly number[],
   ): WaypointStep[] {
     const [xPick, yPick, zPick] = pickCoords;
     const [xDrop, yDrop, zDrop] = dropCoords ?? DEFAULT_SPINDLE_TOWER_COORDS;
@@ -349,7 +370,12 @@ export class PickAndPlaceTrajectoryGenerator {
 
     // 8. Tower retreat
     const posRetreat: [number, number, number] = [xDrop, yDrop, zDrop + APPROACH_LIFT_OFFSET_M];
-    const qRetreatRaw = this.solver.solveIk(-posRetreat[0], -posRetreat[1], posRetreat[2], qRelease);
+    const qRetreatRaw = this.solver.solveIk(
+      -posRetreat[0],
+      -posRetreat[1],
+      posRetreat[2],
+      qRelease,
+    );
     const qRetreat = unwrapJointAngles(qRetreatRaw, qRelease);
 
     // 9. Home & 10. Complete

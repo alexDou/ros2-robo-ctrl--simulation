@@ -25,7 +25,7 @@ export interface RobotLoaderOptions {
   loadMeshCb?: (
     url: string,
     manager: LoadingManager,
-    onLoad: (mesh: Object3D, err?: Error) => void
+    onLoad: (mesh: Object3D, err?: Error) => void,
   ) => void;
   parseVisual?: boolean;
   parseCollision?: boolean;
@@ -39,7 +39,7 @@ export interface RobotLoaderOptions {
  */
 export function resolvePackageUri(
   uri: string,
-  packages: Record<string, string> = DEFAULT_PACKAGE_MAP
+  packages: Record<string, string> = DEFAULT_PACKAGE_MAP,
 ): string {
   if (!uri.startsWith('package://')) {
     return uri;
@@ -121,7 +121,7 @@ export function getCanonicalJoints(robot: URDFRobot): URDFJoint[] {
  */
 export function applyJointPositions(
   joints: readonly URDFJoint[],
-  positions: readonly number[]
+  positions: readonly number[],
 ): boolean {
   let changed = false;
   const count = Math.min(joints.length, positions.length);
@@ -141,7 +141,7 @@ export function applyJointPositions(
  */
 export function parseRobotModel(
   urdfContent: string | Element | Document,
-  loader: URDFLoader = createRobotLoader()
+  loader: URDFLoader = createRobotLoader(),
 ): URDFRobot {
   return loader.parse(urdfContent);
 }
@@ -156,7 +156,7 @@ export function parseRobotModel(
  */
 export async function loadRobotModel(
   url: string = DEFAULT_UR5E_URDF_PATH,
-  loader: URDFLoader = createRobotLoader()
+  loader: URDFLoader = createRobotLoader(),
 ): Promise<URDFRobot> {
   return new Promise((resolve, reject) => {
     const manager = loader.manager;
@@ -214,7 +214,7 @@ export async function loadRobotModel(
       undefined,
       (err) => {
         safeReject(err instanceof Error ? err : new Error(String(err)));
-      }
+      },
     );
   });
 }

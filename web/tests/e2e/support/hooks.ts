@@ -41,7 +41,7 @@ Before(async function (this: CustomWorld, scenario) {
   // Never touch the mock publisher; telemetry comes from the 500 Hz DDS loop.
   if (!sharedHarness.isLive) {
     const isClosedLoop = scenario.pickle.tags.some(
-      (t) => t.name === '@closed-loop' || t.name === '@workcell' || t.name === '@pick-and-place'
+      (t) => t.name === '@closed-loop' || t.name === '@workcell' || t.name === '@pick-and-place',
     );
     if (isClosedLoop) {
       if (this.harness.isMockPublisherRunning()) {
@@ -75,7 +75,9 @@ After(async function (this: CustomWorld, scenario) {
   // Restore IDLE state if robot was left in FAULT and clear active gear
   if (this.teleopPage && this.page && !this.page.isClosed()) {
     try {
-      const badge = await this.teleopPage.connectionBadge.innerText({ timeout: 500 }).catch(() => '');
+      const badge = await this.teleopPage.connectionBadge
+        .innerText({ timeout: 500 })
+        .catch(() => '');
       if (badge.includes('FAULT')) {
         await this.teleopPage.clickResetFault().catch(() => {});
         await this.teleopPage.expectConnectionStatus(/IDLE/, 1000).catch(() => {});

@@ -11,33 +11,16 @@ Covers Unit 6.5-Bugfix.2.2 (hand-sim-1h63):
 - Error handling: schema validation, robot busy, robot in fault, service unavailable, and goal rejection.
 """
 
-import math
 import time
 
-from geometry_msgs.msg import Point
-import rclpy
-from rclpy.action import ActionServer, CancelResponse, GoalResponse
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.node import Node
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from rclpy.parameter import Parameter
 
 from domain import (
     CommandType,
-    ErrorFrame,
-    PickAndPlaceTargetPayload,
     RobotCommand,
     RobotState,
-    RobotTelemetryEvent,
-    SpawnObjectPayload,
-    robot_command_topic,
-    robot_telemetry_topic,
 )
-from robot_control_interfaces.action import PickAndPlace
-from robot_control_interfaces.srv import ClearWorkspace, SpawnObject
-
-from arm_controller.edge_bridge_node import EdgeBridgeNode
-
-
 
 
 def test_edge_bridge_actions_schema_validation_and_rejection():

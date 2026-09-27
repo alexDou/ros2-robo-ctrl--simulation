@@ -54,8 +54,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     vi.restoreAllMocks();
   });
 
-
-
   describe('Unit 3.3: 60 FPS Telemetry Kinematic Synchronization & Dirty-Checking', () => {
     it('displays loading overlay while URDF model is loading', () => {
       vi.spyOn(robotLoader, 'loadRobotModel').mockReturnValue(new Promise(() => {})); // Never resolves
@@ -64,7 +62,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         <RobotVisualizer
           rendererFactory={() => undefined as any}
           controlsFactory={() => mockControls}
-        />
+        />,
       );
 
       const loadingOverlay = screen.queryByTestId('visualizer-loading-overlay');
@@ -78,7 +76,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             throw new Error('WebGL blocklisted');
           }}
           controlsFactory={() => mockControls}
-        />
+        />,
       );
 
       const errorOverlay = screen.queryByTestId('visualizer-error-overlay');
@@ -94,7 +92,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           <RobotVisualizer
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
-          />
+          />,
         );
       });
 

@@ -1,12 +1,12 @@
 """Shared pytest fixtures for arm_controller EdgeBridge tests."""
 
+import contextlib
 import itertools
 
 import pytest
 import rclpy
-from rclpy.node import Node
-
 from controller_manager_msgs.srv import SwitchController
+from rclpy.node import Node
 
 
 @pytest.fixture(autouse=True)
@@ -33,9 +33,7 @@ def make_switch_server():
             res.message = str(message)
             return res
 
-        node.create_service(
-            SwitchController, "/controller_manager/switch_controller", _cb
-        )
+        node.create_service(SwitchController, "/controller_manager/switch_controller", _cb)
         executor.add_node(node)
         created.append(node)
         return node
@@ -43,7 +41,5 @@ def make_switch_server():
     yield _make
 
     for node in created:
-        try:
+        with contextlib.suppress(Exception):
             node.destroy_node()
-        except Exception:
-            pass

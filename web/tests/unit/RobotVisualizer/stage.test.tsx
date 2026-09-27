@@ -55,10 +55,10 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     vi.restoreAllMocks();
   });
 
-
-
   it('renders canvas element and visualizer container', () => {
-    render(<RobotVisualizer rendererFactory={() => mockRenderer} controlsFactory={() => mockControls} />);
+    render(
+      <RobotVisualizer rendererFactory={() => mockRenderer} controlsFactory={() => mockControls} />,
+    );
 
     const container = screen.getByTestId('robot-visualizer');
     expect(container).toBeDefined();
@@ -77,12 +77,12 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         onSceneReady={(scene) => {
           capturedScene = scene;
         }}
-      />
+      />,
     );
 
     expect(capturedScene).not.toBeNull();
     const gridHelper = capturedScene!.children.find(
-      (child) => child instanceof THREE.GridHelper
+      (child) => child instanceof THREE.GridHelper,
     ) as THREE.GridHelper | undefined;
 
     expect(gridHelper).toBeDefined();
@@ -100,7 +100,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         onSceneReady={(scene) => {
           capturedScene = scene;
         }}
-      />
+      />,
     );
 
     expect(capturedScene).not.toBeNull();
@@ -121,7 +121,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         onSceneReady={(_, __, controls) => {
           capturedControls = controls;
         }}
-      />
+      />,
     );
 
     expect(capturedControls).toBeDefined();
@@ -151,14 +151,16 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           onSceneReady={(scene) => {
             capturedScene = scene;
           }}
-        />
+        />,
       );
     });
 
     expect(loadSpy).toHaveBeenCalled();
     expect(capturedScene).not.toBeNull();
     const sceneNonNull = capturedScene!;
-    const robotRoot = sceneNonNull.children.find((c: THREE.Object3D) => c.name === 'robot-root') as THREE.Group;
+    const robotRoot = sceneNonNull.children.find(
+      (c: THREE.Object3D) => c.name === 'robot-root',
+    ) as THREE.Group;
     expect(robotRoot).toBeDefined();
     // REP-103 rotation: -Math.PI / 2 on X
     expect(robotRoot.rotation.x).toBeCloseTo(-Math.PI / 2, 4);
@@ -174,7 +176,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         onSceneReady={(scene) => {
           capturedScene = scene;
         }}
-      />
+      />,
     );
 
     expect(capturedScene).not.toBeNull();

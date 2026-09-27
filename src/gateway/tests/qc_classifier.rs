@@ -5,7 +5,7 @@
 
 use gateway::domain::GearColor;
 use gateway::qc_classifier::{
-    Classification, QcClassifier, RandomQcClassifier, SeededQcClassifier, enrich_spawn_payload,
+    enrich_spawn_payload, Classification, QcClassifier, RandomQcClassifier, SeededQcClassifier,
 };
 
 fn classify_n<C: QcClassifier>(classifier: &mut C, n: usize) -> Vec<Classification> {
@@ -65,8 +65,7 @@ fn random_stub_intact_false_rate_near_20_percent() {
 
 #[test]
 fn enrich_writes_color_and_intact_keys() {
-    let blind =
-        serde_json::json!({"x": 0.45, "y": -0.1, "z": 0.0, "object_type": "GEAR"});
+    let blind = serde_json::json!({"x": 0.45, "y": -0.1, "z": 0.0, "object_type": "GEAR"});
     let enriched = enrich_spawn_payload(blind, (GearColor::Green, false));
     assert_eq!(
         enriched["color"],

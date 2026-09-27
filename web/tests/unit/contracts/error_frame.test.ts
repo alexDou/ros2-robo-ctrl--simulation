@@ -1,7 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  parseErrorFrame,
-} from '@domain/parsers';
+import { parseErrorFrame } from '@domain/parsers';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
   describe('ErrorFrame', () => {
@@ -27,9 +25,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         timestamp_ns: '1000',
       };
 
-      expect(() => parseErrorFrame(JSON.stringify(raw))).toThrow(
-        /Expected frame type 'ERROR'/
-      );
+      expect(() => parseErrorFrame(JSON.stringify(raw))).toThrow(/Expected frame type 'ERROR'/);
     });
   });
 });

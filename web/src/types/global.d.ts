@@ -48,7 +48,9 @@ export interface RobotVisualizerGlobalHandle {
   getScrapBinMesh: () => unknown;
   isScrapBinNonEmpty: () => boolean;
   getSnapshotGearCount: () => number;
-  getSnapshotGearPosition: (id: string) => { x: number; y: number; z: number; bucket: string } | null;
+  getSnapshotGearPosition: (
+    id: string,
+  ) => { x: number; y: number; z: number; bucket: string } | null;
   getSnapshotGearIds: () => string[];
   getSnapshotGearColor: (id: string) => GearColor | null;
   getSnapshotGearIntact: (id: string) => boolean | null;

@@ -12,36 +12,26 @@ Covers Unit 6.5-Bugfix.2.1 (hand-sim-o5es):
 - Schema validation error frame handling
 """
 
+import contextlib
 import math
 import threading
 import time
 
-from rclpy.node import Node
-
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from control_msgs.action import FollowJointTrajectory
-import rclpy
-from rclpy.action import ActionServer, CancelResponse
+from rclpy.action import ActionServer
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.parameter import Parameter
-from sensor_msgs.msg import JointState
 
 from domain import (
     CANONICAL_POSES,
     CANONICAL_UR5E_JOINTS,
     CommandType,
-    ErrorFrame,
     PoseName,
     RobotCommand,
     RobotState,
-    RobotTelemetryEvent,
-    robot_command_topic,
-    robot_telemetry_topic,
 )
-
-from arm_controller.edge_bridge_node import EdgeBridgeNode
-
-
 
 
 def test_edge_bridge_canned_poses_dispatch(make_switch_server):
@@ -66,7 +56,11 @@ def test_edge_bridge_canned_poses_dispatch(make_switch_server):
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-arm-poses"),
-            Parameter("controller_action_name", Parameter.Type.STRING, "/test_controller/follow_joint_trajectory_poses"),
+            Parameter(
+                "controller_action_name",
+                Parameter.Type.STRING,
+                "/test_controller/follow_joint_trajectory_poses",
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.05),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
@@ -116,15 +110,13 @@ def test_edge_bridge_canned_poses_dispatch(make_switch_server):
             goal_req = received_traj_goals[0]
             assert goal_req.trajectory.joint_names == CANONICAL_UR5E_JOINTS
             target_pt = goal_req.trajectory.points[0].positions
-            for target_q, expected_q in zip(target_pt, CANONICAL_POSES[pose_name]):
+            for target_q, expected_q in zip(target_pt, CANONICAL_POSES[pose_name], strict=True):
                 assert math.isclose(target_q, expected_q, abs_tol=1e-4)
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_traj_server.destroy()
         mock_controller.destroy_node()
         node.close()
@@ -153,7 +145,11 @@ def test_edge_bridge_multi_waypoint_preservation(make_switch_server):
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-arm-wp"),
-            Parameter("controller_action_name", Parameter.Type.STRING, "/test_controller/follow_joint_trajectory_wp"),
+            Parameter(
+                "controller_action_name",
+                Parameter.Type.STRING,
+                "/test_controller/follow_joint_trajectory_wp",
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.05),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
@@ -204,15 +200,13 @@ def test_edge_bridge_multi_waypoint_preservation(make_switch_server):
         # Verify ALL 3 waypoints are present, not just the last one
         assert len(goal_req.trajectory.points) == 3
         for i, pt in enumerate(goal_req.trajectory.points):
-            for q_actual, q_expected in zip(pt.positions, waypoints[i]):
+            for q_actual, q_expected in zip(pt.positions, waypoints[i], strict=True):
                 assert math.isclose(q_actual, q_expected, abs_tol=1e-4)
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_traj_server.destroy()
         mock_controller.destroy_node()
         node.close()

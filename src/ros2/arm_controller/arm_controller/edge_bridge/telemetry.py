@@ -1,14 +1,21 @@
 """Zenoh ingress, joint mapping, telemetry publish, error frames, shutdown."""
 
+import contextlib
 import json
 import time
-from typing import Any, Optional
+from typing import Any
 
 from sensor_msgs.msg import JointState
 from std_msgs.msg import String
+
 from domain import (
-    CANONICAL_UR5E_JOINTS, ErrorFrame, InferenceMetrics, PalmState, RobotCommand, RobotState,
-    RobotTelemetryEvent, WorkcellState,
+    CANONICAL_UR5E_JOINTS,
+    ErrorFrame,
+    InferenceMetrics,
+    PalmState,
+    RobotState,
+    RobotTelemetryEvent,
+    WorkcellState,
 )
 
 
@@ -63,7 +70,6 @@ class EdgeBridgeTelemetryMixin:
             except Exception as e:
                 self.get_logger().error(f"Failed to publish ActionFeedbackFrame to Zenoh: {e}")
 
-
     def _on_zenoh_command(self, sample: Any) -> None:
         """Zenoh subscriber callback processing incoming samples from DataFabric."""
         try:
@@ -84,7 +90,7 @@ class EdgeBridgeTelemetryMixin:
         with self._lock:
             self._workcell_state = snapshot
 
-    def _on_telemetry_timer(self) -> Optional[RobotTelemetryEvent]:
+    def _on_telemetry_timer(self) -> RobotTelemetryEvent | None:
         """Steady 10 Hz cached snapshot while engaged; None while STANDBY."""
         with self._lock:
             if self._robot_state == RobotState.STANDBY:
@@ -124,7 +130,7 @@ class EdgeBridgeTelemetryMixin:
                 self.get_logger().error(f"Failed to publish ErrorFrame to Zenoh: {e}")
 
     @staticmethod
-    def _inference_for_workcell(workcell_state: WorkcellState) -> Optional[InferenceMetrics]:
+    def _inference_for_workcell(workcell_state: WorkcellState) -> InferenceMetrics | None:
         """Maps the active gear classification onto the existing inference channel.
 
         spawned/in_progress gear reports its outcome: DEFECTIVE when
@@ -145,7 +151,7 @@ class EdgeBridgeTelemetryMixin:
         label = "DEFECTIVE" if not entry.intact else str(entry.color.value)
         return InferenceMetrics(latency_ms=0.0, confidence=1.0, detected_object=label)
 
-    def publish_telemetry(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+    def publish_telemetry(self, command_id: str | None = None) -> RobotTelemetryEvent:
         """Emits RobotTelemetryEvent over Zenoh on robot/{id}/telemetry."""
         with self._lock:
             state = self._robot_state
@@ -177,119 +183,84 @@ class EdgeBridgeTelemetryMixin:
         """Cleans up active goals, Zenoh subscriptions, and ROS2 resources."""
         with self._lock:
             if self._active_traj_handle is not None:
-                try:
+                with contextlib.suppress(Exception):
                     self._active_traj_handle.cancel_goal_async()
-                except Exception:
-                    pass
                 self._active_traj_handle = None
 
             if self._active_pnp_handle is not None:
-                try:
+                with contextlib.suppress(Exception):
                     self._active_pnp_handle.cancel_goal_async()
-                except Exception:
-                    pass
                 self._active_pnp_handle = None
 
         if self._startup_thread is not None and self._startup_thread.is_alive():
             self._startup_thread.join(timeout=1.0)
 
         if self._zenoh_sub is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._zenoh_sub.undeclare()
-            except Exception:
-                pass
             self._zenoh_sub = None
 
         if self._zenoh_pub is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._zenoh_pub.undeclare()
-            except Exception:
-                pass
             self._zenoh_pub = None
 
         if self._zenoh_feedback_pub is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._zenoh_feedback_pub.undeclare()
-            except Exception:
-                pass
             self._zenoh_feedback_pub = None
 
         if self._owns_zenoh_session and self._zenoh_session is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._zenoh_session.close()
-            except Exception:
-                pass
             self._zenoh_session = None
 
         if self._joint_sub is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_subscription(self._joint_sub)
-            except Exception:
-                pass
             self._joint_sub = None
 
         if self._traj_client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._traj_client.destroy()
-            except Exception:
-                pass
             self._traj_client = None
 
         if self._pnp_client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._pnp_client.destroy()
-            except Exception:
-                pass
             self._pnp_client = None
 
         if self._spawn_object_client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_client(self._spawn_object_client)
-            except Exception:
-                pass
             self._spawn_object_client = None
 
         if self._clear_workspace_client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_client(self._clear_workspace_client)
-            except Exception:
-                pass
             self._clear_workspace_client = None
 
         if self._switch_client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_client(self._switch_client)
-            except Exception:
-                pass
             self._switch_client = None
 
         if self._mark_grasped_client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_client(self._mark_grasped_client)
-            except Exception:
-                pass
             self._mark_grasped_client = None
 
         if self._commit_drop_client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_client(self._commit_drop_client)
-            except Exception:
-                pass
             self._commit_drop_client = None
 
         if self._workcell_state_sub is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_subscription(self._workcell_state_sub)
-            except Exception:
-                pass
             self._workcell_state_sub = None
 
         if self._telemetry_timer is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_timer(self._telemetry_timer)
-            except Exception:
-                pass
             self._telemetry_timer = None
-
-
-

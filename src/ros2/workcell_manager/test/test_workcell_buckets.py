@@ -3,12 +3,11 @@
 import json
 import threading
 import time
+
 import pytest
 import rclpy
-from rclpy.executors import SingleThreadedExecutor
 from geometry_msgs.msg import Point
-from std_msgs.msg import Int32, String
-
+from rclpy.executors import SingleThreadedExecutor
 from robot_control_interfaces.srv import (
     ClearWorkspace,
     CommitDrop,
@@ -16,13 +15,15 @@ from robot_control_interfaces.srv import (
     MarkGrasped,
     SpawnObject,
 )
+from std_msgs.msg import Int32, String
+from workcell_manager.workcell_node import (
+    WorkcellNode,
+)
+
 from domain import (
     STACK_STEP_M,
     TOWER_CAPACITY,
     WHITE_TOWER,
-)
-from workcell_manager.workcell_node import (
-    WorkcellNode,
 )
 
 
@@ -36,7 +37,9 @@ def ros_context():
 
 
 def _spawn(node, x=0.45, y=0.10, z=0.0, color="WHITE", intact=True):
-    req = SpawnObject.Request(coords=Point(x=x, y=y, z=z), object_type="GEAR", color=color, intact=intact)
+    req = SpawnObject.Request(
+        coords=Point(x=x, y=y, z=z), object_type="GEAR", color=color, intact=intact
+    )
     return node.handle_spawn_object(req, SpawnObject.Response())
 
 
@@ -148,7 +151,9 @@ def test_get_drop_slot_pure_reservation():
     node = WorkcellNode()
     try:
         for _ in range(3):
-            out = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
+            out = node.handle_get_drop_slot(
+                GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
+            )
             assert out.slot_index == 0
             assert out.overflow_occurred is False
         assert node.processed == []
@@ -156,7 +161,9 @@ def test_get_drop_slot_pure_reservation():
         _spawn(node)
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        out = node.handle_get_drop_slot(GetDropSlot.Request(color="", intact=True), GetDropSlot.Response())
+        out = node.handle_get_drop_slot(
+            GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
+        )
         assert out.slot_index == 1
         assert pytest.approx(out.drop_coords.z) == STACK_STEP_M
         assert node.inventory == 1
@@ -268,7 +275,12 @@ def test_heartbeat_publishes_snapshot_without_mutation():
         while not received and time.time() - start_t < 2.0:
             time.sleep(0.01)
         assert received, "no 1Hz heartbeat snapshot"
-        assert received[-1] == {"spawned": [], "in_progress": [], "processed": [], "active_id": None}
+        assert received[-1] == {
+            "spawned": [],
+            "in_progress": [],
+            "processed": [],
+            "active_id": None,
+        }
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)

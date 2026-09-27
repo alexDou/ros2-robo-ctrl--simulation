@@ -3,19 +3,17 @@
 import threading
 import time
 
-from geometry_msgs.msg import Point
-import rclpy
-from rclpy.action import ActionClient, ActionServer, CancelResponse, GoalResponse
-from rclpy.node import Node
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.parameter import Parameter
-from sensor_msgs.msg import JointState
-
 from arm_controller.arm_controller_node import (
     ArmControllerNode,
 )
+from geometry_msgs.msg import Point
+from rclpy.action import ActionClient
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
+from rclpy.parameter import Parameter
 from robot_control_interfaces.action import PickAndPlace
 from robot_control_interfaces.srv import GetDropSlot
+from sensor_msgs.msg import JointState
 
 
 def test_joint_state_subscriber_updates_canonical_joints():
@@ -46,7 +44,9 @@ def test_arm_controller_out_of_reach_goal_aborts():
     """Asserts out-of-reach pick coordinates reject/abort goal with structured error message."""
     node = ArmControllerNode(
         parameter_overrides=[
-            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_out_of_reach"),
+            Parameter(
+                "pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_out_of_reach"
+            ),
         ]
     )
     client_node = Node("test_pnp_client_oor")
@@ -108,7 +108,9 @@ def test_arm_controller_queries_workcell_drop_slot():
     node = ArmControllerNode(
         parameter_overrides=[
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_query_drop"),
-            Parameter("get_drop_slot_service_name", Parameter.Type.STRING, "/test_workcell/get_drop_slot"),
+            Parameter(
+                "get_drop_slot_service_name", Parameter.Type.STRING, "/test_workcell/get_drop_slot"
+            ),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.005),
             Parameter("traj_connect_timeout", Parameter.Type.DOUBLE, 0.01),
         ]

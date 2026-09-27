@@ -83,7 +83,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
       it('parses valid custom waypoints TrajectoryExecutePayload', () => {
         const waypoints = [
           [0.0, -1.57, 1.57, 0.0, 0.0, 0.0] as [number, number, number, number, number, number],
-          [0.1, -1.50, 1.60, 0.0, 0.0, 0.0] as [number, number, number, number, number, number],
+          [0.1, -1.5, 1.6, 0.0, 0.0, 0.0] as [number, number, number, number, number, number],
         ];
         const payload = parseTrajectoryExecutePayload({ waypoints });
         expect(payload.waypoints).toEqual(waypoints);
@@ -93,7 +93,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         expect(() =>
           parseTrajectoryExecutePayload({
             waypoints: [[0.0, 0.0, 0.0]],
-          })
+          }),
         ).toThrow();
       });
     });

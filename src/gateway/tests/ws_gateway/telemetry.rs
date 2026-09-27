@@ -8,6 +8,9 @@ use tokio_tungstenite::tungstenite::Message;
 
 #[tokio::test]
 async fn test_ws_30hz_telemetry_high_throughput() {
+    // Stream 60 frames representing 2 seconds of 30 Hz telemetry
+    const TOTAL_FRAMES: usize = 60;
+
     let registry = web::Data::new(ActiveSessionRegistry::default());
     let fabric = web::Data::new(DataFabricPort::memory());
 
@@ -34,13 +37,13 @@ async fn test_ws_30hz_telemetry_high_throughput() {
 
     assert_eq!(fabric.active_telemetry_subscriptions("robot-30hz"), 1);
 
-    // Stream 60 frames representing 2 seconds of 30 Hz telemetry
-    const TOTAL_FRAMES: usize = 60;
     for i in 0..TOTAL_FRAMES {
+        let frame_offset_ns = u64::try_from(i).expect("frame index fits in u64") * 33_333_333;
+        let frame_joint_pos = f64::from(u32::try_from(i).expect("frame index fits in u32")) * 0.01;
         let telem_event = RobotTelemetryEvent {
-            timestamp_ns: 1_700_000_000_000_000_000 + (i as u64 * 33_333_333),
+            timestamp_ns: 1_700_000_000_000_000_000 + frame_offset_ns,
             robot_state: RobotState::Idle,
-            joint_positions: [i as f64 * 0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+            joint_positions: [frame_joint_pos, 0.0, 0.0, 0.0, 0.0, 0.0],
             palm_state: PalmState::default(),
             inference_metrics: None,
             command_id: None,
@@ -70,7 +73,8 @@ async fn test_ws_30hz_telemetry_high_throughput() {
             Message::Text(txt) => {
                 let received: RobotTelemetryEvent =
                     serde_json::from_str(&txt).expect("parse telemetry event");
-                assert!((received.joint_positions[0] - i as f64 * 0.01).abs() < 1e-6);
+                let i_f64 = f64::from(u32::try_from(i).expect("frame index fits in u32"));
+                assert!(i_f64.mul_add(-0.01, received.joint_positions[0]).abs() < 1e-6);
             }
             other => panic!("expected text message, got {other:?}"),
         }

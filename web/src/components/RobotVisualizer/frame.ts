@@ -5,7 +5,11 @@ import { getLatestPositions } from '@/utils/three/positions';
 import type { TelemetryBufferLike } from '@/components/RobotVisualizer/types';
 import { JOINT_LERP_ALPHA, JOINT_SNAP_EPS } from '@/components/RobotVisualizer/constants';
 import { setJointOnRobot } from '@/components/RobotVisualizer/scene/robot';
-import { readSnapshot, reconcileSnapshotGears, type SnapshotStore } from '@/components/RobotVisualizer/interaction/snapshot';
+import {
+  readSnapshot,
+  reconcileSnapshotGears,
+  type SnapshotStore,
+} from '@/components/RobotVisualizer/interaction/snapshot';
 import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
@@ -96,15 +100,11 @@ export function stepFrame(args: FrameArgs): void {
 
   // Workcell-authority pure render: gears follow snapshot buckets only.
   // No grasp-bit cases, no phase gates, no IDLE safety net here.
-  reconcileSnapshotGears(
-    args.store,
-    readSnapshot(args.bufferRef),
-    {
-      robotGroup: args.robotGroup,
-      mountLink: args.mountLink,
-      tableAssets: args.tableAssets,
-      scrapBin: args.scrapBin ?? null,
-      onDirty: args.onDirty,
-    },
-  );
+  reconcileSnapshotGears(args.store, readSnapshot(args.bufferRef), {
+    robotGroup: args.robotGroup,
+    mountLink: args.mountLink,
+    tableAssets: args.tableAssets,
+    scrapBin: args.scrapBin ?? null,
+    onDirty: args.onDirty,
+  });
 }

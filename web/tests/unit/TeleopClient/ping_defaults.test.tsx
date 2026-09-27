@@ -52,11 +52,15 @@ class MockWebSocket {
       this.onerror(new Event('error'));
     }
     if (this.onclose) {
-      this.onclose(new CloseEvent('close', { code: isConflict ? 4409 : 1006, reason: isConflict ? 'Conflict' : 'Abnormal Closure' }));
+      this.onclose(
+        new CloseEvent('close', {
+          code: isConflict ? 4409 : 1006,
+          reason: isConflict ? 'Conflict' : 'Abnormal Closure',
+        }),
+      );
     }
   }
 }
-
 
 describe('TeleopClient Component', () => {
   let originalWebSocket: typeof WebSocket;
@@ -73,7 +77,6 @@ describe('TeleopClient Component', () => {
     vi.restoreAllMocks();
   });
 
-
   it('defaults to arm-ur5 when robotId is omitted', () => {
     render(<TeleopClient />);
     expect(screen.getByText(/Teleop Control — arm-ur5/i)).toBeDefined();
@@ -83,8 +86,10 @@ describe('TeleopClient Component', () => {
   });
 
   it('transmits structured PING command when clicking Ping button', () => {
-    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
-    fireEvent.click(screen.getByTestId("connect-button"));
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
+    fireEvent.click(screen.getByTestId('connect-button'));
     const ws = MockWebSocket.instances[0];
 
     act(() => {
@@ -105,5 +110,4 @@ describe('TeleopClient Component', () => {
     expect(screen.getByTestId('log-item-probe')).toBeDefined();
     expect(screen.getByTestId('event-log').textContent).toMatch(/PING/);
   });
-
 });

@@ -1,9 +1,18 @@
 """Analytical UR5e forward/inverse kinematics solver."""
 
 import math
-from typing import Optional
 
 from arm_controller.kinematics.angles import normalize_angle
+from arm_controller.kinematics.constants import (
+    DEFAULT_DOWNWARD_ORIENTATION,
+    DEFAULT_TCP_OFFSET_M,
+    HOME_JOINT_POSITIONS,
+    MAX_REACH_M,
+    MIN_REACH_M,
+    UR5E_DH_A,
+    UR5E_DH_ALPHA,
+    UR5E_DH_D,
+)
 from arm_controller.kinematics.errors import KinematicSingularityError, OutOfReachError
 from arm_controller.kinematics.matrices import (
     _dh_matrix,
@@ -11,21 +20,13 @@ from arm_controller.kinematics.matrices import (
     _matmul_4x4,
 )
 
-from arm_controller.kinematics.constants import (
-    UR5E_DH_D,
-    UR5E_DH_A,
-    UR5E_DH_ALPHA,
-    DEFAULT_TCP_OFFSET_M,
-    MIN_REACH_M,
-    MAX_REACH_M,
-    DEFAULT_SPINDLE_TOWER_COORDS,
-    APPROACH_LIFT_OFFSET_M,
-    CANONICAL_UR5E_JOINTS,
-    HOME_JOINT_POSITIONS,
-    READY_JOINT_POSITIONS,
-    INSPECT_JOINT_POSITIONS,
-    DEFAULT_DOWNWARD_ORIENTATION,
-)
+# (shoulder, elbow, wrist) root signs identifying one of the 8 closed-form UR5e IK branches.
+ArmConfiguration = tuple[int, int, int]
+
+
+def _same_configuration(a: ArmConfiguration, b: ArmConfiguration) -> bool:
+    """Configurations match per joint group; a degenerate root (0) matches either sign."""
+    return all(sa == sb or sa == 0 or sb == 0 for sa, sb in zip(a, b, strict=True))
 
 
 class UR5eKinematics:
@@ -34,9 +35,9 @@ class UR5eKinematics:
     def __init__(
         self,
         tcp_offset: float = DEFAULT_TCP_OFFSET_M,
-        d: Optional[list[float]] = None,
-        a: Optional[list[float]] = None,
-        alpha: Optional[list[float]] = None,
+        d: list[float] | None = None,
+        a: list[float] | None = None,
+        alpha: list[float] | None = None,
     ) -> None:
         self.tcp_offset = tcp_offset
         self.d = list(d if d is not None else UR5E_DH_D)
@@ -107,7 +108,18 @@ class UR5eKinematics:
 
     def solve_ik_matrix(self, t06: list[list[float]]) -> list[list[float]]:
         """Closed-form analytical solution of UR5e 8 kinematic branches for a target tool0 matrix."""
-        solutions: list[list[float]] = []
+        return [q for _, q in self.solve_ik_matrix_configurations(t06)]
+
+    def solve_ik_matrix_configurations(
+        self, t06: list[list[float]]
+    ) -> list[tuple[ArmConfiguration, list[float]]]:
+        """Like solve_ik_matrix, but labels each branch with its (shoulder, elbow, wrist) sign.
+
+        Signs are +1/-1 for the +/- root of each closed-form acos, and 0 for a degenerate root
+        where both branches coincide. Keeping one configuration across a motion keeps the arm on
+        one continuous branch.
+        """
+        solutions: list[tuple[ArmConfiguration, list[float]]] = []
 
         p05x = t06[0][3] - self.d[5] * t06[0][2]
         p05y = t06[1][3] - self.d[5] * t06[1][2]
@@ -120,27 +132,27 @@ class UR5eKinematics:
         ratio1 = max(-1.0, min(1.0, self.d[3] / r_xy))
         phi1 = math.acos(ratio1)
         th1_options = [
-            normalize_angle(psi + math.pi / 2.0 + phi1),
-            normalize_angle(psi + math.pi / 2.0 - phi1),
+            (1, normalize_angle(psi + math.pi / 2.0 + phi1)),
+            (-1, normalize_angle(psi + math.pi / 2.0 - phi1)),
         ]
 
-        for th1 in th1_options:
+        for shoulder, th1 in th1_options:
             val = t06[0][3] * math.sin(th1) - t06[1][3] * math.cos(th1) - self.d[3]
             ratio5 = val / self.d[5]
             if abs(ratio5) > 1.000001:
                 continue
             phi5 = math.acos(max(-1.0, min(1.0, ratio5)))
             th5_options = (
-                [normalize_angle(phi5)]
+                [(0, normalize_angle(phi5))]
                 if abs(phi5) < 1e-6
-                else [normalize_angle(phi5), normalize_angle(-phi5)]
+                else [(1, normalize_angle(phi5)), (-1, normalize_angle(-phi5))]
             )
 
             t01 = _dh_matrix(th1, self.d[0], self.a[0], self.alpha[0])
             t10 = _invert_rigid_transform(t01)
             t16 = _matmul_4x4(t10, t06)
 
-            for th5 in th5_options:
+            for wrist, th5 in th5_options:
                 s5 = math.sin(th5)
                 if abs(s5) < 1e-6:
                     th6 = 0.0
@@ -156,19 +168,17 @@ class UR5eKinematics:
                 y14 = t14[1][3]
                 r2 = x14 * x14 + y14 * y14
 
-                ratio3 = (r2 - self.a[1] ** 2 - self.a[2] ** 2) / (
-                    2.0 * self.a[1] * self.a[2]
-                )
+                ratio3 = (r2 - self.a[1] ** 2 - self.a[2] ** 2) / (2.0 * self.a[1] * self.a[2])
                 if abs(ratio3) > 1.000001:
                     continue
                 phi3 = math.acos(max(-1.0, min(1.0, ratio3)))
                 th3_options = (
-                    [normalize_angle(phi3)]
+                    [(0, normalize_angle(phi3))]
                     if abs(phi3) < 1e-6
-                    else [normalize_angle(phi3), normalize_angle(-phi3)]
+                    else [(1, normalize_angle(phi3)), (-1, normalize_angle(-phi3))]
                 )
 
-                for th3 in th3_options:
+                for elbow, th3 in th3_options:
                     k1 = self.a[1] + self.a[2] * math.cos(th3)
                     k2 = self.a[2] * math.sin(th3)
                     th2 = normalize_angle(math.atan2(y14, x14) - math.atan2(k2, k1))
@@ -176,7 +186,7 @@ class UR5eKinematics:
                     phi14 = math.atan2(t14[1][0], t14[0][0])
                     th4 = normalize_angle(phi14 - th2 - th3)
 
-                    solutions.append([th1, th2, th3, th4, th5, th6])
+                    solutions.append(((shoulder, elbow, wrist), [th1, th2, th3, th4, th5, th6]))
 
         return solutions
 
@@ -199,7 +209,7 @@ class UR5eKinematics:
         if not solutions:
             raise KinematicSingularityError("No inverse kinematics solutions available")
 
-        best_sol: Optional[list[float]] = None
+        best_sol: list[float] | None = None
         best_dist = float("inf")
 
         for sol in solutions:
@@ -211,41 +221,83 @@ class UR5eKinematics:
         assert best_sol is not None
         return best_sol
 
-    def solve_ik_all(
+    def _target_flange_matrix(
         self,
         x: float,
         y: float,
         z: float,
-        rotation_matrix: Optional[list[list[float]]] = None,
-        apply_tcp_offset: bool = True,
+        rotation_matrix: list[list[float]] | None,
+        apply_tcp_offset: bool,
     ) -> list[list[float]]:
-        """Solves all valid analytical IK branches for a Cartesian target."""
+        """Validates reach and builds the tool0 (flange) target matrix for a TCP position."""
         self.check_reachability(x, y, z)
 
         rot = rotation_matrix if rotation_matrix is not None else DEFAULT_DOWNWARD_ORIENTATION
         tool_z_axis = [rot[0][2], rot[1][2], rot[2][2]]
 
         offset = self.tcp_offset if apply_tcp_offset else 0.0
-        flange_x = x - offset * tool_z_axis[0]
-        flange_y = y - offset * tool_z_axis[1]
-        flange_z = z - offset * tool_z_axis[2]
-
-        t06 = [
-            [rot[0][0], rot[0][1], rot[0][2], flange_x],
-            [rot[1][0], rot[1][1], rot[1][2], flange_y],
-            [rot[2][0], rot[2][1], rot[2][2], flange_z],
+        return [
+            [rot[0][0], rot[0][1], rot[0][2], x - offset * tool_z_axis[0]],
+            [rot[1][0], rot[1][1], rot[1][2], y - offset * tool_z_axis[1]],
+            [rot[2][0], rot[2][1], rot[2][2], z - offset * tool_z_axis[2]],
             [0.0, 0.0, 0.0, 1.0],
         ]
 
+    def solve_ik_all(
+        self,
+        x: float,
+        y: float,
+        z: float,
+        rotation_matrix: list[list[float]] | None = None,
+        apply_tcp_offset: bool = True,
+    ) -> list[list[float]]:
+        """Solves all valid analytical IK branches for a Cartesian target."""
+        t06 = self._target_flange_matrix(x, y, z, rotation_matrix, apply_tcp_offset)
         return self.solve_ik_matrix(t06)
+
+    def solve_ik_configured(
+        self,
+        x: float,
+        y: float,
+        z: float,
+        current_joints: list[float] | None = None,
+        configuration: ArmConfiguration | None = None,
+        rotation_matrix: list[list[float]] | None = None,
+        apply_tcp_offset: bool = True,
+    ) -> tuple[list[float], ArmConfiguration]:
+        """Solves IK restricted to `configuration` (if given), choosing the branch with minimal
+        angular displacement from current_joints. Returns (joints, configuration).
+
+        Raises OutOfReachError when the target is only reachable by switching configuration:
+        a mid-motion branch switch swings the whole arm, so the goal must be rejected instead.
+        """
+        t06 = self._target_flange_matrix(x, y, z, rotation_matrix, apply_tcp_offset)
+        labelled = self.solve_ik_matrix_configurations(t06)
+        if not labelled:
+            raise OutOfReachError(
+                f"No kinematically reachable configuration found for ({x:.3f}, {y:.3f}, {z:.3f})"
+            )
+        if configuration is not None:
+            labelled = [item for item in labelled if _same_configuration(item[0], configuration)]
+            if not labelled:
+                raise OutOfReachError(
+                    f"Target ({x:.3f}, {y:.3f}, {z:.3f}) is outside the workspace of arm "
+                    f"configuration {configuration}; reaching it would require a branch switch"
+                )
+
+        reference = current_joints if current_joints is not None else HOME_JOINT_POSITIONS
+        best_configuration, best_joints = min(
+            labelled, key=lambda item: self.angular_distance(item[1], reference)
+        )
+        return best_joints, best_configuration
 
     def solve_ik(
         self,
         x: float,
         y: float,
         z: float,
-        current_joints: Optional[list[float]] = None,
-        rotation_matrix: Optional[list[list[float]]] = None,
+        current_joints: list[float] | None = None,
+        rotation_matrix: list[list[float]] | None = None,
         apply_tcp_offset: bool = True,
     ) -> list[float]:
         """Solves IK for Cartesian target and selects branch with minimal angular displacement."""
@@ -261,11 +313,7 @@ class UR5eKinematics:
                 f"No kinematically reachable configuration found for ({x:.3f}, {y:.3f}, {z:.3f})"
             )
 
-        reference = (
-            current_joints
-            if current_joints is not None
-            else HOME_JOINT_POSITIONS
-        )
+        reference = current_joints if current_joints is not None else HOME_JOINT_POSITIONS
         return self.select_minimal_displacement(solutions, reference)
 
 

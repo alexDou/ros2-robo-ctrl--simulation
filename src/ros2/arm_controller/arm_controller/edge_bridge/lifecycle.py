@@ -1,12 +1,12 @@
 """ENGAGE/STANDBY handshake, homing, controller switching."""
 
+import contextlib
 import threading
 import time
-from typing import Optional
 
 from controller_manager_msgs.srv import SwitchController
-from sensor_msgs.msg import JointState
 from rclpy.qos import qos_profile_sensor_data
+from sensor_msgs.msg import JointState
 
 from domain import CANONICAL_POSES, PoseName, RobotState, RobotTelemetryEvent
 
@@ -62,9 +62,7 @@ class EdgeBridgeLifecycleMixin:
         """Blocks until startup homing has finished."""
         return self._homing_done_event.wait(timeout=timeout_sec)
 
-    def _switch_controllers(
-        self, activate: list[str], deactivate: list[str]
-    ) -> bool:
+    def _switch_controllers(self, activate: list[str], deactivate: list[str]) -> bool:
         """Activates/deactivates controllers via switch_controller (BEST_EFFORT).
 
         Controllers spawn --inactive (parked: no /joint_states traffic).
@@ -95,13 +93,11 @@ class EdgeBridgeLifecycleMixin:
             self.get_logger().warning("switch_controller call timed out")
             return False
         if not future.result().ok:
-            self.get_logger().warning(
-                f"switch_controller rejected: {future.result().message}"
-            )
+            self.get_logger().warning(f"switch_controller rejected: {future.result().message}")
             return False
         return True
 
-    def handle_engage(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+    def handle_engage(self, command_id: str | None = None) -> RobotTelemetryEvent:
         """ENGAGE handshake: activate controllers, subscribe joints, home, go IDLE.
 
         Strict order: (1) switch controllers active, (2) subscribe joints
@@ -122,9 +118,7 @@ class EdgeBridgeLifecycleMixin:
             self._homing_done_event.clear()
             self._startup_motion_event.clear()
             need_sub = self._joint_sub is None
-            need_homing_thread = (
-                self._startup_thread is None or not self._startup_thread.is_alive()
-            )
+            need_homing_thread = self._startup_thread is None or not self._startup_thread.is_alive()
 
         self.get_logger().info("ENGAGE step 1/3: activating controllers...")
         switched = self._switch_controllers(
@@ -157,9 +151,7 @@ class EdgeBridgeLifecycleMixin:
             )
             self.get_logger().info("ENGAGE step 2/3 done: joint subscription active")
         else:
-            self.get_logger().info(
-                "ENGAGE step 2/3 skipped: sub already active"
-            )
+            self.get_logger().info("ENGAGE step 2/3 skipped: sub already active")
 
         if need_homing_thread:
             if self._auto_home_on_startup:
@@ -171,21 +163,17 @@ class EdgeBridgeLifecycleMixin:
                 )
                 self._startup_thread.start()
             else:
-                self.get_logger().info(
-                    "ENGAGE step 3/3 skipped: homing off, going IDLE"
-                )
+                self.get_logger().info("ENGAGE step 3/3 skipped: homing off, going IDLE")
                 with self._lock:
                     self._robot_state = RobotState.IDLE
                 self._homing_done_event.set()
                 return self.publish_telemetry(command_id=command_id)
         else:
-            self.get_logger().info(
-                "ENGAGE step 3/3 skipped: homing already in progress"
-            )
+            self.get_logger().info("ENGAGE step 3/3 skipped: homing already in progress")
 
         return self.publish_telemetry(command_id=command_id)
 
-    def handle_standby(self, command_id: Optional[str] = None) -> RobotTelemetryEvent:
+    def handle_standby(self, command_id: str | None = None) -> RobotTelemetryEvent:
         """STANDBY handshake: cancel goals, park home if mid-motion, drop sub, park in STANDBY.
 
         Order: (1) cancel active trajectory + PickAndPlace goals, (2) send one
@@ -252,10 +240,8 @@ class EdgeBridgeLifecycleMixin:
             self._joint_sub = None
 
         if joint_sub is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.destroy_subscription(joint_sub)
-            except Exception:
-                pass
 
         if not self._switch_controllers(
             activate=[],
@@ -264,5 +250,3 @@ class EdgeBridgeLifecycleMixin:
             self.get_logger().warning("STANDBY: controller deactivation failed; staying parked")
 
         return self.publish_telemetry(command_id=command_id)
-
-

@@ -11,19 +11,20 @@ Per ADR 0004 & Unit Refactoring-A (hand-sim-z7uz):
 - Enforces mutual exclusion across concurrent goal requests.
 """
 
+import contextlib
 import threading
 import time
-from typing import Optional
 
-
+import rclpy
 from builtin_interfaces.msg import Duration
 from control_msgs.action import FollowJointTrajectory
-import rclpy
 from rclpy.action import ActionClient, ActionServer, CancelResponse, GoalResponse
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
+from robot_control_interfaces.action import PickAndPlace
+from robot_control_interfaces.srv import GetDropSlot
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectoryPoint
 
@@ -37,8 +38,6 @@ from arm_controller.kinematics import (
     PickAndPlaceTrajectoryGenerator,
     WaypointStep,
 )
-from robot_control_interfaces.action import PickAndPlace
-from robot_control_interfaces.srv import GetDropSlot
 
 MAX_JOINT_VELOCITY_RAD_S: float = 2.0
 
@@ -56,7 +55,9 @@ class ArmControllerNode(Node):
     def __init__(self, node_name: str = "arm_controller_node", **kwargs) -> None:
         super().__init__(node_name, **kwargs)
 
-        self.declare_parameter("controller_action_name", "/scaled_joint_trajectory_controller/follow_joint_trajectory")
+        self.declare_parameter(
+            "controller_action_name", "/scaled_joint_trajectory_controller/follow_joint_trajectory"
+        )
         self.declare_parameter("pick_and_place_action_name", "/arm_controller/pick_and_place")
         self.declare_parameter("get_drop_slot_service_name", "/workcell/get_drop_slot")
         self.declare_parameter("joint_states_topic", "/joint_states")
@@ -67,8 +68,12 @@ class ArmControllerNode(Node):
         self.declare_parameter("max_joint_velocity", MAX_JOINT_VELOCITY_RAD_S)
 
         self._controller_action_name = str(self.get_parameter("controller_action_name").value)
-        self._pick_and_place_action_name = str(self.get_parameter("pick_and_place_action_name").value)
-        self._get_drop_slot_service_name = str(self.get_parameter("get_drop_slot_service_name").value)
+        self._pick_and_place_action_name = str(
+            self.get_parameter("pick_and_place_action_name").value
+        )
+        self._get_drop_slot_service_name = str(
+            self.get_parameter("get_drop_slot_service_name").value
+        )
         self._joint_states_topic = str(self.get_parameter("joint_states_topic").value)
         self._tcp_offset = float(self.get_parameter("tcp_offset").value)
         self._step_duration = float(self.get_parameter("step_duration").value)
@@ -83,8 +88,8 @@ class ArmControllerNode(Node):
         self._active_traj_handle = None
 
         # Telemetry parsing cache for zero-alloc 100 Hz sim ingestion (500 Hz only on real UR)
-        self._cached_joint_names: Optional[list[str]] = None
-        self._cached_joint_indices: Optional[list[int]] = None
+        self._cached_joint_names: list[str] | None = None
+        self._cached_joint_indices: list[int] | None = None
 
         # Kinematics engine
         self.solver = AnalyticalInverseKinematics(tcp_offset=self._tcp_offset)
@@ -216,7 +221,9 @@ class ArmControllerNode(Node):
                 duration = step.pause_duration_s
             else:
                 max_dq = max(abs(step.joint_positions[i] - prev_joints[i]) for i in range(6))
-                min_time = max_dq / self._max_joint_velocity if self._max_joint_velocity > 0 else 0.0
+                min_time = (
+                    max_dq / self._max_joint_velocity if self._max_joint_velocity > 0 else 0.0
+                )
                 duration = max(self._step_duration, min_time)
 
             cumulative_time += duration
@@ -267,7 +274,9 @@ class ArmControllerNode(Node):
             else:
                 # Dynamic drop slot query
                 if not self._drop_slot_client.wait_for_service(timeout_sec=1.0):
-                    self.get_logger().error("GetDropSlot service not available on /workcell/get_drop_slot")
+                    self.get_logger().error(
+                        "GetDropSlot service not available on /workcell/get_drop_slot"
+                    )
                     goal_handle.abort()
                     result.success = False
                     result.message = "GetDropSlot service not available"
@@ -301,7 +310,9 @@ class ArmControllerNode(Node):
                     drop_arrived.wait(0.02)
 
                 if "error" in drop_store or drop_store.get("result") is None:
-                    self.get_logger().error("Failed to query drop slot from /workcell/get_drop_slot")
+                    self.get_logger().error(
+                        "Failed to query drop slot from /workcell/get_drop_slot"
+                    )
                     goal_handle.abort()
                     result.success = False
                     result.message = "Failed to query drop slot"
@@ -309,14 +320,16 @@ class ArmControllerNode(Node):
 
                 drop_res = drop_store["result"]
                 if drop_res.slot_index < 0:
-                    self.get_logger().error(
-                        "GetDropSlot rejected query (invalid classification)"
-                    )
+                    self.get_logger().error("GetDropSlot rejected query (invalid classification)")
                     goal_handle.abort()
                     result.success = False
                     result.message = "Drop slot rejected query: invalid classification"
                     return result
-                drop_coords = (drop_res.drop_coords.x, drop_res.drop_coords.y, drop_res.drop_coords.z)
+                drop_coords = (
+                    drop_res.drop_coords.x,
+                    drop_res.drop_coords.y,
+                    drop_res.drop_coords.z,
+                )
                 self.get_logger().info(
                     f"Queried drop slot: ({drop_res.drop_coords.x:.3f}, {drop_res.drop_coords.y:.3f}, {drop_res.drop_coords.z:.3f}), "
                     f"slot={drop_res.slot_index}, overflow={drop_res.overflow_occurred}"
@@ -329,9 +342,13 @@ class ArmControllerNode(Node):
             # Validate reachability
             try:
                 self.solver.check_reachability(*pick_coords)
-                self.solver.check_reachability(pick_coords[0], pick_coords[1], pick_coords[2] + APPROACH_LIFT_OFFSET_M)
+                self.solver.check_reachability(
+                    pick_coords[0], pick_coords[1], pick_coords[2] + APPROACH_LIFT_OFFSET_M
+                )
                 self.solver.check_reachability(*drop_coords)
-                self.solver.check_reachability(drop_coords[0], drop_coords[1], drop_coords[2] + APPROACH_LIFT_OFFSET_M)
+                self.solver.check_reachability(
+                    drop_coords[0], drop_coords[1], drop_coords[2] + APPROACH_LIFT_OFFSET_M
+                )
             except OutOfReachError as err:
                 self.get_logger().warning(f"Target coordinate out of reach: {err}")
                 goal_handle.abort()
@@ -356,9 +373,13 @@ class ArmControllerNode(Node):
                 return result
 
             # Connect to controller
-            controller_connected = self._traj_client.wait_for_server(timeout_sec=self._traj_connect_timeout)
+            controller_connected = self._traj_client.wait_for_server(
+                timeout_sec=self._traj_connect_timeout
+            )
             if self._require_controller and not controller_connected:
-                self.get_logger().error("Required FollowJointTrajectory action server not available")
+                self.get_logger().error(
+                    "Required FollowJointTrajectory action server not available"
+                )
                 goal_handle.abort()
                 result.success = False
                 result.message = "Controller action server not connected"
@@ -368,7 +389,9 @@ class ArmControllerNode(Node):
             traj_result_future = None
 
             if controller_connected:
-                self.get_logger().info("Dispatching trajectory goal to FollowJointTrajectory client")
+                self.get_logger().info(
+                    "Dispatching trajectory goal to FollowJointTrajectory client"
+                )
                 send_goal_future = self._traj_client.send_goal_async(traj_goal)
                 start_t = time.time()
                 while not send_goal_future.done() and time.time() - start_t < 2.0:
@@ -412,25 +435,28 @@ class ArmControllerNode(Node):
                 feedback = PickAndPlace.Feedback()
                 feedback.phase = step.phase
                 feedback.percent_complete = float(step.percent_complete)
-                try:
+                with contextlib.suppress(Exception):
                     goal_handle.publish_feedback(feedback)
-                except Exception:
-                    pass
                 self.get_logger().debug(
                     f"Feedback: {feedback.phase} ({feedback.percent_complete:.1f}%)"
                 )
 
                 if step.pause_duration_s > 0.0:
-                    step_time = step.pause_duration_s if self._step_duration > 0.05 else self._step_duration
+                    step_time = (
+                        step.pause_duration_s if self._step_duration > 0.05 else self._step_duration
+                    )
                 else:
                     if self._step_duration <= 0.05:
                         step_time = self._step_duration
                     else:
                         max_dq = max(abs(step.joint_positions[i] - prev_q[i]) for i in range(6))
-                        min_time = max_dq / self._max_joint_velocity if self._max_joint_velocity > 0 else 0.0
+                        min_time = (
+                            max_dq / self._max_joint_velocity
+                            if self._max_joint_velocity > 0
+                            else 0.0
+                        )
                         step_time = max(self._step_duration, min_time)
                 prev_q = step.joint_positions
-
 
                 # Interruptible wait checking cancellation and controller failure
                 step_elapsed = 0.0
@@ -487,7 +513,6 @@ class ArmControllerNode(Node):
             with self._lock:
                 self._active_goal_handle = None
                 self._active_traj_handle = None
-
 
 
 def main(args: list[str] | None = None) -> None:

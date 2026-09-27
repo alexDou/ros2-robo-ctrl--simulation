@@ -9,7 +9,7 @@ When(
     expect(this.teleopPage).toBeDefined();
     expect(poseName).toBe('Home');
     await this.teleopPage!.clickHomePose();
-  }
+  },
 );
 
 Then(
@@ -17,7 +17,7 @@ Then(
   async function (this: CustomWorld, state: string) {
     expect(this.teleopPage).toBeDefined();
     await this.teleopPage!.expectEventLogContains(new RegExp(`State:\\s*${state}`));
-  }
+  },
 );
 
 Then(
@@ -27,15 +27,18 @@ Then(
     const targetPose = CANONICAL_POSES[poseKey as PoseName];
     expect(targetPose).toBeDefined();
     await this.teleopPage!.expectRobotAtPose(targetPose, 0.08, maxSeconds * 1000);
-  }
+  },
 );
 
-Then('the palm status should indicate {string}', async function (this: CustomWorld, status: string) {
-  expect(this.teleopPage).toBeDefined();
-  expect(status).toMatch(/^(Grasped|Released)$/);
-  // Palm badge removed in 6.6.4a; 3D nozzle highlight is the grasp source of truth.
-  await this.teleopPage!.expectPalmNozzleHighlighted(status === 'Grasped');
-});
+Then(
+  'the palm status should indicate {string}',
+  async function (this: CustomWorld, status: string) {
+    expect(this.teleopPage).toBeDefined();
+    expect(status).toMatch(/^(Grasped|Released)$/);
+    // Palm badge removed in 6.6.4a; 3D nozzle highlight is the grasp source of truth.
+    await this.teleopPage!.expectPalmNozzleHighlighted(status === 'Grasped');
+  },
+);
 
 Then(
   'the palm status should indicate {string} within {int} ms',
@@ -43,7 +46,7 @@ Then(
     expect(this.teleopPage).toBeDefined();
     expect(status).toMatch(/^(Grasped|Released)$/);
     await this.teleopPage!.expectPalmNozzleHighlighted(status === 'Grasped', timeoutMs);
-  }
+  },
 );
 
 Then('the palm nozzle visual material should be idle', async function (this: CustomWorld) {
@@ -58,10 +61,9 @@ Then('the palm nozzle visual material should be highlighted', async function (th
 
 When('the robot begins executing trajectory motion', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
-  await expect(this.teleopPage!.connectionBadge).toHaveText(
-    /CONNECTED \/ EXECUTING/,
-    { timeout: 3000 }
-  );
+  await expect(this.teleopPage!.connectionBadge).toHaveText(/CONNECTED \/ EXECUTING/, {
+    timeout: 3000,
+  });
 });
 
 When('the operator dispatches an EMERGENCY_STOP command', async function (this: CustomWorld) {
@@ -84,7 +86,7 @@ Then(
       const diff = Math.abs(s2[joint] - s1[joint]);
       expect(diff).toBeLessThanOrEqual(0.001);
     }
-  }
+  },
 );
 
 Then('all action buttons should be disabled', async function (this: CustomWorld) {

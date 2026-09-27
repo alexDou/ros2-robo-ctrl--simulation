@@ -47,6 +47,7 @@ in brackets so only that error is silenced on that line:
 
 ```python
 from foolib import foo  # type: ignore[attr-defined]
+
 x = compute()  # type: ignore[arg-type, assignment]
 ```
 

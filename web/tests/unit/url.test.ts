@@ -35,21 +35,21 @@ describe('URL query parameter utilities', () => {
     it('throws Error when parameter is absent', () => {
       setWindowSearch('?other=123');
       expect(() => getParam('robot_id')).toThrow(
-        'Missing required URL query parameter: "robot_id"'
+        'Missing required URL query parameter: "robot_id"',
       );
     });
 
     it('throws Error when parameter is empty string', () => {
       setWindowSearch('?robot_id=');
       expect(() => getParam('robot_id')).toThrow(
-        'Missing required URL query parameter: "robot_id"'
+        'Missing required URL query parameter: "robot_id"',
       );
     });
 
     it('throws Error when search string is completely empty', () => {
       setWindowSearch('');
       expect(() => getParam('robot_id')).toThrow(
-        'Missing required URL query parameter: "robot_id"'
+        'Missing required URL query parameter: "robot_id"',
       );
     });
   });
@@ -77,35 +77,31 @@ describe('URL query parameter utilities', () => {
   describe('resolveGatewayWsUrl', () => {
     it('returns explicit gatewayWsUrl override when provided', () => {
       expect(resolveGatewayWsUrl('robot-0', 'ws://custom-host:9999/ws')).toBe(
-        'ws://custom-host:9999/ws'
+        'ws://custom-host:9999/ws',
       );
     });
 
     it('constructs ws URL using default port 8080 when query parameter is absent', () => {
       setWindowSearch('');
-      expect(resolveGatewayWsUrl('robot-0')).toBe(
-        'ws://localhost:8080/ws/teleop/robot/robot-0'
-      );
+      expect(resolveGatewayWsUrl('robot-0')).toBe('ws://localhost:8080/ws/teleop/robot/robot-0');
     });
 
     it('uses gateway_port query parameter when present', () => {
       setWindowSearch('?gateway_port=9090');
-      expect(resolveGatewayWsUrl('robot-1')).toBe(
-        'ws://localhost:9090/ws/teleop/robot/robot-1'
-      );
+      expect(resolveGatewayWsUrl('robot-1')).toBe('ws://localhost:9090/ws/teleop/robot/robot-1');
     });
   });
 
   describe('resolveGatewayHealthUrl', () => {
     it('maps ws robot URL to http /health origin', () => {
       expect(resolveGatewayHealthUrl('ws://localhost:8080/ws/teleop/robot/robot-0')).toBe(
-        'http://localhost:8080/health'
+        'http://localhost:8080/health',
       );
     });
 
     it('maps wss URL to https /health origin', () => {
       expect(resolveGatewayHealthUrl('wss://example.com:9090/ws/teleop/robot/arm-ur5')).toBe(
-        'https://example.com:9090/health'
+        'https://example.com:9090/health',
       );
     });
   });

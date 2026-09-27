@@ -1,20 +1,23 @@
 """Unit 6.7.6 red: edge 10Hz steady telemetry timer (same single owner)."""
+
 import rclpy
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from rclpy.parameter import Parameter
 
 from domain import RobotState
-from arm_controller.edge_bridge_node import EdgeBridgeNode
 
 
 def _make_node(robot_id: str) -> EdgeBridgeNode:
     if not rclpy.ok():
         rclpy.init()
-    return EdgeBridgeNode(parameter_overrides=[
-        Parameter("robot_id", Parameter.Type.STRING, robot_id),
-        Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
-        Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
-        Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
-    ])
+    return EdgeBridgeNode(
+        parameter_overrides=[
+            Parameter("robot_id", Parameter.Type.STRING, robot_id),
+            Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
+            Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
+        ]
+    )
 
 
 def test_edge_has_10hz_telemetry_timer():

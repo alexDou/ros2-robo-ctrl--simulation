@@ -42,8 +42,8 @@ describe('Unit Kinematics: UR5e Analytical IK & Pick-and-Place Generator', () =>
 
   it('generates 10-step pick-and-place waypoint trajectory with correct ActionPhases and percentages', () => {
     const gen = new PickAndPlaceTrajectoryGenerator();
-    const pick: [number, number, number] = [0.50, 0.00, 0.00];
-    const drop: [number, number, number] = [0.40, -0.30, 0.00];
+    const pick: [number, number, number] = [0.5, 0.0, 0.0];
+    const drop: [number, number, number] = [0.4, -0.3, 0.0];
 
     const steps = gen.generateTrajectory(pick, drop);
     expect(steps.length).toBe(10);
@@ -94,10 +94,10 @@ describe('Unit Kinematics: UR5e Analytical IK & Pick-and-Place Generator', () =>
   it('achieves sub-millimeter Cartesian positional accuracy on round-trip forward/inverse kinematics', () => {
     const solver = new UR5eKinematics();
     const testTargets: [number, number, number][] = [
-      [0.50, 0.00, 0.10],
-      [0.40, -0.30, 0.05],
-      [-0.45, 0.20, 0.15],
-      [0.35, 0.35, 0.00],
+      [0.5, 0.0, 0.1],
+      [0.4, -0.3, 0.05],
+      [-0.45, 0.2, 0.15],
+      [0.35, 0.35, 0.0],
     ];
 
     for (const [x, y, z] of testTargets) {

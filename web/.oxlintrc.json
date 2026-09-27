@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "import", "unicorn", "react", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "settings": {
+    "react": {
+      "version": "18.0"
+    }
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "vitest/require-mock-type-parameters": "off",
+    "no-underscore-dangle": "off",
+    "vitest/require-to-throw-message": "warn",
+    "react/refs": "off",
+    "react/immutability": "off",
+    "react/globals": "off",
+    "vitest/no-conditional-expect": "warn"
+  },
+  "ignorePatterns": ["dist/**", "test-results/**", "public/**", "domain/contracts.ts"]
+}

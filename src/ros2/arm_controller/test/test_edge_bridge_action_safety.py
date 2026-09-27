@@ -1,24 +1,23 @@
 """EdgeBridgeNode action safety tests (rejection, e-stop, feedback stream)."""
 
+import contextlib
 import json
 import math
 import threading
 import time
 
-import rclpy
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from rclpy.action import ActionServer, CancelResponse, GoalResponse
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.parameter import Parameter
+from robot_control_interfaces.action import PickAndPlace
 
 from domain import (
     CommandType,
     RobotCommand,
     RobotState,
 )
-from robot_control_interfaces.action import PickAndPlace
-
-from arm_controller.edge_bridge_node import EdgeBridgeNode
 
 
 def test_edge_bridge_pick_and_place_goal_rejection_fault(make_switch_server):
@@ -36,7 +35,11 @@ def test_edge_bridge_pick_and_place_goal_rejection_fault(make_switch_server):
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-pnp-reject"),
-            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place_reject"),
+            Parameter(
+                "pick_and_place_action_name",
+                Parameter.Type.STRING,
+                "/test_arm/pick_and_place_reject",
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
             Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
@@ -78,10 +81,8 @@ def test_edge_bridge_pick_and_place_goal_rejection_fault(make_switch_server):
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -120,7 +121,11 @@ def test_edge_bridge_pick_and_place_emergency_stop_cancel(make_switch_server):
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-pnp-estop"),
-            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place_estop"),
+            Parameter(
+                "pick_and_place_action_name",
+                Parameter.Type.STRING,
+                "/test_arm/pick_and_place_estop",
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
             Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
@@ -171,10 +176,8 @@ def test_edge_bridge_pick_and_place_emergency_stop_cancel(make_switch_server):
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -224,7 +227,9 @@ def test_edge_bridge_zenoh_action_feedback_streaming(make_switch_server):
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, robot_id),
-            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_zenoh/pick_and_place"),
+            Parameter(
+                "pick_and_place_action_name", Parameter.Type.STRING, "/test_zenoh/pick_and_place"
+            ),
             Parameter("action_feedback_topic", Parameter.Type.STRING, feedback_topic),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
@@ -274,10 +279,8 @@ def test_edge_bridge_zenoh_action_feedback_streaming(make_switch_server):
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_server.destroy()
         mock_arm.destroy_node()
         node.close()

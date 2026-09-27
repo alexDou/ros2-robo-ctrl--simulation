@@ -78,8 +78,13 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
             "pick_z": 0.0
         }),
     };
-    let rx_pick_only =
-        super::support::expect_rate_limited(&mut ws_stream, &mut cmd_rx, &pick_only_cmd, &rate_limit_cmd).await;
+    let rx_pick_only = super::support::expect_rate_limited(
+        &mut ws_stream,
+        &mut cmd_rx,
+        &pick_only_cmd,
+        &rate_limit_cmd,
+    )
+    .await;
     assert_eq!(rx_pick_only.r#type, CommandType::PickAndPlaceTarget);
     let parsed_pick_only: PickAndPlaceTargetPayload =
         serde_json::from_value(rx_pick_only.payload).expect("parse payload");

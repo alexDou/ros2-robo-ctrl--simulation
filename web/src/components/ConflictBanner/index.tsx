@@ -15,7 +15,8 @@ export function ConflictBanner({ reason }: ConflictBannerProps) {
         marginBottom: '1.5rem',
       }}
     >
-      <strong>Session Conflict:</strong> {reason || 'Another active session already controls this robot.'}
+      <strong>Session Conflict:</strong>{' '}
+      {reason || 'Another active session already controls this robot.'}
     </div>
   );
 }

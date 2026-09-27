@@ -1,11 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import {
-  RobotState,
-  isRobotTelemetryEvent,
-} from '@contracts';
-import {
-  parseRobotTelemetryEvent,
-} from '@domain/parsers';
+import { RobotState, isRobotTelemetryEvent } from '@contracts';
+import { parseRobotTelemetryEvent } from '@domain/parsers';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
   describe('RobotTelemetryEvent', () => {
@@ -20,7 +15,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           detected_object: 'box',
         },
         command_id: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
 
       const event = parseRobotTelemetryEvent(JSON.stringify(raw));
@@ -37,7 +32,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
         inference_metrics: null,
         command_id: null,
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
 
       const event = parseRobotTelemetryEvent(JSON.stringify(rawNulls));
@@ -53,7 +48,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         robot_state: 'EXECUTING',
         joint_positions: [0.0, -1.57, 1.57, 0.0, 0.0, 0.0],
         phase: 'RELEASING',
-      workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
       };
       const event = parseRobotTelemetryEvent(JSON.stringify(withPhase));
       expect(event.phase).toBe('RELEASING');
@@ -110,10 +105,30 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         workcell_state: {
           spawned: [{ id: 'gear-0', x: 0.45, y: 0.1, z: 0.0, color: 'WHITE', intact: true }],
           in_progress: [
-            { id: 'gear-1', x: 0.45, y: 0.1, z: 0.0, origin_x: 0.45, origin_y: 0.1, origin_z: 0.0, color: 'GREEN', intact: true },
+            {
+              id: 'gear-1',
+              x: 0.45,
+              y: 0.1,
+              z: 0.0,
+              origin_x: 0.45,
+              origin_y: 0.1,
+              origin_z: 0.0,
+              color: 'GREEN',
+              intact: true,
+            },
           ],
           processed: [
-            { id: 'gear-2', x: 0.4, y: -0.3, z: 0.02, origin_x: 0.5, origin_y: 0.15, origin_z: 0.0, color: 'BLUE', intact: false },
+            {
+              id: 'gear-2',
+              x: 0.4,
+              y: -0.3,
+              z: 0.02,
+              origin_x: 0.5,
+              origin_y: 0.15,
+              origin_z: 0.0,
+              color: 'BLUE',
+              intact: false,
+            },
           ],
           active_id: 'gear-1',
         },
@@ -132,7 +147,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         joint_positions: [0.0, 1.0], // only 2 joints
       };
       expect(() => parseRobotTelemetryEvent(JSON.stringify(rawTooFew))).toThrow(
-        /must contain exactly 6 joint positions/
+        /must contain exactly 6 joint positions/,
       );
 
       const raw5 = {
@@ -141,7 +156,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         joint_positions: [0.0, 1.0, 2.0, 3.0, 4.0], // 5 joints
       };
       expect(() => parseRobotTelemetryEvent(JSON.stringify(raw5))).toThrow(
-        /must contain exactly 6 joint positions/
+        /must contain exactly 6 joint positions/,
       );
 
       const raw7 = {
@@ -150,7 +165,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         joint_positions: [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0], // 7 joints
       };
       expect(() => parseRobotTelemetryEvent(JSON.stringify(raw7))).toThrow(
-        /must contain exactly 6 joint positions/
+        /must contain exactly 6 joint positions/,
       );
     });
 
@@ -207,9 +222,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         joint_positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       };
 
-      expect(() => parseRobotTelemetryEvent(JSON.stringify(raw))).toThrow(
-        /Invalid robot state/
-      );
+      expect(() => parseRobotTelemetryEvent(JSON.stringify(raw))).toThrow(/Invalid robot state/);
     });
   });
 });

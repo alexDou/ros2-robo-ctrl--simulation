@@ -181,9 +181,9 @@ pub async fn teleop_ws(
                                                 if payload.pick_x.is_finite()
                                                     && payload.pick_y.is_finite()
                                                     && payload.pick_z.is_finite()
-                                                    && payload.drop_x.is_none_or(|v| v.is_finite())
-                                                    && payload.drop_y.is_none_or(|v| v.is_finite())
-                                                    && payload.drop_z.is_none_or(|v| v.is_finite())
+                                                    && payload.drop_x.is_none_or(f64::is_finite)
+                                                    && payload.drop_y.is_none_or(f64::is_finite)
+                                                    && payload.drop_z.is_none_or(f64::is_finite)
                                                 {
                                                 let use_custom_drop = payload.drop_x.is_some() && payload.drop_y.is_some() && payload.drop_z.is_some();
                                                 let goal = crate::action::PickAndPlaceGoal {

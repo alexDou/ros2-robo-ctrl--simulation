@@ -1,27 +1,16 @@
 """Deterministic 10-step pick-and-place waypoint generator."""
 
 from dataclasses import dataclass
-from typing import Optional
 
+from arm_controller.kinematics.angles import unwrap_joint_angles_within_limits
+from arm_controller.kinematics.constants import (
+    APPROACH_LIFT_OFFSET_M,
+    DEFAULT_SPINDLE_TOWER_COORDS,
+    HOME_JOINT_POSITIONS,
+    UR5E_JOINT_LIMITS,
+)
 from arm_controller.kinematics.phases import ActionPhase
 from arm_controller.kinematics.solver import UR5eKinematics
-from arm_controller.kinematics.angles import unwrap_joint_angles
-
-from arm_controller.kinematics.constants import (
-    UR5E_DH_D,
-    UR5E_DH_A,
-    UR5E_DH_ALPHA,
-    DEFAULT_TCP_OFFSET_M,
-    MIN_REACH_M,
-    MAX_REACH_M,
-    DEFAULT_SPINDLE_TOWER_COORDS,
-    APPROACH_LIFT_OFFSET_M,
-    CANONICAL_UR5E_JOINTS,
-    HOME_JOINT_POSITIONS,
-    READY_JOINT_POSITIONS,
-    INSPECT_JOINT_POSITIONS,
-    DEFAULT_DOWNWARD_ORIENTATION,
-)
 
 
 @dataclass(frozen=True)
@@ -46,15 +35,15 @@ class WaypointStep:
 class PickAndPlaceTrajectoryGenerator:
     """Generates deterministic 10-step Cartesian and joint waypoint trajectories."""
 
-    def __init__(self, solver: Optional[UR5eKinematics] = None) -> None:
+    def __init__(self, solver: UR5eKinematics | None = None) -> None:
         self.solver = solver if solver is not None else UR5eKinematics()
 
     def generate_trajectory(
         self,
         pick_coords: tuple[float, float, float],
-        drop_coords: Optional[tuple[float, float, float]] = None,
-        current_joints: Optional[list[float]] = None,
-        rotation_matrix: Optional[list[list[float]]] = None,
+        drop_coords: tuple[float, float, float] | None = None,
+        current_joints: list[float] | None = None,
+        rotation_matrix: list[list[float]] | None = None,
     ) -> list[WaypointStep]:
         """Generates standard 10-step pick-and-place waypoint sequence.
 
@@ -71,11 +60,7 @@ class PickAndPlaceTrajectoryGenerator:
         10. complete: HOME pose                            -> COMPLETED (100%)
         """
         x_pick, y_pick, z_pick = pick_coords
-        drop = (
-            drop_coords
-            if drop_coords is not None
-            else DEFAULT_SPINDLE_TOWER_COORDS
-        )
+        drop = drop_coords if drop_coords is not None else DEFAULT_SPINDLE_TOWER_COORDS
         x_drop, y_drop, z_drop = drop
 
         # Validate reachability before computation
@@ -84,11 +69,7 @@ class PickAndPlaceTrajectoryGenerator:
         self.solver.check_reachability(x_drop, y_drop, z_drop)
         self.solver.check_reachability(x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
 
-        q_ref = (
-            list(current_joints)
-            if current_joints is not None
-            else list(HOME_JOINT_POSITIONS)
-        )
+        q_ref = list(current_joints) if current_joints is not None else list(HOME_JOINT_POSITIONS)
 
         # Coordinate frame transformation: UR5e URDF base_link is REP-103 (+X forward),
         # but base_link_inertia is rotated by pi around Z (UR controller / DH convention).
@@ -107,87 +88,63 @@ class PickAndPlaceTrajectoryGenerator:
         x_pick_dh, y_pick_dh = -x_pick, -y_pick
         x_drop_dh, y_drop_dh = -x_drop, -y_drop
 
-        # 1. Approach pick
+        def solve(dh_xyz: tuple[float, float, float], q_prev: list[float]) -> list[float]:
+            nonlocal configuration
+            q_raw, solved = self.solver.solve_ik_configured(
+                dh_xyz[0],
+                dh_xyz[1],
+                dh_xyz[2],
+                current_joints=q_prev,
+                configuration=configuration,
+                rotation_matrix=ik_rot,
+            )
+            # A degenerate (0) sign locked at approach_pick is pinned by the first definite one.
+            configuration = tuple(c or d for c, d in zip(configuration, solved, strict=True))
+            return unwrap_joint_angles_within_limits(q_raw, q_prev, UR5E_JOINT_LIMITS)
+
+        # 1. Approach pick. Its branch (shoulder/elbow/wrist) is locked for the whole cycle so the
+        # arm never flips configuration mid-motion (e.g. at high tower slots).
         pos_app_pick = (x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
-        pos_app_pick_dh = (x_pick_dh, y_pick_dh, z_pick + APPROACH_LIFT_OFFSET_M)
-        q_app_pick_raw = self.solver.solve_ik(
-            pos_app_pick_dh[0],
-            pos_app_pick_dh[1],
-            pos_app_pick_dh[2],
+        q_app_pick_raw, configuration = self.solver.solve_ik_configured(
+            x_pick_dh,
+            y_pick_dh,
+            z_pick + APPROACH_LIFT_OFFSET_M,
             current_joints=q_ref,
             rotation_matrix=ik_rot,
         )
-        q_app_pick = unwrap_joint_angles(q_app_pick_raw, q_ref)
+        q_app_pick = unwrap_joint_angles_within_limits(q_app_pick_raw, q_ref, UR5E_JOINT_LIMITS)
 
         # 2. Pick
         pos_pick = (x_pick, y_pick, z_pick)
-        pos_pick_dh = (x_pick_dh, y_pick_dh, z_pick)
-        q_pick_raw = self.solver.solve_ik(
-            pos_pick_dh[0],
-            pos_pick_dh[1],
-            pos_pick_dh[2],
-            current_joints=q_app_pick,
-            rotation_matrix=ik_rot,
-        )
-        q_pick = unwrap_joint_angles(q_pick_raw, q_app_pick)
+        q_pick = solve((x_pick_dh, y_pick_dh, z_pick), q_app_pick)
 
         # 3. Grasp Actuation (suction on, 200ms pause at pick position)
         q_grasp = list(q_pick)
 
         # 4. Lift
         pos_lift = (x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
-        pos_lift_dh = (x_pick_dh, y_pick_dh, z_pick + APPROACH_LIFT_OFFSET_M)
-        q_lift_raw = self.solver.solve_ik(
-            pos_lift_dh[0],
-            pos_lift_dh[1],
-            pos_lift_dh[2],
-            current_joints=q_grasp,
-            rotation_matrix=ik_rot,
-        )
-        q_lift = unwrap_joint_angles(q_lift_raw, q_grasp)
+        q_lift = solve((x_pick_dh, y_pick_dh, z_pick + APPROACH_LIFT_OFFSET_M), q_grasp)
 
         # 5. Tower approach / transfer
         pos_app_drop = (x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
-        pos_app_drop_dh = (x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M)
-        q_app_drop_raw = self.solver.solve_ik(
-            pos_app_drop_dh[0],
-            pos_app_drop_dh[1],
-            pos_app_drop_dh[2],
-            current_joints=q_lift,
-            rotation_matrix=ik_rot,
-        )
-        q_app_drop = unwrap_joint_angles(q_app_drop_raw, q_lift)
+        q_app_drop = solve((x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M), q_lift)
 
         # 6. Tower drop
         pos_drop = (x_drop, y_drop, z_drop)
-        pos_drop_dh = (x_drop_dh, y_drop_dh, z_drop)
-        q_drop_raw = self.solver.solve_ik(
-            pos_drop_dh[0],
-            pos_drop_dh[1],
-            pos_drop_dh[2],
-            current_joints=q_app_drop,
-            rotation_matrix=ik_rot,
-        )
-        q_drop = unwrap_joint_angles(q_drop_raw, q_app_drop)
+        q_drop = solve((x_drop_dh, y_drop_dh, z_drop), q_app_drop)
 
         # 7. Release Actuation (suction off, 200ms pause at drop position)
         q_release = list(q_drop)
 
         # 8. Tower retreat
         pos_retreat = (x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
-        pos_retreat_dh = (x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M)
-        q_retreat_raw = self.solver.solve_ik(
-            pos_retreat_dh[0],
-            pos_retreat_dh[1],
-            pos_retreat_dh[2],
-            current_joints=q_release,
-            rotation_matrix=ik_rot,
-        )
-        q_retreat = unwrap_joint_angles(q_retreat_raw, q_release)
+        q_retreat = solve((x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M), q_release)
 
-        # 9. Home & 10. Complete
-        q_home_canonical = list(HOME_JOINT_POSITIONS)
-        q_home = unwrap_joint_angles(q_home_canonical, q_retreat)
+        # 9. Home & 10. Complete: HOME is an absolute posture, never unwrapped relative to the
+        # retreat pose. Unwrapping it added a 2*pi turn to wrist_1 whenever the retreat pose had
+        # wrist_1 > pi/2 (outer towers, slot >= 1); fed back via /joint_states, the turns
+        # accumulated cycle over cycle past the URDF limits.
+        q_home = list(HOME_JOINT_POSITIONS)
         home_pos = self.solver.forward_kinematics_position(q_home, with_tcp=True)
 
         return [

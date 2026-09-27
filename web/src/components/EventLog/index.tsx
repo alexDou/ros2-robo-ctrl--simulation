@@ -40,7 +40,8 @@ export function EventLog({ logs }: EventLogProps) {
                   }}
                 >
                   <div>
-                    [{log.timestamp}] <strong>[ERROR: {log.data.error_code}]</strong> {log.data.message}
+                    [{log.timestamp}] <strong>[ERROR: {log.data.error_code}]</strong>{' '}
+                    {log.data.message}
                   </div>
                 </div>
               );

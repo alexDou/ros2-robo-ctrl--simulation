@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  UR5E_JOINTS,
-  CANONICAL_UR5E_JOINTS,
-  type UR5eJoint,
-} from '@contracts';
+import { UR5E_JOINTS, CANONICAL_UR5E_JOINTS, type UR5eJoint } from '@contracts';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
   describe('Canonical UR5e Joint Constants', () => {

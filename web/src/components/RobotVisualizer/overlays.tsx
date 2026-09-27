@@ -28,7 +28,14 @@ export function VisualizerErrorOverlay({ error }: { error: VisualizerErrorInfo }
       <div style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
         {'⚠ '} {error.title}
       </div>
-      <div style={{ color: '#e5e7eb', fontSize: '0.875rem', maxWidth: '480px', marginBottom: '0.75rem' }}>
+      <div
+        style={{
+          color: '#e5e7eb',
+          fontSize: '0.875rem',
+          maxWidth: '480px',
+          marginBottom: '0.75rem',
+        }}
+      >
         {error.message}
       </div>
       {error.hint && (

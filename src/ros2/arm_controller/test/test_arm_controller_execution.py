@@ -1,15 +1,8 @@
 """ArmControllerNode execution tests (lifecycle, cancellation, mutual exclusion, drop-slot faults)."""
 
+import contextlib
 import threading
 import time
-
-from control_msgs.action import FollowJointTrajectory
-from geometry_msgs.msg import Point
-import rclpy
-from rclpy.action import ActionClient, ActionServer, CancelResponse, GoalResponse
-from rclpy.node import Node
-from rclpy.executors import MultiThreadedExecutor
-from rclpy.parameter import Parameter
 
 from arm_controller.arm_controller_node import (
     ArmControllerNode,
@@ -17,6 +10,12 @@ from arm_controller.arm_controller_node import (
 from arm_controller.kinematics import (
     CANONICAL_UR5E_JOINTS,
 )
+from control_msgs.action import FollowJointTrajectory
+from geometry_msgs.msg import Point
+from rclpy.action import ActionClient, ActionServer, CancelResponse
+from rclpy.executors import MultiThreadedExecutor
+from rclpy.node import Node
+from rclpy.parameter import Parameter
 from robot_control_interfaces.action import PickAndPlace
 from robot_control_interfaces.srv import GetDropSlot
 
@@ -34,7 +33,7 @@ def test_arm_controller_action_lifecycle_and_feedback_stream():
         res.error_code = FollowJointTrajectory.Result.SUCCESSFUL
         return res
 
-    mock_traj_server = ActionServer(
+    _mock_traj_server = ActionServer(  # noqa: F841 -- kept alive to serve goals; never read
         mock_controller,
         FollowJointTrajectory,
         "/test_controller/follow_joint_trajectory",
@@ -44,7 +43,11 @@ def test_arm_controller_action_lifecycle_and_feedback_stream():
     node = ArmControllerNode(
         parameter_overrides=[
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_lifecycle"),
-            Parameter("controller_action_name", Parameter.Type.STRING, "/test_controller/follow_joint_trajectory"),
+            Parameter(
+                "controller_action_name",
+                Parameter.Type.STRING,
+                "/test_controller/follow_joint_trajectory",
+            ),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.01),
             Parameter("require_controller", Parameter.Type.BOOL, True),
         ]
@@ -136,20 +139,16 @@ def test_arm_controller_goal_cancellation_and_safe_stop():
     def handle_traj_execute(goal_handle):
         # If safe-stop trajectory (1 point), complete immediately
         if len(goal_handle.request.trajectory.points) == 1:
-            try:
+            with contextlib.suppress(Exception):
                 goal_handle.succeed()
-            except Exception:
-                pass
             return FollowJointTrajectory.Result()
 
         # Initial trajectory to give time for cancel
         start_t = time.time()
         while time.time() - start_t < 2.0:
             if goal_handle.is_cancel_requested:
-                try:
+                with contextlib.suppress(Exception):
                     goal_handle.canceled()
-                except Exception:
-                    pass
                 res = FollowJointTrajectory.Result()
                 res.error_code = -1
                 return res
@@ -160,7 +159,6 @@ def test_arm_controller_goal_cancellation_and_safe_stop():
         except Exception:
             pass
         return FollowJointTrajectory.Result()
-
 
     ActionServer(
         mock_controller,
@@ -173,7 +171,11 @@ def test_arm_controller_goal_cancellation_and_safe_stop():
     node = ArmControllerNode(
         parameter_overrides=[
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_cancel"),
-            Parameter("controller_action_name", Parameter.Type.STRING, "/test_cancel_controller/follow_joint_trajectory"),
+            Parameter(
+                "controller_action_name",
+                Parameter.Type.STRING,
+                "/test_cancel_controller/follow_joint_trajectory",
+            ),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.3),
             Parameter("require_controller", Parameter.Type.BOOL, True),
         ]
@@ -307,7 +309,11 @@ def test_arm_controller_drop_slot_unavailable_aborts_goal():
     node = ArmControllerNode(
         parameter_overrides=[
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_no_drop_svc"),
-            Parameter("get_drop_slot_service_name", Parameter.Type.STRING, "/test_workcell/nonexistent_drop_slot"),
+            Parameter(
+                "get_drop_slot_service_name",
+                Parameter.Type.STRING,
+                "/test_workcell/nonexistent_drop_slot",
+            ),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.005),
             Parameter("traj_connect_timeout", Parameter.Type.DOUBLE, 0.01),
         ]
@@ -364,12 +370,18 @@ def test_arm_controller_slow_drop_slot_service_still_resolves():
         res.overflow_occurred = False
         return res
 
-    mock_workcell.create_service(GetDropSlot, "/test_slow_workcell/get_drop_slot", mock_get_drop_slot)
+    mock_workcell.create_service(
+        GetDropSlot, "/test_slow_workcell/get_drop_slot", mock_get_drop_slot
+    )
 
     node = ArmControllerNode(
         parameter_overrides=[
             Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_slow_drop"),
-            Parameter("get_drop_slot_service_name", Parameter.Type.STRING, "/test_slow_workcell/get_drop_slot"),
+            Parameter(
+                "get_drop_slot_service_name",
+                Parameter.Type.STRING,
+                "/test_slow_workcell/get_drop_slot",
+            ),
             Parameter("step_duration", Parameter.Type.DOUBLE, 0.005),
             Parameter("traj_connect_timeout", Parameter.Type.DOUBLE, 0.01),
         ]

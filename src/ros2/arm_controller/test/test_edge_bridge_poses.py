@@ -1,17 +1,13 @@
 """EdgeBridgeNode init and phase-telemetry tests."""
 
-import time
-
+from arm_controller.edge_bridge_node import EdgeBridgeNode
 from rclpy.parameter import Parameter
-from sensor_msgs.msg import JointState
 
 from domain import (
     CANONICAL_POSES,
     PoseName,
     RobotState,
 )
-
-from arm_controller.edge_bridge_node import EdgeBridgeNode
 
 
 def test_edge_bridge_initialization():

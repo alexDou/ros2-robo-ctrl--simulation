@@ -12,11 +12,6 @@ export function ActionProgressBar({ progress }: ActionProgressBarProps) {
     <div
       data-testid="action-progress-container"
       style={{
-        position: 'absolute',
-        top: '1rem',
-        left: '1rem',
-        right: '1rem',
-        zIndex: 20,
         backgroundColor: 'rgba(31, 41, 55, 0.92)',
         backdropFilter: 'blur(4px)',
         borderRadius: '0.5rem',
@@ -24,6 +19,8 @@ export function ActionProgressBar({ progress }: ActionProgressBarProps) {
         border: '1px solid #374151',
         boxSizing: 'border-box',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
+        width: '100%',
+        marginBottom: '0.75rem',
       }}
     >
       <div
@@ -37,8 +34,7 @@ export function ActionProgressBar({ progress }: ActionProgressBarProps) {
         }}
       >
         <span>
-          Action Phase:{' '}
-          <strong data-testid="action-progress-phase">{progress.phase}</strong>
+          Action Phase: <strong data-testid="action-progress-phase">{progress.phase}</strong>
         </span>
         <span data-testid="action-progress-percent" style={{ fontWeight: 600, color: '#60a5fa' }}>
           {roundedPercent}%

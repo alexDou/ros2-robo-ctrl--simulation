@@ -2,10 +2,13 @@ import { When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { CustomWorld } from '../support/world';
 
-Then('the 3D workcell table should be mounted in the WebGL scene', async function (this: CustomWorld) {
-  expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.expectWorkcellTableLoaded();
-});
+Then(
+  'the 3D workcell table should be mounted in the WebGL scene',
+  async function (this: CustomWorld) {
+    expect(this.teleopPage).toBeDefined();
+    await this.teleopPage!.expectWorkcellTableLoaded();
+  },
+);
 
 Then('no active gear should be present in the workspace', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
@@ -32,7 +35,7 @@ When(
   async function (this: CustomWorld, x: number, y: number) {
     expect(this.teleopPage).toBeDefined();
     await this.teleopPage!.clickWorkcellTable(x, y);
-  }
+  },
 );
 
 When(
@@ -40,7 +43,7 @@ When(
   async function (this: CustomWorld, x: number, y: number) {
     expect(this.teleopPage).toBeDefined();
     await this.teleopPage!.clickWorkcellTable(x, y);
-  }
+  },
 );
 
 When('the operator clicks the "Clear Workspace" button', async function (this: CustomWorld) {
@@ -53,7 +56,7 @@ Then(
   async function (this: CustomWorld, x: number, y: number) {
     expect(this.teleopPage).toBeDefined();
     await this.teleopPage!.expectGearwheelAtPosition(x, y, 0.05);
-  }
+  },
 );
 
 Then('clicking the workcell table is locked out', async function (this: CustomWorld) {
@@ -89,27 +92,30 @@ Then(
         {
           message: `EdgeNode logger should record gear spawn near (${x.toFixed(3)}, ${y.toFixed(3)}, 0.000)`,
           timeout: 5000,
-        }
+        },
       )
       .toBeLessThanOrEqual(0.05);
-  }
+  },
 );
 
-Then('the EdgeNode ROS2 logger should record workspace cleared', async function (this: CustomWorld) {
-  await expect
-    .poll(() => this.harness.getCapturedLogs(), {
-      message: 'EdgeNode logger should record workspace cleared',
-      timeout: 5000,
-    })
-    .toContain('Workspace cleared for command');
-});
+Then(
+  'the EdgeNode ROS2 logger should record workspace cleared',
+  async function (this: CustomWorld) {
+    await expect
+      .poll(() => this.harness.getCapturedLogs(), {
+        message: 'EdgeNode logger should record workspace cleared',
+        timeout: 5000,
+      })
+      .toContain('Workspace cleared for command');
+  },
+);
 
 When(
   'the operator hovers over the workcell table at coordinates x {float} and y {float}',
   async function (this: CustomWorld, x: number, y: number) {
     expect(this.teleopPage).toBeDefined();
     await this.teleopPage!.hoverWorkcellTable(x, y);
-  }
+  },
 );
 
 Then('the dynamic ring reticle should be visible', async function (this: CustomWorld) {

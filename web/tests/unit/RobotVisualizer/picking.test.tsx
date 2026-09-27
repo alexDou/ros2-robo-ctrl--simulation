@@ -14,7 +14,6 @@ function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[
   };
 }
 
-
 describe('Unit 3.2: RobotVisualizer Component', () => {
   let mockRenderer: any;
   let mockControls: any;
@@ -72,7 +71,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     cbs.forEach((cb) => cb(performance.now()));
   };
 
-
   describe('Unit 5.1: 3D Workcell Table, Raycaster & Procedural Gear Ingestion', () => {
     let fakeTool0Link: THREE.Object3D;
     let fakeRobot: any;
@@ -105,7 +103,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -148,7 +146,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -208,7 +206,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -230,7 +228,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           robotState="IDLE"
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
-        />
+        />,
       );
 
       act(() => {
@@ -253,7 +251,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -299,7 +297,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -311,7 +309,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
       // Backend echo: spawned entry appears at click coords verbatim.
       act(() => {
-        telemetryBufferRef.current.workcellState.spawned = [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0 , color: 'WHITE', intact: true }];
+        telemetryBufferRef.current.workcellState.spawned = [
+          { id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE', intact: true },
+        ];
         stepFrame();
       });
 
@@ -338,7 +338,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
 
     it('snapshot removal deletes mesh and lifts ClickLockout; clearWorkspace is echo-driven no-op', async () => {
       const onSpawnSpy = vi.fn();
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
+      const telemetryBufferRef = snapBuffer([
+        { id: 'g1', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true },
+      ]);
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -351,7 +353,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -389,7 +391,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     });
 
     it('cleans up and disposes table, reticle, and snapshot gear geometries and materials on unmount', async () => {
-      const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 , color: 'WHITE', intact: true }]);
+      const telemetryBufferRef = snapBuffer([
+        { id: 'g1', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true },
+      ]);
       let unmountFn: () => void;
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -403,7 +407,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
         unmountFn = res.unmount;
       });
@@ -455,7 +459,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             rendererFactory={() => mockRenderer}
             controlsFactory={() => mockControls}
             onRobotLoaded={() => resolveLoaded()}
-          />
+          />,
         );
       });
 
@@ -489,7 +493,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
 
       await act(async () => {
@@ -506,7 +510,9 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
             ? new PointerEvent('pointerdown', { clientX: 100, clientY: 100, bubbles: true })
             : new MouseEvent('pointerdown', { clientX: 100, clientY: 100, bubbles: true });
         canvas.dispatchEvent(downEvt);
-        canvas.dispatchEvent(new MouseEvent('click', { clientX: 150, clientY: 150, bubbles: true }));
+        canvas.dispatchEvent(
+          new MouseEvent('click', { clientX: 150, clientY: 150, bubbles: true }),
+        );
       });
 
       expect(visualizer.hasActiveGear()).toBe(false);

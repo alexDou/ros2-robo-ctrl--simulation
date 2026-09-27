@@ -89,7 +89,7 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
         rendererFactory={() => mockRenderer}
         controlsFactory={() => mockControls}
         onRobotLoaded={() => resolveLoaded()}
-      />
+      />,
     );
     await act(async () => {
       await loadedPromise;
@@ -124,9 +124,11 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
   });
 
   it('indicator empty with no rejects; sound-only processed stays empty with no digits', async () => {
-    const telemetryBufferRef = snapBuffer([], [], [
-      { id: 'w1', x: 0.4, y: -0.3, z: 0.0, color: 'WHITE', intact: true },
-    ]);
+    const telemetryBufferRef = snapBuffer(
+      [],
+      [],
+      [{ id: 'w1', x: 0.4, y: -0.3, z: 0.0, color: 'WHITE', intact: true }],
+    );
     const visualizer = await mountVisualizer(telemetryBufferRef);
     act(() => {
       stepFrame();
@@ -162,9 +164,11 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
   });
 
   it('clearing workspace returns icon to empty', async () => {
-    const telemetryBufferRef = snapBuffer([], [], [
-      { id: 'd1', x: SCRAP_BIN[0], y: SCRAP_BIN[1], z: 0.0, color: 'BLUE', intact: false },
-    ]);
+    const telemetryBufferRef = snapBuffer(
+      [],
+      [],
+      [{ id: 'd1', x: SCRAP_BIN[0], y: SCRAP_BIN[1], z: 0.0, color: 'BLUE', intact: false }],
+    );
     const visualizer = await mountVisualizer(telemetryBufferRef);
     act(() => {
       stepFrame();
@@ -192,7 +196,7 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
           rendererFactory={() => mockRenderer}
           controlsFactory={() => mockControls}
           onRobotLoaded={() => resolveLoaded()}
-        />
+        />,
       );
       unmountFn = res.unmount;
     });

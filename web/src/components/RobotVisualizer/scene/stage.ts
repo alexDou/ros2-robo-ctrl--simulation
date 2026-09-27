@@ -83,7 +83,16 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const scrapBinAssets = createScrapBin();
   robotGroup.add(scrapBinAssets.group);
 
-  return { scene, camera, robotGroup, pedestalAssets, tableAssets, spindleTowerAssets, spindleTowerAssetsByColor, scrapBinAssets };
+  return {
+    scene,
+    camera,
+    robotGroup,
+    pedestalAssets,
+    tableAssets,
+    spindleTowerAssets,
+    spindleTowerAssetsByColor,
+    scrapBinAssets,
+  };
 }
 
 export function createRenderer(

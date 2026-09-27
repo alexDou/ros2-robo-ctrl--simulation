@@ -1,23 +1,22 @@
 """EdgeBridgeNode PickAndPlace dispatch tests (happy path + custom drop)."""
 
+import contextlib
 import math
 import threading
 import time
 
-import rclpy
-from rclpy.action import ActionServer, CancelResponse, GoalResponse
+from arm_controller.edge_bridge_node import EdgeBridgeNode
+from rclpy.action import ActionServer
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.parameter import Parameter
+from robot_control_interfaces.action import PickAndPlace
 
 from domain import (
     CommandType,
     RobotCommand,
     RobotState,
 )
-from robot_control_interfaces.action import PickAndPlace
-
-from arm_controller.edge_bridge_node import EdgeBridgeNode
 
 
 def test_edge_bridge_pick_and_place_action_dispatch_and_feedback(make_switch_server):
@@ -66,7 +65,9 @@ def test_edge_bridge_pick_and_place_action_dispatch_and_feedback(make_switch_ser
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-pnp-arm"),
-            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place"),
+            Parameter(
+                "pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place"
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
             Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
@@ -138,10 +139,8 @@ def test_edge_bridge_pick_and_place_action_dispatch_and_feedback(make_switch_ser
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()
@@ -171,7 +170,11 @@ def test_edge_bridge_pick_and_place_custom_drop_coords(make_switch_server):
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-pnp-custom"),
-            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test_arm/pick_and_place_custom"),
+            Parameter(
+                "pick_and_place_action_name",
+                Parameter.Type.STRING,
+                "/test_arm/pick_and_place_custom",
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
             Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
@@ -225,10 +228,8 @@ def test_edge_bridge_pick_and_place_custom_drop_coords(make_switch_server):
     finally:
         executor.shutdown()
         spin_thread.join(timeout=1.0)
-        try:
+        with contextlib.suppress(Exception):
             _fake.destroy_node()
-        except Exception:
-            pass
         mock_action_server.destroy()
         mock_arm.destroy_node()
         node.close()

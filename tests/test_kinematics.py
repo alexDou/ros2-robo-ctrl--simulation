@@ -12,21 +12,17 @@ Validates:
 
 import math
 import random
-import pytest
 
-from domain import CANONICAL_POSES, PoseName
+import pytest
 from arm_controller.kinematics import (
-    DEFAULT_DOWNWARD_ORIENTATION,
     DEFAULT_SPINDLE_TOWER_COORDS,
     DEFAULT_TCP_OFFSET_M,
-    MAX_REACH_M,
-    MIN_REACH_M,
-    KinematicsError,
     OutOfReachError,
     PickAndPlaceTrajectoryGenerator,
     UR5eKinematics,
-    WaypointStep,
 )
+
+from domain import CANONICAL_POSES, PoseName
 
 
 @pytest.fixture
@@ -94,7 +90,7 @@ class TestInverseKinematics:
             cartesian_error_m = math.sqrt(dx * dx + dy * dy + dz * dz)
 
             # Assert strict sub-millimeter (< 1mm = 0.001m) accuracy
-            assert cartesian_error_m < 0.001, f"Error {cartesian_error_m*1000:.3f}mm exceeds 1mm"
+            assert cartesian_error_m < 0.001, f"Error {cartesian_error_m * 1000:.3f}mm exceeds 1mm"
             tested += 1
 
         assert tested == 100
@@ -102,9 +98,9 @@ class TestInverseKinematics:
     def test_solve_cartesian_downward_normal_constraint(self, solver: UR5eKinematics) -> None:
         """Asserts solve_ik enforces vertical downward normal orientation."""
         test_points = [
-            (0.40, -0.30, 0.0),   # SpindleTower base
+            (0.40, -0.30, 0.0),  # SpindleTower base
             (0.40, -0.30, 0.10),  # SpindleTower approach
-            (0.35, 0.15, 0.0),    # Workcell table pickup
+            (0.35, 0.15, 0.0),  # Workcell table pickup
             (0.50, -0.10, 0.05),  # Intermediate workspace point
         ]
 
@@ -153,11 +149,13 @@ class TestInverseKinematics:
             dist_other = solver.angular_distance(other, q_current)
             assert dist_best <= dist_other + 1e-9
 
-    def test_minimal_displacement_avoids_multi_revolution_flips(self, solver: UR5eKinematics) -> None:
+    def test_minimal_displacement_avoids_multi_revolution_flips(
+        self, solver: UR5eKinematics
+    ) -> None:
         """Asserts angular distance accounts for 2*pi wrapping."""
         q_near_pi = [3.10, 0.0, 0.0, 0.0, 0.0, 0.0]
         cand1 = [-3.14, 0.0, 0.0, 0.0, 0.0, 0.0]  # angular diff ~ 0.04 rad
-        cand2 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]    # angular diff ~ 3.10 rad
+        cand2 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # angular diff ~ 3.10 rad
 
         best = solver.select_minimal_displacement([cand1, cand2], q_near_pi)
         assert best == cand1
@@ -165,9 +163,9 @@ class TestInverseKinematics:
 
 class TestReachabilityBoundaries:
     def test_reachability_within_boundaries_passes(self, solver: UR5eKinematics) -> None:
-        solver.check_reachability(0.40, 0.30, 0.0)   # R = 0.50m
-        solver.check_reachability(0.25, 0.0, 0.0)    # R = 0.25m
-        solver.check_reachability(0.80, 0.0, 0.0)    # R = 0.80m
+        solver.check_reachability(0.40, 0.30, 0.0)  # R = 0.50m
+        solver.check_reachability(0.25, 0.0, 0.0)  # R = 0.25m
+        solver.check_reachability(0.80, 0.0, 0.0)  # R = 0.80m
 
     def test_inner_radius_out_of_reach_raises_error(self, solver: UR5eKinematics) -> None:
         # R = 0.1414m < 0.20m
@@ -339,5 +337,4 @@ class TestPickAndPlaceTrajectoryGenerator:
             dy = (-T_tcp[1][3]) - step.cartesian_position[1]
             dz = T_tcp[2][3] - step.cartesian_position[2]
             err = math.sqrt(dx * dx + dy * dy + dz * dz)
-            assert err < 0.001, f"Step {step.name} FK error {err*1000:.3f}mm exceeds 1mm limit"
-
+            assert err < 0.001, f"Step {step.name} FK error {err * 1000:.3f}mm exceeds 1mm limit"

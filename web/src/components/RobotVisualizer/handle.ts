@@ -25,7 +25,12 @@ export interface HandleDeps {
   simulatePointerMove: (x: number, y: number) => void;
   simulatePointerLeave: () => void;
   simulateClick: (x: number, y: number) => unknown;
-  raycastPointer: (clientX: number, clientY: number) => RobotVisualizerGlobalHandle['raycastPointer'] extends (a: number, b: number) => infer R ? R : never;
+  raycastPointer: (
+    clientX: number,
+    clientY: number,
+  ) => RobotVisualizerGlobalHandle['raycastPointer'] extends (a: number, b: number) => infer R
+    ? R
+    : never;
   getTableScreenCoords: (x: number, y: number) => { clientX: number; clientY: number } | null;
 }
 
@@ -59,8 +64,7 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
     getLinkWorldPosition: (linkName: string): { x: number; y: number; z: number } | null => {
       const robot = deps.getRobot();
       if (!robot) return null;
-      const link =
-        (robot.links && robot.links[linkName]) || robot.getObjectByName(linkName);
+      const link = (robot.links && robot.links[linkName]) || robot.getObjectByName(linkName);
       if (!link) return null;
       const target = new THREE.Vector3();
       link.getWorldPosition(target);
@@ -101,7 +105,8 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
     getSpindleTowerMesh: () => deps.getSpindle()?.group ?? null,
     getSpindleTowerMeshes: () =>
       Object.values(deps.getSpindlesByColor()).map((s) => s?.group ?? null),
-    getSpindleTowerMeshByColor: (color: GearColor) => deps.getSpindlesByColor()[color]?.group ?? null,
+    getSpindleTowerMeshByColor: (color: GearColor) =>
+      deps.getSpindlesByColor()[color]?.group ?? null,
     getSpindleBaseFlangeMesh: () => deps.getSpindle()?.flangeMesh ?? null,
     getSpindlePinMesh: () => deps.getSpindle()?.pinMesh ?? null,
     getScrapBinMesh: () => deps.getScrapBin()?.group ?? null,
@@ -125,7 +130,8 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
       // Per-color n/10 counters must filter by color+intact+coords, not this.
       [...deps.store.gears.values()].filter((r) => r.bucket === 'processed').length,
     isGearAttached: () => [...deps.store.gears.values()].some((r) => r.bucket === 'in_progress'),
-    wasGearEverAttached: () => [...deps.store.gears.values()].some((r) => r.bucket === 'in_progress'),
+    wasGearEverAttached: () =>
+      [...deps.store.gears.values()].some((r) => r.bucket === 'in_progress'),
     getAttachedGearMesh: () => {
       const rec = [...deps.store.gears.values()].find((r) => r.bucket === 'in_progress');
       return rec?.assets.group ?? null;
@@ -149,9 +155,13 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
       return { x: pos.x, y: pos.y, z: pos.z };
     },
     hasActiveGear: () =>
-      [...deps.store.gears.values()].some((r) => r.bucket === 'spawned' || r.bucket === 'in_progress'),
+      [...deps.store.gears.values()].some(
+        (r) => r.bucket === 'spawned' || r.bucket === 'in_progress',
+      ),
     getSpawnedGearCount: () =>
-      [...deps.store.gears.values()].filter((r) => r.bucket === 'spawned' || r.bucket === 'in_progress').length,
+      [...deps.store.gears.values()].filter(
+        (r) => r.bucket === 'spawned' || r.bucket === 'in_progress',
+      ).length,
     isLockedOut: () => deps.isLocked(),
     clearWorkspace: () => {
       // No-op locally: workspace clears on snapshot echo (CLEAR_WORKSPACE).

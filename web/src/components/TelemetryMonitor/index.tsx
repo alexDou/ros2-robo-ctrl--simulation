@@ -176,7 +176,14 @@ export function TelemetryMonitor({
               gap: '0.25rem',
             }}
           >
-            <span style={{ color: '#9ca3af', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span
+              style={{
+                color: '#9ca3af',
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
               {jointName.replace(/_/g, ' ')}
             </span>
             <span
@@ -184,7 +191,12 @@ export function TelemetryMonitor({
                 jointValRefs.current[jointName] = el;
               }}
               data-testid={`joint-val-${jointName}`}
-              style={{ fontFamily: 'monospace', fontSize: '0.95rem', fontWeight: 600, color: '#60a5fa' }}
+              style={{
+                fontFamily: 'monospace',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                color: '#60a5fa',
+              }}
             >
               0.000 rad (0.0°)
             </span>
@@ -194,4 +206,3 @@ export function TelemetryMonitor({
     </section>
   );
 }
-

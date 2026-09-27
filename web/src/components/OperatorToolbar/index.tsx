@@ -72,7 +72,10 @@ export function OperatorToolbar({
         </div>
       )}
       {disabledReason && (
-        <div data-testid="toolbar-disabled-reason" style={{ color: '#9ca3af', fontSize: '0.8125rem' }}>
+        <div
+          data-testid="toolbar-disabled-reason"
+          style={{ color: '#9ca3af', fontSize: '0.8125rem' }}
+        >
           {disabledReason}
         </div>
       )}
@@ -118,7 +121,9 @@ export function OperatorToolbar({
           data-testid="workspace-control-cluster"
           style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}
         >
-          <span style={{ color: '#9ca3af', fontSize: '0.8125rem', fontWeight: 600 }}>Workcell:</span>
+          <span style={{ color: '#9ca3af', fontSize: '0.8125rem', fontWeight: 600 }}>
+            Workcell:
+          </span>
           <button
             data-testid="clear-workspace-button"
             type="button"

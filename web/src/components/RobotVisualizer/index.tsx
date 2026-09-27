@@ -1,5 +1,8 @@
 export { RobotVisualizer } from '@/components/RobotVisualizer/Visualizer';
-export type { RobotVisualizerProps, WorkcellSnapshotView } from '@/components/RobotVisualizer/types';
+export type {
+  RobotVisualizerProps,
+  WorkcellSnapshotView,
+} from '@/components/RobotVisualizer/types';
 export {
   REACHABILITY_MIN_RADIUS,
   REACHABILITY_MAX_RADIUS,

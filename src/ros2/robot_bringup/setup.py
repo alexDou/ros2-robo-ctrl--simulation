@@ -19,37 +19,35 @@ from glob import glob
 
 from setuptools import find_packages, setup
 
-PACKAGE_NAME = 'robot_bringup'
+PACKAGE_NAME = "robot_bringup"
 
 setup(
     name=PACKAGE_NAME,
-    version='0.1.0',
-    packages=find_packages(exclude=['test*']),
+    version="0.1.0",
+    packages=find_packages(exclude=["test*"]),
     data_files=[
         (
-            'share/ament_index/resource_index/packages',
-            ['resource/' + PACKAGE_NAME],
+            "share/ament_index/resource_index/packages",
+            ["resource/" + PACKAGE_NAME],
         ),
-        ('share/' + PACKAGE_NAME, ['package.xml']),
+        ("share/" + PACKAGE_NAME, ["package.xml"]),
         (
-            os.path.join('share', PACKAGE_NAME, 'launch'),
-            glob('launch/*.launch.py'),
+            os.path.join("share", PACKAGE_NAME, "launch"),
+            glob("launch/*.launch.py"),
         ),
         (
-            os.path.join('share', PACKAGE_NAME, 'config'),
-            glob('config/*.yaml'),
+            os.path.join("share", PACKAGE_NAME, "config"),
+            glob("config/*.yaml"),
         ),
     ],
-    install_requires=['setuptools'],
+    install_requires=["setuptools"],
     zip_safe=True,
-    maintainer='alexDou',
-    maintainer_email='alex.doo.gm@gmail.com',
-    description=(
-        'ROS2 launch package and bringup configurations for UR5e and workcell'
-    ),
-    license='Apache-2.0',
-    tests_require=['pytest', 'launch_testing'],
+    maintainer="alexDou",
+    maintainer_email="alex.doo.gm@gmail.com",
+    description=("ROS2 launch package and bringup configurations for UR5e and workcell"),
+    license="Apache-2.0",
+    tests_require=["pytest", "launch_testing"],
     entry_points={
-        'console_scripts': [],
+        "console_scripts": [],
     },
 )

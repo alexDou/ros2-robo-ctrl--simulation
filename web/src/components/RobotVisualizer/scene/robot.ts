@@ -32,7 +32,8 @@ export function initRobotAtHome(robot: URDFRobot, lastRendered: Float64Array): v
 
 export function findFlangeMount(robot: URDFRobot): THREE.Object3D | null {
   return (
-    (robot.links && (robot.links['tool0'] || robot.links['flange'] || robot.links['wrist_3_link'])) ||
+    (robot.links &&
+      (robot.links['tool0'] || robot.links['flange'] || robot.links['wrist_3_link'])) ||
     robot.getObjectByName('tool0') ||
     robot.getObjectByName('flange') ||
     robot.getObjectByName('wrist_3_link') ||

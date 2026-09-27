@@ -1,4 +1,7 @@
-import type { JointPositionsRefLike, TelemetryBufferLike } from '@/components/RobotVisualizer/types';
+import type {
+  JointPositionsRefLike,
+  TelemetryBufferLike,
+} from '@/components/RobotVisualizer/types';
 
 export function getLatestPositions(
   jointPositionsRef?: { current?: readonly number[] | null } | null,

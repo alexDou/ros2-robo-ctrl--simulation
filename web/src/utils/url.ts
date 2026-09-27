@@ -13,12 +13,7 @@ import { isBrowser } from '@utils/env';
  * @returns Key-value map of all present query parameters.
  */
 export function getAllParams(search?: string): Record<string, string> {
-  const searchStr =
-    search !== undefined
-      ? search
-      : isBrowser()
-      ? window.location.search
-      : '';
+  const searchStr = search !== undefined ? search : isBrowser() ? window.location.search : '';
 
   const params = new URLSearchParams(searchStr);
   const result: Record<string, string> = {};
@@ -37,12 +32,7 @@ export function getAllParams(search?: string): Record<string, string> {
  * @returns The string value of the parameter.
  */
 export function getParam(name: string, search?: string): string {
-  const searchStr =
-    search !== undefined
-      ? search
-      : isBrowser()
-      ? window.location.search
-      : '';
+  const searchStr = search !== undefined ? search : isBrowser() ? window.location.search : '';
 
   const params = new URLSearchParams(searchStr);
   const value = params.get(name);
@@ -62,8 +52,7 @@ export function getParam(name: string, search?: string): string {
  */
 export function resolveGatewayWsUrl(robotId: string, gatewayWsUrl?: string): string {
   if (gatewayWsUrl) return gatewayWsUrl;
-  const defaultProto =
-    isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const defaultProto = isBrowser() && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const defaultHost =
     isBrowser() && window.location.hostname ? window.location.hostname : 'localhost';
   const queryPort =

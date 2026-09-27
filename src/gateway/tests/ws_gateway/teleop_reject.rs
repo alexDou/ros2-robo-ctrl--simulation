@@ -76,7 +76,8 @@ async fn test_ws_teleop_joint_target_rejected_without_handler() {
         }
         other => panic!("expected text error frame, got {other:?}"),
     }
-    super::support::assert_no_client_command(&mut cmd_rx, "teleop command must not reach fabric").await;
+    super::support::assert_no_client_command(&mut cmd_rx, "teleop command must not reach fabric")
+        .await;
 
     // Session durable: subsequent PING still forwarded.
     tokio::time::sleep(Duration::from_millis(120)).await;

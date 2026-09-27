@@ -56,10 +56,10 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 
       it('rejects malformed PickAndPlaceTargetPayload with non-numeric fields', () => {
         expect(() =>
-          parsePickAndPlaceTargetPayload({ pick_x: 'invalid', pick_y: 0.1, pick_z: 0.0 })
+          parsePickAndPlaceTargetPayload({ pick_x: 'invalid', pick_y: 0.1, pick_z: 0.0 }),
         ).toThrow();
         expect(() =>
-          parsePickAndPlaceTargetPayload({ pick_x: 0.5, pick_y: 0.1, pick_z: 0.0, drop_x: 'nan' })
+          parsePickAndPlaceTargetPayload({ pick_x: 0.5, pick_y: 0.1, pick_z: 0.0, drop_x: 'nan' }),
         ).toThrow();
       });
 
@@ -70,7 +70,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
             pick_y: 0.1,
             pick_z: 0.0,
             rogue_field: 'not_allowed',
-          })
+          }),
         ).toThrow();
         expect(
           isPickAndPlaceTargetPayload({
@@ -78,7 +78,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
             pick_y: 0.1,
             pick_z: 0.0,
             rogue_field: 'not_allowed',
-          })
+          }),
         ).toBe(false);
       });
     });
@@ -106,7 +106,7 @@ describe('TypeScript Domain Schemas & Contracts', () => {
         expect(isRobotCommand(cmd)).toBe(true);
 
         const serialized = JSON.stringify(cmd, (_, v) =>
-          typeof v === 'bigint' ? v.toString() : v
+          typeof v === 'bigint' ? v.toString() : v,
         );
         const parsed = parseRobotCommand(serialized);
         expect(parsed.type).toBe(CommandType.PICK_AND_PLACE_TARGET);
@@ -166,11 +166,11 @@ describe('Finite-float guards (semgrep ros2-float-coord)', () => {
   it('rejects non-finite PickAndPlaceTargetPayload coordinates', async () => {
     const { parsePickAndPlaceTargetPayload } = await import('@domain/parsers');
     for (const bad of [Infinity, -Infinity, NaN]) {
-      expect(() => parsePickAndPlaceTargetPayload({ pick_x: bad, pick_y: 0.1, pick_z: 0.0 })).toThrow(
-        /finite|must be a number/
-      );
       expect(() =>
-        parsePickAndPlaceTargetPayload({ pick_x: 0.5, pick_y: 0.1, pick_z: 0.0, drop_x: bad })
+        parsePickAndPlaceTargetPayload({ pick_x: bad, pick_y: 0.1, pick_z: 0.0 }),
+      ).toThrow(/finite|must be a number/);
+      expect(() =>
+        parsePickAndPlaceTargetPayload({ pick_x: 0.5, pick_y: 0.1, pick_z: 0.0, drop_x: bad }),
       ).toThrow(/finite|must be a number/);
     }
   });

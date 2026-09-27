@@ -51,11 +51,15 @@ class MockWebSocket {
       this.onerror(new Event('error'));
     }
     if (this.onclose) {
-      this.onclose(new CloseEvent('close', { code: isConflict ? 4409 : 1006, reason: isConflict ? 'Conflict' : 'Abnormal Closure' }));
+      this.onclose(
+        new CloseEvent('close', {
+          code: isConflict ? 4409 : 1006,
+          reason: isConflict ? 'Conflict' : 'Abnormal Closure',
+        }),
+      );
     }
   }
 }
-
 
 describe('TeleopClient Component', () => {
   let originalWebSocket: typeof WebSocket;
@@ -72,9 +76,10 @@ describe('TeleopClient Component', () => {
     vi.restoreAllMocks();
   });
 
-
   it('renders connection lifecycle badge and connects to /ws/teleop/robot/{id}', () => {
-    render(<TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />);
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
 
     // Connect-gated: zero sockets until operator presses Connect
     expect(MockWebSocket.instances.length).toBe(0);
@@ -93,5 +98,4 @@ describe('TeleopClient Component', () => {
 
     expect(screen.getByTestId('connection-badge').textContent).toMatch(/CONNECTED/i);
   });
-
 });

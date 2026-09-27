@@ -117,21 +117,15 @@ describe('TypeScript Domain Schemas & Contracts', () => {
       expect(inferenceMetricsSchema.parse(validMetrics)).toEqual(validMetrics);
 
       // confidence bounds [0.0, 1.0]
-      expect(() =>
-        inferenceMetricsSchema.parse({ ...validMetrics, confidence: 1.5 })
-      ).toThrow();
-      expect(() =>
-        inferenceMetricsSchema.parse({ ...validMetrics, confidence: -0.1 })
-      ).toThrow();
+      expect(() => inferenceMetricsSchema.parse({ ...validMetrics, confidence: 1.5 })).toThrow();
+      expect(() => inferenceMetricsSchema.parse({ ...validMetrics, confidence: -0.1 })).toThrow();
 
       // latency_ms non-negative
-      expect(() =>
-        inferenceMetricsSchema.parse({ ...validMetrics, latency_ms: -5 })
-      ).toThrow();
+      expect(() => inferenceMetricsSchema.parse({ ...validMetrics, latency_ms: -5 })).toThrow();
 
       // detected_object non-empty
       expect(() =>
-        inferenceMetricsSchema.parse({ ...validMetrics, detected_object: '' })
+        inferenceMetricsSchema.parse({ ...validMetrics, detected_object: '' }),
       ).toThrow();
     });
   });

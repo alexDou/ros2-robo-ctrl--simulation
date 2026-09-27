@@ -138,6 +138,10 @@ impl DataFabricPort {
     }
 
     /// Publishes a PickAndPlace action goal for `robot_id`.
+    ///
+    /// # Errors
+    /// Returns [`FabricError`] on serialization or Zenoh put failure; the in-memory
+    /// adapter never errors.
     pub async fn publish_action_goal(
         &self,
         robot_id: &str,
@@ -150,6 +154,9 @@ impl DataFabricPort {
     }
 
     /// Subscribes to PickAndPlace action goals for `robot_id`.
+    ///
+    /// # Errors
+    /// Returns [`FabricError`] on the Zenoh adapter, which does not support this method.
     pub fn subscribe_action_goal(
         &self,
         robot_id: &str,
@@ -163,6 +170,10 @@ impl DataFabricPort {
     }
 
     /// Publishes Action feedback for `robot_id`.
+    ///
+    /// # Errors
+    /// Returns [`FabricError`] on serialization or Zenoh put failure; the in-memory
+    /// adapter never errors.
     pub async fn publish_action_feedback(
         &self,
         robot_id: &str,
@@ -175,6 +186,9 @@ impl DataFabricPort {
     }
 
     /// Subscribes to Action feedback for `robot_id`.
+    ///
+    /// # Errors
+    /// Returns [`FabricError`] if subscription setup fails on the Zenoh adapter.
     pub fn subscribe_action_feedback(
         &self,
         robot_id: &str,

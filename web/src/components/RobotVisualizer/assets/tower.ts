@@ -35,7 +35,7 @@ export function createSpindleTower(color: GearColor = 'WHITE'): SpindleTowerProc
 
   // 2. Vertical metal spindle pin / post (r=0.007m, h=0.20m)
   const pinRadius = 0.007;
-  const pinHeight = 0.20;
+  const pinHeight = 0.2;
   const pinGeom = new THREE.CylinderGeometry(pinRadius, pinRadius, pinHeight, 32);
   pinGeom.rotateX(Math.PI / 2);
   const pinMat = new THREE.MeshStandardMaterial({

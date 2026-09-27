@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  robotCommandTopic,
-  robotTelemetryTopic,
-  parseRobotTopic,
-} from '@domain/parsers';
+import { robotCommandTopic, robotTelemetryTopic, parseRobotTopic } from '@domain/parsers';
 
 describe('TypeScript Domain Schemas & Contracts', () => {
   describe('DataFabric Key Expressions', () => {

@@ -42,7 +42,7 @@ Append a `# nosec` comment to the offending line; scope it to specific test IDs 
 than suppressing everything:
 
 ```python
-self.process = subprocess.Popen('/bin/ls *', shell=True)  # nosec B602, B607
+self.process = subprocess.Popen("/bin/ls *", shell=True)  # nosec B602, B607
 assert yaml.load("{}") == []  # nosec assert_used
 ```
 

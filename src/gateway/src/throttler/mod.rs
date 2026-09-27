@@ -22,6 +22,28 @@ fn current_time_ns() -> u64 {
         .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX))
 }
 
+/// Resolves (and caches) the UR5E joint index permutation for an incoming
+/// joint-name ordering that may differ from `UR5E_JOINTS`.
+fn resolve_indices<'a>(
+    guard: &mut ThrottlerState,
+    names: impl Iterator<Item = &'a str>,
+) -> [usize; 6] {
+    if let Some(idx) = guard.cached_indices {
+        return idx;
+    }
+    let names: Vec<&str> = names.collect();
+    let mut idx = [usize::MAX; 6];
+    for (i, &joint) in UR5E_JOINTS.iter().enumerate() {
+        if let Some(p) = names.iter().position(|&n| n == joint) {
+            idx[i] = p;
+        }
+    }
+    if !idx.contains(&usize::MAX) {
+        guard.cached_indices = Some(idx);
+    }
+    idx
+}
+
 #[derive(Debug)]
 struct ThrottlerState {
     pending: Option<RobotTelemetryEvent>,
@@ -189,7 +211,7 @@ impl TelemetryThrottler {
         let mut guard = self.inner.state.lock().expect("lock throttler state");
         guard.current_robot_state = event.robot_state;
         guard.current_palm_state = event.palm_state.clone();
-        guard.current_phase = event.phase.clone();
+        guard.current_phase.clone_from(&event.phase);
         guard.current_workcell_state = event.workcell_state.clone();
         guard.latest = Some(event.clone());
         guard.pending = Some(event);
@@ -205,58 +227,7 @@ impl TelemetryThrottler {
     pub fn push_bytes(&self, bytes: &[u8]) -> Result<(), String> {
         // Fast dispatch: OMG-CDR begins with 4-byte encapsulation header [0x00, 0x01/0x00, 0x00, 0x00]
         if bytes.len() >= 4 && bytes[0] == 0 && (bytes[1] == 1 || bytes[1] == 0) {
-            if let Ok(cdr_msg) = cdr::deserialize::<CdrJointStateMsg>(bytes) {
-                let timestamp_ns = if cdr_msg.header.stamp.sec > 0
-                    || cdr_msg.header.stamp.nanosec > 0
-                {
-                    (u64::try_from(cdr_msg.header.stamp.sec.max(0)).unwrap_or(0)) * 1_000_000_000
-                        + u64::from(cdr_msg.header.stamp.nanosec)
-                } else {
-                    current_time_ns()
-                };
-
-                let mut positions = [0.0; 6];
-                let mut guard = self.inner.state.lock().expect("lock throttler state");
-                let indices = if let Some(idx) = guard.cached_indices {
-                    idx
-                } else {
-                    let mut idx = [usize::MAX; 6];
-                    for (i, &name) in UR5E_JOINTS.iter().enumerate() {
-                        if let Some(p) = cdr_msg.name.iter().position(|n| n == name) {
-                            idx[i] = p;
-                        }
-                    }
-                    if !idx.contains(&usize::MAX) {
-                        guard.cached_indices = Some(idx);
-                    }
-                    idx
-                };
-
-                for (i, &pos_idx) in indices.iter().enumerate() {
-                    if pos_idx != usize::MAX {
-                        positions[i] = cdr_msg.position.get(pos_idx).copied().unwrap_or(0.0);
-                    }
-                }
-
-                let event = RobotTelemetryEvent {
-                    timestamp_ns,
-                    robot_state: guard.current_robot_state,
-                    joint_positions: positions,
-                    palm_state: guard.current_palm_state.clone(),
-                    inference_metrics: None,
-                    command_id: None,
-                    workcell_state: guard.current_workcell_state.clone(),
-                    phase: guard.current_phase.clone(),
-                };
-
-                self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);
-                guard.latest = Some(event.clone());
-                guard.pending = Some(event);
-                drop(guard);
-                return Ok(());
-            }
-
-            return Err("Failed to deserialize binary payload as CDR JointState".to_string());
+            return self.push_cdr_bytes(bytes);
         }
 
         // JSON dispatch path
@@ -266,64 +237,7 @@ impl TelemetryThrottler {
         }
 
         if let Ok(raw) = serde_json::from_slice::<RawJointStateMsgRef>(bytes) {
-            let timestamp_ns = if let Some(ref h) = raw.header {
-                if let Some(ref s) = h.stamp {
-                    let computed = (u64::try_from(s.sec.max(0)).unwrap_or(0)) * 1_000_000_000
-                        + u64::from(s.nanosec);
-                    if computed > 0 {
-                        computed
-                    } else {
-                        current_time_ns()
-                    }
-                } else {
-                    raw.timestamp_ns
-                        .filter(|&t| t > 0)
-                        .unwrap_or_else(current_time_ns)
-                }
-            } else {
-                raw.timestamp_ns
-                    .filter(|&t| t > 0)
-                    .unwrap_or_else(current_time_ns)
-            };
-
-            let mut positions = [0.0; 6];
-            let mut guard = self.inner.state.lock().expect("lock throttler state");
-            let indices = if let Some(idx) = guard.cached_indices {
-                idx
-            } else {
-                let mut idx = [usize::MAX; 6];
-                for (i, &name) in UR5E_JOINTS.iter().enumerate() {
-                    if let Some(p) = raw.name.iter().position(|&n| n == name) {
-                        idx[i] = p;
-                    }
-                }
-                if !idx.contains(&usize::MAX) {
-                    guard.cached_indices = Some(idx);
-                }
-                idx
-            };
-
-            for (i, &pos_idx) in indices.iter().enumerate() {
-                if pos_idx != usize::MAX {
-                    positions[i] = raw.position.get(pos_idx).copied().unwrap_or(0.0);
-                }
-            }
-
-            let event = RobotTelemetryEvent {
-                timestamp_ns,
-                robot_state: guard.current_robot_state,
-                joint_positions: positions,
-                palm_state: guard.current_palm_state.clone(),
-                inference_metrics: None,
-                command_id: None,
-                workcell_state: guard.current_workcell_state.clone(),
-                phase: guard.current_phase.clone(),
-            };
-
-            self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);
-            guard.latest = Some(event.clone());
-            guard.pending = Some(event);
-            drop(guard);
+            self.push_raw_joint_state(&raw);
             return Ok(());
         }
 
@@ -331,6 +245,93 @@ impl TelemetryThrottler {
             "Failed to parse payload as RobotTelemetryEvent, CDR JointState, or JSON JointState"
                 .to_string(),
         )
+    }
+
+    fn push_cdr_bytes(&self, bytes: &[u8]) -> Result<(), String> {
+        let Ok(cdr_msg) = cdr::deserialize::<CdrJointStateMsg>(bytes) else {
+            return Err("Failed to deserialize binary payload as CDR JointState".to_string());
+        };
+
+        let timestamp_ns = if cdr_msg.header.stamp.sec > 0 || cdr_msg.header.stamp.nanosec > 0 {
+            (u64::try_from(cdr_msg.header.stamp.sec.max(0)).unwrap_or(0)) * 1_000_000_000
+                + u64::from(cdr_msg.header.stamp.nanosec)
+        } else {
+            current_time_ns()
+        };
+
+        let mut positions = [0.0; 6];
+        let mut guard = self.inner.state.lock().expect("lock throttler state");
+        let indices = resolve_indices(&mut guard, cdr_msg.name.iter().map(String::as_str));
+        for (i, &pos_idx) in indices.iter().enumerate() {
+            if pos_idx != usize::MAX {
+                positions[i] = cdr_msg.position.get(pos_idx).copied().unwrap_or(0.0);
+            }
+        }
+
+        let event = RobotTelemetryEvent {
+            timestamp_ns,
+            robot_state: guard.current_robot_state,
+            joint_positions: positions,
+            palm_state: guard.current_palm_state.clone(),
+            inference_metrics: None,
+            command_id: None,
+            workcell_state: guard.current_workcell_state.clone(),
+            phase: guard.current_phase.clone(),
+        };
+
+        self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);
+        guard.latest = Some(event.clone());
+        guard.pending = Some(event);
+        drop(guard);
+        Ok(())
+    }
+
+    fn push_raw_joint_state(&self, raw: &RawJointStateMsgRef) {
+        let timestamp_ns = raw
+            .header
+            .as_ref()
+            .and_then(|h| h.stamp.as_ref())
+            .map_or_else(
+                || {
+                    raw.timestamp_ns
+                        .filter(|&t| t > 0)
+                        .unwrap_or_else(current_time_ns)
+                },
+                |s| {
+                    let computed = (u64::try_from(s.sec.max(0)).unwrap_or(0)) * 1_000_000_000
+                        + u64::from(s.nanosec);
+                    if computed > 0 {
+                        computed
+                    } else {
+                        current_time_ns()
+                    }
+                },
+            );
+
+        let mut positions = [0.0; 6];
+        let mut guard = self.inner.state.lock().expect("lock throttler state");
+        let indices = resolve_indices(&mut guard, raw.name.iter().copied());
+        for (i, &pos_idx) in indices.iter().enumerate() {
+            if pos_idx != usize::MAX {
+                positions[i] = raw.position.get(pos_idx).copied().unwrap_or(0.0);
+            }
+        }
+
+        let event = RobotTelemetryEvent {
+            timestamp_ns,
+            robot_state: guard.current_robot_state,
+            joint_positions: positions,
+            palm_state: guard.current_palm_state.clone(),
+            inference_metrics: None,
+            command_id: None,
+            workcell_state: guard.current_workcell_state.clone(),
+            phase: guard.current_phase.clone(),
+        };
+
+        self.inner.ingested_count.fetch_add(1, Ordering::Relaxed);
+        guard.latest = Some(event.clone());
+        guard.pending = Some(event);
+        drop(guard);
     }
 
     /// Pushes a raw JSON string into the throttler.
