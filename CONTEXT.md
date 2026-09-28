@@ -64,40 +64,56 @@ _Avoid_: Preset, recorded path, macro
 Deterministic grasping mechanism in simulation parenting an object mesh to the DexterousPalm on `tool0` upon proximity threshold ($15\text{mm}$) and grasp command.
 _Avoid_: Physics grip, collision grab, magnetic lock
 
-**StepIndexingConveyor**:
-Linear feed mechanism advancing gearwheels one by one to a fixed pickup station and stopping until manipulator execution completes.
-_Avoid_: Moving belt, continuous feeder, conveyor line
+**Conveyor**:
+Linear belt in front of the manipulator carrying Gearwheels from the FeedHopper toward the ScrapBin; it runs until the lead Gearwheel of the current Batch reaches the far edge of the PickZone, then stops while the Batch is sorted.
+_Avoid_: Indexing conveyor, step feeder, conveyor line, moving belt
+
+**FeedHopper**:
+Reservoir at the upstream end of the Conveyor, filled on demand with a fixed deck of 100 Gearwheels whose color and soundness are already known.
+_Avoid_: Container, holder, magazine, feeder
+
+**Batch**:
+The Gearwheels dropped onto the Conveyor during one belt run, between 3 and BeltCapacity (fewer only when the FeedHopper runs out).
+_Avoid_: Wave, load, lot
+
+**PickZone**:
+The stretch of the Conveyor within the manipulator's reach where a stopped Batch is sorted.
+_Avoid_: Active area, operational area, pickup station
+
+**BeltCapacity**:
+Maximum number of Gearwheels one Batch may hold, set by the size of the PickZone.
+_Avoid_: Belt limit, N_max
+
+**ConveyorStatus**:
+Operational state of the Conveyor and FeedHopper (`EMPTY`, `LOADED`, `FEEDING`, `HALTED`, `STOPPED`), independent of RobotState.
+_Avoid_: Belt mode, feed state, RobotState
+
+**Stop**:
+Operator pause of feeding: the Conveyor freezes and no further Gearwheels are dispatched, while the pick already under way completes; processing resumes from where it paused.
+_Avoid_: Pause, halt, EmergencyStop
+
+**RearStand**:
+Fixture behind the manipulator carrying the three SpindleTowers.
+_Avoid_: Tower rack, shelf, back table
 
 **SpindleTower**:
-Physical sorting destination vertical post receiving inspected sound gearwheels by color.
+Physical sorting destination vertical post receiving inspected sound gearwheels by color (`WHITE`, `GREEN`, `BLUE`); it empties itself once it holds 10.
 _Avoid_: Peg, stacker, pole
 
 **ScrapBin**:
-Physical disposal destination chute receiving cracked or unsound gearwheels regardless of color.
-_Avoid_: Trash, reject pile, discard box
-
-**WorkcellTable**:
-Physical horizontal workspace surface located in front of the robotic manipulator receiving object placement coordinates.
-_Avoid_: Desk, bench, ground plane, platform
+Physical disposal destination at the Conveyor exit receiving unsound gearwheels of any color by dropping off the belt end; shown only as empty or not empty, and emptied once it holds 100.
+_Avoid_: Trash, reject pile, discard box, recycle bin
 
 **Gearwheel**:
-Cylindrical manufactured workpiece with perimeter teeth targeted for ingestion, pickup, and sorting.
-_Avoid_: Item, puck, token, part
-
-**ReachabilityBoundary**:
-Valid radial operational envelope between inner radius ($0.35\text{m}$) and outer radius ($0.75\text{m}$) for Cartesian manipulator targeting.
-_Avoid_: Reach limit, boundary zone, work area
-
-**ClickLockout**:
-Client-side operator interlock preventing additional object placement while an active gearwheel is present in the workspace or RobotState is not IDLE.
-_Avoid_: Click debounce, place lock, input gate
+Cylindrical manufactured workpiece with perimeter teeth, carrying a color (`WHITE`, `GREEN`, `BLUE`) and soundness (sound or defective), targeted for feeding, pickup, and sorting.
+_Avoid_: Item, puck, token, part, gear
 
 **ClearWorkspace**:
-Explicit administrative command and action resetting active workcell objects and lifting placement lockouts.
+Explicit administrative command resetting all registered Gearwheels, SpindleTowers and the ScrapBin; also issued on every TeleopClient connect and after FAULT.
 _Avoid_: Reset scene, wipe table, delete objects
 
 **WorkcellState**:
-Authoritative domain state component within EdgeNode tracking active workcell workpiece presence, coordinates, and spindle tower inventory.
+Authoritative domain state component tracking registered Gearwheels, their coordinates, color and soundness, and SpindleTower and ScrapBin inventory. A Gearwheel enters it only when registered at a stopped Conveyor; FeedHopper and belt contents belong to TeleopClient alone.
 _Avoid_: Scene graph, world model, spawn manager, entity repo
 
 **AnalyticalInverseKinematics**:
