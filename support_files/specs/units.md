@@ -208,24 +208,21 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
 
 ---
 
-## Unit 8: Indexing Conveyor Belt & Dual-Flow Interaction Showcase
+## Unit 8: Conveyor Feed Flow (Flow B)
 
-* **Objective**: Implement the step-and-wait indexing conveyor belt as a second operational flow, provide mutually exclusive mode switching ("Click-to-Place" vs "Conveyor Belt"), and deliver the complete final interactive showcase from `support_files/iterations/iter-2.txt`.
-* **Architecture**: Contract-first development. Unit 8.0 defines conveyor operational mode schemas. Unit 8.1 implements 3D conveyor model and indexing step-and-wait animation. Unit 8.2 implements EdgeNode conveyor feed orchestration. Unit 8.3 integrates dual-flow UI mode toggle and full showcase E2E suite.
+* **Objective**: Deliver iter-2 Flow B on a dedicated branch `feat/conveyor-flow` (cut from `main` after the security branch merges; `main` keeps Flow A click-to-place frozen; exactly one flow per branch, no runtime mode switch). A Conveyor replaces the WorkcellTable across the front of the arm, fed by a FeedHopper (Fill = 100-gear deck: 10% defective, 30/30/30 sound); on Process the belt feeds random Batches of 3..BeltCapacity gears, stops at the PickZone edge, and TeleopClient registers and dispatches gears one by one (sound → SpindleTower on a rear stand at −X, defective → ScrapBin via belt drop, no arm motion). Towers auto-empty at 10; the ScrapBin renders binary green/red. Full spec and decision log: `support_files/specs/unit8/`.
+* **Architecture**: Contract-first development. Unit 8.0 moves `color` + `intact` onto the `SPAWN_OBJECT` wire (UI-assigned; Gateway QcClassifier deleted) and relocates tower/bin constants. Units 8.1 (Workcell semantics + IK reach), 8.2 (Three.js scene) and 8.3 (TeleopClient conveyor controller) run in parallel against mocks. Unit 8.4 is the seeded Cucumber E2E suite. Hopper/belt/batch state is TeleopClient-local; WorkcellState is the single authority for registered gears (ADR 0005).
 
 ### Sub-Unit Breakdown
-- **Unit 8.0: Dual-Flow Mode Wire Contract**:
-  - Defines `SET_OPERATION_MODE` command (`"CLICK_TO_PLACE"` | `"CONVEYOR_FEED"`).
-  - Enforces mutual exclusion: selecting one mode locks the other until the current flow finishes or is stopped.
-- **Unit 8.1: 3D Indexing Conveyor & Step-and-Wait Animation**:
-  - Models linear conveyor belt entering the workcell from the left flank.
-  - Implements deterministic step-and-wait indexing: conveyor advances gear to fixed pickup position and stops.
-  - Arm picks up gear from pickup stop $\to$ conveyor waits until arm returns to `IDLE` $\to$ conveyor indexes next gear into pickup position.
-  - Conveyor overflow return chute despawns unhandled items gracefully.
-- **Unit 8.2: EdgeNode Conveyor Orchestration & Feed Sequencing**:
-  - EdgeNode controls conveyor step timer and pickup state coordination.
-  - Feeds gears at controlled intervals up to capacity limit $N_{\max} = 9$.
-- **Unit 8.3: Showcase Integration & Multi-Service Playwright Suite**:
-  - UI mode toggle: "Mode: Click-to-Place" vs "Mode: Conveyor Belt" with busy-state gating.
-  - Comprehensive automated E2E test verifying both operational flows, emergency stop interrupts, capacity bounds, and reset workspace actions.
-
+- **Unit 8.0: Spawn Classification Contract + Layout Constants**:
+  - `SpawnObjectPayload` gains required `color` (`WHITE`/`GREEN`/`BLUE`) + `intact`; Gateway passes it through verbatim (classifier removed).
+  - Relocated `WHITE/GREEN/BLUE_TOWER` (rear stand, X = −0.45) and `SCRAP_BIN` (belt exit) consts; regenerate domain types; cross-language contract tests.
+- **Unit 8.1: Workcell Semantics & Reach**:
+  - Defective spawn commits straight to ScrapBin inventory (arm idle); tower auto-empties at `TOWER_CAPACITY` 10 (replaces FIFO); bin empties at 100.
+  - IK reach tests for every PickZone corner and every rear-stand drop.
+- **Unit 8.2: Conveyor Scene**:
+  - Removes table, landing mat, raycast/reticle, ClickLockout. Adds conveyor (+Y → −Y), FeedHopper, rear stand; relocates towers and bin; binary bin color; tower fade-out; new default camera.
+- **Unit 8.3: TeleopClient Conveyor Controller**:
+  - Seedable deck, Fill/Process/Stop state machine (ConveyorStatus `EMPTY`/`LOADED`/`FEEDING`/`HALTED`/`STOPPED`), belt feed + stop rule + final flush, per-gear `SPAWN_OBJECT` → `PICK_AND_PLACE_TARGET` loop; connect/FAULT → local reset + `CLEAR_WORKSPACE`.
+- **Unit 8.4: Seeded Hermetic E2E**:
+  - Cucumber + Playwright (Mock Gateway): full Fill → Process run, Stop/resume, EmergencyStop reset, reload reset, tower auto-empty, bin color.
