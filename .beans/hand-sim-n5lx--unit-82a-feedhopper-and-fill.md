@@ -1,0 +1,35 @@
+---
+# hand-sim-n5lx
+title: 'Unit 8.2a: FeedHopper and Fill'
+status: todo
+type: task
+tags:
+    - ready-for-agent
+created_at: 2026-09-28T16:06:03Z
+updated_at: 2026-09-28T16:06:03Z
+parent: hand-sim-d04j
+blocked_by:
+    - hand-sim-rmju
+---
+
+## Parent
+
+hand-sim-d04j (Unit 8 spec)
+
+## What to build
+
+FeedHopper fixture at the belt's upstream end (Y ≈ +0.85). Fill generates the seedable deck of 100 gears — exactly 10 defective (random color) + 30/30/30 sound, shuffled — and the hopper visibly fills. ConveyorStatus EMPTY → LOADED; Process enabled only when LOADED, Fill only when EMPTY.
+
+## Acceptance criteria
+
+- [ ] Vitest: deck has exactly 10 defective and 30/30/30 sound; same seed → same order
+- [ ] Hopper fill level reflects deck count
+- [ ] Button gating per ConveyorStatus
+- [ ] E2E: Fill shows a full hopper and enables Process
+- [ ] `scripts/verify.sh` prints `verify: GREEN`
+
+## Blocked by
+
+- hand-sim-rmju (04)
+
+Spec + decision log: `support_files/specs/unit8/`.
