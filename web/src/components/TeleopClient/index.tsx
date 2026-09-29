@@ -4,14 +4,8 @@ import { DEFAULT_ROBOT_ID } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
-import {
-  TRACER_GEAR,
-  buildDeck,
-  dispatchGear,
-  type ConveyorPorts,
-  type ConveyorStatus,
-  type GearSpec,
-} from '@utils/conveyorController';
+import { buildDeck, type ConveyorStatus, type GearSpec } from '@utils/conveyorController';
+import { createBeltFeeder, type BeltFeeder } from '@utils/beltFeeder';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
 import { ActionProgressBar } from '@components/ActionProgressBar';
@@ -23,6 +17,8 @@ import { OperatorToolbar } from '@components/OperatorToolbar';
 export type { ConnectionState, LogEntry };
 
 const BOOT_TIMEOUT_MS = 10000;
+const FEED_TICK_MS = 33;
+const MAX_FEED_STEP_S = 0.05;
 
 export interface TeleopClientProps {
   robotId?: string;
@@ -67,8 +63,6 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
-    spawnObject,
-    pickAndPlace,
     clearWorkspace,
     sendPing,
   } = useTeleopSession({
@@ -91,66 +85,51 @@ export function TeleopClient({
     (snap?.inProgress?.length ?? 0) > 0 ||
     (snap?.processed?.length ?? 0) > 0;
 
-  // Conveyor tracer (Unit 8.0c): progress is read from the workcell snapshot, the single authority.
-  const robotStateRef = useRef(robotState);
-  robotStateRef.current = robotState;
-  const waitersRef = useRef<
-    Array<{ ready: () => boolean; resolve: () => void; reject: (err: Error) => void }>
-  >([]);
-  useEffect(() => {
-    // Disconnect or FAULT resets the whole system (ADR 0005 §5): abandon any pending dispatch.
-    if (connectionState !== 'CONNECTED' || robotState === 'FAULT') {
-      for (const w of waitersRef.current) w.reject(new Error('conveyor dispatch aborted'));
-      waitersRef.current = [];
-      return;
-    }
-    waitersRef.current = waitersRef.current.filter((w) => {
-      if (!w.ready()) return true;
-      w.resolve();
-      return false;
-    });
-  }, [connectionState, robotState, workcellVersion]);
-  const waitUntil = useCallback(
-    (ready: () => boolean) =>
-      new Promise<void>((resolve, reject) => {
-        if (ready()) resolve();
-        else waitersRef.current.push({ ready, resolve, reject });
-      }),
-    [],
-  );
-  // ConveyorStatus and the hopper deck are TeleopClient-local (ADR 0005); never on the wire.
+  // ConveyorStatus, the hopper deck and the belt feeder are TeleopClient-local (ADR 0005); never
+  // on the wire. Per-gear dispatch to the workcell arrives with Unit 8.3.
   const [conveyorStatus, setConveyorStatus] = useState<ConveyorStatus>('EMPTY');
   const [deck, setDeck] = useState<GearSpec[]>([]);
+  const feederRef = useRef<BeltFeeder | null>(null);
+  const feedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopFeeding = useCallback(() => {
+    if (feedTimerRef.current !== null) clearInterval(feedTimerRef.current);
+    feedTimerRef.current = null;
+  }, []);
+  useEffect(() => stopFeeding, [stopFeeding]);
+
   const handleFill = useCallback(() => {
     setDeck(buildDeck());
     setConveyorStatus('LOADED');
   }, []);
   useEffect(() => {
-    // Disconnect or FAULT resets the hopper along with the workcell.
+    // Disconnect or FAULT resets the hopper and belt along with the workcell.
     if (connectionState !== 'CONNECTED' || robotState === 'FAULT') {
+      stopFeeding();
+      feederRef.current = null;
       setDeck([]);
       setConveyorStatus('EMPTY');
     }
-  }, [connectionState, robotState]);
+  }, [connectionState, robotState, stopFeeding]);
+
   const handleProcess = useCallback(() => {
-    const ws = () => bufferRef.current?.workcellState;
-    const ports: ConveyorPorts = {
-      spawn: spawnObject,
-      pickAndPlace,
-      waitForRegistered: () => waitUntil(() => (ws()?.spawned?.length ?? 0) > 0),
-      waitForSettled: () =>
-        waitUntil(
-          () =>
-            robotStateRef.current === 'IDLE' &&
-            (ws()?.spawned?.length ?? 0) === 0 &&
-            (ws()?.inProgress?.length ?? 0) === 0,
-        ),
-    };
+    stopFeeding();
+    const feeder = createBeltFeeder(deck, Date.now());
+    feederRef.current = feeder;
     setConveyorStatus('FEEDING');
-    dispatchGear(ports, TRACER_GEAR)
-      .then(() => setConveyorStatus('LOADED'))
-      .catch(() => undefined);
-  }, [bufferRef, spawnObject, pickAndPlace, waitUntil]);
+    let last = performance.now();
+    feedTimerRef.current = setInterval(() => {
+      const now = performance.now();
+      // Cap dt so a throttled tab cannot skip the spawn schedule.
+      feeder.step(Math.min((now - last) / 1000, MAX_FEED_STEP_S));
+      last = now;
+      setDeck(feeder.remaining().slice());
+      if (feeder.status() === 'HALTED') {
+        stopFeeding();
+        setConveyorStatus('HALTED');
+      }
+    }, FEED_TICK_MS);
+  }, [deck, stopFeeding]);
 
   const handleClearWorkspace = useCallback(() => {
     clearWorkspace();
@@ -286,6 +265,7 @@ export function TeleopClient({
               jointPositionsRef={jointPositionsRef}
               robotState={effectiveRobotState ?? 'STANDBY'}
               hopperCount={deck.length}
+              beltFeederRef={feederRef}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}

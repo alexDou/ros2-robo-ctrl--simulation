@@ -19,6 +19,7 @@ import type { GearColor } from '@contracts';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
+import type { BeltGearsAssets } from '@/components/RobotVisualizer/assets/beltgears';
 import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
@@ -64,6 +65,7 @@ export function RobotVisualizer({
   telemetryBufferRef,
   robotState,
   hopperCount = 0,
+  beltFeederRef,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -102,6 +104,8 @@ export function RobotVisualizer({
 
   const hopperCountRef = useRef(hopperCount);
   hopperCountRef.current = hopperCount;
+  const beltFeederRefProp = useRef(beltFeederRef);
+  beltFeederRefProp.current = beltFeederRef;
 
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
   const binNonEmptyRef = useRef<boolean>(false);
@@ -120,6 +124,8 @@ export function RobotVisualizer({
     let rearStandAssets: RearStandProceduralAssets | null = null;
     let conveyorAssets: ConveyorProceduralAssets | null = null;
     let hopperAssets: HopperProceduralAssets | null = null;
+    let beltGearsAssets: BeltGearsAssets | null = null;
+    let lastBeltScroll = 0;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
       null;
@@ -141,6 +147,7 @@ export function RobotVisualizer({
     rearStandAssets = stage.rearStandAssets;
     conveyorAssets = stage.conveyorAssets;
     hopperAssets = stage.hopperAssets;
+    beltGearsAssets = stage.beltGearsAssets;
     hopperAssets.setCount(hopperCountRef.current);
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
@@ -231,6 +238,8 @@ export function RobotVisualizer({
       getRearStand: () => rearStandAssets,
       getConveyor: () => conveyorAssets,
       getHopper: () => hopperAssets,
+      getBeltGears: () => beltGearsAssets,
+      getConveyorScroll: () => lastBeltScroll,
       getScrapBin: () => scrapBinAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
@@ -297,6 +306,19 @@ export function RobotVisualizer({
       if (GEAR_COLORS.some((c) => nextCounts[c] !== prevCounts[c])) {
         towerCountsRef.current = nextCounts;
         setCounts(nextCounts);
+      }
+
+      // Belt gears and surface follow the client-local feeder (empty belt when there is none).
+      if (beltGearsAssets && conveyorAssets) {
+        const feeder = beltFeederRefProp.current?.current ?? null;
+        const scroll = feeder ? feeder.scroll() : 0;
+        const gears = feeder ? feeder.gears() : [];
+        if (scroll !== lastBeltScroll || gears.length !== beltGearsAssets.group.children.length) {
+          lastBeltScroll = scroll;
+          conveyorAssets.setScroll(scroll);
+          beltGearsAssets.sync(gears);
+          needsRender = true;
+        }
       }
 
       // FeedHopper fill level follows the deck count prop.
@@ -395,6 +417,14 @@ export function RobotVisualizer({
         }
         conveyorAssets.dispose();
         conveyorAssets = null;
+      }
+
+      if (beltGearsAssets) {
+        if (beltGearsAssets.group.parent) {
+          beltGearsAssets.group.parent.remove(beltGearsAssets.group);
+        }
+        beltGearsAssets.dispose();
+        beltGearsAssets = null;
       }
 
       if (hopperAssets) {

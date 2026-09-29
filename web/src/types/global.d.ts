@@ -55,6 +55,8 @@ export interface RobotVisualizerGlobalHandle {
   getRearStandMesh: () => unknown;
   getConveyorMesh: () => unknown;
   getHopperMesh: () => unknown;
+  getBeltGearPositions: () => Array<{ x: number; y: number; z: number }>;
+  getBeltScroll: () => number;
   getHopperFillLevel: () => number;
   getGearMesh: () => unknown;
   getGearPosition: () => { x: number; y: number; z: number } | null;

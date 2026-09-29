@@ -39,18 +39,19 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the Reset Fault button should be disabled
     And the robot joint positions should remain unchanged
 
-  @conveyor @tracer-bullet @unit-8.0c
-  Scenario: Processing places one intact gear from the belt onto its color tower
+  @conveyor @unit-8.2b
+  Scenario: Process feeds one Batch onto the belt and halts it at the PickZone edge
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
     When the operator clicks the "Fill" button
     Then the hopper should be full
-    And Process should be enabled and Fill disabled
     When the operator clicks the "Process" button
-    Then the event log should record state transition to "EXECUTING"
-    And the event log should record state transition to "IDLE"
-    And the intact GREEN gear should rest on the GREEN tower
+    Then the belt surface should be moving
+    And the belt should halt with a Batch of 3 to 10 gears inside the PickZone
+    And the belt surface should be frozen
+    And the hopper should hold the rest of the deck
+    And Fill and Process should both be disabled
 
   @conveyor @unit-8.1a
   Scenario: A defective gear is booked to the scrap bin without arm motion
