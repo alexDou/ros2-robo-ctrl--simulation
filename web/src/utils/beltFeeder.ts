@@ -31,6 +31,8 @@ export interface BeltFeeder {
   status: () => FeederStatus;
   /** Gears currently on the belt, in spawn order (lead gear first). */
   gears: () => readonly BeltGear[];
+  /** Removes and returns the lead gear (it is being handed to the workcell); undefined when none. */
+  take: () => BeltGear | undefined;
   /** Deck entries still in the hopper. */
   remaining: () => readonly GearSpec[];
   /** Total belt travel in meters, for the surface animation. */
@@ -77,6 +79,7 @@ export function createBeltFeeder(deck: readonly GearSpec[], seed: number): BeltF
   return {
     status: () => (halted ? 'HALTED' : 'FEEDING'),
     gears: () => onBelt,
+    take: () => onBelt.shift(),
     remaining: () => hopper,
     scroll: () => travelled,
     step(dt) {

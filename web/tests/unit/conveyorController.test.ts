@@ -7,6 +7,7 @@ import {
   canFill,
   canProcess,
   dispatchGear,
+  processBatch,
   type ConveyorPorts,
   type ConveyorStatus,
   type GearOnBelt,
@@ -30,6 +31,9 @@ function fakePorts(): { ports: ConveyorPorts; calls: string[]; payloads: unknown
     },
     waitForSettled: async () => {
       calls.push('settled');
+    },
+    goHome: () => {
+      calls.push('home');
     },
   };
   return { ports, calls, payloads };
@@ -56,9 +60,10 @@ describe('Unit 8.0c: minimal conveyor controller (hand-sim-rmju)', () => {
   });
 
   it('spawns a defective gear without commanding an arm pick', async () => {
-    const { ports, calls } = fakePorts();
+    const { ports, calls, payloads } = fakePorts();
     await dispatchGear(ports, { color: 'WHITE', intact: false, x: 0.4, y: 0.0 });
     expect(calls).toEqual(['spawn']);
+    expect(payloads[0]).toMatchObject({ color: 'WHITE', intact: false, x: 0.4, y: 0.0 });
   });
 
   it('places the tracer gear inside the PickZone, and it is intact', () => {
@@ -98,5 +103,47 @@ describe('Unit 8.2a: deck generation and button gating (hand-sim-n5lx)', () => {
       expect(canFill(s)).toBe(s === 'EMPTY');
       expect(canProcess(s)).toBe(s === 'LOADED');
     }
+  });
+});
+
+describe('Unit 8.2c: sort one halted Batch gear by gear (hand-sim-as72)', () => {
+  it('dispatches each gear in order, waiting for IDLE before the next, skips picks for defective, then goes HOME', async () => {
+    const { ports, calls } = fakePorts();
+    const gears: GearOnBelt[] = [
+      { color: 'WHITE', intact: true, x: 0.3, y: 0.5 },
+      { color: 'GREEN', intact: false, x: 0.4, y: 0.4 },
+      { color: 'BLUE', intact: true, x: 0.5, y: 0.3 },
+    ];
+
+    await processBatch(ports, () => gears.shift());
+
+    expect(calls).toEqual([
+      'spawn',
+      'registered',
+      'pickAndPlace',
+      'settled',
+      'spawn',
+      'spawn',
+      'registered',
+      'pickAndPlace',
+      'settled',
+      'home',
+    ]);
+  });
+
+  it('picks a gear at its coordinates at its turn, even if it moved since the halt', async () => {
+    const { ports, payloads } = fakePorts();
+    const second: GearOnBelt = { color: 'BLUE', intact: true, x: 0.5, y: 0.3 };
+    const gears: GearOnBelt[] = [{ color: 'WHITE', intact: true, x: 0.3, y: 0.5 }, second];
+    const movingPorts: ConveyorPorts = {
+      ...ports,
+      waitForSettled: async () => {
+        second.x = 0.45; // operator drags the second gear while the first is being sorted
+      },
+    };
+
+    await processBatch(movingPorts, () => gears.shift());
+
+    expect(payloads[3]).toEqual({ pick_x: 0.45, pick_y: 0.3, pick_z: 0.0 });
   });
 });

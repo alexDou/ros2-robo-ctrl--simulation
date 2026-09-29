@@ -1,5 +1,11 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { CANONICAL_UR5E_JOINTS } from '@contracts';
+import {
+  SCRAP_BIN_EMPTY_COLOR,
+  SCRAP_BIN_FILLED_COLOR,
+} from '../../../src/components/RobotVisualizer/assets/scrapbin';
+
+type BeltSnapshot = Array<{ x: number; y: number; intact: boolean }>;
 
 export class TeleopPage {
   readonly page: Page;
@@ -417,16 +423,61 @@ export class TeleopPage {
         { timeout: 15000 },
       )
       .toBe(true);
-    const gears = await this.page.evaluate(() => window.__robot_visualizer!.getBeltGearPositions());
+    // Sorting takes gears off the belt right at the halt, so assert on the last full snapshot.
+    const gears = await this.page.evaluate(
+      () => (window as unknown as { __batchMax: BeltSnapshot }).__batchMax,
+    );
     expect(gears.length).toBeGreaterThanOrEqual(3);
     expect(gears.length).toBeLessThanOrEqual(10);
     const ys = gears.map((g) => g.y);
-    expect(Math.min(...ys)).toBeCloseTo(-0.51, 3);
+    // Last snapshot precedes the halt tick by up to one feeder step (~0.02 m), hence the tolerance.
+    expect(Math.min(...ys)).toBeCloseTo(-0.51, 1);
     for (const g of gears) {
       expect(g.y).toBeLessThanOrEqual(0.51);
       expect(g.x).toBeGreaterThanOrEqual(0.25);
       expect(g.x).toBeLessThanOrEqual(0.55);
     }
+  }
+
+  /** Record the largest belt snapshot (the full Batch) before sorting empties the belt. */
+  async startRecordingBatch(): Promise<void> {
+    await this.page.evaluate(() => {
+      const w = window as unknown as { __batchMax: BeltSnapshot };
+      w.__batchMax = [];
+      setInterval(() => {
+        const snap = window.__robot_visualizer!.getBeltGearPositions();
+        if (snap.length >= w.__batchMax.length) w.__batchMax = snap;
+      }, 20);
+    });
+  }
+
+  async getBatchComposition(): Promise<{ intact: number; defective: number }> {
+    const gears = await this.page.evaluate(
+      () => (window as unknown as { __batchMax: BeltSnapshot }).__batchMax,
+    );
+    const intact = gears.filter((g) => g.intact).length;
+    return { intact, defective: gears.length - intact };
+  }
+
+  async expectBatchSorted(batch: { intact: number; defective: number }): Promise<void> {
+    const total = async () => {
+      let sum = 0;
+      for (const c of ['WHITE', 'GREEN', 'BLUE']) {
+        const text = await this.page.getByTestId(`tower-counter-${c}`).innerText();
+        sum += Number(/(\d+)\/\d+/.exec(text)![1]);
+      }
+      return sum;
+    };
+    await expect.poll(total, { timeout: 120000 }).toBe(batch.intact);
+    await expect(this.connectionBadge).toHaveText(/CONNECTED \/ IDLE/, { timeout: 30000 });
+    await this.expectScrapBinFloorHex(
+      batch.defective > 0 ? SCRAP_BIN_FILLED_COLOR : SCRAP_BIN_EMPTY_COLOR,
+    );
+    await expect
+      .poll(() =>
+        this.page.evaluate(() => window.__robot_visualizer!.getBeltGearPositions().length),
+      )
+      .toBe(0);
   }
 
   async expectBeltFrozen(): Promise<void> {
@@ -439,7 +490,7 @@ export class TeleopPage {
   async expectHopperHoldsRestOfDeck(): Promise<void> {
     const { level, count } = await this.page.evaluate(() => ({
       level: window.__robot_visualizer!.getHopperFillLevel(),
-      count: window.__robot_visualizer!.getBeltGearPositions().length,
+      count: (window as unknown as { __batchMax: BeltSnapshot }).__batchMax.length,
     }));
     expect(level).toBeCloseTo((100 - count) / 100, 6);
   }

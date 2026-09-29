@@ -249,3 +249,14 @@ Then('the GREEN tower stack should have faded out', async function (this: Custom
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectTowerGearCount(0);
 });
+
+Then('the halted Batch is sorted gear by gear', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  const batch = await this.teleopPage!.getBatchComposition();
+  await this.teleopPage!.expectBatchSorted(batch);
+});
+
+When('the Batch composition is being recorded', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.startRecordingBatch();
+});

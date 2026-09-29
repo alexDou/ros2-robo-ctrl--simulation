@@ -12,8 +12,8 @@ describe('Unit 8.2b: belt visuals (hand-sim-fe63)', () => {
     ]);
     expect(belt.group.children).toHaveLength(2);
     expect(belt.getPositions()).toEqual([
-      { x: 0.3, y: 0.5, z: 0 },
-      { x: 0.5, y: 0.3, z: 0 },
+      { x: 0.3, y: 0.5, z: 0, color: 'GREEN', intact: true },
+      { x: 0.5, y: 0.3, z: 0, color: 'BLUE', intact: false },
     ]);
     belt.sync([{ color: 'GREEN', intact: true, x: 0.3, y: 0.4 }]);
     expect(belt.group.children).toHaveLength(1);

@@ -4,7 +4,13 @@ import { DEFAULT_ROBOT_ID } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
-import { buildDeck, type ConveyorStatus, type GearSpec } from '@utils/conveyorController';
+import {
+  buildDeck,
+  processBatch,
+  type ConveyorPorts,
+  type ConveyorStatus,
+  type GearSpec,
+} from '@utils/conveyorController';
 import { createBeltFeeder, type BeltFeeder } from '@utils/beltFeeder';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
@@ -63,6 +69,8 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
+    spawnObject,
+    pickAndPlace,
     clearWorkspace,
     sendPing,
   } = useTeleopSession({
@@ -85,8 +93,36 @@ export function TeleopClient({
     (snap?.inProgress?.length ?? 0) > 0 ||
     (snap?.processed?.length ?? 0) > 0;
 
+  // Batch sorting: progress is read from the workcell snapshot, the single authority.
+  const robotStateRef = useRef(robotState);
+  robotStateRef.current = robotState;
+  const waitersRef = useRef<
+    Array<{ ready: () => boolean; resolve: () => void; reject: (err: Error) => void }>
+  >([]);
+  useEffect(() => {
+    // Disconnect or FAULT resets the whole system (ADR 0005 §5): abandon any pending dispatch.
+    if (connectionState !== 'CONNECTED' || robotState === 'FAULT') {
+      for (const w of waitersRef.current) w.reject(new Error('conveyor dispatch aborted'));
+      waitersRef.current = [];
+      return;
+    }
+    waitersRef.current = waitersRef.current.filter((w) => {
+      if (!w.ready()) return true;
+      w.resolve();
+      return false;
+    });
+  }, [connectionState, robotState, workcellVersion]);
+  const waitUntil = useCallback(
+    (ready: () => boolean) =>
+      new Promise<void>((resolve, reject) => {
+        if (ready()) resolve();
+        else waitersRef.current.push({ ready, resolve, reject });
+      }),
+    [],
+  );
+
   // ConveyorStatus, the hopper deck and the belt feeder are TeleopClient-local (ADR 0005); never
-  // on the wire. Per-gear dispatch to the workcell arrives with Unit 8.3.
+  // on the wire.
   const [conveyorStatus, setConveyorStatus] = useState<ConveyorStatus>('EMPTY');
   const [deck, setDeck] = useState<GearSpec[]>([]);
   const feederRef = useRef<BeltFeeder | null>(null);
@@ -112,6 +148,33 @@ export function TeleopClient({
     }
   }, [connectionState, robotState, stopFeeding]);
 
+  const sortBatch = useCallback(
+    (feeder: BeltFeeder) => {
+      const ws = () => bufferRef.current?.workcellState;
+      const ports: ConveyorPorts = {
+        spawn: spawnObject,
+        pickAndPlace,
+        waitForRegistered: () => waitUntil(() => (ws()?.spawned?.length ?? 0) > 0),
+        waitForSettled: () =>
+          waitUntil(
+            () =>
+              robotStateRef.current === 'IDLE' &&
+              (ws()?.spawned?.length ?? 0) === 0 &&
+              (ws()?.inProgress?.length ?? 0) === 0,
+          ),
+        goHome: () => executePose('HOME'),
+      };
+      processBatch(ports, feeder.take)
+        .then(() => {
+          // Batch done: the belt is cleared; the rest of the deck waits for the next Process.
+          if (feederRef.current === feeder) feederRef.current = null;
+          setConveyorStatus(feeder.remaining().length > 0 ? 'LOADED' : 'EMPTY');
+        })
+        .catch(() => undefined);
+    },
+    [bufferRef, spawnObject, pickAndPlace, executePose, waitUntil],
+  );
+
   const handleProcess = useCallback(() => {
     stopFeeding();
     const feeder = createBeltFeeder(deck, Date.now());
@@ -127,9 +190,10 @@ export function TeleopClient({
       if (feeder.status() === 'HALTED') {
         stopFeeding();
         setConveyorStatus('HALTED');
+        sortBatch(feeder);
       }
     }, FEED_TICK_MS);
-  }, [deck, stopFeeding]);
+  }, [deck, stopFeeding, sortBatch]);
 
   const handleClearWorkspace = useCallback(() => {
     clearWorkspace();
