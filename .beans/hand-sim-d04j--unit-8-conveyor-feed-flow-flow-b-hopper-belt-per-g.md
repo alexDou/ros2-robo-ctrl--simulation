@@ -17,7 +17,7 @@ Visitors of the deployed simulation currently see the click-to-place workflow: t
 
 ## Solution
 
-On a dedicated branch the WorkcellTable is replaced by a Conveyor running across the front of the manipulator, fed from a FeedHopper at its upstream end, with the ScrapBin under its exit and the three SpindleTowers on a RearStand behind the arm. The operator clicks **Fill** to load the FeedHopper with 100 Gearwheels (10% defective, sound gears split evenly across WHITE/GREEN/BLUE), then **Process**. The Conveyor feeds a random Batch of 3..BeltCapacity gears onto the belt, one by one, stops when the lead gear reaches the far edge of the PickZone, and the arm sorts sound gears onto their color SpindleTower one gear at a time. Defective gears stay on the belt and drop into the ScrapBin on the next belt run. This repeats until the FeedHopper is empty, then a final flush clears the belt. **Stop** pauses feeding and resumes later. EmergencyStop, FAULT, reconnect or page reload resets the whole system. Full SpindleTowers empty themselves at 10 with a fade; the ScrapBin shows only empty (green) or not empty (red).
+On a dedicated branch the WorkcellTable is replaced by a Conveyor running across the front of the manipulator, fed from a FeedHopper at its upstream end, with the ScrapBin under its exit and the three SpindleTowers on a RearStand behind the arm. The operator clicks **Fill** to load the FeedHopper with 100 Gearwheels (10% defective, intact gears split evenly across WHITE/GREEN/BLUE), then **Process**. The Conveyor feeds a random Batch of 3..BeltCapacity gears onto the belt, one by one, stops when the lead gear reaches the far edge of the PickZone, and the arm sorts intact gears onto their color SpindleTower one gear at a time. Defective gears stay on the belt and drop into the ScrapBin on the next belt run. This repeats until the FeedHopper is empty, then a final flush clears the belt. **Stop** pauses feeding and resumes later. EmergencyStop, FAULT, reconnect or page reload resets the whole system. Full SpindleTowers empty themselves at 10 with a fade; the ScrapBin shows only empty (green) or not empty (red).
 
 ## User Stories
 
@@ -31,7 +31,7 @@ On a dedicated branch the WorkcellTable is replaced by a Conveyor running across
 8. As a visitor, I want gears to drop onto the moving belt one by one with irregular spacing and lateral position, so that the feed looks natural.
 9. As a visitor, I want each belt run to carry between 3 and BeltCapacity gears, so that batches vary.
 10. As a visitor, I want the belt to stop when the lead gear reaches the far edge of the PickZone, so that every gear in the Batch is within the arm's reach.
-11. As a visitor, I want the arm to pick sound gears one at a time and stack each on the tower of its color, so that I see the sorting.
+11. As a visitor, I want the arm to pick intact gears one at a time and stack each on the tower of its color, so that I see the sorting.
 12. As a visitor, I want defective gears to show a visible crack, so that I can tell why they are not picked.
 13. As a visitor, I want defective gears left on the belt and dropped into the ScrapBin when the belt next moves, so that rejection happens on the line without the arm.
 14. As an operator, I want the arm to return HOME when a Batch is done and the belt to restart automatically, so that the run continues without input.
@@ -48,9 +48,9 @@ On a dedicated branch the WorkcellTable is replaced by a Conveyor running across
 25. As a visitor, I want a tower that reaches 10 gears to fade its stack out and reset to 0 without stopping the arm, so that the run never blocks on a full tower.
 26. As a visitor, I want the ScrapBin green when empty and red when it holds anything, so that I read reject status at a glance.
 27. As an operator, I want the ScrapBin to empty itself at 100 gears, so that it never overflows.
-28. As an operator, I want the supply proportions to be exact (10 defective, 30/30/30 sound) but in random order, so that every run is fair and different.
+28. As an operator, I want the supply proportions to be exact (10 defective, 30/30/30 intact) but in random order, so that every run is fair and different.
 29. As an operator, I want gears moved on the belt after the stop to be picked where they actually are, so that the line is robust to disturbance.
-30. As a developer, I want the gear color and soundness to travel on the SPAWN_OBJECT command, so that the workcell stores exactly what the feed produced.
+30. As a developer, I want the gear color and intactness to travel on the SPAWN_OBJECT command, so that the workcell stores exactly what the feed produced.
 31. As a developer, I want WorkcellState to be the only authority for registered gears, and the hopper/belt state to live only in TeleopClient, so that no state is owned twice.
 32. As a developer, I want a defective gear registered like any other but booked straight into the ScrapBin with no arm motion, so that scrap inventory stays authoritative in the workcell.
 33. As a developer, I want every PickZone corner and every rear tower drop proven reachable by IK tests, so that layout changes cannot silently break the arm.
@@ -71,8 +71,8 @@ On a dedicated branch the WorkcellTable is replaced by a Conveyor running across
   - `CLEAR_WORKSPACE` empties everything.
 - **Conveyor controller (TeleopClient, new deep module)**: owns FeedHopper deck, belt kinematics, Batches and ConveyorStatus; nothing of it goes on the wire. Interface: inputs = operator intents (Fill / Process / Stop), clock ticks, telemetry snapshots (RobotState, workcell inventory); outputs = RobotCommands to send, ConveyorStatus, gear poses for rendering, button enablement. Seedable RNG.
   - ConveyorStatus: `EMPTY` → Fill → `LOADED` → Process → `FEEDING` → lead gear at PickZone edge → `HALTED` → (per-gear loop) → Batch done → `FEEDING` … → deck empty → flush → `EMPTY`. Stop from any running state → `STOPPED` → Process resumes. FAULT / connect → local reset + `CLEAR_WORKSPACE`.
-  - Per-gear loop at `HALTED`: send `SPAWN_OBJECT(x, y, z, color, intact)`; if sound, send `PICK_AND_PLACE_TARGET` to its tower and wait for `IDLE`; if defective, continue with the next gear.
-  - Deck: exactly 10 defective (random color) + 30/30/30 sound, shuffled.
+  - Per-gear loop at `HALTED`: send `SPAWN_OBJECT(x, y, z, color, intact)`; if intact, send `PICK_AND_PLACE_TARGET` to its tower and wait for `IDLE`; if defective, continue with the next gear.
+  - Deck: exactly 10 defective (random color) + 30/30/30 intact, shuffled.
   - Batch size random in 3..BeltCapacity (last may be smaller); random spawn delay; random lateral X; minimum spacing ≈ 0.13 m.
 - **Layout** (REP-103, belt top Z = 0): belt X 0.25–0.55 (0.30 m wide), running along Y ≈ +0.95 → −0.66, travel +Y → −Y; PickZone Y −0.51…+0.51 (corners R ≈ 0.75 m); BeltCapacity ≈ 10; FeedHopper at Y ≈ +0.85. All starting values; the PickZone shrinks until the IK reach tests pass. The arm is never scaled.
 - **Scene**: new fixtures for Conveyor, FeedHopper and RearStand inside the REP-103 robot group; towers and bin relocated; ScrapBin binary color; tower fade-out (~1.5 s) when a count resets; new default camera on the robot's right side, chosen by screenshot comparison of 3–4 candidates.

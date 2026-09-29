@@ -119,7 +119,7 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
     return (window as any).__robot_visualizer;
   }
 
-  it('sound gear shows no notch; defective gear shows notch', async () => {
+  it('intact gear shows no notch; defective gear shows notch', async () => {
     const telemetryBufferRef = snapBuffer([
       { id: 's1', x: 0.5, y: 0.0, z: 0.0, color: 'GREEN', intact: true },
       { id: 'd1', x: 0.55, y: 0.05, z: 0.0, color: 'GREEN', intact: false },
@@ -129,15 +129,15 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
       stepFrame();
     });
     const scene = visualizer.getScene() as THREE.Scene;
-    const sound = gearGroupAt(scene, 0.5, 0.0, 0.0)!;
+    const intact = gearGroupAt(scene, 0.5, 0.0, 0.0)!;
     const defective = gearGroupAt(scene, 0.55, 0.05, 0.0)!;
-    expect(sound).not.toBeNull();
+    expect(intact).not.toBeNull();
     expect(defective).not.toBeNull();
     expect(visualizer.getSnapshotGearIntact('s1')).toBe(true);
     expect(visualizer.getSnapshotGearIntact('d1')).toBe(false);
-    expect(notchVisible(sound)).toBe(false);
+    expect(notchVisible(intact)).toBe(false);
     expect(notchVisible(defective)).toBe(true);
-    expect(bodyHex(sound)).toBe(GEAR_CLASSIFIED_HEX.GREEN.body);
+    expect(bodyHex(intact)).toBe(GEAR_CLASSIFIED_HEX.GREEN.body);
     expect(bodyHex(defective)).toBe(GEAR_CLASSIFIED_HEX.GREEN.body);
   });
 

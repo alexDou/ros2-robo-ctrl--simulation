@@ -76,7 +76,7 @@ EmergencyStop / FAULT / page reload / reconnect → full reset: local stores emp
 ```
 
 - **Button gating**: Fill enabled only when the hopper is empty and nothing is running; Process disabled until filled; while running, Fill disabled. After Stop with gears left, Fill stays disabled and Process resumes.
-- **Deck**: 100 gears generated at Fill: exactly 10 defective (random color) + 30/30/30 sound, shuffled (seedable in tests). Defect rate 10%.
+- **Deck**: 100 gears generated at Fill: exactly 10 defective (random color) + 30/30/30 intact, shuffled (seedable in tests). Defect rate 10%.
 - **Batch**: random size in 3..BeltCapacity (last may be smaller); gears appear one by one with random delay and random lateral X on the moving belt.
 - **Registration**: gears become domain state only via `SPAWN_OBJECT` at belt stop, one by one. A gear moved on the belt after the stop is picked where the UI reports it at its turn.
 - **ConveyorStatus** (TeleopClient-local, separate from RobotState): `EMPTY` / `LOADED` / `FEEDING` / `HALTED` / `STOPPED`. RobotState is unchanged (`BOOTING`/`STANDBY`/`IDLE`/`EXECUTING`/`FAULT`).
@@ -124,10 +124,10 @@ Read `.agents/rules/threejs-rep103.md` first. All fixtures stay inside `robotGro
 
 TeleopClient-local module (hook/util under `web/src/`, tests in `web/tests/unit/`).
 
-1. Deck generator (seedable): 10 defective (random color) + 30/30/30 sound, shuffled.
+1. Deck generator (seedable): 10 defective (random color) + 30/30/30 intact, shuffled.
 2. ConveyorStatus state machine + Fill / Process / Stop buttons and gating (see Operational Flow).
 3. Belt kinematics: speed, spawn delays, lateral randomisation, min spacing, stop when the Batch lead gear reaches the PickZone edge; defective leftovers tip into the bin on the next run; final flush.
-4. Per-gear command loop: `SPAWN_OBJECT` → (sound) `PICK_AND_PLACE_TARGET` to its tower → wait `IDLE` → next; defective → next immediately.
+4. Per-gear command loop: `SPAWN_OBJECT` → (intact) `PICK_AND_PLACE_TARGET` to its tower → wait `IDLE` → next; defective → next immediately.
 5. Reset: on connect and on FAULT, empty local stores and send `CLEAR_WORKSPACE`.
 6. Telemetry sidebar: tower counters `n/10`, binary bin state; no Flow A controls.
 
@@ -153,7 +153,7 @@ Cucumber + Playwright against the Mock Gateway (`npm --prefix web run test:e2e`)
 | Q3 | Feed model | iter-2 batch fill-then-clear, not one-by-one indexing. `StepIndexingConveyor` retired from the glossary. |
 | Q4 | Container | Visible FeedHopper; Fill loads 100 gears. |
 | Q5 | Batch size / colors | Random 3..BeltCapacity per belt run; gears appear one by one on the moving belt; colors equiprobable, no guarantees. |
-| Q6 | Defectives | Arm picks only sound gears; defectives fall off the belt end into the ScrapBin. |
+| Q6 | Defectives | Arm picks only intact gears; defectives fall off the belt end into the ScrapBin. |
 | Q7 | Colors | WHITE / GREEN / BLUE only — no Red anywhere. |
 | Q8 | Table | Conveyor replaces the WorkcellTable; hopper upstream. |
 | Q9 | Belt geometry | Along Y, top Z = 0, +Y → −Y; width and PickZone maximised within reach. Arm not scaled. |

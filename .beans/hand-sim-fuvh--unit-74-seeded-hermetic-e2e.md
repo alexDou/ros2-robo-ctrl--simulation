@@ -41,4 +41,4 @@ As a test engineer, I want hermetic end-to-end runs driven by a seeded classific
 
 ## Summary of Changes
 
-Seeded hermetic E2E green: mock mirrors classification sequence (deterministic gear-seed-N ids, wrap replay, WHITE/sound default), per-tower FIFO + bin cap-100 recycle mirror WorkcellNode, CLEAR wipes all buckets, click-to-echo <50ms. 9 seeded tests + 11 legacy + 211 full suite pass; typecheck + lint clean.
+Seeded hermetic E2E green: mock mirrors classification sequence (deterministic gear-seed-N ids, wrap replay, WHITE/intact default), per-tower FIFO + bin cap-100 recycle mirror WorkcellNode, CLEAR wipes all buckets, click-to-echo <50ms. 9 seeded tests + 11 legacy + 211 full suite pass; typecheck + lint clean.

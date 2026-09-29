@@ -69,7 +69,7 @@ Linear belt in front of the manipulator carrying Gearwheels from the FeedHopper 
 _Avoid_: Indexing conveyor, step feeder, conveyor line, moving belt
 
 **FeedHopper**:
-Reservoir at the upstream end of the Conveyor, filled on demand with a fixed deck of 100 Gearwheels whose color and soundness are already known.
+Reservoir at the upstream end of the Conveyor, filled on demand with a fixed deck of 100 Gearwheels whose color and intactness are already known.
 _Avoid_: Container, holder, magazine, feeder
 
 **Batch**:
@@ -97,15 +97,15 @@ Fixture behind the manipulator carrying the three SpindleTowers.
 _Avoid_: Tower rack, shelf, back table
 
 **SpindleTower**:
-Physical sorting destination vertical post receiving inspected sound gearwheels by color (`WHITE`, `GREEN`, `BLUE`); it empties itself once it holds 10.
+Physical sorting destination vertical post receiving inspected intact gearwheels by color (`WHITE`, `GREEN`, `BLUE`); it empties itself once it holds 10.
 _Avoid_: Peg, stacker, pole
 
 **ScrapBin**:
-Physical disposal destination at the Conveyor exit receiving unsound gearwheels of any color by dropping off the belt end; shown only as empty or not empty, and emptied once it holds 100.
+Physical disposal destination at the Conveyor exit receiving defective gearwheels of any color by dropping off the belt end; shown only as empty or not empty, and emptied once it holds 100.
 _Avoid_: Trash, reject pile, discard box, recycle bin
 
 **Gearwheel**:
-Cylindrical manufactured workpiece with perimeter teeth, carrying a color (`WHITE`, `GREEN`, `BLUE`) and soundness (sound or defective), targeted for feeding, pickup, and sorting.
+Cylindrical manufactured workpiece with perimeter teeth, carrying a color (`WHITE`, `GREEN`, `BLUE`) and intactness (intact or defective), targeted for feeding, pickup, and sorting.
 _Avoid_: Item, puck, token, part, gear
 
 **ClearWorkspace**:
@@ -113,7 +113,7 @@ Explicit administrative command resetting all registered Gearwheels, SpindleTowe
 _Avoid_: Reset scene, wipe table, delete objects
 
 **WorkcellState**:
-Authoritative domain state component tracking registered Gearwheels, their coordinates, color and soundness, and SpindleTower and ScrapBin inventory. A Gearwheel enters it only when registered at a stopped Conveyor; FeedHopper and belt contents belong to TeleopClient alone.
+Authoritative domain state component tracking registered Gearwheels, their coordinates, color and intactness, and SpindleTower and ScrapBin inventory. A Gearwheel enters it only when registered at a stopped Conveyor; FeedHopper and belt contents belong to TeleopClient alone.
 _Avoid_: Scene graph, world model, spawn manager, entity repo
 
 **AnalyticalInverseKinematics**:

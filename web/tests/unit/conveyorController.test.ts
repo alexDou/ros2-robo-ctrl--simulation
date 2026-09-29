@@ -30,7 +30,7 @@ function fakePorts(): { ports: ConveyorPorts; calls: string[]; payloads: unknown
 }
 
 describe('Unit 8.0c: minimal conveyor controller (hand-sim-rmju)', () => {
-  it('spawns a sound gear with its classification, then picks it once registered, then waits to settle', async () => {
+  it('spawns an intact gear with its classification, then picks it once registered, then waits to settle', async () => {
     const { ports, calls, payloads } = fakePorts();
     const gear: GearOnBelt = { color: 'BLUE', intact: true, x: 0.4, y: 0.1 };
 
@@ -55,7 +55,7 @@ describe('Unit 8.0c: minimal conveyor controller (hand-sim-rmju)', () => {
     expect(calls).toEqual(['spawn']);
   });
 
-  it('places the tracer gear inside the PickZone, and it is sound', () => {
+  it('places the tracer gear inside the PickZone, and it is intact', () => {
     expect(TRACER_GEAR.intact).toBe(true);
     expect(TRACER_GEAR.x).toBeGreaterThanOrEqual(BELT_X_RANGE[0]);
     expect(TRACER_GEAR.x).toBeLessThanOrEqual(BELT_X_RANGE[1]);

@@ -19,13 +19,13 @@ hand-sim-d04j (Unit 8 spec)
 
 ## What to build
 
-At HALTED the controller processes gears one at a time: SPAWN_OBJECT with the gear's current coordinates + color + intact; sound → PICK_AND_PLACE_TARGET to its tower and wait for IDLE; defective → next gear. Batch done → arm HOME.
+At HALTED the controller processes gears one at a time: SPAWN_OBJECT with the gear's current coordinates + color + intact; intact → PICK_AND_PLACE_TARGET to its tower and wait for IDLE; defective → next gear. Batch done → arm HOME.
 
 ## Acceptance criteria
 
 - [ ] Vitest: command sequence per gear, wait-for-IDLE before next, defective skipped
 - [ ] Gear picked at its current coordinates (robust to being moved)
-- [ ] E2E: a seeded mixed Batch ends with sound gears on their towers and bin red
+- [ ] E2E: a seeded mixed Batch ends with intact gears on their towers and bin red
 - [ ] `scripts/verify.sh` prints `verify: GREEN`
 
 ## Blocked by
