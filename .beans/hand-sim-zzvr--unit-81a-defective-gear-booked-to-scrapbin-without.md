@@ -1,12 +1,13 @@
 ---
 # hand-sim-zzvr
 title: 'Unit 8.1a: Defective gear booked to ScrapBin without arm motion; binary bin'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:03Z
-updated_at: 2026-09-28T16:06:03Z
+updated_at: 2026-09-29T13:49:41Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-rmju
@@ -35,3 +36,5 @@ A spawned `intact == false` gear is committed straight to ScrapBin inventory by 
 - hand-sim-rmju (04)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Done, verify GREEN. Deferred to 8.2: defective gear stays visually on the belt (snapshot renders it in the bin for now). ScrapBin moved to [0.4,-0.75,-0.05]; SCRAP reach case dropped from test_kinematics (arm no longer visits the bin).
