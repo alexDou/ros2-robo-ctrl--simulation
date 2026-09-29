@@ -18,6 +18,7 @@ export class TeleopPage {
   readonly poseHomeButton: Locator;
   readonly resetFaultButton: Locator;
   readonly clearWorkspaceButton: Locator;
+  readonly processButton: Locator;
   readonly toolbarErrorBanner: Locator;
   readonly connectButton: Locator;
   readonly disconnectButton: Locator;
@@ -44,6 +45,7 @@ export class TeleopPage {
     this.poseHomeButton = page.getByTestId('pose-home-button');
     this.resetFaultButton = page.getByTestId('reset-fault-button');
     this.clearWorkspaceButton = page.getByTestId('clear-workspace-button');
+    this.processButton = page.getByTestId('process-button');
     this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
     this.connectButton = page.getByTestId('connect-button');
     this.disconnectButton = page.getByTestId('disconnect-button');
@@ -316,6 +318,23 @@ export class TeleopPage {
         payload: { reason },
       }),
     );
+  }
+
+  async clickProcess(): Promise<void> {
+    await expect(this.processButton).toBeEnabled();
+    await this.processButton.click();
+  }
+
+  async expectSingleGearOnTower(tower: readonly [number, number, number]): Promise<void> {
+    await this.expectTowerGearCount(1);
+    const pos = await this.page.evaluate(() => {
+      const gears = window.__robot_visualizer!.getTowerGears() as Array<{
+        position: { x: number; y: number };
+      }>;
+      return { x: gears[0].position.x, y: gears[0].position.y };
+    });
+    expect(pos.x).toBeCloseTo(tower[0], 3);
+    expect(pos.y).toBeCloseTo(tower[1], 3);
   }
 
   async clickClearWorkspace(): Promise<void> {

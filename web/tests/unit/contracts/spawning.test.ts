@@ -30,7 +30,14 @@ describe('TypeScript Domain Schemas & Contracts', () => {
       });
 
       it('parses valid SpawnObjectPayload', () => {
-        const payload = { x: 0.5, y: -0.1, z: 0.0, object_type: 'GEAR' as const };
+        const payload = {
+          x: 0.5,
+          y: -0.1,
+          z: 0.0,
+          object_type: 'GEAR' as const,
+          color: 'BLUE' as const,
+          intact: true,
+        };
         const parsed = parseSpawnObjectPayload(payload);
         expect(parsed.x).toBe(0.5);
         expect(parsed.y).toBe(-0.1);
@@ -45,14 +52,36 @@ describe('TypeScript Domain Schemas & Contracts', () => {
 
       it('rejects malformed SpawnObjectPayload', () => {
         expect(() =>
-          parseSpawnObjectPayload({ x: 'not-a-number', y: 0, z: 0, object_type: 'GEAR' }),
+          parseSpawnObjectPayload({
+            x: 'not-a-number',
+            y: 0,
+            z: 0,
+            object_type: 'GEAR',
+            color: 'WHITE',
+            intact: true,
+          }),
         ).toThrow();
         expect(() => parseSpawnObjectPayload({ x: 0.5, y: 0 })).toThrow();
         expect(() =>
-          parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'INVALID' }),
+          parseSpawnObjectPayload({
+            x: 0.5,
+            y: 0,
+            z: 0,
+            object_type: 'INVALID',
+            color: 'WHITE',
+            intact: true,
+          }),
         ).toThrow();
         expect(() =>
-          parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', extra: true }),
+          parseSpawnObjectPayload({
+            x: 0.5,
+            y: 0,
+            z: 0,
+            object_type: 'GEAR',
+            color: 'WHITE',
+            intact: true,
+            extra: true,
+          }),
         ).toThrow();
       });
     });
@@ -81,6 +110,8 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           y: 0.2,
           z: 0.0,
           object_type: 'GEAR',
+          color: 'GREEN',
+          intact: false,
         });
         expect(cmd.type).toBe(CommandType.SPAWN_OBJECT);
         expect(cmd.payload).toEqual({
@@ -88,6 +119,8 @@ describe('TypeScript Domain Schemas & Contracts', () => {
           y: 0.2,
           z: 0.0,
           object_type: 'GEAR',
+          color: 'GREEN',
+          intact: false,
         });
         expect(isRobotCommand(cmd)).toBe(true);
       });
@@ -106,9 +139,16 @@ describe('Finite-float guards (semgrep ros2-float-coord)', () => {
   it('rejects non-finite SpawnObjectPayload coordinates', async () => {
     const { parseSpawnObjectPayload } = await import('@domain/parsers');
     for (const bad of [Infinity, -Infinity, NaN]) {
-      expect(() => parseSpawnObjectPayload({ x: bad, y: 0, z: 0, object_type: 'GEAR' })).toThrow(
-        /finite|must be a number/,
-      );
+      expect(() =>
+        parseSpawnObjectPayload({
+          x: bad,
+          y: 0,
+          z: 0,
+          object_type: 'GEAR',
+          color: 'WHITE',
+          intact: true,
+        }),
+      ).toThrow(/finite|must be a number/);
     }
   });
 });

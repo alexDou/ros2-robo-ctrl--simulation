@@ -1,21 +1,16 @@
 import { describe, it, expect } from 'vitest';
 describe('Unit 7.0: required color + intact on GearEntry (hand-sim-9kw2)', () => {
-  it('spawn payload carries no classification; GearEntry requires color + intact, rejects RED', async () => {
+  it('spawn payload requires color + intact (no defaults); GearEntry requires them too, rejects RED', async () => {
     const contracts = await import('@contracts');
+    const base = { x: 0.5, y: 0, z: 0, object_type: 'GEAR' } as const;
+    expect(() => contracts.parseSpawnObjectPayload({ ...base, color: 'WHITE' })).toThrow();
+    expect(() => contracts.parseSpawnObjectPayload({ ...base, intact: true })).toThrow();
+    expect(() => contracts.parseSpawnObjectPayload({ ...base })).toThrow();
     expect(() =>
-      contracts.parseSpawnObjectPayload({
-        x: 0.5,
-        y: 0,
-        z: 0,
-        object_type: 'GEAR',
-        color: 'WHITE',
-      }),
+      contracts.parseSpawnObjectPayload({ ...base, color: 'RED', intact: true }),
     ).toThrow();
-    expect(() =>
-      contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR', intact: true }),
-    ).toThrow();
-    const spawn = contracts.parseSpawnObjectPayload({ x: 0.5, y: 0, z: 0, object_type: 'GEAR' });
-    expect(spawn).toEqual({ x: 0.5, y: 0, z: 0, object_type: 'GEAR' });
+    const spawn = contracts.parseSpawnObjectPayload({ ...base, color: 'GREEN', intact: false });
+    expect(spawn).toEqual({ ...base, color: 'GREEN', intact: false });
     for (const color of ['WHITE', 'GREEN', 'BLUE'] as const) {
       for (const intact of [false, true]) {
         const g = contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0, color, intact });

@@ -70,6 +70,23 @@ export const poseNameSchema = PoseNameSchema;
 
 export type PoseName = z.infer<typeof PoseNameSchema>;
 
+/** Tower color assigned by the client */
+export const GearColor = {
+  WHITE: 'WHITE',
+  GREEN: 'GREEN',
+  BLUE: 'BLUE',
+} as const;
+
+export const GearColorSchema = z.enum([
+  'WHITE',
+  'GREEN',
+  'BLUE',
+], { message: 'Invalid gear color' });
+
+export const gearColorSchema = GearColorSchema;
+
+export type GearColor = z.infer<typeof GearColorSchema>;
+
 /** Type of object to spawn */
 export const SpawnObjectType = {
   GEAR: 'GEAR',
@@ -136,23 +153,6 @@ export const RobotStateSchema = z.enum([
 export const robotStateSchema = RobotStateSchema;
 
 export type RobotState = z.infer<typeof RobotStateSchema>;
-
-/** Gear color class routing to its spindle tower */
-export const GearColor = {
-  WHITE: 'WHITE',
-  GREEN: 'GREEN',
-  BLUE: 'BLUE',
-} as const;
-
-export const GearColorSchema = z.enum([
-  'WHITE',
-  'GREEN',
-  'BLUE',
-], { message: 'Invalid gear color' });
-
-export const gearColorSchema = GearColorSchema;
-
-export type GearColor = z.infer<typeof GearColorSchema>;
 
 /** Canonical UR5e 6-DoF joint names in kinematic sequence */
 export const UR5E_JOINTS = [
@@ -322,6 +322,8 @@ export const rawSpawnObjectPayloadSchema = z.object(
     x: z.number({ message: "Field 'x' must be a number" }).refine(Number.isFinite, { message: "Field 'x' must be a finite number" }),
     y: z.number({ message: "Field 'y' must be a number" }).refine(Number.isFinite, { message: "Field 'y' must be a finite number" }),
     z: z.number({ message: "Field 'z' must be a number" }).refine(Number.isFinite, { message: "Field 'z' must be a finite number" }),
+    color: GearColorSchema,
+    intact: z.boolean(),
     object_type: SpawnObjectTypeSchema,
   },
   { message: 'SpawnObjectPayload payload must be an object' }

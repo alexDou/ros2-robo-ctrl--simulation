@@ -107,7 +107,9 @@
         "x",
         "y",
         "z",
-        "object_type"
+        "object_type",
+        "color",
+        "intact"
       ],
       "properties": {
         "x": {
@@ -121,6 +123,16 @@
         "z": {
           "type": "number",
           "description": "Cartesian Z in meters (clamped to table surface 0.0m)"
+        },
+        "color": {
+          "type": "string",
+          "title": "GearColor",
+          "enum": ["WHITE", "GREEN", "BLUE"],
+          "description": "Tower color assigned by the client"
+        },
+        "intact": {
+          "type": "boolean",
+          "description": "false = defective gear (routes to ScrapBin)"
         },
         "object_type": {
           "type": "string",

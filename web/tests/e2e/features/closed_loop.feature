@@ -38,3 +38,13 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And all action buttons should be enabled
     And the Reset Fault button should be disabled
     And the robot joint positions should remain unchanged
+
+  @conveyor @tracer-bullet @unit-8.0c
+  Scenario: Processing places one sound gear from the belt onto its color tower
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    When the operator clicks the "Process" button
+    Then the event log should record state transition to "EXECUTING"
+    And the event log should record state transition to "IDLE"
+    And the sound GREEN gear should rest on the GREEN tower

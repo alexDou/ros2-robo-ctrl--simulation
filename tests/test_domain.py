@@ -407,7 +407,11 @@ def test_robot_telemetry_event_palm_state():
 
 
 def test_spawn_object_payload_serialization():
-    payload = SpawnObjectPayload(x=0.5, y=-0.1, z=0.0, object_type=SpawnObjectType.GEAR)
+    payload = SpawnObjectPayload(
+        x=0.5, y=-0.1, z=0.0, object_type=SpawnObjectType.GEAR, color="GREEN", intact=False
+    )
+    assert payload.color.value == "GREEN"
+    assert payload.intact is False
     assert payload.x == 0.5
     assert payload.y == -0.1
     assert payload.z == 0.0
@@ -433,17 +437,19 @@ def test_spawn_object_payload_serialization():
     # Invalid object_type
     with pytest.raises(ValidationError):
         SpawnObjectPayload.model_validate_json(
-            '{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "INVALID"}'
+            '{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "INVALID", "color": "WHITE", "intact": true}'
         )
 
     # Missing required field
     with pytest.raises(ValidationError):
-        SpawnObjectPayload.model_validate_json('{"x": 0.5, "y": 0.0, "z": 0.0}')
+        SpawnObjectPayload.model_validate_json(
+            '{"x": 0.5, "y": 0.0, "z": 0.0, "color": "WHITE", "intact": true}'
+        )
 
     # Extra fields rejected (strict)
     with pytest.raises(ValidationError):
         SpawnObjectPayload.model_validate_json(
-            '{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "extra": 1}'
+            '{"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "color": "WHITE", "intact": true, "extra": 1}'
         )
 
 
@@ -647,7 +653,7 @@ def test_robot_telemetry_event_workcell_origin_optional_round_trip():
 
 
 def test_unit70_required_color_intact():
-    # Unit 7.0/hand-sim-9kw2: spawn carries no classification;
+    # Unit 8.0c/hand-sim-rmju: spawn carries the client's classification (required, no defaults);
     # GearEntry requires color + intact on every bucket, no defaults.
     import json
     from pathlib import Path
@@ -666,9 +672,9 @@ def test_unit70_required_color_intact():
     schemas_dir = Path(__file__).parent.parent / "schemas"
     cmd_data = json.loads((schemas_dir / "robot_command.schema.json").read_text())
     spawn_def = cmd_data["$defs"]["spawn_object_payload"]
-    assert set(spawn_def["required"]) == {"x", "y", "z", "object_type"}
-    assert "color" not in spawn_def["properties"]
-    assert "intact" not in spawn_def["properties"]
+    assert set(spawn_def["required"]) == {"x", "y", "z", "object_type", "color", "intact"}
+    assert spawn_def["properties"]["color"]["enum"] == ["WHITE", "GREEN", "BLUE"]
+    assert spawn_def["properties"]["intact"]["type"] == "boolean"
     assert spawn_def["additionalProperties"] is False
 
     tel_data = json.loads((schemas_dir / "robot_telemetry_event.schema.json").read_text())
@@ -682,12 +688,18 @@ def test_unit70_required_color_intact():
         assert "default" not in gear_def["properties"]["intact"]
         assert gear_def["additionalProperties"] is False
 
-    spawn = SpawnObjectPayload(x=0.5, y=0.0, z=0.0, object_type=SpawnObjectType.GEAR)
+    spawn = SpawnObjectPayload(
+        x=0.5, y=0.0, z=0.0, object_type=SpawnObjectType.GEAR, color="BLUE", intact=True
+    )
     assert SpawnObjectPayload.model_validate_json(spawn.model_dump_json()) == spawn
 
     with pytest.raises(ValidationError):
         SpawnObjectPayload.model_validate(
             {"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "color": "WHITE"}
+        )
+    with pytest.raises(ValidationError):
+        SpawnObjectPayload.model_validate(
+            {"x": 0.5, "y": 0.0, "z": 0.0, "object_type": "GEAR", "color": "RED", "intact": True}
         )
     with pytest.raises(ValidationError):
         SpawnObjectPayload.model_validate(

@@ -10,6 +10,8 @@ export interface OperatorToolbarProps {
   onDisconnect: () => void;
   onResetFault: () => void;
   onClearWorkspace: () => void;
+  onProcess: () => void;
+  processDisabled?: boolean;
   errorBanner?: { errorCode: string; message: string } | null;
   disabled?: boolean;
   disabledReason?: string | null;
@@ -24,6 +26,8 @@ export function OperatorToolbar({
   onDisconnect,
   onResetFault,
   onClearWorkspace,
+  onProcess,
+  processDisabled = false,
   errorBanner,
   disabled = false,
   disabledReason = null,
@@ -35,6 +39,7 @@ export function OperatorToolbar({
   const actionDisabled = disabled || !isIdle;
   const resetFaultDisabled = disabled || !isFault;
   const clearWorkspaceDisabled = disabled || !isIdle || !hasActiveGear;
+  const processButtonDisabled = disabled || !isIdle || processDisabled;
   const isConnected = connectionState === 'CONNECTED' || connectionState === 'CONNECTING';
 
   return (
@@ -124,6 +129,25 @@ export function OperatorToolbar({
           <span style={{ color: '#9ca3af', fontSize: '0.8125rem', fontWeight: 600 }}>
             Workcell:
           </span>
+          <button
+            data-testid="process-button"
+            type="button"
+            onClick={onProcess}
+            disabled={processButtonDisabled}
+            style={{
+              backgroundColor: processButtonDisabled ? '#374151' : '#059669',
+              color: processButtonDisabled ? '#9ca3af' : '#ffffff',
+              padding: '0.4rem 0.8rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              cursor: processButtonDisabled ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s ease',
+            }}
+          >
+            Process
+          </button>
           <button
             data-testid="clear-workspace-button"
             type="button"

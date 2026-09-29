@@ -12,16 +12,35 @@ import {
 function wsUrl(gateway: MockGateway): string {
   return `ws://127.0.0.1:${gateway.port}/ws/teleop/robot/${DEFAULT_ROBOT_ID}`;
 }
-function sendSpawn(ws: WebSocket, id: string, x = 0.5, y = 0.0): void {
+// Classification now rides on the spawn payload (Unit 8.0c); tests seed a cycling sequence here.
+let classificationSequence: Array<{ color: string; intact: boolean }> = [];
+let classificationIndex = 0;
+function seedClassification(sequence: Array<{ color: string; intact: boolean }>): void {
+  classificationSequence = sequence;
+  classificationIndex = 0;
+}
+function nextClassification(): { color: string; intact: boolean } {
+  if (classificationSequence.length === 0) return { color: 'WHITE', intact: true };
+  const item = classificationSequence[classificationIndex % classificationSequence.length];
+  classificationIndex += 1;
+  return item;
+}
+function send(ws: WebSocket, id: string, type: string, payload: object): void {
   ws.send(
     JSON.stringify({
       command_id: id,
       sender_id: 'ui-test',
       timestamp_ns: Date.now() * 1_000_000,
-      type: 'SPAWN_OBJECT',
-      payload: { x, y, z: 0.0, object_type: 'GEAR' },
+      type,
+      payload,
     }),
   );
+}
+// Spawn registers the gear, then the client dispatches the pick explicitly.
+function sendSpawn(ws: WebSocket, id: string, x = 0.5, y = 0.0): void {
+  const cls = nextClassification();
+  send(ws, id, 'SPAWN_OBJECT', { x, y, z: 0.0, object_type: 'GEAR', ...cls });
+  send(ws, `${id}-pick`, 'PICK_AND_PLACE_TARGET', { pick_x: x, pick_y: y, pick_z: 0.0 });
 }
 function sendClear(ws: WebSocket, id: string): void {
   ws.send(
@@ -54,6 +73,7 @@ async function waitFor(cond: () => boolean, timeoutMs = 10000, stepMs = 50): Pro
 describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
   let gateway: MockGateway;
   beforeEach(async () => {
+    seedClassification([]);
     gateway = new MockGateway({ port: 0, host: '127.0.0.1' });
     await gateway.start();
   });
@@ -62,7 +82,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
   });
   it('replays seeded sequence exactly and wraps around', async () => {
     gateway.setAutoExecutePickAndPlace(false);
-    gateway.setClassificationSequence([
+    seedClassification([
       { color: 'GREEN', intact: true },
       { color: 'BLUE', intact: false },
       { color: 'WHITE', intact: true },
@@ -106,7 +126,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
     }
   });
   it('sound GREEN deposits at green tower with label GREEN', async () => {
-    gateway.setClassificationSequence([{ color: 'GREEN', intact: true }]);
+    seedClassification([{ color: 'GREEN', intact: true }]);
     const ws = await openWs(gateway);
     const labels: string[] = [];
     ws.on('message', (data) => {
@@ -131,7 +151,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
     }
   });
   it('defective BLUE deposits at scrap bin with label DEFECTIVE', async () => {
-    gateway.setClassificationSequence([{ color: 'BLUE', intact: false }]);
+    seedClassification([{ color: 'BLUE', intact: false }]);
     const ws = await openWs(gateway);
     const labels: string[] = [];
     ws.on('message', (data) => {
@@ -179,7 +199,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       origin_z: 0,
     };
     gateway.seedProcessed([...tower, sibling]);
-    gateway.setClassificationSequence([{ color: 'WHITE', intact: true }]);
+    seedClassification([{ color: 'WHITE', intact: true }]);
     const ws = await openWs(gateway);
     try {
       sendSpawn(ws, 'fifo-1');
@@ -202,7 +222,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
     }
   });
   it('clear wipes towers plus bin', async () => {
-    gateway.setClassificationSequence([{ color: 'GREEN', intact: false }]);
+    seedClassification([{ color: 'GREEN', intact: false }]);
     const ws = await openWs(gateway);
     try {
       sendSpawn(ws, 'clear-1');
@@ -222,7 +242,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
   });
   it('click-to-echo latency under 50ms over the wire', async () => {
     gateway.setAutoExecutePickAndPlace(false);
-    gateway.setClassificationSequence([{ color: 'WHITE', intact: true }]);
+    seedClassification([{ color: 'WHITE', intact: true }]);
     const ws = await openWs(gateway);
     try {
       const t0 = Date.now();
@@ -270,7 +290,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       origin_z: 0,
     }));
     gateway.seedProcessed([tower, ...bin]);
-    gateway.setClassificationSequence([{ color: 'BLUE', intact: false }]);
+    seedClassification([{ color: 'BLUE', intact: false }]);
     const ws = await openWs(gateway);
     try {
       sendSpawn(ws, 'bin-cap-1');
@@ -316,7 +336,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       ctx,
     );
     expect(ctx.scrapBin.hasItems).toBe(false);
-    gateway.setClassificationSequence([{ color: 'GREEN', intact: false }]);
+    seedClassification([{ color: 'GREEN', intact: false }]);
     const ws = await openWs(gateway);
     try {
       sendSpawn(ws, 'icon-1');

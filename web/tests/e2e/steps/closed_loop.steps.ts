@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { CANONICAL_POSES, PoseName } from '@contracts';
+import { CANONICAL_POSES, PoseName, GREEN_TOWER } from '@contracts';
 import { CustomWorld } from '../support/world';
 
 When(
@@ -139,4 +139,14 @@ Then('the robot joint positions should remain unchanged', async function (this: 
     const diff = Math.abs(post[joint] - pre![joint]);
     expect(diff).toBeLessThan(0.005);
   }
+});
+
+When('the operator clicks the "Process" button', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.clickProcess();
+});
+
+Then('the sound GREEN gear should rest on the GREEN tower', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectSingleGearOnTower(GREEN_TOWER);
 });

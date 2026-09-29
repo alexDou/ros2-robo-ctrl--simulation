@@ -21,6 +21,14 @@ class PoseName(str, Enum):
     INSPECT_POSE = "INSPECT_POSE"
 
 
+class GearColor(str, Enum):
+    """Tower color assigned by the client"""
+
+    WHITE = "WHITE"
+    GREEN = "GREEN"
+    BLUE = "BLUE"
+
+
 class SpawnObjectType(str, Enum):
     """Type of object to spawn"""
 
@@ -51,14 +59,6 @@ class RobotState(str, Enum):
     IDLE = "IDLE"
     EXECUTING = "EXECUTING"
     FAULT = "FAULT"
-
-
-class GearColor(str, Enum):
-    """Gear color class routing to its spindle tower"""
-
-    WHITE = "WHITE"
-    GREEN = "GREEN"
-    BLUE = "BLUE"
 
 
 UR5E_JOINTS: list[str] = [
@@ -180,6 +180,8 @@ class SpawnObjectPayload(BaseModel):
     x: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian X in meters (REP-103 robot base frame)")
     y: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Y in meters (REP-103 robot base frame)")
     z: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Z in meters (clamped to table surface 0.0m)")
+    color: GearColor = Field(..., description="Tower color assigned by the client")
+    intact: bool = Field(...)
     object_type: SpawnObjectType = Field(..., description="Type of object to spawn")
 
 

@@ -1,5 +1,6 @@
 use gateway::domain::{
-    ClearWorkspacePayload, CommandType, RobotCommand, SpawnObjectPayload, SpawnObjectType,
+    ClearWorkspacePayload, CommandType, GearColor, RobotCommand, SpawnObjectPayload,
+    SpawnObjectType,
 };
 use serde_json::json;
 
@@ -10,10 +11,14 @@ fn test_spawn_object_payload_serialization_round_trip() {
         y: -0.1,
         z: 0.0,
         object_type: SpawnObjectType::Gear,
+        color: GearColor::Green,
+        intact: false,
     };
     let serialized = serde_json::to_string(&payload).expect("Serialize SpawnObjectPayload");
     assert!(serialized.contains(r#""object_type":"GEAR""#));
     assert!(serialized.contains(r#""x":0.5"#));
+    assert!(serialized.contains(r#""color":"GREEN""#));
+    assert!(serialized.contains(r#""intact":false"#));
 
     let deserialized: SpawnObjectPayload =
         serde_json::from_str(&serialized).expect("Deserialize SpawnObjectPayload");
@@ -25,6 +30,8 @@ fn test_spawn_object_payload_serialization_round_trip() {
         "y": 0.0,
         "z": 0.0,
         "object_type": "UNKNOWN",
+        "color": "WHITE",
+        "intact": true,
     })
     .to_string();
     let result: Result<SpawnObjectPayload, _> = serde_json::from_str(&invalid_json);

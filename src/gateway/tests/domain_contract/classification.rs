@@ -1,6 +1,6 @@
 #[test]
 fn test_unit70_required_color_intact() {
-    // Unit 7.0/hand-sim-9kw2: spawn carries no classification;
+    // Unit 8.0c/hand-sim-rmju: spawn carries the client's classification (required, no defaults);
     // GearEntry requires color + intact on every bucket, no defaults.
     use gateway::domain::{
         GearColor, GearEntry, RobotState, RobotTelemetryEvent, SpawnObjectPayload, SpawnObjectType,
@@ -12,18 +12,24 @@ fn test_unit70_required_color_intact() {
         y: 0.0,
         z: 0.0,
         object_type: SpawnObjectType::Gear,
+        color: GearColor::Blue,
+        intact: true,
     };
     let wire = serde_json::to_string(&payload).expect("serialize");
     let restored: SpawnObjectPayload = serde_json::from_str(&wire).expect("deserialize");
     assert_eq!(payload, restored);
 
-    // Classification rejected on spawn wire (gateway classifies after validation).
-    let bad_color: Result<SpawnObjectPayload, _> =
+    // Classification is required on the spawn wire: missing or invalid values are rejected.
+    let missing_intact: Result<SpawnObjectPayload, _> =
         serde_json::from_str(r#"{"x":0.5,"y":0.0,"z":0.0,"object_type":"GEAR","color":"WHITE"}"#);
-    assert!(bad_color.is_err());
-    let bad_intact: Result<SpawnObjectPayload, _> =
+    assert!(missing_intact.is_err());
+    let missing_color: Result<SpawnObjectPayload, _> =
         serde_json::from_str(r#"{"x":0.5,"y":0.0,"z":0.0,"object_type":"GEAR","intact":true}"#);
-    assert!(bad_intact.is_err());
+    assert!(missing_color.is_err());
+    let bad_color: Result<SpawnObjectPayload, _> = serde_json::from_str(
+        r#"{"x":0.5,"y":0.0,"z":0.0,"object_type":"GEAR","color":"RED","intact":true}"#,
+    );
+    assert!(bad_color.is_err());
 
     // Invalid color rejected on GearEntry; missing fields rejected (no defaults).
     let bad: Result<GearEntry, _> =

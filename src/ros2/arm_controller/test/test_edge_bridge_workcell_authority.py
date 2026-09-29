@@ -1,4 +1,4 @@
-"""Unit 6.7.3 red: edge state sub + auto-dispatch + grasp/commit."""
+"""Unit 6.7.3/8.0c: edge state sub, explicit per-gear dispatch, grasp/commit."""
 
 import contextlib
 import json
@@ -91,7 +91,7 @@ def test_edge_caches_workcell_state_snapshot():
         node.destroy_node()
 
 
-def test_edge_spawn_async_auto_dispatches_pnp():
+def test_edge_spawn_registers_gear_and_client_dispatches_pnp():
     mw = Node("mw_auto")
     ma = Node("ma_auto")
     goals = []
@@ -137,7 +137,27 @@ def test_edge_spawn_async_auto_dispatches_pnp():
                 sender_id="u",
                 timestamp_ns=time.time_ns(),
                 type=CommandType.SPAWN_OBJECT,
-                payload={"x": 0.45, "y": 0.10, "z": 0.0, "object_type": "GEAR"},
+                payload={
+                    "x": 0.45,
+                    "y": 0.10,
+                    "z": 0.0,
+                    "object_type": "GEAR",
+                    "color": "WHITE",
+                    "intact": True,
+                },
+            )
+        )
+        # Spawn only registers the gear: no implicit pick, arm stays IDLE.
+        time.sleep(0.5)
+        assert goals == []
+        assert node.robot_state == RobotState.IDLE
+        node.handle_command(
+            RobotCommand(
+                command_id="p1",
+                sender_id="u",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.PICK_AND_PLACE_TARGET,
+                payload={"pick_x": 0.45, "pick_y": 0.10, "pick_z": 0.0},
             )
         )
         st = time.time()
@@ -278,7 +298,14 @@ def test_edge_spawn_failure_no_dispatch_no_retry():
                 sender_id="u",
                 timestamp_ns=time.time_ns(),
                 type=CommandType.SPAWN_OBJECT,
-                payload={"x": 0.5, "y": 0.15, "z": 0.0, "object_type": "GEAR"},
+                payload={
+                    "x": 0.5,
+                    "y": 0.15,
+                    "z": 0.0,
+                    "object_type": "GEAR",
+                    "color": "WHITE",
+                    "intact": True,
+                },
             )
         )
         st = time.time()

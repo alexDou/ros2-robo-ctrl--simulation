@@ -1,6 +1,8 @@
 use actix_web::{web, App, HttpServer};
 use futures_util::{SinkExt, StreamExt};
-use gateway::domain::{CommandType, ErrorFrame, RobotCommand, SpawnObjectPayload, SpawnObjectType};
+use gateway::domain::{
+    CommandType, ErrorFrame, GearColor, RobotCommand, SpawnObjectPayload, SpawnObjectType,
+};
 use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
 use std::time::Duration;
 use tokio_tungstenite::connect_async;
@@ -54,7 +56,9 @@ async fn test_ws_spawn_object_and_clear_workspace_handling_and_validation() {
             "x": 0.45,
             "y": -0.1,
             "z": 0.0,
-            "object_type": "GEAR"
+            "object_type": "GEAR",
+            "color": "BLUE",
+            "intact": false
         }),
     };
     ws_stream
@@ -67,27 +71,17 @@ async fn test_ws_spawn_object_and_clear_workspace_handling_and_validation() {
     let rx_spawn = super::support::recv_client_command(&mut cmd_rx).await;
     assert_eq!(rx_spawn.command_id, "cmd-spawn-valid");
     assert_eq!(rx_spawn.r#type, CommandType::SpawnObject);
-    // Unit 7.2: gateway enriches after blind validation; fabric side carries
-    // color + intact (blind-shape assertions cover inbound only).
-    let color = rx_spawn.payload["color"].as_str().expect("enriched color");
-    assert!(
-        matches!(color, "WHITE" | "GREEN" | "BLUE"),
-        "unexpected enriched color {color}"
-    );
-    assert!(
-        rx_spawn.payload["intact"].is_boolean(),
-        "enriched intact flag must be boolean"
-    );
-    let mut blind = rx_spawn.payload.clone();
-    let obj = blind.as_object_mut().expect("payload object");
-    obj.remove("color");
-    obj.remove("intact");
+    // Unit 8.0c: payload passes through verbatim (the client owns classification).
+    assert_eq!(rx_spawn.payload, spawn_cmd.payload);
+    let blind = rx_spawn.payload.clone();
     let parsed_spawn: SpawnObjectPayload =
         serde_json::from_value(blind).expect("parse blind payload");
     assert!((parsed_spawn.x - 0.45).abs() < 1e-6);
     assert!((parsed_spawn.y - (-0.1)).abs() < 1e-6);
     assert!((parsed_spawn.z - 0.0).abs() < 1e-6);
     assert_eq!(parsed_spawn.object_type, SpawnObjectType::Gear);
+    assert_eq!(parsed_spawn.color, GearColor::Blue);
+    assert!(!parsed_spawn.intact);
 
     // 2. Send malformed SPAWN_OBJECT command (missing required field `z`) -> Rejected with structured ErrorFrame
     tokio::time::sleep(Duration::from_millis(120)).await;
