@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
-import { CANONICAL_POSES, PoseName, GREEN_TOWER } from '@contracts';
+import { CANONICAL_POSES, PoseName, GREEN_TOWER, STACK_STEP_M } from '@contracts';
 import { CustomWorld } from '../support/world';
 import {
   SCRAP_BIN_EMPTY_COLOR,
@@ -173,4 +173,40 @@ Then('the scrap bin should turn red', async function (this: CustomWorld) {
 Then('the arm should not have moved', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectEventLogNotContains('State: EXECUTING');
+});
+
+Given('the GREEN tower already holds {int} gears', async function (this: CustomWorld, n: number) {
+  expect(this.teleopPage).toBeDefined();
+  this.harness.seedProcessed(
+    Array.from({ length: n }, (_, k) => ({
+      id: `seed-green-${k}`,
+      x: GREEN_TOWER[0],
+      y: GREEN_TOWER[1],
+      z: k * STACK_STEP_M,
+      color: 'GREEN' as const,
+      intact: true,
+      origin_x: 0.4,
+      origin_y: 0,
+      origin_z: 0,
+    })),
+  );
+  await this.teleopPage!.expectTowerCounter('GREEN', `GREEN: ${n}/10`);
+});
+
+When('a 10th intact GREEN gear is picked', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.dispatchIntactGreenPick();
+});
+
+Then(
+  'the GREEN tower counter should read {string}',
+  async function (this: CustomWorld, text: string) {
+    expect(this.teleopPage).toBeDefined();
+    await this.teleopPage!.expectTowerCounter('GREEN', `GREEN: ${text}`);
+  },
+);
+
+Then('the GREEN tower stack should have faded out', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectTowerGearCount(0);
 });

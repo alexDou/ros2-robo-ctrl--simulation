@@ -175,8 +175,8 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       ws.close();
     }
   });
-  it('per-tower FIFO at 10: 11th WHITE evicts oldest', async () => {
-    const tower = Array.from({ length: 10 }, (_, k) => ({
+  it('10th commit empties that tower only, sibling untouched', async () => {
+    const tower = Array.from({ length: 9 }, (_, k) => ({
       id: `white-${k}`,
       x: WHITE_TOWER[0],
       y: WHITE_TOWER[1],
@@ -206,17 +206,10 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       await waitFor(
         () =>
           gateway.getRobotState() === 'IDLE' &&
-          gateway.getWorkcellSnapshot().processed.length === 11 &&
-          gateway.getWorkcellSnapshot().processed.every((e) => e.id !== 'white-0'),
+          gateway.getWorkcellSnapshot().processed.length === 1,
       );
       const snap = gateway.getWorkcellSnapshot();
-      const whites = snap.processed.filter((e) => e.color === 'WHITE' && e.intact);
-      expect(whites).toHaveLength(10);
-      expect(whites.map((e) => e.id)).not.toContain('white-0');
-      expect(snap.processed.map((e) => e.id)).toContain('green-0');
-      const top = whites.reduce((a, b) => (a.z > b.z ? a : b));
-      expect(top.z).toBeCloseTo(9 * STACK_STEP_M, 6);
-      expect(top.x).toBeCloseTo(WHITE_TOWER[0], 6);
+      expect(snap.processed.map((e) => e.id)).toEqual(['green-0']);
     } finally {
       ws.close();
     }

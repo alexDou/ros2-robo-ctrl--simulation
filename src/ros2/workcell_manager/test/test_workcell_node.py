@@ -72,14 +72,17 @@ def test_get_drop_slot_incremental_height():
             assert out_res.overflow_occurred is False
             assert node.inventory == 0
         # Height grows only via spawn->grasp->commit cycles.
-        for k in range(TOWER_CAPACITY):
+        for k in range(TOWER_CAPACITY - 1):
             out = _full_cycle(node)
             assert out.slot_index == k
             assert pytest.approx(out.drop_coords.z) == k * STACK_STEP_M
             assert node.inventory == k + 1
             assert node.tower_count == k + 1
-        assert node.inventory == 10
-        assert node.tower_count == 10
+        # The 10th commit lands on the top slot, then the tower empties.
+        out = _full_cycle(node)
+        assert out.slot_index == TOWER_CAPACITY - 1
+        assert node.inventory == 0
+        assert node.tower_count == 0
     finally:
         node.destroy_node()
 
@@ -117,15 +120,13 @@ def test_get_drop_slot_custom_tower_elevation():
         node.destroy_node()
 
 
-def test_get_drop_slot_fifo_overflow():
+def test_get_drop_slot_tenth_commit_empties_tower():
     node = WorkcellNode()
     try:
-        for _ in range(10):
+        for _ in range(TOWER_CAPACITY - 1):
             _full_cycle(node)
+        assert node.inventory == TOWER_CAPACITY - 1
 
-        assert node.inventory == 10
-
-        # 11th commit: FIFO bottom-drop on overflow (k > 10)
         node.handle_spawn_object(
             SpawnObject.Request(
                 coords=Point(x=0.50, y=0.20, z=0.0), object_type="GEAR", color="WHITE", intact=True
@@ -133,30 +134,22 @@ def test_get_drop_slot_fifo_overflow():
             SpawnObject.Response(),
         )
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
-        out11 = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
+        out10 = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
 
-        assert out11.overflow_occurred is True
-        assert out11.slot_index == TOWER_CAPACITY - 1  # 9 (top slot)
-        assert pytest.approx(out11.drop_coords.x) == WHITE_TOWER[0]
-        assert pytest.approx(out11.drop_coords.y) == WHITE_TOWER[1]
-        assert pytest.approx(out11.drop_coords.z) == (TOWER_CAPACITY - 1) * STACK_STEP_M
-        assert node.inventory == 10
-        assert node.tower_count == TOWER_CAPACITY
+        # The 10th gear still drops on the top slot, then the tower empties.
+        assert out10.overflow_occurred is True
+        assert out10.slot_index == TOWER_CAPACITY - 1
+        assert pytest.approx(out10.drop_coords.x) == WHITE_TOWER[0]
+        assert pytest.approx(out10.drop_coords.y) == WHITE_TOWER[1]
+        assert pytest.approx(out10.drop_coords.z) == (TOWER_CAPACITY - 1) * STACK_STEP_M
+        assert node.inventory == 0
+        assert node.tower_count == 0
 
-        # 12th commit: continuing overflow
-        node.handle_spawn_object(
-            SpawnObject.Request(
-                coords=Point(x=0.50, y=0.20, z=0.0), object_type="GEAR", color="WHITE", intact=True
-            ),
-            SpawnObject.Response(),
-        )
-        node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
-        out12 = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        assert out12.overflow_occurred is True
-        assert out12.slot_index == 9
-        assert pytest.approx(out12.drop_coords.z) == 0.18
-        assert node.inventory == 10
-        assert node.tower_count == TOWER_CAPACITY
+        # Next gear starts a fresh stack.
+        out11 = _full_cycle(node)
+        assert out11.slot_index == 0
+        assert out11.overflow_occurred is False
+        assert node.tower_count == 1
     finally:
         node.destroy_node()
 

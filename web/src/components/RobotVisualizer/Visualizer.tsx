@@ -15,6 +15,7 @@ import type {
   WorkcellSnapshotView,
 } from '@/components/RobotVisualizer/types';
 import type { GearColor } from '@contracts';
+
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
@@ -29,8 +30,10 @@ import {
 } from '@/components/RobotVisualizer/scene/stage';
 import { loadRobot } from '@/components/RobotVisualizer/scene/robot';
 import { disposeMaterial } from '@/utils/three/dispose';
+import { towerCounts } from '@/utils/towerCounts';
 import {
   createSnapshotStore,
+  readSnapshot,
   type SnapshotStore,
 } from '@/components/RobotVisualizer/interaction/snapshot';
 import { createFrameState, stepFrame } from '@/components/RobotVisualizer/frame';
@@ -40,6 +43,8 @@ import {
   type VisualizerErrorInfo,
 } from '@/components/RobotVisualizer/overlays';
 import { createVisualizerHandle } from '@/components/RobotVisualizer/handle';
+
+const GEAR_COLORS: readonly GearColor[] = ['WHITE', 'GREEN', 'BLUE'];
 
 export type { WorkcellSnapshotView };
 export {
@@ -69,6 +74,7 @@ export function RobotVisualizer({
   const [errorInfo, setErrorInfo] = useState<VisualizerErrorInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [binNonEmpty, setBinNonEmpty] = useState<boolean>(false);
+  const [counts, setCounts] = useState<Record<GearColor, number>>({ WHITE: 0, GREEN: 0, BLUE: 0 });
 
   const jointPositionsRefProp = useRef(jointPositionsRef);
   jointPositionsRefProp.current = jointPositionsRef;
@@ -93,6 +99,7 @@ export function RobotVisualizer({
 
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
   const binNonEmptyRef = useRef<boolean>(false);
+  const towerCountsRef = useRef<Record<GearColor, number>>({ WHITE: 0, GREEN: 0, BLUE: 0 });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -268,6 +275,20 @@ export function RobotVisualizer({
         setBinNonEmpty(scrapBinAssets.hasItems);
       }
 
+      // Tower counters n/10 derive from the authoritative processed list.
+      const nextCounts = towerCounts(
+        readSnapshot(
+          telemetryBufferRefProp.current?.current
+            ? { current: telemetryBufferRefProp.current.current }
+            : undefined,
+        ).processed,
+      );
+      const prevCounts = towerCountsRef.current;
+      if (GEAR_COLORS.some((c) => nextCounts[c] !== prevCounts[c])) {
+        towerCountsRef.current = nextCounts;
+        setCounts(nextCounts);
+      }
+
       // Render only when dirty, skipping static frames
       if (needsRender) {
         renderer.render(scene, camera);
@@ -312,6 +333,11 @@ export function RobotVisualizer({
         rec.assets.dispose();
       }
       store.gears.clear();
+      for (const f of store.fading.values()) {
+        if (f.assets.group.parent) f.assets.group.parent.remove(f.assets.group);
+        f.assets.dispose();
+      }
+      store.fading.clear();
 
       // Dispose SpindleTower fixture assets (all three color towers)
       if (spindleTowerAssetsByColor) {
@@ -453,6 +479,32 @@ export function RobotVisualizer({
       >
         <span aria-hidden="true">{binNonEmpty ? '🗑️' : '🗑'}</span>
         <span>{binNonEmpty ? 'Scrap: has items' : 'Scrap: empty'}</span>
+      </div>
+      <div
+        data-testid="tower-counters"
+        style={{
+          position: 'absolute',
+          top: '3.25rem',
+          right: '0.75rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.25rem',
+          backgroundColor: 'rgba(17, 24, 39, 0.85)',
+          border: '1px solid #374151',
+          borderRadius: '0.375rem',
+          padding: '0.375rem 0.625rem',
+          color: '#9ca3af',
+          fontSize: '0.75rem',
+          fontWeight: 600,
+          pointerEvents: 'none',
+          zIndex: 4,
+        }}
+      >
+        {GEAR_COLORS.map((c) => (
+          <span key={c} data-testid={`tower-counter-${c}`}>
+            {c}: {counts[c]}/{TOWER_CAPACITY}
+          </span>
+        ))}
       </div>
     </div>
   );

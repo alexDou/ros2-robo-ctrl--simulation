@@ -208,10 +208,10 @@ def test_invalid_color_reservation_rejected():
         node.destroy_node()
 
 
-def test_overflow_evicts_oldest_of_same_tower_only():
+def test_tenth_commit_empties_that_tower_only():
     node = WorkcellNode()
     try:
-        for _ in range(TOWER_CAPACITY):
+        for _ in range(TOWER_CAPACITY - 1):
             _cycle(node, color="GREEN", intact=True)
         _cycle(node, color="WHITE", intact=True)
         _cycle(node, color="WHITE", intact=True)
@@ -220,10 +220,7 @@ def test_overflow_evicts_oldest_of_same_tower_only():
         assert res.success is True
         assert res.overflow_occurred is True
         assert res.slot_index == TOWER_CAPACITY - 1
-        greens = [e for e in node.processed if e["color"] == "GREEN"]
-        assert len(greens) == TOWER_CAPACITY
-        for i, entry in enumerate(greens):
-            assert pytest.approx(entry["z"]) == GREEN_TOWER[2] + i * STACK_STEP_M
+        assert [e for e in node.processed if e["color"] == "GREEN"] == []
         whites = [(e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"]
         assert whites == white_before
     finally:

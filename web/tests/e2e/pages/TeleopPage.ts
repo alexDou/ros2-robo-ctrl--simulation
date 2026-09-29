@@ -332,6 +332,30 @@ export class TeleopPage {
     );
   }
 
+  async dispatchIntactGreenPick(): Promise<void> {
+    const frame = (type: string, payload: Record<string, unknown>) =>
+      JSON.stringify({
+        command_id: `${type.toLowerCase()}-${Date.now()}`,
+        sender_id: 'ui-client',
+        timestamp_ns: Date.now() * 1_000_000,
+        type,
+        payload,
+      });
+    await this.injectRawFrame(
+      frame('SPAWN_OBJECT', {
+        x: 0.4,
+        y: 0.0,
+        z: 0.0,
+        object_type: 'GEAR',
+        color: 'GREEN',
+        intact: true,
+      }),
+    );
+    await this.injectRawFrame(
+      frame('PICK_AND_PLACE_TARGET', { pick_x: 0.4, pick_y: 0.0, pick_z: 0.0 }),
+    );
+  }
+
   async expectScrapBinFloorHex(hex: number): Promise<void> {
     await expect
       .poll(() =>
@@ -341,6 +365,10 @@ export class TeleopPage {
         }),
       )
       .toBe(hex);
+  }
+
+  async expectTowerCounter(color: string, text: string): Promise<void> {
+    await expect(this.page.getByTestId(`tower-counter-${color}`)).toHaveText(text);
   }
 
   async expectEventLogNotContains(text: string): Promise<void> {

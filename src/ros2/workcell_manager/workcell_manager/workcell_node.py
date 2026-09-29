@@ -426,26 +426,6 @@ class WorkcellNode(Node):
             else:
                 fill = self._tower_fill_locked(color)
                 slot_index, z_k, overflow_occurred = self._slot_for_count(fill)
-                if overflow_occurred:
-                    # Per-tower FIFO: evict this tower's oldest bottom gear,
-                    # shift only this tower down one slot.
-                    for j, older in enumerate(self._processed):
-                        if (
-                            older.get("color", DEFAULT_GEAR_COLOR) == color
-                            and older.get("intact", True)
-                            and (older["x"], older["y"]) == (base[0], base[1])
-                        ):
-                            del self._processed[j]
-                            break
-                    i = 0
-                    for older in self._processed:
-                        if (
-                            older.get("color", DEFAULT_GEAR_COLOR) == color
-                            and older.get("intact", True)
-                            and (older["x"], older["y"]) == (base[0], base[1])
-                        ):
-                            older["z"] = float(base[2] + i * self._height_step)
-                            i += 1
             drop_entry = {
                 "id": gear_id,
                 "x": float(base[0]),
@@ -458,6 +438,18 @@ class WorkcellNode(Node):
                 "intact": intact,
             }
             self._processed.append(drop_entry)
+            if not uncapped and fill + 1 >= self._max_capacity:
+                # Tower full: this commit empties it (siblings untouched).
+                overflow_occurred = True
+                self._processed = [
+                    e
+                    for e in self._processed
+                    if not (
+                        e.get("color", DEFAULT_GEAR_COLOR) == color
+                        and e.get("intact", True)
+                        and (e["x"], e["y"]) == (base[0], base[1])
+                    )
+                ]
             new_count = len(self._processed)
         self._publish_state()
         self.publish_inventory(new_count)

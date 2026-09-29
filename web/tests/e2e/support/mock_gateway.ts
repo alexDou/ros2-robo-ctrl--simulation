@@ -168,6 +168,7 @@ export class MockGateway {
 
   public seedProcessed(entries: GearEntry[]): void {
     this.processed = [...entries];
+    this.sendTelemetryToAll('seed-processed');
   }
 
   private destinationFor(color: GearColor, intact: boolean): readonly [number, number, number] {
@@ -653,31 +654,14 @@ export class MockGateway {
         origin_z: entry.origin_z ?? z,
       });
       if (cls.intact) {
-        // Per-tower FIFO: evict oldest of this tower only, re-z survivors.
-        const towerIdx = this.processed
-          .map((e, i) => ({ e, i }))
-          .filter(
-            ({ e }) =>
-              e.intact &&
-              e.color === cls.color &&
-              Math.abs(e.x - base[0]) < 1e-6 &&
-              Math.abs(e.y - base[1]) < 1e-6,
-          )
-          .map(({ i }) => i);
-        if (towerIdx.length > TOWER_CAPACITY) {
-          this.processed.splice(towerIdx[0], 1);
-        }
-        let fill = 0;
-        for (const e of this.processed) {
-          if (
-            e.intact &&
-            e.color === cls.color &&
-            Math.abs(e.x - base[0]) < 1e-6 &&
-            Math.abs(e.y - base[1]) < 1e-6
-          ) {
-            e.z = fill * STACK_STEP_M;
-            fill++;
-          }
+        // Tower full: this commit empties it (siblings untouched).
+        const inTower = (e: GearEntry): boolean =>
+          e.intact &&
+          e.color === cls.color &&
+          Math.abs(e.x - base[0]) < 1e-6 &&
+          Math.abs(e.y - base[1]) < 1e-6;
+        if (this.processed.filter(inTower).length >= TOWER_CAPACITY) {
+          this.processed = this.processed.filter((e) => !inTower(e));
         }
       }
       this.spawned = this.spawned.filter((g) => g.id !== id);

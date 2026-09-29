@@ -171,22 +171,22 @@ def test_get_drop_slot_pure_reservation():
         node.destroy_node()
 
 
-def test_commit_drop_fifo_overflow():
+def test_tenth_commit_empties_tower():
     node = WorkcellNode()
     try:
-        for _ in range(TOWER_CAPACITY):
+        for _ in range(TOWER_CAPACITY - 1):
             _spawn(node)
             node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
             node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        assert len(node.processed) == TOWER_CAPACITY
+        assert len(node.processed) == TOWER_CAPACITY - 1
         _spawn(node, x=0.50, y=0.20)
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         res = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
         assert res.success is True
         assert res.overflow_occurred is True
         assert res.slot_index == TOWER_CAPACITY - 1
-        assert len(node.processed) == TOWER_CAPACITY
-        assert node.tower_count == TOWER_CAPACITY
+        assert len(node.processed) == 0
+        assert node.tower_count == 0
     finally:
         node.destroy_node()
 

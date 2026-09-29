@@ -58,3 +58,15 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     When a defective gear is spawned
     Then the scrap bin should turn red
     And the arm should not have moved
+
+  @conveyor @unit-8.1b
+  Scenario: The 10th gear on a tower empties it with a fade
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    Given the GREEN tower already holds 9 gears
+    When a 10th intact GREEN gear is picked
+    Then the event log should record state transition to "EXECUTING"
+    And the event log should record state transition to "IDLE"
+    And the GREEN tower counter should read "0/10"
+    And the GREEN tower stack should have faded out
