@@ -4,6 +4,8 @@ import { BELT_X_RANGE, BELT_Y_RANGE } from '@/components/RobotVisualizer/constan
 
 export interface ConveyorProceduralAssets {
   group: THREE.Group;
+  /** Total belt travel in meters; the surface stripes move toward -Y and wrap. */
+  setScroll: (travelM: number) => void;
   dispose: () => void;
 }
 
@@ -36,6 +38,34 @@ export function createConveyor(): ConveyorProceduralAssets {
   belt.name = 'conveyor-belt';
   belt.position.set(0, 0, -BELT_THICKNESS / 2);
   group.add(belt);
+
+  const STRIPE_PITCH = 0.2;
+  const stripeCount = Math.round(sizeY / STRIPE_PITCH);
+  const stripePeriod = stripeCount * STRIPE_PITCH;
+  const stripeGeom = new THREE.BoxGeometry(sizeX * 0.9, 0.012, 0.002);
+  const stripeMat = new THREE.MeshStandardMaterial({
+    color: 0x94a3b8,
+    roughness: 0.9,
+    metalness: 0.1,
+  });
+  const stripes: Array<{ mesh: THREE.Mesh; y0: number }> = [];
+  for (let i = 0; i < stripeCount; i++) {
+    const mesh = new THREE.Mesh(stripeGeom, stripeMat);
+    mesh.name = `conveyor-stripe-${i}`;
+    const y0 = -sizeY / 2 + (i + 0.5) * STRIPE_PITCH;
+    mesh.position.set(0, y0, 0.001);
+    group.add(mesh);
+    stripes.push({ mesh, y0 });
+  }
+  const setScroll = (travelM: number) => {
+    for (const { mesh, y0 } of stripes) {
+      // Shift by travel, wrapped into [-period/2, period/2).
+      const shifted = y0 - travelM;
+      mesh.position.y =
+        ((((shifted + stripePeriod / 2) % stripePeriod) + stripePeriod) % stripePeriod) -
+        stripePeriod / 2;
+    }
+  };
 
   const railGeom = new THREE.BoxGeometry(RAIL_WIDTH, sizeY, RAIL_HEIGHT);
   const railMat = new THREE.MeshStandardMaterial({
@@ -73,11 +103,13 @@ export function createConveyor(): ConveyorProceduralAssets {
   const dispose = () => {
     beltGeom.dispose();
     disposeMaterial(beltMat);
+    stripeGeom.dispose();
+    disposeMaterial(stripeMat);
     railGeom.dispose();
     disposeMaterial(railMat);
     legGeom.dispose();
     disposeMaterial(legMat);
   };
 
-  return { group, dispose };
+  return { group, setScroll, dispose };
 }

@@ -398,16 +398,50 @@ export class TeleopPage {
     await this.processButton.click();
   }
 
-  async expectSingleGearOnTower(tower: readonly [number, number, number]): Promise<void> {
-    await this.expectTowerGearCount(1);
-    const pos = await this.page.evaluate(() => {
-      const gears = window.__robot_visualizer!.getTowerGears() as Array<{
-        position: { x: number; y: number };
-      }>;
-      return { x: gears[0].position.x, y: gears[0].position.y };
-    });
-    expect(pos.x).toBeCloseTo(tower[0], 3);
-    expect(pos.y).toBeCloseTo(tower[1], 3);
+  async expectBeltMoving(): Promise<void> {
+    await expect
+      .poll(() => this.page.evaluate(() => window.__robot_visualizer!.getBeltScroll()))
+      .toBeGreaterThan(0);
+  }
+
+  async expectBatchHaltedInPickZone(): Promise<void> {
+    // HALTED: the belt scroll stops advancing.
+    await expect
+      .poll(
+        async () => {
+          const a = await this.page.evaluate(() => window.__robot_visualizer!.getBeltScroll());
+          await this.page.waitForTimeout(300);
+          const b = await this.page.evaluate(() => window.__robot_visualizer!.getBeltScroll());
+          return a === b && a > 0;
+        },
+        { timeout: 15000 },
+      )
+      .toBe(true);
+    const gears = await this.page.evaluate(() => window.__robot_visualizer!.getBeltGearPositions());
+    expect(gears.length).toBeGreaterThanOrEqual(3);
+    expect(gears.length).toBeLessThanOrEqual(10);
+    const ys = gears.map((g) => g.y);
+    expect(Math.min(...ys)).toBeCloseTo(-0.51, 3);
+    for (const g of gears) {
+      expect(g.y).toBeLessThanOrEqual(0.51);
+      expect(g.x).toBeGreaterThanOrEqual(0.25);
+      expect(g.x).toBeLessThanOrEqual(0.55);
+    }
+  }
+
+  async expectBeltFrozen(): Promise<void> {
+    const a = await this.page.evaluate(() => window.__robot_visualizer!.getBeltScroll());
+    await this.page.waitForTimeout(400);
+    const b = await this.page.evaluate(() => window.__robot_visualizer!.getBeltScroll());
+    expect(b).toBe(a);
+  }
+
+  async expectHopperHoldsRestOfDeck(): Promise<void> {
+    const { level, count } = await this.page.evaluate(() => ({
+      level: window.__robot_visualizer!.getHopperFillLevel(),
+      count: window.__robot_visualizer!.getBeltGearPositions().length,
+    }));
+    expect(level).toBeCloseTo((100 - count) / 100, 6);
   }
 
   async clickClearWorkspace(): Promise<void> {

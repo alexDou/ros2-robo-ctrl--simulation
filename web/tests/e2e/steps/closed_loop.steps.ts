@@ -165,9 +165,33 @@ When('the operator clicks the "Process" button', async function (this: CustomWor
   await this.teleopPage!.clickProcess();
 });
 
-Then('the intact GREEN gear should rest on the GREEN tower', async function (this: CustomWorld) {
+Then('the belt surface should be moving', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.expectSingleGearOnTower(GREEN_TOWER);
+  await this.teleopPage!.expectBeltMoving();
+});
+
+Then(
+  'the belt should halt with a Batch of 3 to 10 gears inside the PickZone',
+  async function (this: CustomWorld) {
+    expect(this.teleopPage).toBeDefined();
+    await this.teleopPage!.expectBatchHaltedInPickZone();
+  },
+);
+
+Then('the belt surface should be frozen', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectBeltFrozen();
+});
+
+Then('the hopper should hold the rest of the deck', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectHopperHoldsRestOfDeck();
+});
+
+Then('Fill and Process should both be disabled', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await expect(this.teleopPage!.fillButton).toBeDisabled();
+  await expect(this.teleopPage!.processButton).toBeDisabled();
 });
 
 When('a defective gear is spawned', async function (this: CustomWorld) {

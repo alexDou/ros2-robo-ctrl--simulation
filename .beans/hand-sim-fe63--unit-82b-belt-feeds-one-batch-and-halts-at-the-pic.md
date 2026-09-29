@@ -1,12 +1,13 @@
 ---
 # hand-sim-fe63
 title: 'Unit 8.2b: Belt feeds one Batch and halts at the PickZone edge'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:03Z
-updated_at: 2026-09-28T16:06:03Z
+updated_at: 2026-09-29T18:12:53Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-n5lx
@@ -33,3 +34,5 @@ Process runs the belt +Y → −Y; gears drop from the hopper one by one with ra
 - hand-sim-n5lx (06)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Implemented: pure seedable beltFeeder (2-lane spawn, distance-based random gaps, halt exactly at PickZone edge), belt stripe scroll, belt gear meshes, Process feeds a Batch (FEEDING→HALTED), E2E. 8.0c tracer Process path and its E2E scenario replaced (per-gear dispatch returns in 8.3). verify GREEN.
