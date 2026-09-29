@@ -17,6 +17,7 @@ import type {
 import type { GearColor } from '@contracts';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
+import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import {
@@ -102,6 +103,7 @@ export function RobotVisualizer({
     let loadedRobot: URDFRobot | null = null;
     let palmAssets: PalmProceduralAssets | null = null;
     let pedestalAssets: PedestalProceduralAssets | null = null;
+    let rearStandAssets: RearStandProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
       null;
@@ -120,6 +122,7 @@ export function RobotVisualizer({
     const camera = stage.camera;
     const robotGroup = stage.robotGroup;
     pedestalAssets = stage.pedestalAssets;
+    rearStandAssets = stage.rearStandAssets;
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
     scrapBinAssets = stage.scrapBinAssets;
@@ -206,6 +209,7 @@ export function RobotVisualizer({
         BLUE: spindleTowerAssetsByColor?.BLUE ?? null,
       }),
       getPedestal: () => pedestalAssets,
+      getRearStand: () => rearStandAssets,
       getScrapBin: () => scrapBinAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
@@ -334,6 +338,14 @@ export function RobotVisualizer({
         }
         palmAssets.dispose();
         palmAssets = null;
+      }
+
+      if (rearStandAssets) {
+        if (rearStandAssets.group.parent) {
+          rearStandAssets.group.parent.remove(rearStandAssets.group);
+        }
+        rearStandAssets.dispose();
+        rearStandAssets = null;
       }
 
       // Dispose robot pedestal table assets

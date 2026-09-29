@@ -7,9 +7,8 @@ import {
 } from '@contracts';
 import type { GearColor } from '@contracts';
 
-// Legacy single-tower alias (Unit 6.x): identical to SPINDLE_TOWERS.WHITE.
+// Legacy single-tower alias: identical to SPINDLE_TOWERS.WHITE.
 // Kept so existing single-tower scene/tests render unchanged.
-export const SPINDLE_TOWER_COORDS = { x: 0.68, y: -0.16, z: 0.0 };
 export const GRASP_RIDE_OFFSET_Z_M = 0.118;
 export const JOINT_LERP_ALPHA = 0.25;
 export const JOINT_SNAP_EPS = 1e-4;
@@ -29,6 +28,8 @@ export const SPINDLE_TOWERS: Record<GearColor, SpindleTowerCoords> = {
   GREEN: toCoords(GREEN_TOWER),
   BLUE: toCoords(BLUE_TOWER),
 };
+
+export const SPINDLE_TOWER_COORDS: SpindleTowerCoords = SPINDLE_TOWERS.WHITE;
 
 export const TOWER_CAPACITY: number = DOMAIN_TOWER_CAPACITY;
 

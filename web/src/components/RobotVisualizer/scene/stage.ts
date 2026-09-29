@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
+import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
+import { createRearStand } from '@/components/RobotVisualizer/assets/rearstand';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
 import { createScrapBin } from '@/components/RobotVisualizer/assets/scrapbin';
@@ -14,6 +16,7 @@ export interface StageAssets {
   camera: THREE.PerspectiveCamera;
   robotGroup: THREE.Group;
   pedestalAssets: PedestalProceduralAssets;
+  rearStandAssets: RearStandProceduralAssets;
   spindleTowerAssets: SpindleTowerProceduralAssets;
   spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
   scrapBinAssets: ScrapBinProceduralAssets;
@@ -58,6 +61,10 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const pedestalAssets = createRobotPedestal();
   robotGroup.add(pedestalAssets.group);
 
+  // Rear stand carrying the towers (top flush at Z = 0)
+  const rearStandAssets = createRearStand();
+  robotGroup.add(rearStandAssets.group);
+
   // Mount three color SpindleTowers at canonical WHITE/GREEN/BLUE coords.
   // WHITE keeps legacy position so single-tower scene renders identically.
   const whiteTower = createSpindleTower('WHITE');
@@ -78,6 +85,7 @@ export function createStage(container: HTMLDivElement): StageAssets {
     camera,
     robotGroup,
     pedestalAssets,
+    rearStandAssets,
     spindleTowerAssets,
     spindleTowerAssetsByColor,
     scrapBinAssets,

@@ -207,13 +207,13 @@ export class MockGateway {
     // Legacy alias: synthesize processed entries at tower coords verbatim.
     this.processed = Array.from({ length: Math.max(0, count) }, (_, i) => ({
       id: `legacy-tower-${i}`,
-      x: 0.68,
-      y: -0.16,
+      x: WHITE_TOWER[0],
+      y: WHITE_TOWER[1],
       z: i * 0.02,
       color: 'WHITE' as const,
       intact: true as const,
-      origin_x: 0.68,
-      origin_y: -0.16,
+      origin_x: WHITE_TOWER[0],
+      origin_y: WHITE_TOWER[1],
       origin_z: 0,
     }));
   }

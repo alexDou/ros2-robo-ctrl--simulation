@@ -3,6 +3,7 @@ import { render, act } from '@testing-library/preact';
 import * as THREE from 'three';
 import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
+import { SPINDLE_TOWERS } from '@components/RobotVisualizer/constants';
 
 function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[] = []) {
   return {
@@ -91,7 +92,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot as any);
     });
 
-    it('mounts SpindleTower 3D fixture at (x=0.68, y=-0.16, z=0.0) with base flange and 0.20m spindle pin', async () => {
+    it('mounts SpindleTower 3D fixture at the WHITE tower coords with base flange and 0.20m spindle pin', async () => {
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -114,8 +115,8 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(towerMesh).toBeDefined();
       expect(towerMesh).not.toBeNull();
       expect(towerMesh.name).toBe('spindle-tower');
-      expect(towerMesh.position.x).toBeCloseTo(0.68, 2);
-      expect(towerMesh.position.y).toBeCloseTo(-0.16, 2);
+      expect(towerMesh.position.x).toBeCloseTo(SPINDLE_TOWERS.WHITE.x, 2);
+      expect(towerMesh.position.y).toBeCloseTo(SPINDLE_TOWERS.WHITE.y, 2);
       expect(towerMesh.position.z).toBeCloseTo(0.0, 2);
 
       const baseFlange = visualizer.getSpindleBaseFlangeMesh();
@@ -342,7 +343,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       const telemetryBufferRef = snapBuffer(
         [{ id: 'g-table', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true }],
         [],
-        [{ id: 'g-tower', x: 0.68, y: -0.16, z: 0.0, color: 'WHITE', intact: true }],
+        [{ id: 'g-tower', ...SPINDLE_TOWERS.WHITE, color: 'WHITE', intact: true }],
       );
 
       let resolveLoaded: () => void;

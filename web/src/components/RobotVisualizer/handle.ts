@@ -3,6 +3,7 @@ import type { URDFRobot } from 'urdf-loader';
 import { UR5E_JOINTS, type GearColor } from '@contracts';
 import type { RobotVisualizerGlobalHandle } from '@/types/global';
 import type { SnapshotStore } from '@/components/RobotVisualizer/interaction/snapshot';
+import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
@@ -17,6 +18,7 @@ export interface HandleDeps {
   getSpindlesByColor: () => Record<GearColor, SpindleTowerProceduralAssets | null>;
   getScrapBin: () => ScrapBinProceduralAssets | null;
   getPedestal: () => PedestalProceduralAssets | null;
+  getRearStand: () => RearStandProceduralAssets | null;
   store: SnapshotStore;
   getLastRendered: () => number[];
 }
@@ -124,6 +126,7 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
       return rec?.assets.group ?? null;
     },
     getPedestalMesh: () => deps.getPedestal()?.group ?? null,
+    getRearStandMesh: () => deps.getRearStand()?.group ?? null,
     getGearMesh: () => {
       const rec =
         [...deps.store.gears.values()].find((r) => r.bucket === 'spawned') ??

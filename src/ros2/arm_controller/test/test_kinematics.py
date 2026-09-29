@@ -16,6 +16,8 @@ from arm_controller.kinematics import (
     unwrap_joint_angles_within_limits,
 )
 
+from domain import BLUE_TOWER, GREEN_TOWER, STACK_STEP_M, WHITE_TOWER
+
 
 def test_analytical_ik_solve_time_and_precision():
     """Asserts AnalyticalInverseKinematics solves in <0.2ms with <1mm Cartesian accuracy."""
@@ -173,9 +175,9 @@ _URDF_LIMITS = [
     (-_TWO_PI, _TWO_PI),  # wrist_3
 ]
 _TOWERS = {
-    "WHITE": (0.68, -0.16),
-    "GREEN": (0.68, 0.0),
-    "BLUE": (0.68, 0.16),
+    "WHITE": tuple(WHITE_TOWER[:2]),
+    "GREEN": tuple(GREEN_TOWER[:2]),
+    "BLUE": tuple(BLUE_TOWER[:2]),
     "SCRAP": (0.40, 0.28),
 }
 _PICKS = [
@@ -227,7 +229,7 @@ def test_plan_from_wound_up_seed_recovers_canonical_home():
     seed[3] += _TWO_PI
 
     steps = gen.generate_trajectory(
-        pick_coords=(0.50, 0.0, 0.0), drop_coords=(0.68, 0.16, 0.04), current_joints=seed
+        pick_coords=(0.50, 0.0, 0.0), drop_coords=(*BLUE_TOWER[:2], 0.04), current_joints=seed
     )
 
     _assert_within_urdf_limits(steps, "wound seed")
@@ -246,7 +248,7 @@ def test_pick_to_retreat_keeps_one_arm_configuration(tower, slot):
         try:
             steps = gen.generate_trajectory(
                 pick_coords=pick,
-                drop_coords=(tx, ty, slot * 0.02),
+                drop_coords=(tx, ty, slot * STACK_STEP_M),
                 current_joints=list(HOME_JOINT_POSITIONS),
             )
         except OutOfReachError:
@@ -258,10 +260,35 @@ def test_pick_to_retreat_keeps_one_arm_configuration(tower, slot):
             assert len(signs) == 1, f"{context}: {CANONICAL_UR5E_JOINTS[joint]} changes branch"
         for prev, curr in zip(ik_steps, ik_steps[1:], strict=False):
             pan_swing = abs(curr.joint_positions[0] - prev.joint_positions[0])
-            assert pan_swing <= math.pi / 2.0, (
+            # Rear-stand towers need a real sweep across the base; a flip is a swing much larger
+            # than the azimuth change between the two Cartesian waypoints.
+            azimuth_change = abs(
+                math.remainder(
+                    math.atan2(curr.cartesian_position[1], curr.cartesian_position[0])
+                    - math.atan2(prev.cartesian_position[1], prev.cartesian_position[0]),
+                    2.0 * math.pi,
+                )
+            )
+            assert pan_swing <= azimuth_change + 0.2, (
                 f"{context}: shoulder_pan swings {pan_swing:.3f} rad from '{prev.name}' to "
                 f"'{curr.name}' (shoulder flip)"
             )
+
+
+@pytest.mark.parametrize("tower", ["WHITE", "GREEN", "BLUE"])
+@pytest.mark.parametrize("slot", range(10))
+def test_every_rear_stand_tower_drop_solves(tower, slot):
+    """Unit 8.0a: every tower drop, bottom to top slot, is reachable from every pick position."""
+    gen = PickAndPlaceTrajectoryGenerator()
+    tx, ty = _TOWERS[tower]
+    assert tx < 0.0, "towers live on the rear stand behind the arm"
+    for pick in _PICKS:
+        steps = gen.generate_trajectory(
+            pick_coords=pick,
+            drop_coords=(tx, ty, slot * STACK_STEP_M),
+            current_joints=list(HOME_JOINT_POSITIONS),
+        )
+        _assert_within_urdf_limits(steps, f"{tower} slot {slot} pick {pick}")
 
 
 def test_drop_reachable_only_by_branch_switch_is_rejected():
