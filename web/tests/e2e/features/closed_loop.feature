@@ -44,6 +44,9 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
+    When the operator clicks the "Fill" button
+    Then the hopper should be full
+    And Process should be enabled and Fill disabled
     When the operator clicks the "Process" button
     Then the event log should record state transition to "EXECUTING"
     And the event log should record state transition to "IDLE"
@@ -70,3 +73,12 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the event log should record state transition to "IDLE"
     And the GREEN tower counter should read "0/10"
     And the GREEN tower stack should have faded out
+
+  @conveyor @unit-8.2a
+  Scenario: Fill loads the hopper and enables Process
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    When the operator clicks the "Fill" button
+    Then the hopper should be full
+    And Process should be enabled and Fill disabled

@@ -1,12 +1,13 @@
 ---
 # hand-sim-n5lx
 title: 'Unit 8.2a: FeedHopper and Fill'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:03Z
-updated_at: 2026-09-28T16:06:03Z
+updated_at: 2026-09-29T17:59:51Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-rmju
@@ -33,3 +34,5 @@ FeedHopper fixture at the belt's upstream end (Y ≈ +0.85). Fill generates the 
 - hand-sim-rmju (04)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Implemented: seedable buildDeck, ConveyorStatus gating (Fill/Process), FeedHopper asset with fill level, E2E. verify GREEN. Deferred to 8.3: deck consumption, HALTED/STOPPED transitions, CLEAR_WORKSPACE on reset.

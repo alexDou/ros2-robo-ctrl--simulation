@@ -4,7 +4,14 @@ import { DEFAULT_ROBOT_ID } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
-import { TRACER_GEAR, dispatchGear, type ConveyorPorts } from '@utils/conveyorController';
+import {
+  TRACER_GEAR,
+  buildDeck,
+  dispatchGear,
+  type ConveyorPorts,
+  type ConveyorStatus,
+  type GearSpec,
+} from '@utils/conveyorController';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
 import { ActionProgressBar } from '@components/ActionProgressBar';
@@ -111,7 +118,20 @@ export function TeleopClient({
       }),
     [],
   );
-  const [processing, setProcessing] = useState(false);
+  // ConveyorStatus and the hopper deck are TeleopClient-local (ADR 0005); never on the wire.
+  const [conveyorStatus, setConveyorStatus] = useState<ConveyorStatus>('EMPTY');
+  const [deck, setDeck] = useState<GearSpec[]>([]);
+  const handleFill = useCallback(() => {
+    setDeck(buildDeck());
+    setConveyorStatus('LOADED');
+  }, []);
+  useEffect(() => {
+    // Disconnect or FAULT resets the hopper along with the workcell.
+    if (connectionState !== 'CONNECTED' || robotState === 'FAULT') {
+      setDeck([]);
+      setConveyorStatus('EMPTY');
+    }
+  }, [connectionState, robotState]);
   const handleProcess = useCallback(() => {
     const ws = () => bufferRef.current?.workcellState;
     const ports: ConveyorPorts = {
@@ -126,10 +146,10 @@ export function TeleopClient({
             (ws()?.inProgress?.length ?? 0) === 0,
         ),
     };
-    setProcessing(true);
+    setConveyorStatus('FEEDING');
     dispatchGear(ports, TRACER_GEAR)
-      .catch(() => undefined)
-      .finally(() => setProcessing(false));
+      .then(() => setConveyorStatus('LOADED'))
+      .catch(() => undefined);
   }, [bufferRef, spawnObject, pickAndPlace, waitUntil]);
 
   const handleClearWorkspace = useCallback(() => {
@@ -265,6 +285,7 @@ export function TeleopClient({
               telemetryBufferRef={bufferRef}
               jointPositionsRef={jointPositionsRef}
               robotState={effectiveRobotState ?? 'STANDBY'}
+              hopperCount={deck.length}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}
@@ -274,13 +295,16 @@ export function TeleopClient({
             robotState={effectiveRobotState ?? 'STANDBY'}
             connectionState={connectionState}
             hasActiveGear={hasActiveGear || workcellHasGears}
+            conveyorStatus={
+              workcellHasGears && conveyorStatus === 'LOADED' ? 'HALTED' : conveyorStatus
+            }
             onExecutePose={executePose}
             onConnect={connect}
             onDisconnect={disconnect}
             onResetFault={resetFault}
             onClearWorkspace={handleClearWorkspace}
+            onFill={handleFill}
             onProcess={handleProcess}
-            processDisabled={processing || workcellHasGears}
             errorBanner={errorBanner}
             disabled={toolbarDisabled}
             disabledReason={
