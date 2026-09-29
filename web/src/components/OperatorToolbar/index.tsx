@@ -1,17 +1,19 @@
 import { PoseName, type RobotState } from '@contracts';
 import type { ConnectionState } from '@/hooks/useTeleopSession';
+import { canFill, canProcess, type ConveyorStatus } from '@utils/conveyorController';
 
 export interface OperatorToolbarProps {
   robotState: RobotState | string | null;
   connectionState: ConnectionState;
   hasActiveGear: boolean;
+  conveyorStatus: ConveyorStatus;
   onExecutePose: (poseName: PoseName) => void;
   onConnect: () => void;
   onDisconnect: () => void;
   onResetFault: () => void;
   onClearWorkspace: () => void;
+  onFill: () => void;
   onProcess: () => void;
-  processDisabled?: boolean;
   errorBanner?: { errorCode: string; message: string } | null;
   disabled?: boolean;
   disabledReason?: string | null;
@@ -21,13 +23,14 @@ export function OperatorToolbar({
   robotState,
   connectionState,
   hasActiveGear,
+  conveyorStatus,
   onExecutePose,
   onConnect,
   onDisconnect,
   onResetFault,
   onClearWorkspace,
+  onFill,
   onProcess,
-  processDisabled = false,
   errorBanner,
   disabled = false,
   disabledReason = null,
@@ -39,7 +42,8 @@ export function OperatorToolbar({
   const actionDisabled = disabled || !isIdle;
   const resetFaultDisabled = disabled || !isFault;
   const clearWorkspaceDisabled = disabled || !isIdle || !hasActiveGear;
-  const processButtonDisabled = disabled || !isIdle || processDisabled;
+  const fillButtonDisabled = disabled || !canFill(conveyorStatus);
+  const processButtonDisabled = disabled || !isIdle || !canProcess(conveyorStatus);
   const isConnected = connectionState === 'CONNECTED' || connectionState === 'CONNECTING';
 
   return (
@@ -129,6 +133,25 @@ export function OperatorToolbar({
           <span style={{ color: '#9ca3af', fontSize: '0.8125rem', fontWeight: 600 }}>
             Workcell:
           </span>
+          <button
+            data-testid="fill-button"
+            type="button"
+            onClick={onFill}
+            disabled={fillButtonDisabled}
+            style={{
+              backgroundColor: fillButtonDisabled ? '#374151' : '#7c3aed',
+              color: fillButtonDisabled ? '#9ca3af' : '#ffffff',
+              padding: '0.4rem 0.8rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              cursor: fillButtonDisabled ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s ease',
+            }}
+          >
+            Fill
+          </button>
           <button
             data-testid="process-button"
             type="button"

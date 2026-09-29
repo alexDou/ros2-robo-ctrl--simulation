@@ -50,3 +50,49 @@ export async function dispatchGear(ports: ConveyorPorts, gear: GearOnBelt): Prom
   ports.pickAndPlace({ pick_x: gear.x, pick_y: gear.y, pick_z: 0.0 });
   await ports.waitForSettled();
 }
+
+/** TeleopClient-local hopper/belt lifecycle, separate from RobotState (ADR 0005). */
+export type ConveyorStatus = 'EMPTY' | 'LOADED' | 'FEEDING' | 'HALTED' | 'STOPPED';
+
+export const DECK_SIZE = 100;
+const DEFECTIVE_COUNT = 10;
+const INTACT_PER_COLOR = 30;
+const GEAR_COLORS: readonly GearColor[] = ['WHITE', 'GREEN', 'BLUE'];
+
+/** A deck entry: classification only, position is assigned when it rides the belt. */
+export interface GearSpec {
+  color: GearColor;
+  intact: boolean;
+}
+
+/** Small seedable PRNG (mulberry32) so tests and E2E get a reproducible deck. */
+function seededRandom(seed: number): () => number {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Fill: exactly 10 defective (random color) + 30/30/30 intact, Fisher-Yates shuffled. */
+export function buildDeck(seed: number = Date.now()): GearSpec[] {
+  const rand = seededRandom(seed);
+  const deck: GearSpec[] = [];
+  for (const color of GEAR_COLORS) {
+    for (let i = 0; i < INTACT_PER_COLOR; i++) deck.push({ color, intact: true });
+  }
+  for (let i = 0; i < DEFECTIVE_COUNT; i++) {
+    deck.push({ color: GEAR_COLORS[Math.floor(rand() * GEAR_COLORS.length)], intact: false });
+  }
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+export const canFill = (status: ConveyorStatus): boolean => status === 'EMPTY';
+export const canProcess = (status: ConveyorStatus): boolean => status === 'LOADED';

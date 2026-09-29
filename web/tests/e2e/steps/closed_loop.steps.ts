@@ -145,6 +145,21 @@ Then('the robot joint positions should remain unchanged', async function (this: 
   }
 });
 
+When('the operator clicks the "Fill" button', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.clickFill();
+});
+
+Then('the hopper should be full', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectHopperFull();
+});
+
+Then('Process should be enabled and Fill disabled', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectFillDisabledProcessEnabled();
+});
+
 When('the operator clicks the "Process" button', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.clickProcess();

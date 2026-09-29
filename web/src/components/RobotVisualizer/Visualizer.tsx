@@ -19,6 +19,7 @@ import type { GearColor } from '@contracts';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
+import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
@@ -31,6 +32,7 @@ import {
 import { loadRobot } from '@/components/RobotVisualizer/scene/robot';
 import { disposeMaterial } from '@/utils/three/dispose';
 import { towerCounts } from '@/utils/towerCounts';
+import { DECK_SIZE } from '@utils/conveyorController';
 import {
   createSnapshotStore,
   readSnapshot,
@@ -61,6 +63,7 @@ export function RobotVisualizer({
   jointPositionsRef,
   telemetryBufferRef,
   robotState,
+  hopperCount = 0,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -97,6 +100,9 @@ export function RobotVisualizer({
   const robotStatePropRef = useRef(robotState);
   robotStatePropRef.current = robotState;
 
+  const hopperCountRef = useRef(hopperCount);
+  hopperCountRef.current = hopperCount;
+
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
   const binNonEmptyRef = useRef<boolean>(false);
   const towerCountsRef = useRef<Record<GearColor, number>>({ WHITE: 0, GREEN: 0, BLUE: 0 });
@@ -113,6 +119,7 @@ export function RobotVisualizer({
     let pedestalAssets: PedestalProceduralAssets | null = null;
     let rearStandAssets: RearStandProceduralAssets | null = null;
     let conveyorAssets: ConveyorProceduralAssets | null = null;
+    let hopperAssets: HopperProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
       null;
@@ -133,6 +140,8 @@ export function RobotVisualizer({
     pedestalAssets = stage.pedestalAssets;
     rearStandAssets = stage.rearStandAssets;
     conveyorAssets = stage.conveyorAssets;
+    hopperAssets = stage.hopperAssets;
+    hopperAssets.setCount(hopperCountRef.current);
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
     scrapBinAssets = stage.scrapBinAssets;
@@ -221,6 +230,7 @@ export function RobotVisualizer({
       getPedestal: () => pedestalAssets,
       getRearStand: () => rearStandAssets,
       getConveyor: () => conveyorAssets,
+      getHopper: () => hopperAssets,
       getScrapBin: () => scrapBinAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
@@ -287,6 +297,15 @@ export function RobotVisualizer({
       if (GEAR_COLORS.some((c) => nextCounts[c] !== prevCounts[c])) {
         towerCountsRef.current = nextCounts;
         setCounts(nextCounts);
+      }
+
+      // FeedHopper fill level follows the deck count prop.
+      if (hopperAssets) {
+        const wanted = Math.min(1, Math.max(0, hopperCountRef.current / DECK_SIZE));
+        if (hopperAssets.getFillLevel() !== wanted) {
+          hopperAssets.setCount(hopperCountRef.current);
+          needsRender = true;
+        }
       }
 
       // Render only when dirty, skipping static frames
@@ -376,6 +395,14 @@ export function RobotVisualizer({
         }
         conveyorAssets.dispose();
         conveyorAssets = null;
+      }
+
+      if (hopperAssets) {
+        if (hopperAssets.group.parent) {
+          hopperAssets.group.parent.remove(hopperAssets.group);
+        }
+        hopperAssets.dispose();
+        hopperAssets = null;
       }
 
       if (rearStandAssets) {

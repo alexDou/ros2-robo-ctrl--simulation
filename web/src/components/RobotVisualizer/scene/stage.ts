@@ -2,11 +2,13 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
+import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import { createConveyor } from '@/components/RobotVisualizer/assets/conveyor';
+import { createHopper } from '@/components/RobotVisualizer/assets/hopper';
 import { createRearStand } from '@/components/RobotVisualizer/assets/rearstand';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
@@ -20,6 +22,7 @@ export interface StageAssets {
   pedestalAssets: PedestalProceduralAssets;
   rearStandAssets: RearStandProceduralAssets;
   conveyorAssets: ConveyorProceduralAssets;
+  hopperAssets: HopperProceduralAssets;
   spindleTowerAssets: SpindleTowerProceduralAssets;
   spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
   scrapBinAssets: ScrapBinProceduralAssets;
@@ -72,6 +75,10 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const conveyorAssets = createConveyor();
   robotGroup.add(conveyorAssets.group);
 
+  // FeedHopper at the belt's upstream end
+  const hopperAssets = createHopper();
+  robotGroup.add(hopperAssets.group);
+
   // Mount three color SpindleTowers at canonical WHITE/GREEN/BLUE coords.
   // WHITE keeps legacy position so single-tower scene renders identically.
   const whiteTower = createSpindleTower('WHITE');
@@ -94,6 +101,7 @@ export function createStage(container: HTMLDivElement): StageAssets {
     pedestalAssets,
     rearStandAssets,
     conveyorAssets,
+    hopperAssets,
     spindleTowerAssets,
     spindleTowerAssetsByColor,
     scrapBinAssets,

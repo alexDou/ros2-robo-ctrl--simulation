@@ -29,6 +29,8 @@ export interface RobotVisualizerProps {
   jointPositionsRef?: { current: readonly number[] };
   telemetryBufferRef?: TelemetryBufferLike;
   robotState?: RobotState | string;
+  /** Gears currently in the FeedHopper deck; drives the hopper fill level. */
+  hopperCount?: number;
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,

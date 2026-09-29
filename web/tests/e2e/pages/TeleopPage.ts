@@ -19,6 +19,7 @@ export class TeleopPage {
   readonly resetFaultButton: Locator;
   readonly clearWorkspaceButton: Locator;
   readonly processButton: Locator;
+  readonly fillButton: Locator;
   readonly toolbarErrorBanner: Locator;
   readonly connectButton: Locator;
   readonly disconnectButton: Locator;
@@ -46,6 +47,7 @@ export class TeleopPage {
     this.resetFaultButton = page.getByTestId('reset-fault-button');
     this.clearWorkspaceButton = page.getByTestId('clear-workspace-button');
     this.processButton = page.getByTestId('process-button');
+    this.fillButton = page.getByTestId('fill-button');
     this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
     this.connectButton = page.getByTestId('connect-button');
     this.disconnectButton = page.getByTestId('disconnect-button');
@@ -373,6 +375,22 @@ export class TeleopPage {
 
   async expectEventLogNotContains(text: string): Promise<void> {
     await expect(this.eventLog).not.toContainText(text);
+  }
+
+  async clickFill(): Promise<void> {
+    await expect(this.fillButton).toBeEnabled();
+    await this.fillButton.click();
+  }
+
+  async expectHopperFull(): Promise<void> {
+    await expect
+      .poll(() => this.page.evaluate(() => window.__robot_visualizer!.getHopperFillLevel()))
+      .toBe(1);
+  }
+
+  async expectFillDisabledProcessEnabled(): Promise<void> {
+    await expect(this.fillButton).toBeDisabled();
+    await expect(this.processButton).toBeEnabled();
   }
 
   async clickProcess(): Promise<void> {

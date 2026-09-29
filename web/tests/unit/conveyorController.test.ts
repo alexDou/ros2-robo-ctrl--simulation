@@ -1,10 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { BELT_X_RANGE, PICK_ZONE_Y_RANGE } from '@contracts';
 import {
+  DECK_SIZE,
   TRACER_GEAR,
+  buildDeck,
+  canFill,
+  canProcess,
   dispatchGear,
   type ConveyorPorts,
+  type ConveyorStatus,
   type GearOnBelt,
+  type GearSpec,
 } from '@/utils/conveyorController';
 
 function fakePorts(): { ports: ConveyorPorts; calls: string[]; payloads: unknown[] } {
@@ -61,5 +67,36 @@ describe('Unit 8.0c: minimal conveyor controller (hand-sim-rmju)', () => {
     expect(TRACER_GEAR.x).toBeLessThanOrEqual(BELT_X_RANGE[1]);
     expect(TRACER_GEAR.y).toBeGreaterThanOrEqual(PICK_ZONE_Y_RANGE[0]);
     expect(TRACER_GEAR.y).toBeLessThanOrEqual(PICK_ZONE_Y_RANGE[1]);
+  });
+});
+
+describe('Unit 8.2a: deck generation and button gating (hand-sim-n5lx)', () => {
+  const tally = (deck: GearSpec[]) => {
+    const t = { defective: 0, WHITE: 0, GREEN: 0, BLUE: 0 };
+    for (const g of deck) {
+      if (g.intact) t[g.color] += 1;
+      else t.defective += 1;
+    }
+    return t;
+  };
+
+  it.each([1, 2, 42, 12345])('seed %i: 10 defective and 30/30/30 intact', (seed) => {
+    const deck = buildDeck(seed);
+    expect(deck).toHaveLength(DECK_SIZE);
+    const t = tally(deck);
+    expect(t).toMatchObject({ defective: 10, WHITE: 30, GREEN: 30, BLUE: 30 });
+  });
+
+  it('same seed gives the same order; a different seed shuffles differently', () => {
+    expect(buildDeck(7)).toEqual(buildDeck(7));
+    expect(buildDeck(7)).not.toEqual(buildDeck(8));
+  });
+
+  it('enables Fill only when EMPTY and Process only when LOADED', () => {
+    const statuses: ConveyorStatus[] = ['EMPTY', 'LOADED', 'FEEDING', 'HALTED', 'STOPPED'];
+    for (const s of statuses) {
+      expect(canFill(s)).toBe(s === 'EMPTY');
+      expect(canProcess(s)).toBe(s === 'LOADED');
+    }
   });
 });
