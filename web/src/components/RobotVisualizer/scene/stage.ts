@@ -15,11 +15,14 @@ import { createRearStand } from '@/components/RobotVisualizer/assets/rearstand';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
 import { createScrapBin } from '@/components/RobotVisualizer/assets/scrapbin';
+import { DEFAULT_CAMERA_POSE, repToWorld } from '@/components/RobotVisualizer/scene/cameraPose';
 import type { GearColor } from '@contracts';
 
 export interface StageAssets {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
+  /** World-space point the camera looks at by default (orbit target). */
+  cameraTarget: THREE.Vector3;
   robotGroup: THREE.Group;
   pedestalAssets: PedestalProceduralAssets;
   rearStandAssets: RearStandProceduralAssets;
@@ -40,7 +43,6 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const initialWidth = container.clientWidth || 800;
   const initialHeight = container.clientHeight || 600;
   const camera = new THREE.PerspectiveCamera(45, initialWidth / initialHeight, 0.05, 50);
-  camera.position.set(1.4, 1.2, 1.4);
 
   // 5. Calibrated ground floor grid with 10cm subdivisions (2m size, 20 divisions)
   // Positioned at floor level (y = -0.255m) beneath the pedestal foot
@@ -101,9 +103,14 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const scrapBinAssets = createScrapBin();
   robotGroup.add(scrapBinAssets.group);
 
+  const cameraTarget = repToWorld(robotGroup, DEFAULT_CAMERA_POSE.target);
+  camera.position.copy(repToWorld(robotGroup, DEFAULT_CAMERA_POSE.position));
+  camera.lookAt(cameraTarget);
+
   return {
     scene,
     camera,
+    cameraTarget,
     robotGroup,
     pedestalAssets,
     rearStandAssets,
@@ -144,6 +151,7 @@ export function createControls(
   renderer: THREE.WebGLRenderer,
   controlsFactory?: (camera: THREE.PerspectiveCamera, domElement: HTMLElement) => OrbitControls,
   onChange?: () => void,
+  target: THREE.Vector3 = new THREE.Vector3(0, 0.2, 0),
 ): OrbitControls {
   let controls: OrbitControls;
   if (controlsFactory) {
@@ -151,8 +159,7 @@ export function createControls(
   } else {
     controls = new OrbitControls(camera, renderer.domElement);
   }
-  // Centered on robot shoulder (approx y = 0.2m in Three.js WebGL frame)
-  controls.target.set(0, 0.2, 0);
+  controls.target.copy(target);
   // Polar limits prevent camera traversal below the ground plane (y <= 0)
   controls.minPolarAngle = 0.05;
   controls.maxPolarAngle = Math.PI / 2 - 0.02;

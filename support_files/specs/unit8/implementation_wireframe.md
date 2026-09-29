@@ -54,7 +54,7 @@ The UR5e keeps its real dimensions (IK, URDF and the LIVE 500 Hz path depend on 
 | ScrapBin | Under belt exit, Y ≈ −0.75 (camera side), below belt top | Defective gears tip off the belt end into it. |
 | Rear stand | ≈ 0.5 × 0.3 m, centred X = −0.45 | Top at Z = 0. Shifted toward camera so towers aren't hidden by the arm at HOME. |
 | Towers | X = −0.45, row along Y ≈ −0.26 / −0.10 / +0.06 (WHITE / GREEN / BLUE) | R ≈ 0.45–0.52. |
-| Camera | Robot's right side; start REP (0.2, −1.9, 1.4) → target (0.1, 0, 0.1) | Final choice: best of 3–4 candidates by Playwright screenshot (belt, arm, rear stand all visible). |
+| Camera | Robot's right side; start REP (0.2, −1.9, 1.4) → target (0.1, 0, 0.1) | Final choice: best of 3–4 candidates by Playwright screenshot (belt, arm, rear stand all visible). **Locked (8.2e): REP (0.6, −2.0, 1.5) → (0.1, 0.05, 0.3)**; the start pose cropped the upright arm. |
 
 All numbers are starting values: shrink the PickZone until the 8.1 IK reach test is green. Update only via `schemas/` consts + codegen; fix hard-coded copies (`web/src/components/RobotVisualizer/constants.ts` `SPINDLE_TOWER_COORDS`, `src/ros2/arm_controller/arm_controller/kinematics/constants.py` `DEFAULT_SPINDLE_TOWER_COORDS`, test literals in `src/ros2/arm_controller/test/test_kinematics.py` and `src/gateway/tests/domain_contract/classification.rs`).
 
