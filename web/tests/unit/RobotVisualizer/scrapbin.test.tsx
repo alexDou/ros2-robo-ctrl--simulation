@@ -5,7 +5,11 @@ import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
 import { SCRAP_BIN } from '@contracts';
 import { SCRAP_BIN_COORDS } from '@components/RobotVisualizer/constants';
-import { createScrapBin } from '@components/RobotVisualizer/assets/scrapbin';
+import {
+  createScrapBin,
+  SCRAP_BIN_EMPTY_COLOR,
+  SCRAP_BIN_FILLED_COLOR,
+} from '@components/RobotVisualizer/assets/scrapbin';
 
 function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[] = []) {
   return {
@@ -105,10 +109,32 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
     const bin = createScrapBin();
     expect(bin.group.name).toBe('scrap-bin');
     expect(bin.group.position.x).toBeCloseTo(0.4, 4);
-    expect(bin.group.position.y).toBeCloseTo(0.28, 4);
-    expect(bin.group.position.z).toBeCloseTo(0.0, 4);
+    expect(bin.group.position.y).toBeCloseTo(-0.75, 4);
+    expect(bin.group.position.z).toBeCloseTo(-0.05, 4);
     expect(bin.hasItems).toBe(false);
     expect(bin.group.getObjectByName('scrap-bin-fill')!.visible).toBe(false);
+    bin.dispose();
+  });
+
+  it('bin renders green when empty and red when it holds a defective gear', () => {
+    const bin = createScrapBin();
+    const floorColor = () =>
+      (
+        (bin.group.getObjectByName('scrap-bin-floor') as THREE.Mesh)
+          .material as THREE.MeshStandardMaterial
+      ).color.getHex();
+    const wallColor = () =>
+      (
+        (bin.group.getObjectByName('scrap-bin-wall-0') as THREE.Mesh)
+          .material as THREE.MeshStandardMaterial
+      ).color.getHex();
+    expect(floorColor()).toBe(SCRAP_BIN_EMPTY_COLOR);
+    expect(wallColor()).toBe(SCRAP_BIN_EMPTY_COLOR);
+    bin.setHasItems(true);
+    expect(floorColor()).toBe(SCRAP_BIN_FILLED_COLOR);
+    expect(wallColor()).toBe(SCRAP_BIN_FILLED_COLOR);
+    bin.setHasItems(false);
+    expect(floorColor()).toBe(SCRAP_BIN_EMPTY_COLOR);
     bin.dispose();
   });
 
@@ -119,7 +145,7 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
     expect(bin).not.toBeNull();
     expect(bin.name).toBe('scrap-bin');
     expect(bin.position.x).toBeCloseTo(0.4, 2);
-    expect(bin.position.y).toBeCloseTo(0.28, 2);
+    expect(bin.position.y).toBeCloseTo(-0.75, 2);
     expect(visualizer.getSpindleTowerMeshes()).toHaveLength(3);
   });
 

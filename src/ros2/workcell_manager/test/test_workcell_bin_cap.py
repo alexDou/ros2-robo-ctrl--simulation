@@ -1,5 +1,7 @@
 """Bin cap-100 recycle tests for WorkcellNode (hand-sim-lilk, Unit 7.3e)."""
 
+from types import SimpleNamespace
+
 import pytest
 import rclpy
 from geometry_msgs.msg import Point
@@ -38,6 +40,15 @@ def _spawn(node, x=0.45, y=0.10, z=0.0, **classification):
 def _cycle(node, x=0.45, y=0.10, z=0.0, **classification):
     out = _spawn(node, x, y, z, **classification)
     assert out.success is True
+    if classification.get("intact") is False:
+        # Defective gears are booked to the ScrapBin at spawn; the arm never carries them.
+        entry = node.processed[-1]
+        return SimpleNamespace(
+            success=True,
+            slot_index=round((entry["z"] - SCRAP_BIN[2]) / STACK_STEP_M),
+            overflow_occurred=False,
+            drop_coords=Point(x=entry["x"], y=entry["y"], z=entry["z"]),
+        )
     node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
     return node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
 
@@ -67,7 +78,7 @@ def test_bin_piles_to_cap_with_overflow_never_set():
             assert res.overflow_occurred is False
             assert pytest.approx(res.drop_coords.x) == SCRAP_BIN[0]
             assert pytest.approx(res.drop_coords.y) == SCRAP_BIN[1]
-            assert pytest.approx(res.drop_coords.z) == k * STACK_STEP_M
+            assert pytest.approx(res.drop_coords.z) == SCRAP_BIN[2] + k * STACK_STEP_M
         assert len(_bin_entries(node)) == MAX_SCRAP_BIN_CAPACITY
     finally:
         node.destroy_node()

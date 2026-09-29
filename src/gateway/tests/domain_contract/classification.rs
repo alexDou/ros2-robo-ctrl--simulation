@@ -76,7 +76,7 @@ fn test_unit70_required_color_intact() {
         assert_eq!(WHITE_TOWER, [-0.45, -0.26, 0.0]);
         assert_eq!(GREEN_TOWER, [-0.45, -0.10, 0.0]);
         assert_eq!(BLUE_TOWER, [-0.45, 0.06, 0.0]);
-        assert_eq!(SCRAP_BIN, [0.4, 0.28, 0.0]);
+        assert_eq!(SCRAP_BIN, [0.4, -0.75, -0.05]);
         assert_eq!(BELT_X_RANGE, [0.25, 0.55]);
         assert_eq!(BELT_Y_RANGE, [-0.66, 0.95]);
         assert_eq!(PICK_ZONE_Y_RANGE, [-0.51, 0.51]);

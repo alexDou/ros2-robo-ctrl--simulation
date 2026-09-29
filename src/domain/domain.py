@@ -96,7 +96,7 @@ GREEN_TOWER: list[float] = [-0.45, -0.1, 0.0]
 
 BLUE_TOWER: list[float] = [-0.45, 0.06, 0.0]
 
-SCRAP_BIN: list[float] = [0.4, 0.28, 0.0]
+SCRAP_BIN: list[float] = [0.4, -0.75, -0.05]
 
 BELT_X_RANGE: list[float] = [0.25, 0.55]
 

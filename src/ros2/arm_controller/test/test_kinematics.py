@@ -185,7 +185,6 @@ _TOWERS = {
     "WHITE": tuple(WHITE_TOWER[:2]),
     "GREEN": tuple(GREEN_TOWER[:2]),
     "BLUE": tuple(BLUE_TOWER[:2]),
-    "SCRAP": (0.40, 0.28),
 }
 _PICKS = [
     (0.45, -0.15, 0.0),

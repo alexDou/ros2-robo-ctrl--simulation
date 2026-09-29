@@ -320,6 +320,33 @@ export class TeleopPage {
     );
   }
 
+  async dispatchDefectiveSpawn(): Promise<void> {
+    await this.injectRawFrame(
+      JSON.stringify({
+        command_id: `spawn-defective-${Date.now()}`,
+        sender_id: 'ui-client',
+        timestamp_ns: Date.now() * 1_000_000,
+        type: 'SPAWN_OBJECT',
+        payload: { x: 0.4, y: 0.0, z: 0.0, object_type: 'GEAR', color: 'BLUE', intact: false },
+      }),
+    );
+  }
+
+  async expectScrapBinFloorHex(hex: number): Promise<void> {
+    await expect
+      .poll(() =>
+        this.page.evaluate(() => {
+          const bin = window.__robot_visualizer!.getScrapBinMesh() as any;
+          return bin.getObjectByName('scrap-bin-floor').material.color.getHex();
+        }),
+      )
+      .toBe(hex);
+  }
+
+  async expectEventLogNotContains(text: string): Promise<void> {
+    await expect(this.eventLog).not.toContainText(text);
+  }
+
   async clickProcess(): Promise<void> {
     await expect(this.processButton).toBeEnabled();
     await this.processButton.click();

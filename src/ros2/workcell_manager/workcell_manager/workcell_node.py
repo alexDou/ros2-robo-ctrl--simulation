@@ -206,6 +206,28 @@ class WorkcellNode(Node):
         """Discards the old bin pile in place; towers untouched (sharp cut)."""
         self._processed = [e for e in self._processed if e.get("intact", True)]
 
+    def _book_scrap_locked(self, x: float, y: float, z: float, color: str) -> str:
+        """Commits a defective gear straight to the ScrapBin pile; returns its id."""
+        if self._bin_fill_locked() >= MAX_SCRAP_BIN_CAPACITY:
+            self._recycle_bin_locked()
+        _, z_k = self._bin_slot_locked()
+        base = SCRAP_BIN
+        gear_id = uuid.uuid4().hex
+        self._processed.append(
+            {
+                "id": gear_id,
+                "x": float(base[0]),
+                "y": float(base[1]),
+                "z": float(base[2] + z_k),
+                "origin_x": x,
+                "origin_y": y,
+                "origin_z": z,
+                "color": color,
+                "intact": False,
+            }
+        )
+        return gear_id
+
     def _active_classification_locked(self) -> tuple[str, bool] | None:
         """Returns (color, intact) of the spawned/in-progress gear, if any."""
         for bucket in (self._spawned, self._in_progress):
@@ -285,14 +307,8 @@ class WorkcellNode(Node):
     def handle_spawn_object(
         self, request: SpawnObject.Request, response: SpawnObject.Response
     ) -> SpawnObject.Response:
-        """Spawns gear on the table if no gear is spawned or in transit."""
+        """Spawns an intact gear if none is active; a defective one is booked to the ScrapBin."""
         with self._lock:
-            if self._spawned or self._in_progress:
-                response.success = False
-                response.message = "Workpiece already active on table"
-                response.gear_id = ""
-                self.get_logger().warning("Rejecting spawn_object: workcell busy")
-                return response
             color = str(getattr(request, "color", "") or "")
             if color not in VALID_GEAR_COLORS:
                 response.success = False
@@ -312,16 +328,35 @@ class WorkcellNode(Node):
                 response.gear_id = ""
                 self.get_logger().warning("Rejecting spawn_object: non-finite coords")
                 return response
-            gear_id = uuid.uuid4().hex
-            self._spawned[gear_id] = {
-                "id": gear_id,
-                "x": cx,
-                "y": cy,
-                "z": cz,
-                "color": color,
-                "intact": intact,
-            }
+            if not intact:
+                # Defective gears never enter the pick pipeline: booked to the bin at once.
+                gear_id = self._book_scrap_locked(cx, cy, cz, color)
+                new_count = len(self._processed)
+                booked = True
+            elif self._spawned or self._in_progress:
+                response.success = False
+                response.message = "Workpiece already active on table"
+                response.gear_id = ""
+                self.get_logger().warning("Rejecting spawn_object: workcell busy")
+                return response
+            else:
+                booked = False
+                gear_id = uuid.uuid4().hex
+                self._spawned[gear_id] = {
+                    "id": gear_id,
+                    "x": cx,
+                    "y": cy,
+                    "z": cz,
+                    "color": color,
+                    "intact": intact,
+                }
         self._publish_state()
+        if booked:
+            self.publish_inventory(new_count)
+            response.success = True
+            response.message = "Defective gear booked to ScrapBin"
+            response.gear_id = gear_id
+            return response
 
         response.success = True
         response.message = "Object spawned"
