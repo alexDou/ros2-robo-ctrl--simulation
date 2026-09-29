@@ -1,6 +1,6 @@
 import { PoseName, type RobotState } from '@contracts';
 import type { ConnectionState } from '@/hooks/useTeleopSession';
-import { canFill, canProcess, type ConveyorStatus } from '@utils/conveyorController';
+import { canFill, canProcess, canStop, type ConveyorStatus } from '@utils/conveyorController';
 
 export interface OperatorToolbarProps {
   robotState: RobotState | string | null;
@@ -16,6 +16,7 @@ export interface OperatorToolbarProps {
   onClearWorkspace: () => void;
   onFill: () => void;
   onProcess: () => void;
+  onStop: () => void;
   errorBanner?: { errorCode: string; message: string } | null;
   disabled?: boolean;
   disabledReason?: string | null;
@@ -34,6 +35,7 @@ export function OperatorToolbar({
   onClearWorkspace,
   onFill,
   onProcess,
+  onStop,
   errorBanner,
   disabled = false,
   disabledReason = null,
@@ -47,6 +49,7 @@ export function OperatorToolbar({
   const clearWorkspaceDisabled = disabled || !isIdle || !hasActiveGear;
   const fillButtonDisabled = disabled || !canFill(conveyorStatus);
   const processButtonDisabled = disabled || !isIdle || !canProcess(conveyorStatus, hopperCount);
+  const stopButtonDisabled = disabled || !canStop(conveyorStatus);
   const isConnected = connectionState === 'CONNECTED' || connectionState === 'CONNECTING';
 
   return (
@@ -173,6 +176,25 @@ export function OperatorToolbar({
             }}
           >
             Process
+          </button>
+          <button
+            data-testid="stop-button"
+            type="button"
+            onClick={onStop}
+            disabled={stopButtonDisabled}
+            style={{
+              backgroundColor: stopButtonDisabled ? '#374151' : '#dc2626',
+              color: stopButtonDisabled ? '#9ca3af' : '#ffffff',
+              padding: '0.4rem 0.8rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              cursor: stopButtonDisabled ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s ease',
+            }}
+          >
+            Stop
           </button>
           <button
             data-testid="clear-workspace-button"

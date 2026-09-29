@@ -28,6 +28,7 @@ export class TeleopPage {
   readonly resetFaultButton: Locator;
   readonly clearWorkspaceButton: Locator;
   readonly processButton: Locator;
+  readonly stopButton: Locator;
   readonly fillButton: Locator;
   readonly toolbarErrorBanner: Locator;
   readonly connectButton: Locator;
@@ -56,6 +57,7 @@ export class TeleopPage {
     this.resetFaultButton = page.getByTestId('reset-fault-button');
     this.clearWorkspaceButton = page.getByTestId('clear-workspace-button');
     this.processButton = page.getByTestId('process-button');
+    this.stopButton = page.getByTestId('stop-button');
     this.fillButton = page.getByTestId('fill-button');
     this.toolbarErrorBanner = page.getByTestId('toolbar-error-banner');
     this.connectButton = page.getByTestId('connect-button');
@@ -405,6 +407,20 @@ export class TeleopPage {
   async clickProcess(): Promise<void> {
     await expect(this.processButton).toBeEnabled();
     await this.processButton.click();
+  }
+
+  async clickStop(): Promise<void> {
+    await expect(this.stopButton).toBeEnabled();
+    await this.stopButton.click();
+  }
+
+  /** STOPPED: the in-flight pick may still finish first, so wait for Process to come back. */
+  async expectStopped(): Promise<void> {
+    await expect(this.processButton).toBeEnabled({ timeout: 60000 });
+    await expect(this.fillButton).toBeDisabled();
+    await expect(this.stopButton).toBeDisabled();
+    const hopper = await this.page.evaluate(() => window.__robot_visualizer!.getHopperFillLevel());
+    expect(hopper).toBeGreaterThan(0);
   }
 
   async expectBeltMoving(): Promise<void> {

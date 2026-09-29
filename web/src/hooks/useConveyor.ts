@@ -3,7 +3,9 @@ import type { PickAndPlaceTargetPayload, SpawnObjectPayload } from '@contracts';
 import {
   ConveyorAbortedError,
   buildDeck,
+  createDeckRun,
   runDeck,
+  type DeckRun,
   type ConveyorPorts,
   type ConveyorStatus,
   type GearSpec,
@@ -42,6 +44,8 @@ export interface UseConveyorParams {
 interface Feed {
   timer: ReturnType<typeof setInterval>;
   reject: (err: Error) => void;
+  /** Ends the feed promise without a halt (Stop): the belt just freezes. */
+  freeze: () => void;
 }
 
 /**
@@ -66,6 +70,10 @@ export function useConveyor({
   const feederRef = useRef<BeltFeeder | null>(null);
   const feedRef = useRef<Feed | null>(null);
   const runIdRef = useRef(0);
+  /** Progress of the current run; kept after Stop so Process can resume it. */
+  const deckRunRef = useRef<DeckRun | null>(null);
+  const runSeedRef = useRef(0);
+  const stopRef = useRef(false);
   const robotStateRef = useRef(robotState);
   robotStateRef.current = robotState;
 
@@ -83,6 +91,7 @@ export function useConveyor({
     runIdRef.current += 1; // any run in flight stops at its next phase boundary
     cancelFeed('session reset');
     feederRef.current = null;
+    deckRunRef.current = null;
     setDeck([]);
     setConveyorStatus('EMPTY');
   }, [connected, robotState, cancelFeed]);
@@ -114,13 +123,32 @@ export function useConveyor({
             resolve();
           }
         }, FEED_TICK_MS);
-        feedRef.current = { timer, reject };
+        feedRef.current = {
+          timer,
+          reject,
+          freeze: () => {
+            clearInterval(timer);
+            feedRef.current = null;
+            resolve();
+          },
+        };
       }),
     [timeScale],
   );
 
+  const handleStop = useCallback(() => {
+    stopRef.current = true;
+    feedRef.current?.freeze(); // belt stops now; a pick in flight finishes, then runDeck stops
+  }, []);
+
   const handleProcess = useCallback(() => {
     const runId = ++runIdRef.current;
+    stopRef.current = false;
+    if (!deckRunRef.current) {
+      deckRunRef.current = createDeckRun(deck);
+      runSeedRef.current = seed ?? Date.now(); // fixed for the whole run, so a resume stays seeded
+    }
+    const deckRun = deckRunRef.current;
     const ports: ConveyorPorts = {
       spawn: spawnObject,
       pickAndPlace,
@@ -143,28 +171,39 @@ export function useConveyor({
         });
       },
     };
-    runDeck(deck, {
+    runDeck(deckRun, {
       ports,
-      seed: seed ?? Date.now(),
+      seed: runSeedRef.current,
       feedUntilHalted,
       assertActive: () => {
         if (runIdRef.current !== runId) throw new ConveyorAbortedError('run superseded or reset');
       },
+      shouldStop: () => stopRef.current,
       onFeeder: (feeder) => {
         feederRef.current = feeder;
       },
       onStatus: setConveyorStatus,
-    }).catch((err: unknown) => {
-      if (err instanceof ConveyorAbortedError) {
-        report('CONVEYOR_ABORTED', err.message);
-        return;
-      }
-      console.error('Conveyor run failed', err);
-      report('CONVEYOR_ERROR', err instanceof Error ? err.message : String(err));
-      cancelFeed('conveyor run failed');
-      setConveyorStatus('STOPPED');
-      throw err;
-    });
+    })
+      .then((outcome) => {
+        if (outcome === 'DONE') deckRunRef.current = null;
+      })
+      .catch((err: unknown) => {
+        if (err instanceof ConveyorAbortedError) {
+          report('CONVEYOR_ABORTED', err.message);
+          return;
+        }
+        console.error('Conveyor run failed', err);
+        report('CONVEYOR_ERROR', err instanceof Error ? err.message : String(err));
+        if (runIdRef.current === runId) {
+          // A gear may be lost mid-dispatch, so the run cannot be resumed: reset like a FAULT.
+          cancelFeed('conveyor run failed');
+          deckRunRef.current = null;
+          feederRef.current = null;
+          setDeck([]);
+          setConveyorStatus('EMPTY');
+        }
+        throw err;
+      });
   }, [
     deck,
     seed,
@@ -179,5 +218,5 @@ export function useConveyor({
     cancelFeed,
   ]);
 
-  return { conveyorStatus, deck, feederRef, handleFill, handleProcess };
+  return { conveyorStatus, deck, feederRef, handleFill, handleProcess, handleStop };
 }
