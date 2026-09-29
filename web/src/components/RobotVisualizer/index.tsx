@@ -4,8 +4,6 @@ export type {
   WorkcellSnapshotView,
 } from '@/components/RobotVisualizer/types';
 export {
-  REACHABILITY_MIN_RADIUS,
-  REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
   SCRAP_BIN_COORDS,

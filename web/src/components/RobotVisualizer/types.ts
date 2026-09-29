@@ -1,7 +1,7 @@
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type * as THREE from 'three';
 import type { URDFRobot } from 'urdf-loader';
-import type { SpawnObjectPayload, RobotState, GearEntry } from '@contracts';
+import type { RobotState, GearEntry } from '@contracts';
 
 export interface WorkcellSnapshotView {
   spawned: GearEntry[];
@@ -29,7 +29,6 @@ export interface RobotVisualizerProps {
   jointPositionsRef?: { current: readonly number[] };
   telemetryBufferRef?: TelemetryBufferLike;
   robotState?: RobotState | string;
-  onSpawnObject?: (payload: SpawnObjectPayload) => void;
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,

@@ -390,19 +390,6 @@ export class TeleopPage {
       .toBeLessThanOrEqual(toleranceRad);
   }
 
-  async expectWorkcellTableLoaded(timeout = 10000): Promise<void> {
-    await expect
-      .poll(
-        async () => {
-          return await this.page.evaluate(() => {
-            return Boolean(window.__robot_visualizer && window.__robot_visualizer.getTableMesh());
-          });
-        },
-        { timeout, message: 'WorkcellTable slab mesh failed to mount in 3D scene' },
-      )
-      .toBe(true);
-  }
-
   async hasActiveGear(): Promise<boolean> {
     return await this.page.evaluate(() => {
       return window.__robot_visualizer ? window.__robot_visualizer.hasActiveGear() : false;
@@ -447,77 +434,6 @@ export class TeleopPage {
         },
       )
       .toBeLessThanOrEqual(tolerance);
-  }
-
-  async expectClickLockedOut(lockedOut: boolean, timeout = 5000): Promise<void> {
-    await expect
-      .poll(
-        async () => {
-          return await this.page.evaluate(() => {
-            return window.__robot_visualizer ? window.__robot_visualizer.isLockedOut() : false;
-          });
-        },
-        { timeout, message: `Expected visualizer isLockedOut to be ${lockedOut}` },
-      )
-      .toBe(lockedOut);
-  }
-
-  async clickWorkcellTable(x: number, y: number): Promise<void> {
-    const coords = await this.page.evaluate(
-      ({ targetX, targetY }) => {
-        return window.__robot_visualizer?.getTableScreenCoords(targetX, targetY) ?? null;
-      },
-      { targetX: x, targetY: y },
-    );
-
-    if (coords) {
-      await this.page.mouse.click(coords.clientX, coords.clientY);
-    } else {
-      await this.page.evaluate(
-        ({ targetX, targetY }) => {
-          window.__robot_visualizer?.simulateClick(targetX, targetY);
-        },
-        { targetX: x, targetY: y },
-      );
-    }
-  }
-
-  async hoverWorkcellTable(x: number, y: number): Promise<void> {
-    const coords = await this.page.evaluate(
-      ({ targetX, targetY }) => {
-        return window.__robot_visualizer?.getTableScreenCoords(targetX, targetY) ?? null;
-      },
-      { targetX: x, targetY: y },
-    );
-
-    if (coords) {
-      await this.page.mouse.move(coords.clientX, coords.clientY);
-    } else {
-      await this.page.evaluate(
-        ({ targetX, targetY }) => {
-          window.__robot_visualizer?.simulatePointerMove(targetX, targetY);
-        },
-        { targetX: x, targetY: y },
-      );
-    }
-  }
-
-  async isReticleVisible(): Promise<boolean> {
-    return await this.page.evaluate(() => {
-      const reticle = window.__robot_visualizer?.getReticleMesh() as { visible: boolean } | null;
-      return reticle ? reticle.visible : false;
-    });
-  }
-
-  async expectReticleVisible(visible: boolean, timeout = 5000): Promise<void> {
-    await expect
-      .poll(
-        async () => {
-          return await this.isReticleVisible();
-        },
-        { timeout, message: `Expected reticle visibility to be ${visible}` },
-      )
-      .toBe(visible);
   }
 
   async expectActionProgressVisible(visible: boolean, timeout = 5000): Promise<void> {

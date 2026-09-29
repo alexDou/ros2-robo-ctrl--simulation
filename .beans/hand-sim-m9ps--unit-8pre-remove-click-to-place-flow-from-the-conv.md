@@ -1,12 +1,13 @@
 ---
 # hand-sim-m9ps
 title: 'Unit 8.pre: Remove click-to-place flow from the conveyor branch'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:03Z
-updated_at: 2026-09-28T16:06:03Z
+updated_at: 2026-09-29T12:46:44Z
 parent: hand-sim-d04j
 ---
 
@@ -32,3 +33,5 @@ Delete Flow A from `feat/conveyor-flow` so exactly one flow lives on the branch 
 - None (can start immediately)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Web-side Flow A removed. Deferred: gateway QcClassifier + mock SPAWN_OBJECT path (Unit 8.0 schema work); palm-grasp closed_loop E2E dropped (needs spawn; re-cover in Unit 8 E2E). clearWorkspace no longer gated on session hasActiveGear (flag never set now).

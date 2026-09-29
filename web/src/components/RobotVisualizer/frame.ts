@@ -10,7 +10,6 @@ import {
   reconcileSnapshotGears,
   type SnapshotStore,
 } from '@/components/RobotVisualizer/interaction/snapshot';
-import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 
@@ -40,7 +39,6 @@ export interface FrameArgs {
   store: SnapshotStore;
   robotGroup: THREE.Group;
   mountLink: THREE.Object3D | null;
-  tableAssets: TableProceduralAssets | null;
   scrapBin?: ScrapBinProceduralAssets | null;
   controls?: { update?: () => boolean };
   onDirty: () => void;
@@ -103,7 +101,6 @@ export function stepFrame(args: FrameArgs): void {
   reconcileSnapshotGears(args.store, readSnapshot(args.bufferRef), {
     robotGroup: args.robotGroup,
     mountLink: args.mountLink,
-    tableAssets: args.tableAssets,
     scrapBin: args.scrapBin ?? null,
     onDirty: args.onDirty,
   });

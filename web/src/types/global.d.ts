@@ -13,15 +13,6 @@ export interface VisualizerRendererInfo {
   };
 }
 
-export interface VisualizerRaycastResult {
-  x: number;
-  y: number;
-  z: number;
-  isReachable: boolean;
-  isInsideTable: boolean;
-  isInsideMat: boolean;
-}
-
 export interface VisualizerNozzleState {
   isGrasped: boolean;
   emissiveHex: number;
@@ -60,20 +51,11 @@ export interface RobotVisualizerGlobalHandle {
   isGearAttached: () => boolean;
   wasGearEverAttached: () => boolean;
   getAttachedGearMesh: () => unknown;
-  getTableMesh: () => unknown;
   getPedestalMesh: () => unknown;
-  getLandingMatMesh: () => unknown;
-  getReticleMesh: () => unknown;
   getGearMesh: () => unknown;
   getGearPosition: () => { x: number; y: number; z: number } | null;
   hasActiveGear: () => boolean;
-  isLockedOut: () => boolean;
   clearWorkspace: () => void;
-  simulatePointerMove: (x: number, y: number) => void;
-  simulatePointerLeave: () => void;
-  simulateClick: (x: number, y: number) => unknown;
-  raycastPointer: (clientX: number, clientY: number) => VisualizerRaycastResult | null;
-  getTableScreenCoords: (x: number, y: number) => { clientX: number; clientY: number } | null;
 }
 
 declare global {

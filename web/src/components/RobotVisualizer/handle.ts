@@ -3,7 +3,6 @@ import type { URDFRobot } from 'urdf-loader';
 import { UR5E_JOINTS, type GearColor } from '@contracts';
 import type { RobotVisualizerGlobalHandle } from '@/types/global';
 import type { SnapshotStore } from '@/components/RobotVisualizer/interaction/snapshot';
-import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
@@ -17,21 +16,9 @@ export interface HandleDeps {
   getSpindle: () => SpindleTowerProceduralAssets | null;
   getSpindlesByColor: () => Record<GearColor, SpindleTowerProceduralAssets | null>;
   getScrapBin: () => ScrapBinProceduralAssets | null;
-  getTable: () => TableProceduralAssets | null;
   getPedestal: () => PedestalProceduralAssets | null;
   store: SnapshotStore;
   getLastRendered: () => number[];
-  isLocked: () => boolean;
-  simulatePointerMove: (x: number, y: number) => void;
-  simulatePointerLeave: () => void;
-  simulateClick: (x: number, y: number) => unknown;
-  raycastPointer: (
-    clientX: number,
-    clientY: number,
-  ) => RobotVisualizerGlobalHandle['raycastPointer'] extends (a: number, b: number) => infer R
-    ? R
-    : never;
-  getTableScreenCoords: (x: number, y: number) => { clientX: number; clientY: number } | null;
 }
 
 // Exposed debug handle on window for testing and diagnostics.
@@ -136,10 +123,7 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
       const rec = [...deps.store.gears.values()].find((r) => r.bucket === 'in_progress');
       return rec?.assets.group ?? null;
     },
-    getTableMesh: () => deps.getTable()?.tableMesh ?? null,
     getPedestalMesh: () => deps.getPedestal()?.group ?? null,
-    getLandingMatMesh: () => deps.getTable()?.matMesh ?? null,
-    getReticleMesh: () => deps.getTable()?.reticleMesh ?? null,
     getGearMesh: () => {
       const rec =
         [...deps.store.gears.values()].find((r) => r.bucket === 'spawned') ??
@@ -162,24 +146,8 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
       [...deps.store.gears.values()].filter(
         (r) => r.bucket === 'spawned' || r.bucket === 'in_progress',
       ).length,
-    isLockedOut: () => deps.isLocked(),
     clearWorkspace: () => {
       // No-op locally: workspace clears on snapshot echo (CLEAR_WORKSPACE).
-    },
-    simulatePointerMove: (x: number, y: number) => {
-      deps.simulatePointerMove(x, y);
-    },
-    simulatePointerLeave: () => {
-      deps.simulatePointerLeave();
-    },
-    simulateClick: (x: number, y: number) => {
-      return deps.simulateClick(x, y);
-    },
-    raycastPointer: (clientX: number, clientY: number) => {
-      return deps.raycastPointer(clientX, clientY);
-    },
-    getTableScreenCoords: (x: number, y: number) => {
-      return deps.getTableScreenCoords(x, y);
     },
   };
 }

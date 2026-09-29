@@ -262,9 +262,9 @@ export function useTeleopSession({
       if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
       const currentRobotState = robotState ?? 'STANDBY';
       if (currentRobotState !== 'IDLE') return;
-      // Immediate ClickLockout: block second spawn before snapshot echo.
+      // Block a second spawn before the snapshot echo.
       // Workcell single-active reject is backend backstop; snapshot echo
-      // is steady-state lockout source for visualizer.
+      // is the steady-state source of gear state.
       if (hasActiveGear) return;
       const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
       wsRef.current.send(serializeCommand(cmd));
@@ -278,14 +278,13 @@ export function useTeleopSession({
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     const currentRobotState = robotState ?? 'STANDBY';
     if (currentRobotState !== 'IDLE') return;
-    // Workcell-authority: workspace clears on snapshot echo. Session flag
-    // alone gates the send; TeleopClient derives button state from snapshot.
-    if (!hasActiveGear) return;
+    // Workcell-authority: workspace clears on snapshot echo. TeleopClient
+    // derives button state from the snapshot; the send is gated on IDLE only.
     setActionProgress(null);
     const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));
     setHasActiveGear(false);
-  }, [robotState, hasActiveGear]);
+  }, [robotState]);
 
   const pushProbeLog = useCallback((status: string, detail: string) => {
     const entry: LogEntry = {

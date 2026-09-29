@@ -62,6 +62,12 @@ class MockWebSocket {
   }
 }
 
+const ONE_GEAR = {
+  spawned: [{ id: 'g1', x: 0.5, y: 0.1, z: 0.0, color: 'WHITE' as const, intact: true }],
+  in_progress: [],
+  processed: [],
+};
+
 describe('TeleopClient Component', () => {
   let originalWebSocket: typeof WebSocket;
 
@@ -101,7 +107,7 @@ describe('TeleopClient Component', () => {
       expect(ws.sentMessages.length).toBe(0);
     });
 
-    it('enables Clear Workspace button when gear is spawned and robot_state is IDLE', () => {
+    it('enables Clear Workspace button when snapshot has a gear and robot_state is IDLE', () => {
       render(
         <TeleopClient
           robotId="robot-0"
@@ -133,12 +139,19 @@ describe('TeleopClient Component', () => {
       const visualizer = (window as any).__robot_visualizer;
       expect(visualizer).toBeDefined();
 
-      // Click reachable table spot to spawn gear
       act(() => {
-        visualizer.simulateClick(0.5, 0.1);
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000050000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: ONE_GEAR,
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
 
-      expect(ws.sentMessages.length).toBe(1);
+      expect(ws.sentMessages.length).toBe(0);
       expect(clearBtn.disabled).toBe(false);
     });
 
@@ -168,19 +181,26 @@ describe('TeleopClient Component', () => {
         );
       });
 
-      const visualizer = (window as any).__robot_visualizer;
       act(() => {
-        visualizer.simulateClick(0.5, 0.1);
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000050000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: ONE_GEAR,
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
-      expect(ws.sentMessages.length).toBe(1);
+      expect(ws.sentMessages.length).toBe(0);
 
       const clearBtn = screen.getByTestId('clear-workspace-button');
       act(() => {
         fireEvent.click(clearBtn);
       });
 
-      expect(ws.sentMessages.length).toBe(2);
-      const clearCmd = JSON.parse(ws.sentMessages[1]);
+      expect(ws.sentMessages.length).toBe(1);
+      const clearCmd = JSON.parse(ws.sentMessages[0]);
       expect(clearCmd.type).toBe(CommandType.CLEAR_WORKSPACE);
       expect(clearCmd.sender_id).toBe('ui-client');
       expect(clearCmd.command_id).toBeDefined();
@@ -188,7 +208,7 @@ describe('TeleopClient Component', () => {
       expect(clearCmd.payload).toEqual({});
     });
 
-    it('destroys 3D gearwheel mesh in RobotVisualizer and lifts ClickLockout upon clicking Clear Workspace', async () => {
+    it('destroys 3D gearwheel mesh in RobotVisualizer and upon clicking Clear Workspace', async () => {
       render(
         <TeleopClient
           robotId="robot-0"
@@ -216,9 +236,16 @@ describe('TeleopClient Component', () => {
 
       const visualizer = (window as any).__robot_visualizer;
 
-      // Spawn initial gear + snapshot echo renders mesh
       act(() => {
-        visualizer.simulateClick(0.5, 0.1);
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000050000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: ONE_GEAR,
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
       act(() => {
         ws.simulateMessage(
@@ -239,7 +266,6 @@ describe('TeleopClient Component', () => {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
       });
       expect(visualizer.hasActiveGear()).toBe(true);
-      expect(visualizer.isLockedOut()).toBe(true);
       expect(visualizer.getGearMesh()).not.toBeNull();
 
       const clearBtn = screen.getByTestId('clear-workspace-button') as HTMLButtonElement;
@@ -253,7 +279,7 @@ describe('TeleopClient Component', () => {
         CommandType.CLEAR_WORKSPACE,
       );
 
-      // Backend echo: all buckets empty -> mesh destroyed, lockout lifted
+      // Backend echo: all buckets empty -> mesh destroyed
       act(() => {
         ws.simulateMessage(
           JSON.stringify({
@@ -269,19 +295,10 @@ describe('TeleopClient Component', () => {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
       });
 
-      // 3D gear destroyed and lockout lifted
+      // 3D gear destroyed
       expect(visualizer.hasActiveGear()).toBe(false);
-      expect(visualizer.isLockedOut()).toBe(false);
       expect(visualizer.getGearMesh()).toBeNull();
       expect(clearBtn.disabled).toBe(true);
-
-      // Verify able to click and place a new gear
-      act(() => {
-        visualizer.simulateClick(0.55, -0.05);
-      });
-      expect(JSON.parse(ws.sentMessages[ws.sentMessages.length - 1]).type).toBe(
-        CommandType.SPAWN_OBJECT,
-      );
     });
 
     it('enforces state interlocks: disables Clear Workspace button when robot_state is not IDLE', () => {
@@ -310,11 +327,16 @@ describe('TeleopClient Component', () => {
         );
       });
 
-      const visualizer = (window as any).__robot_visualizer;
-
-      // Spawn gear when IDLE
       act(() => {
-        visualizer.simulateClick(0.5, 0.1);
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000050000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: ONE_GEAR,
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
 
       const clearBtn = screen.getByTestId('clear-workspace-button') as HTMLButtonElement;
@@ -325,7 +347,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000000000000',
         robot_state: RobotState.EXECUTING,
         joint_positions: [0, 0, 0, 0, 0, 0],
-        workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: ONE_GEAR,
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -338,14 +360,14 @@ describe('TeleopClient Component', () => {
       act(() => {
         fireEvent.click(clearBtn);
       });
-      expect(ws.sentMessages.length).toBe(1);
+      expect(ws.sentMessages.length).toBe(0);
 
       // Transition to FAULT
       const telemFault: RobotTelemetryEvent = {
         timestamp_ns: '1700000000100000000',
         robot_state: RobotState.FAULT,
         joint_positions: [0, 0, 0, 0, 0, 0],
-        workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: ONE_GEAR,
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -359,7 +381,7 @@ describe('TeleopClient Component', () => {
         timestamp_ns: '1700000000200000000',
         robot_state: RobotState.IDLE,
         joint_positions: [0, 0, 0, 0, 0, 0],
-        workcell_state: { spawned: [], in_progress: [], processed: [] },
+        workcell_state: ONE_GEAR,
         palm_state: { is_grasped: false },
       };
       act(() => {
@@ -395,9 +417,16 @@ describe('TeleopClient Component', () => {
         );
       });
 
-      const visualizer = (window as any).__robot_visualizer;
       act(() => {
-        visualizer.simulateClick(0.5, 0.1);
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000050000000',
+            robot_state: RobotState.IDLE,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: ONE_GEAR,
+            palm_state: { is_grasped: false },
+          }),
+        );
       });
 
       const clearBtn = screen.getByTestId('clear-workspace-button') as HTMLButtonElement;

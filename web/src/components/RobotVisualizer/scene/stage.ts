@@ -2,11 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
-import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
-import { createWorkcellTable } from '@/components/RobotVisualizer/assets/table';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
 import { createScrapBin } from '@/components/RobotVisualizer/assets/scrapbin';
 import type { GearColor } from '@contracts';
@@ -16,7 +14,6 @@ export interface StageAssets {
   camera: THREE.PerspectiveCamera;
   robotGroup: THREE.Group;
   pedestalAssets: PedestalProceduralAssets;
-  tableAssets: TableProceduralAssets;
   spindleTowerAssets: SpindleTowerProceduralAssets;
   spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
   scrapBinAssets: ScrapBinProceduralAssets;
@@ -34,7 +31,7 @@ export function createStage(container: HTMLDivElement): StageAssets {
   camera.position.set(1.4, 1.2, 1.4);
 
   // 5. Calibrated ground floor grid with 10cm subdivisions (2m size, 20 divisions)
-  // Positioned at floor level (y = -0.255m) beneath the pedestal foot and table legs
+  // Positioned at floor level (y = -0.255m) beneath the pedestal foot
   const gridHelper = new THREE.GridHelper(2.0, 20, 0x4b5563, 0x374151);
   gridHelper.position.set(0, -0.255, 0);
   scene.add(gridHelper);
@@ -61,13 +58,6 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const pedestalAssets = createRobotPedestal();
   robotGroup.add(pedestalAssets.group);
 
-  // Mount WorkcellTable, Landing Mat, Boundary Outline, and Dynamic Reticle to robotGroup
-  const tableAssets = createWorkcellTable();
-  robotGroup.add(tableAssets.tableMesh);
-  robotGroup.add(tableAssets.matMesh);
-  robotGroup.add(tableAssets.borderLines);
-  robotGroup.add(tableAssets.reticleMesh);
-
   // Mount three color SpindleTowers at canonical WHITE/GREEN/BLUE coords.
   // WHITE keeps legacy position so single-tower scene renders identically.
   const whiteTower = createSpindleTower('WHITE');
@@ -88,7 +78,6 @@ export function createStage(container: HTMLDivElement): StageAssets {
     camera,
     robotGroup,
     pedestalAssets,
-    tableAssets,
     spindleTowerAssets,
     spindleTowerAssetsByColor,
     scrapBinAssets,

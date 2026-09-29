@@ -2,7 +2,6 @@ import type * as THREE from 'three';
 import type { GearEntry } from '@contracts';
 import type { WorkcellSnapshotView, TelemetryBufferLike } from '@/components/RobotVisualizer/types';
 import type { GearwheelProceduralAssets } from '@/components/RobotVisualizer/assets/gear';
-import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import {
   createProceduralGearwheel,
@@ -13,11 +12,10 @@ import { GRASP_RIDE_OFFSET_Z_M } from '@/components/RobotVisualizer/constants';
 
 export interface SnapshotStore {
   gears: Map<string, { assets: GearwheelProceduralAssets; bucket: string }>;
-  lockout: boolean;
 }
 
 export function createSnapshotStore(): SnapshotStore {
-  return { gears: new Map(), lockout: false };
+  return { gears: new Map() };
 }
 
 export function readSnapshot(bufferRef?: TelemetryBufferLike): WorkcellSnapshotView {
@@ -37,7 +35,6 @@ export function reconcileSnapshotGears(
   ctx: {
     robotGroup: THREE.Group;
     mountLink: THREE.Object3D | null;
-    tableAssets: TableProceduralAssets | null;
     scrapBin?: ScrapBinProceduralAssets | null;
     onDirty: () => void;
   },
@@ -102,13 +99,6 @@ export function reconcileSnapshotGears(
         rec.assets.group.position.set(d.entry.x, d.entry.y, d.entry.z);
       }
     }
-  }
-  // Lockout derives from active buckets only: spawned/in_progress block
-  // clicks, processed tower never does (matches pre-6.7 ClickLockout).
-  const hasActive = snap.spawned.length > 0 || snap.inProgress.length > 0;
-  store.lockout = hasActive;
-  if (ctx.tableAssets && hasActive) {
-    ctx.tableAssets.reticleMesh.visible = false;
   }
   // ScrapBin binary state: non-empty iff any processed entry is defective.
   // Defective gears render into bin pile verbatim (workcell owns coords).
