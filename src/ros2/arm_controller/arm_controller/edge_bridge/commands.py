@@ -133,13 +133,8 @@ class EdgeBridgeCommandsMixin:
                     )
                     return None
 
-            # Unit 7.2: gateway enriches after blind validation; classification
-            # rides on the same payload. Pop before blind-schema validation.
-            raw_spawn = dict(command.payload)
-            spawn_color = str(raw_spawn.pop("color", "WHITE") or "WHITE")
-            spawn_intact = bool(raw_spawn.pop("intact", True))
             try:
-                payload = SpawnObjectPayload.model_validate(raw_spawn)
+                payload = SpawnObjectPayload.model_validate(command.payload)
             except Exception as e:
                 self.get_logger().error(f"SpawnObject payload invalid: {e}")
                 self._publish_error("INVALID_PAYLOAD", "SpawnObject payload invalid")
@@ -160,12 +155,9 @@ class EdgeBridgeCommandsMixin:
                 return None
             req.coords = Point(x=sx, y=sy, z=sz)
             req.object_type = payload.object_type.value
-            req.color = spawn_color
-            req.intact = spawn_intact
+            req.color = payload.color.value
+            req.intact = payload.intact
 
-            with self._lock:
-                self._pending_spawn_coords = (sx, sy, sz)
-                self._pending_spawn_command_id = command.command_id
             spawn_command_id = command.command_id
 
             def _on_spawn_done(future: Any) -> None:
@@ -173,40 +165,15 @@ class EdgeBridgeCommandsMixin:
                     res = future.result()
                 except Exception as err:
                     self.get_logger().error(f"SpawnObject call failed: {err}")
-                    with self._lock:
-                        self._pending_spawn_coords = None
-                        self._pending_spawn_command_id = None
                     self._publish_error("SERVICE_ERROR", "SpawnObject call failed")
                     return
                 if res is None or not res.success:
                     msg = res.message if res else "Unknown service failure"
-                    with self._lock:
-                        self._pending_spawn_coords = None
-                        self._pending_spawn_command_id = None
                     self._publish_error("WORKCELL_OCCUPIED", msg)
                     self.publish_telemetry(command_id=spawn_command_id)
                     return
-                with self._lock:
-                    coords = self._pending_spawn_coords
-                    self._pending_spawn_coords = None
-                    self._pending_spawn_command_id = None
-                    idle = self._robot_state == RobotState.IDLE
+                # Spawn only registers the gear; the client dispatches the pick explicitly.
                 self.publish_telemetry(command_id=spawn_command_id)
-                if coords is None or not idle:
-                    return
-                # Auto-dispatch: click IS dispatch; UI sends one command.
-                pnp_payload = PickAndPlaceTargetPayload(
-                    pick_x=coords[0],
-                    pick_y=coords[1],
-                    pick_z=coords[2],
-                )
-                with self._lock:
-                    if self._robot_state != RobotState.IDLE:
-                        return
-                    self._robot_state = RobotState.EXECUTING
-                    self._grasp_notified = False
-                    self._commit_notified = False
-                self._dispatch_pick_and_place_goal(pnp_payload, command_id=spawn_command_id)
 
             self._spawn_object_client.call_async(req).add_done_callback(_on_spawn_done)
 

@@ -1,9 +1,10 @@
-import { useState, useCallback, useEffect } from 'preact/hooks';
+import { useState, useCallback, useEffect, useRef } from 'preact/hooks';
 import { resolveGatewayWsUrl } from '@utils/url';
 import { DEFAULT_ROBOT_ID } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
+import { TRACER_GEAR, dispatchGear, type ConveyorPorts } from '@utils/conveyorController';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
 import { ActionProgressBar } from '@components/ActionProgressBar';
@@ -59,6 +60,8 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
+    spawnObject,
+    pickAndPlace,
     clearWorkspace,
     sendPing,
   } = useTeleopSession({
@@ -80,6 +83,54 @@ export function TeleopClient({
     (snap?.spawned?.length ?? 0) > 0 ||
     (snap?.inProgress?.length ?? 0) > 0 ||
     (snap?.processed?.length ?? 0) > 0;
+
+  // Conveyor tracer (Unit 8.0c): progress is read from the workcell snapshot, the single authority.
+  const robotStateRef = useRef(robotState);
+  robotStateRef.current = robotState;
+  const waitersRef = useRef<
+    Array<{ ready: () => boolean; resolve: () => void; reject: (err: Error) => void }>
+  >([]);
+  useEffect(() => {
+    // Disconnect or FAULT resets the whole system (ADR 0005 §5): abandon any pending dispatch.
+    if (connectionState !== 'CONNECTED' || robotState === 'FAULT') {
+      for (const w of waitersRef.current) w.reject(new Error('conveyor dispatch aborted'));
+      waitersRef.current = [];
+      return;
+    }
+    waitersRef.current = waitersRef.current.filter((w) => {
+      if (!w.ready()) return true;
+      w.resolve();
+      return false;
+    });
+  }, [connectionState, robotState, workcellVersion]);
+  const waitUntil = useCallback(
+    (ready: () => boolean) =>
+      new Promise<void>((resolve, reject) => {
+        if (ready()) resolve();
+        else waitersRef.current.push({ ready, resolve, reject });
+      }),
+    [],
+  );
+  const [processing, setProcessing] = useState(false);
+  const handleProcess = useCallback(() => {
+    const ws = () => bufferRef.current?.workcellState;
+    const ports: ConveyorPorts = {
+      spawn: spawnObject,
+      pickAndPlace,
+      waitForRegistered: () => waitUntil(() => (ws()?.spawned?.length ?? 0) > 0),
+      waitForSettled: () =>
+        waitUntil(
+          () =>
+            robotStateRef.current === 'IDLE' &&
+            (ws()?.spawned?.length ?? 0) === 0 &&
+            (ws()?.inProgress?.length ?? 0) === 0,
+        ),
+    };
+    setProcessing(true);
+    dispatchGear(ports, TRACER_GEAR)
+      .catch(() => undefined)
+      .finally(() => setProcessing(false));
+  }, [bufferRef, spawnObject, pickAndPlace, waitUntil]);
 
   const handleClearWorkspace = useCallback(() => {
     clearWorkspace();
@@ -228,6 +279,8 @@ export function TeleopClient({
             onDisconnect={disconnect}
             onResetFault={resetFault}
             onClearWorkspace={handleClearWorkspace}
+            onProcess={handleProcess}
+            processDisabled={processing || workcellHasGears}
             errorBanner={errorBanner}
             disabled={toolbarDisabled}
             disabledReason={

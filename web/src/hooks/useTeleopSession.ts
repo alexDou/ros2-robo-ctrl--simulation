@@ -9,6 +9,7 @@ import {
   type ErrorFrame,
   type RobotState,
   type SpawnObjectPayload,
+  type PickAndPlaceTargetPayload,
 } from '@contracts';
 import {
   createPingCommand,
@@ -17,6 +18,7 @@ import {
   createEmergencyStopCommand,
   createResetFaultCommand,
   createSpawnObjectCommand,
+  createPickAndPlaceTargetCommand,
   createClearWorkspaceCommand,
   serializeCommand,
   isActionFeedbackFrame,
@@ -274,6 +276,17 @@ export function useTeleopSession({
     [robotState, hasActiveGear],
   );
 
+  const pickAndPlace = useCallback(
+    (payload: PickAndPlaceTargetPayload) => {
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+      if ((robotState ?? 'STANDBY') !== 'IDLE') return;
+      const cmd = createPickAndPlaceTargetCommand(payload, { senderId: 'ui-client' });
+      wsRef.current.send(serializeCommand(cmd));
+      setActionProgress(null);
+    },
+    [robotState],
+  );
+
   const clearWorkspace = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     const currentRobotState = robotState ?? 'STANDBY';
@@ -336,6 +349,7 @@ export function useTeleopSession({
     emergencyStop,
     resetFault,
     spawnObject,
+    pickAndPlace,
     clearWorkspace,
     sendPing,
   };

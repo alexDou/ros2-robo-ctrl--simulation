@@ -28,6 +28,15 @@ pub enum PoseName {
     InspectPose,
 }
 
+/// Tower color assigned by the client
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum GearColor {
+    White,
+    Green,
+    Blue,
+}
+
 /// Type of object to spawn
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -61,15 +70,6 @@ pub enum RobotState {
     Idle,
     Executing,
     Fault,
-}
-
-/// Gear color class routing to its spindle tower
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum GearColor {
-    White,
-    Green,
-    Blue,
 }
 
 /// Canonical UR5e 6-DoF joint names in kinematic sequence
@@ -210,6 +210,8 @@ pub struct SpawnObjectPayload {
     pub x: f64,
     pub y: f64,
     pub z: f64,
+    pub color: GearColor,
+    pub intact: bool,
     pub object_type: SpawnObjectType,
 }
 

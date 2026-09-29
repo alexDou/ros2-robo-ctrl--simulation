@@ -3,6 +3,19 @@ import WebSocket from 'ws';
 import { MockGateway } from '../e2e/support/mock_gateway';
 import { DEFAULT_ROBOT_ID } from '../../domain/contracts';
 
+// Spawn registers the gear (client-assigned classification); the pick is dispatched separately.
+function sendSpawnFor(ws: WebSocket, id: string, x: number, y: number): void {
+  ws.send(
+    JSON.stringify({
+      command_id: id,
+      sender_id: 'ui-test',
+      timestamp_ns: Date.now() * 1_000_000,
+      type: 'SPAWN_OBJECT',
+      payload: { x, y, z: 0.0, object_type: 'GEAR', color: 'WHITE', intact: true },
+    }),
+  );
+}
+
 describe('MockGateway', () => {
   let gateway: MockGateway;
   let wsUrl: string;
@@ -273,6 +286,7 @@ describe('MockGateway', () => {
       }
     });
 
+    sendSpawnFor(ws, 'pnp-phase-1-spawn', 0.5, 0.0);
     ws.send(
       JSON.stringify({
         command_id: 'pnp-phase-1',
@@ -307,6 +321,7 @@ describe('MockGateway', () => {
       ws.on('error', reject);
     });
 
+    sendSpawnFor(ws, 'pick-1-spawn', 0.5, 0.1);
     ws.send(
       JSON.stringify({
         command_id: 'pick-1',
@@ -318,7 +333,7 @@ describe('MockGateway', () => {
     );
 
     await new Promise((r) => setTimeout(r, 50));
-    expect(gateway.getCapturedLogs()).toMatch(/Spawned GEAR at \(0\.500,\s*0\.100,\s*0\.000\)/);
+    expect(gateway.getCapturedLogs()).toMatch(/Spawned GEAR \S+ at \(0\.500,\s*0\.100,\s*0\.000\)/);
 
     ws.send(
       JSON.stringify({
@@ -363,6 +378,7 @@ describe('MockGateway', () => {
 
     expect(gateway.getTowerGearsCount()).toBe(0);
 
+    sendSpawnFor(ws, 'pnp-10-step-spawn', 0.5, 0.0);
     ws.send(
       JSON.stringify({
         command_id: 'pnp-10-step',

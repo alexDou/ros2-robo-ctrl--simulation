@@ -3,7 +3,6 @@ pub mod action;
 #[path = "../../domain/domain.rs"]
 pub mod domain;
 pub mod fabric;
-pub mod qc_classifier;
 pub mod session;
 pub mod throttler;
 pub mod ws;

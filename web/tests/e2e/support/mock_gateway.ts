@@ -9,6 +9,7 @@ import {
   GREEN_TOWER,
   BLUE_TOWER,
   SCRAP_BIN,
+  VALID_GEAR_COLORS,
   STACK_STEP_M,
   TOWER_CAPACITY,
   type ArmJointPositions,
@@ -21,7 +22,7 @@ import {
 } from '../../../domain/contracts';
 import { PickAndPlaceTrajectoryGenerator, type WaypointStep } from './kinematics';
 
-export interface SeededClassification {
+export interface GearClassification {
   color: GearColor;
   intact: boolean;
 }
@@ -91,10 +92,6 @@ export class MockGateway {
   private pnpExecuting = false;
   private pnpTimeout: NodeJS.Timeout | null = null;
   private autoExecutePickAndPlace = true;
-  // Unit 7.4: seeded hermetic classification. Empty sequence = legacy
-  // WHITE/sound default so pre-7.4 callers run unchanged.
-  private classificationSequence: SeededClassification[] = [];
-  private classificationIndex = 0;
   private spawnCounter = 0;
 
   constructor(options: MockGatewayOptions = {}) {
@@ -160,7 +157,6 @@ export class MockGateway {
     this.activeId = null;
     this.inferenceMetrics = null;
     this.autoExecutePickAndPlace = true;
-    this.classificationIndex = 0;
     this.spawnCounter = 0;
     this.robotState = 'IDLE';
     this.palmState = { is_grasped: false };
@@ -169,23 +165,8 @@ export class MockGateway {
     this.clearCapturedLogs();
   }
 
-  public setClassificationSequence(sequence: SeededClassification[]): void {
-    this.classificationSequence = [...sequence];
-    this.classificationIndex = 0;
-  }
-
   public seedProcessed(entries: GearEntry[]): void {
     this.processed = [...entries];
-  }
-
-  private nextClassification(): SeededClassification {
-    if (this.classificationSequence.length === 0) {
-      return { color: 'WHITE', intact: true };
-    }
-    const item =
-      this.classificationSequence[this.classificationIndex % this.classificationSequence.length];
-    this.classificationIndex += 1;
-    return item;
   }
 
   private destinationFor(color: GearColor, intact: boolean): readonly [number, number, number] {
@@ -473,56 +454,57 @@ export class MockGateway {
           this.log('[EDGE] Spawn rejected: robot in FAULT state');
           break;
         }
+        const color = cmd.payload?.color as GearColor;
+        const intact = cmd.payload?.intact;
+        if (!VALID_GEAR_COLORS.includes(color) || typeof intact !== 'boolean') {
+          this.log('[EDGE] Spawn rejected: payload requires color + intact');
+          break;
+        }
         const x = Number(cmd.payload?.x ?? 0.5);
         const y = Number(cmd.payload?.y ?? 0.0);
         const z = Number(cmd.payload?.z ?? 0.0);
-        const cls = this.nextClassification();
         this.spawnCounter += 1;
         const id = `gear-seed-${this.spawnCounter}`;
-        this.spawned = [{ id, x, y, z, color: cls.color, intact: cls.intact }];
+        this.spawned = [{ id, x, y, z, color, intact }];
         this.inProgress = [];
         this.activeId = id;
         this.inferenceMetrics = {
           latency_ms: 0,
           confidence: 1,
-          detected_object: this.inferenceLabel(cls.color, cls.intact),
+          detected_object: this.inferenceLabel(color, intact),
         };
         this.log(
           `[EDGE] Spawned GEAR ${id} at (${x.toFixed(3)}, ${y.toFixed(3)}, ${z.toFixed(3)})`,
         );
         this.cancelTrajectory();
-        if (this.autoExecutePickAndPlace) {
-          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z, cls);
-        } else {
-          this.sendTelemetryToAll(cmd.command_id);
-        }
+        // Spawn only registers the gear; the client dispatches the pick explicitly.
+        this.sendTelemetryToAll(cmd.command_id);
         break;
       }
 
       case 'PICK_AND_PLACE_TARGET': {
-        // Legacy alias (pre-6.7.5 click path): treat pick as spawn-only.
         if (this.robotState === 'FAULT') {
           this.log('[EDGE] Pick and place rejected: robot in FAULT state');
           break;
         }
-        const x = Number(cmd.payload?.pick_x ?? 0.5);
-        const y = Number(cmd.payload?.pick_y ?? 0.0);
-        const z = Number(cmd.payload?.pick_z ?? 0.0);
-        this.log(`[EDGE] Spawned GEAR at (${x.toFixed(3)}, ${y.toFixed(3)}, 0.000)`);
-        this.cancelTrajectory();
+        if (this.robotState !== 'IDLE') {
+          this.log(`[EDGE] Pick and place rejected: robot is ${this.robotState}`);
+          break;
+        }
+        const gear = this.spawned.find((g) => g.id === this.activeId);
+        if (!gear) {
+          this.log('[EDGE] Pick and place rejected: no spawned gear');
+          break;
+        }
+        const x = Number(cmd.payload?.pick_x ?? gear.x);
+        const y = Number(cmd.payload?.pick_y ?? gear.y);
+        const z = Number(cmd.payload?.pick_z ?? gear.z);
+        this.log(`[EDGE] Pick and place ${gear.id} from (${x.toFixed(3)}, ${y.toFixed(3)})`);
         if (this.autoExecutePickAndPlace) {
-          const cls = this.nextClassification();
-          this.spawnCounter += 1;
-          const id = `gear-seed-${this.spawnCounter}`;
-          this.spawned = [{ id, x, y, z, color: cls.color, intact: cls.intact }];
-          this.inProgress = [];
-          this.activeId = id;
-          this.inferenceMetrics = {
-            latency_ms: 0,
-            confidence: 1,
-            detected_object: this.inferenceLabel(cls.color, cls.intact),
-          };
-          this.executePickAndPlaceSequence(cmd.command_id, id, x, y, z, cls);
+          this.executePickAndPlaceSequence(cmd.command_id, gear.id, x, y, z, {
+            color: gear.color,
+            intact: gear.intact,
+          });
         } else {
           this.sendTelemetryToAll(cmd.command_id);
         }
@@ -581,7 +563,7 @@ export class MockGateway {
     x: number,
     y: number,
     z: number,
-    cls: SeededClassification,
+    cls: GearClassification,
   ): void {
     // Bin cap-100 sharp-cut recycle mirrors WorkcellNode.commit_drop:
     // recycle BEFORE slot so the 101st arrival wraps to z=0, towers untouched.

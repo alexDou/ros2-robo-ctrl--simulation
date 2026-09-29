@@ -143,8 +143,6 @@ class EdgeBridgeNode(
         self._active_pnp_handle: Any | None = None
         self._homing_done_event = threading.Event()
         self._startup_motion_event = threading.Event()
-        self._pending_spawn_coords: tuple[float, float, float] | None = None
-        self._pending_spawn_command_id: str | None = None
         self._grasp_notified = False
         self._commit_notified = False
 

@@ -13,11 +13,32 @@ BAD_FLOATS = (math.inf, -math.inf, math.nan)
 def test_spawn_object_payload_rejects_non_finite():
     for bad in BAD_FLOATS:
         with pytest.raises(ValidationError):
-            SpawnObjectPayload(x=bad, y=0.0, z=0.0, object_type=SpawnObjectType.GEAR)
+            SpawnObjectPayload(
+                x=bad,
+                y=0.0,
+                z=0.0,
+                object_type=SpawnObjectType.GEAR,
+                color="WHITE",
+                intact=True,
+            )
         with pytest.raises(ValidationError):
-            SpawnObjectPayload(x=0.5, y=bad, z=0.0, object_type=SpawnObjectType.GEAR)
+            SpawnObjectPayload(
+                x=0.5,
+                y=bad,
+                z=0.0,
+                object_type=SpawnObjectType.GEAR,
+                color="WHITE",
+                intact=True,
+            )
         with pytest.raises(ValidationError):
-            SpawnObjectPayload(x=0.5, y=0.0, z=bad, object_type=SpawnObjectType.GEAR)
+            SpawnObjectPayload(
+                x=0.5,
+                y=0.0,
+                z=bad,
+                object_type=SpawnObjectType.GEAR,
+                color="WHITE",
+                intact=True,
+            )
 
 
 def test_pick_and_place_payload_rejects_non_finite():
