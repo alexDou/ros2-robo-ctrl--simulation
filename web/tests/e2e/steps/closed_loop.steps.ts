@@ -352,3 +352,20 @@ Then('every tower counter should read {string}', async function (this: CustomWor
     await this.teleopPage!.expectTowerCounter(color, `${color}: ${text}`);
   }
 });
+
+Then('some gears should have been sorted', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectSomeGearsSorted();
+});
+
+When('the operator reloads the page and reconnects', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.reload();
+  await this.teleopPage!.clickConnect();
+});
+
+Then('the hopper, belt, towers and bin should all be empty', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectEverythingEmpty();
+  await this.teleopPage!.expectScrapBinFloorHex(SCRAP_BIN_EMPTY_COLOR);
+});

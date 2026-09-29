@@ -113,3 +113,31 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     When the operator clicks the "Process" button
     Then the whole deck should be processed
     And every tower counter should read "0/10"
+
+  @conveyor @unit-8.3b
+  Scenario: EmergencyStop mid-run resets the hopper, belt, towers and bin
+    Given the mock arm runs 10 times faster
+    And the deck seed is 7
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    When the operator clicks the "Fill" button
+    And the operator clicks the "Process" button
+    Then some gears should have been sorted
+    When the operator dispatches an EMERGENCY_STOP command
+    Then the connection status should indicate "CONNECTED / FAULT"
+    And the hopper, belt, towers and bin should all be empty
+
+  @conveyor @unit-8.3b
+  Scenario: Reloading the page mid-run resets the hopper, belt, towers and bin
+    Given the mock arm runs 10 times faster
+    And the deck seed is 7
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    When the operator clicks the "Fill" button
+    And the operator clicks the "Process" button
+    Then some gears should have been sorted
+    When the operator reloads the page and reconnects
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the hopper, belt, towers and bin should all be empty

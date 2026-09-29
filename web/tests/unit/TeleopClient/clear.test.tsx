@@ -11,6 +11,8 @@ class MockWebSocket {
   url: string;
   readyState: number = WebSocket.CONNECTING;
   sentMessages: string[] = [];
+  /** Frames sent inside onopen (the connect-time CLEAR_WORKSPACE reset), kept out of sentMessages. */
+  connectFrames: string[] = [];
 
   onopen: ((event: Event) => void) | null = null;
   onclose: ((event: CloseEvent) => void) | null = null;
@@ -37,6 +39,7 @@ class MockWebSocket {
     this.readyState = WebSocket.OPEN;
     if (this.onopen) {
       this.onopen(new Event('open'));
+      this.connectFrames = this.sentMessages.splice(0);
     }
   }
 
@@ -81,6 +84,49 @@ describe('TeleopClient Component', () => {
   afterEach(() => {
     globalThis.WebSocket = originalWebSocket;
     vi.restoreAllMocks();
+  });
+
+  describe('Unit 8.3b: full reset on connect and FAULT', () => {
+    const frame = (state: RobotState) =>
+      JSON.stringify({
+        timestamp_ns: '1700000000000000000',
+        robot_state: state,
+        joint_positions: [0, 0, 0, 0, 0, 0],
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
+        palm_state: { is_grasped: false },
+      });
+
+    it('sends CLEAR_WORKSPACE as soon as the session connects', () => {
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
+      act(() => ws.simulateOpen());
+      expect(ws.connectFrames.map((f) => JSON.parse(f).type)).toEqual([
+        CommandType.CLEAR_WORKSPACE,
+      ]);
+    });
+
+    it('sends CLEAR_WORKSPACE once when robot_state enters FAULT, even though not IDLE', () => {
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
+      act(() => ws.simulateOpen());
+      act(() => ws.simulateMessage(frame(RobotState.IDLE)));
+      expect(ws.sentMessages.length).toBe(0);
+      act(() => ws.simulateMessage(frame(RobotState.FAULT)));
+      act(() => ws.simulateMessage(frame(RobotState.FAULT)));
+      expect(ws.sentMessages.map((f) => JSON.parse(f).type)).toEqual([CommandType.CLEAR_WORKSPACE]);
+    });
   });
 
   describe('Unit 5.4: TeleopClient Operator Toolbar Clear Workspace', () => {

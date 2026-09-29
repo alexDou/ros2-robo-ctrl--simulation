@@ -173,6 +173,25 @@ def test_clear_wipes_towers_plus_bin_and_restarts_pile():
         node.destroy_node()
 
 
+def test_clear_workspace_empties_gears_towers_and_bin():
+    node = WorkcellNode()
+    try:
+        _cycle(node, color="WHITE", intact=True)
+        _cycle(node, color="GREEN", intact=False)
+        _spawn(node, x=0.40, color="BLUE", intact=True)  # left on the table, not yet picked
+        assert node.has_active_workpiece is True
+        assert node.processed != []
+        out = node.handle_clear_workspace(ClearWorkspace.Request(), ClearWorkspace.Response())
+        assert out.success is True
+        assert node.has_active_workpiece is False
+        assert node.processed == []
+        assert node.tower_count == 0
+        assert _bin_entries(node) == []
+        assert node.inventory == 0
+    finally:
+        node.destroy_node()
+
+
 def test_tower_still_empties_at_10_after_bin_recycle():
     node = WorkcellNode()
     try:

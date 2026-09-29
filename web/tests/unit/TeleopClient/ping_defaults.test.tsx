@@ -11,6 +11,8 @@ class MockWebSocket {
   url: string;
   readyState: number = WebSocket.CONNECTING;
   sentMessages: string[] = [];
+  /** Frames sent inside onopen (the connect-time CLEAR_WORKSPACE reset), kept out of sentMessages. */
+  connectFrames: string[] = [];
 
   onopen: ((event: Event) => void) | null = null;
   onclose: ((event: CloseEvent) => void) | null = null;
@@ -37,6 +39,7 @@ class MockWebSocket {
     this.readyState = WebSocket.OPEN;
     if (this.onopen) {
       this.onopen(new Event('open'));
+      this.connectFrames = this.sentMessages.splice(0);
     }
   }
 
