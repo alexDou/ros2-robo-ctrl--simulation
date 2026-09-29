@@ -1,12 +1,13 @@
 ---
 # hand-sim-jap7
 title: 'Unit 8.2e: Default camera for the conveyor layout'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:04Z
-updated_at: 2026-09-28T16:06:04Z
+updated_at: 2026-09-29T19:42:28Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-wie8
@@ -34,3 +35,5 @@ Choose a default camera on the robot's right side (start REP (0.2, −1.9, 1.4) 
 - hand-sim-323x (03)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Default camera locked at REP (0.6,-2.0,1.5)->(0.1,0.05,0.3) after 8 screenshot candidates; test in web/tests/unit/RobotVisualizer/cameraPose.test.ts. Not checked at a folded HOME pose (screenshots were STANDBY).

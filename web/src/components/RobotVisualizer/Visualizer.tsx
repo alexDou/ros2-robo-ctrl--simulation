@@ -183,6 +183,7 @@ export function RobotVisualizer({
       renderer,
       controlsFactoryRef.current,
       onControlsChange,
+      stage.cameraTarget,
     );
 
     // 8. Load UR5e robot model
