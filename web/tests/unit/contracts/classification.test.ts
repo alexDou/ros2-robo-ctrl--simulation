@@ -32,6 +32,10 @@ describe('Unit 7.0: required color + intact on GearEntry (hand-sim-9kw2)', () =>
     expect(contracts.BLUE_TOWER).toEqual([-0.45, 0.06, 0.0]);
     expect(contracts.SCRAP_BIN).toEqual([0.4, 0.28, 0.0]);
     expect(contracts.TOWER_CAPACITY).toBe(10);
+    expect(contracts.BELT_X_RANGE).toEqual([0.25, 0.55]);
+    expect(contracts.BELT_Y_RANGE).toEqual([-0.66, 0.95]);
+    expect(contracts.PICK_ZONE_Y_RANGE).toEqual([-0.51, 0.51]);
+    expect(contracts.BELT_CAPACITY).toBe(10);
     expect(contracts.STACK_STEP_M).toBe(0.02);
   });
 });

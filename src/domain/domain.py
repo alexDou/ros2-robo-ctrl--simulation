@@ -98,6 +98,14 @@ BLUE_TOWER: list[float] = [-0.45, 0.06, 0.0]
 
 SCRAP_BIN: list[float] = [0.4, 0.28, 0.0]
 
+BELT_X_RANGE: list[float] = [0.25, 0.55]
+
+BELT_Y_RANGE: list[float] = [-0.66, 0.95]
+
+PICK_ZONE_Y_RANGE: list[float] = [-0.51, 0.51]
+
+BELT_CAPACITY: int = 10
+
 TOWER_CAPACITY: int = 10
 
 STACK_STEP_M: float = 0.02

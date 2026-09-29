@@ -107,6 +107,18 @@ pub const BLUE_TOWER: [f64; 3] = [-0.45, 0.06, 0.0];
 /// Scrap bin coordinates in meters (REP-103 robot base frame)
 pub const SCRAP_BIN: [f64; 3] = [0.4, 0.28, 0.0];
 
+/// Conveyor belt X extent [min, max] in meters (REP-103 robot base frame); the PickZone shares it
+pub const BELT_X_RANGE: [f64; 2] = [0.25, 0.55];
+
+/// Conveyor belt Y extent [min, max] in meters; gears travel from +Y to -Y
+pub const BELT_Y_RANGE: [f64; 2] = [-0.66, 0.95];
+
+/// PickZone Y extent [min, max] in meters: the belt stretch the arm can reach at pick and approach heights
+pub const PICK_ZONE_Y_RANGE: [f64; 2] = [-0.51, 0.51];
+
+/// Maximum gears on the belt at once
+pub const BELT_CAPACITY: i64 = 10;
+
 /// Maximum gears per spindle tower
 pub const TOWER_CAPACITY: i64 = 10;
 

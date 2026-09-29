@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
+import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
+import { createConveyor } from '@/components/RobotVisualizer/assets/conveyor';
 import { createRearStand } from '@/components/RobotVisualizer/assets/rearstand';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
@@ -17,6 +19,7 @@ export interface StageAssets {
   robotGroup: THREE.Group;
   pedestalAssets: PedestalProceduralAssets;
   rearStandAssets: RearStandProceduralAssets;
+  conveyorAssets: ConveyorProceduralAssets;
   spindleTowerAssets: SpindleTowerProceduralAssets;
   spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
   scrapBinAssets: ScrapBinProceduralAssets;
@@ -65,6 +68,10 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const rearStandAssets = createRearStand();
   robotGroup.add(rearStandAssets.group);
 
+  // Static conveyor in front of the arm (belt top at Z = 0)
+  const conveyorAssets = createConveyor();
+  robotGroup.add(conveyorAssets.group);
+
   // Mount three color SpindleTowers at canonical WHITE/GREEN/BLUE coords.
   // WHITE keeps legacy position so single-tower scene renders identically.
   const whiteTower = createSpindleTower('WHITE');
@@ -86,6 +93,7 @@ export function createStage(container: HTMLDivElement): StageAssets {
     robotGroup,
     pedestalAssets,
     rearStandAssets,
+    conveyorAssets,
     spindleTowerAssets,
     spindleTowerAssetsByColor,
     scrapBinAssets,

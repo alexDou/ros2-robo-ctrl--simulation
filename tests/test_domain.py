@@ -31,10 +31,14 @@ from domain import (
 def test_workcell_constants_match_schema_single_source_of_truth():
     # hand-sim-rdbp: Stage-0 lock — generated domain owns workcell geometry.
     from domain import (
+        BELT_CAPACITY,
+        BELT_X_RANGE,
+        BELT_Y_RANGE,
         BLUE_TOWER,
         DEFAULT_GEAR_COLOR,
         GREEN_TOWER,
         MAX_SCRAP_BIN_CAPACITY,
+        PICK_ZONE_Y_RANGE,
         SCRAP_BIN,
         STACK_STEP_M,
         TOWER_CAPACITY,
@@ -42,6 +46,10 @@ def test_workcell_constants_match_schema_single_source_of_truth():
         WHITE_TOWER,
     )
 
+    assert BELT_X_RANGE == [0.25, 0.55]
+    assert BELT_Y_RANGE == [-0.66, 0.95]
+    assert PICK_ZONE_Y_RANGE == [-0.51, 0.51]
+    assert BELT_CAPACITY == 10
     assert WHITE_TOWER == [-0.45, -0.26, 0.0]
     assert GREEN_TOWER == [-0.45, -0.10, 0.0]
     assert BLUE_TOWER == [-0.45, 0.06, 0.0]
