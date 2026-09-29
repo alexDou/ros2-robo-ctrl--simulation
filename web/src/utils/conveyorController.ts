@@ -21,6 +21,8 @@ export interface ConveyorPorts {
   waitForRegistered: () => Promise<void>;
   /** Resolves once the pick finished and the arm is IDLE again. */
   waitForSettled: () => Promise<void>;
+  /** Commands the arm to the HOME pose. */
+  goHome: () => void;
 }
 
 /** Tracer bullet (Unit 8.0c): one known intact gear at the belt centre of the PickZone. */
@@ -49,6 +51,21 @@ export async function dispatchGear(ports: ConveyorPorts, gear: GearOnBelt): Prom
   await ports.waitForRegistered();
   ports.pickAndPlace({ pick_x: gear.x, pick_y: gear.y, pick_z: 0.0 });
   await ports.waitForSettled();
+}
+
+/**
+ * Sorts one halted Batch gear by gear (lead gear first), then sends the arm HOME. Each gear is
+ * taken off the belt at its turn (`takeNext`), so one moved after the halt is picked where it now
+ * stands.
+ */
+export async function processBatch(
+  ports: ConveyorPorts,
+  takeNext: () => GearOnBelt | undefined,
+): Promise<void> {
+  for (let gear = takeNext(); gear; gear = takeNext()) {
+    await dispatchGear(ports, gear);
+  }
+  ports.goHome();
 }
 
 /** TeleopClient-local hopper/belt lifecycle, separate from RobotState (ADR 0005). */

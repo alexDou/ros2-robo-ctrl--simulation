@@ -1,12 +1,13 @@
 ---
 # hand-sim-as72
 title: 'Unit 8.2c: Sort one halted Batch gear by gear'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:03Z
-updated_at: 2026-09-28T16:06:03Z
+updated_at: 2026-09-29T18:38:59Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-fe63
@@ -34,3 +35,5 @@ At HALTED the controller processes gears one at a time: SPAWN_OBJECT with the ge
 - hand-sim-zzvr (05)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Implemented processBatch + TeleopClient wiring; E2E @unit-8.2c added (unseeded Batch; seeding is a follow-up).

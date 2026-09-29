@@ -46,7 +46,8 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the 3D robot model should be fully loaded in the WebGL scene
     When the operator clicks the "Fill" button
     Then the hopper should be full
-    When the operator clicks the "Process" button
+    When the Batch composition is being recorded
+    And the operator clicks the "Process" button
     Then the belt surface should be moving
     And the belt should halt with a Batch of 3 to 10 gears inside the PickZone
     And the belt surface should be frozen
@@ -83,3 +84,14 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     When the operator clicks the "Fill" button
     Then the hopper should be full
     And Process should be enabled and Fill disabled
+
+  @conveyor @unit-8.2c
+  Scenario: A halted Batch is sorted gear by gear onto the towers and bin
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    When the operator clicks the "Fill" button
+    And the Batch composition is being recorded
+    And the operator clicks the "Process" button
+    Then the belt should halt with a Batch of 3 to 10 gears inside the PickZone
+    And the halted Batch is sorted gear by gear
