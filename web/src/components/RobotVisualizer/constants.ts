@@ -37,6 +37,9 @@ export const SPINDLE_TOWER_COORDS: SpindleTowerCoords = SPINDLE_TOWERS.WHITE;
 
 export const TOWER_CAPACITY: number = DOMAIN_TOWER_CAPACITY;
 
+/** Tower stack fade-out after auto-empty; the arm does not wait for it. */
+export const TOWER_FADE_MS = 1500;
+
 export const SCRAP_BIN_COORDS: SpindleTowerCoords = toCoords(SCRAP_BIN);
 
 export const BELT_CAPACITY: number = DOMAIN_BELT_CAPACITY;

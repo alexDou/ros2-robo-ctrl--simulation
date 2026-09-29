@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createServer, ViteDevServer } from 'vite';
-import { DEFAULT_ROBOT_ID } from '../../../domain/contracts';
+import { DEFAULT_ROBOT_ID, type GearEntry } from '../../../domain/contracts';
 import { MockGateway } from './mock_gateway';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -99,6 +99,10 @@ export class ServiceHarness {
 
   public clearCapturedLogs(): void {
     this.mockGateway?.clearCapturedLogs();
+  }
+
+  public seedProcessed(entries: GearEntry[]): void {
+    this.mockGateway?.seedProcessed(entries);
   }
 
   public reset(): void {

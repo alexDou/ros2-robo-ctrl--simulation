@@ -15,7 +15,6 @@ from robot_control_interfaces.srv import (
 from workcell_manager.workcell_node import WorkcellNode
 
 from domain import (
-    GREEN_TOWER,
     MAX_SCRAP_BIN_CAPACITY,
     SCRAP_BIN,
     STACK_STEP_M,
@@ -174,21 +173,18 @@ def test_clear_wipes_towers_plus_bin_and_restarts_pile():
         node.destroy_node()
 
 
-def test_tower_fifo_still_pins_at_10_after_bin_recycle():
+def test_tower_still_empties_at_10_after_bin_recycle():
     node = WorkcellNode()
     try:
         for _ in range(MAX_SCRAP_BIN_CAPACITY):
             _cycle(node, color="WHITE", intact=False)
         _cycle(node, color="BLUE", intact=False)
-        for _ in range(10):
+        for _ in range(9):
             _cycle(node, color="GREEN", intact=True)
         res = _cycle(node, color="GREEN", intact=True)
         assert res.overflow_occurred is True
         assert res.slot_index == 9
-        greens = [e for e in node.processed if e["color"] == "GREEN"]
-        assert len(greens) == 10
-        for i, entry in enumerate(greens):
-            assert pytest.approx(entry["z"]) == GREEN_TOWER[2] + i * STACK_STEP_M
+        assert [e for e in node.processed if e["color"] == "GREEN"] == []
         assert len(_bin_entries(node)) == 1
         assert pytest.approx(_bin_entries(node)[0]["x"]) == SCRAP_BIN[0]
     finally:

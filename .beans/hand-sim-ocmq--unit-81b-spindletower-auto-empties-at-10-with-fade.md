@@ -1,12 +1,13 @@
 ---
 # hand-sim-ocmq
 title: 'Unit 8.1b: SpindleTower auto-empties at 10 with fade'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:04Z
-updated_at: 2026-09-28T16:06:04Z
+updated_at: 2026-09-29T14:04:03Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-rmju
@@ -32,3 +33,5 @@ The commit that brings a tower to TOWER_CAPACITY (10) empties it (count → 0), 
 - hand-sim-rmju (04)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Done: 10th commit empties tower (workcell + mock), TeleopClient fade 1.5 s, n/10 counters overlay, E2E scenario. verify GREEN.
