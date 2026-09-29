@@ -566,10 +566,7 @@ export class MockGateway {
       }
 
       case 'CLEAR_WORKSPACE': {
-        if (this.robotState === 'FAULT') {
-          this.log('[EDGE] Clear workspace rejected: robot in FAULT state');
-          break;
-        }
+        // Like the real edge, only EXECUTING refuses; FAULT and connect-time resets must land.
         this.spawned = [];
         this.inProgress = [];
         this.processed = [];

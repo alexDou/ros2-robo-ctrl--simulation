@@ -1,12 +1,13 @@
 ---
 # hand-sim-try7
 title: 'Unit 8.3b: Full reset on EmergencyStop, FAULT, reload and reconnect'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:04Z
-updated_at: 2026-09-28T16:06:04Z
+updated_at: 2026-09-29T20:08:04Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-as72
@@ -32,3 +33,5 @@ On FAULT (incl. after EmergencyStop) and on every TeleopClient connect, the cont
 - hand-sim-as72 (08)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Implemented: TeleopSession sends CLEAR_WORKSPACE on connect and on entering FAULT (not IDLE-gated); local reset already existed in useConveyor. Vitest, pytest and 2 E2E scenarios added; mock gateway now accepts clear in FAULT like the real edge.

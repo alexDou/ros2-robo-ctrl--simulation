@@ -98,6 +98,11 @@ export function useTeleopSession({
       // derives from snapshot (see TeleopClient workcellHasGears).
       setHasActiveGear(false);
     }
+    if (prev !== 'FAULT' && current === 'FAULT' && wsRef.current?.readyState === WebSocket.OPEN) {
+      // FAULT (incl. EmergencyStop) = full reset (Q17); the backend clear is not IDLE-gated.
+      wsRef.current.send(serializeCommand(createClearWorkspaceCommand({ senderId: 'ui-client' })));
+      setHasActiveGear(false);
+    }
     prevRobotStateRef.current = current;
   }, [robotState]);
 
@@ -118,6 +123,8 @@ export function useTeleopSession({
     ws.onopen = () => {
       if (isCleaningUp.current) return;
       setConnectionState('CONNECTED');
+      // Reload/reconnect = system reset (Q29): the edge may still hold a previous session's gears.
+      ws.send(serializeCommand(createClearWorkspaceCommand({ senderId: 'ui-client' })));
       setHasEverConnected(true);
       setConflictReason(null);
     };

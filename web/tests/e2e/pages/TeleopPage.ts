@@ -484,6 +484,31 @@ export class TeleopPage {
     await expect(this.connectionBadge).toHaveText(/CONNECTED \/ IDLE/);
   }
 
+  async expectSomeGearsSorted(): Promise<void> {
+    await expect.poll(() => this.getTowerGearCount(), { timeout: 60000 }).toBeGreaterThan(0);
+  }
+
+  async reload(): Promise<void> {
+    await this.page.reload();
+  }
+
+  async expectEverythingEmpty(): Promise<void> {
+    await expect
+      .poll(() =>
+        this.page.evaluate(() => ({
+          hopper: window.__robot_visualizer!.getHopperFillLevel(),
+          belt: window.__robot_visualizer!.getBeltGearPositions().length,
+          towers: window.__robot_visualizer!.getTowerGearCount(),
+        })),
+      )
+      .toEqual({ hopper: 0, belt: 0, towers: 0 });
+    for (const color of ['WHITE', 'GREEN', 'BLUE']) {
+      await this.expectTowerCounter(color, `${color}: 0/10`);
+    }
+    await expect(this.fillButton).toBeEnabled();
+    await expect(this.processButton).toBeDisabled();
+  }
+
   async expectBeltFrozen(): Promise<void> {
     const a = await this.page.evaluate(() => window.__robot_visualizer!.getBeltScroll());
     await this.page.waitForTimeout(400);
