@@ -100,6 +100,45 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(scene.getObjectByName('workcell-reticle')).toBeUndefined();
     });
 
+    it('mounts a RearStand under the towers with its top flush at Z = 0', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />,
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const stand = visualizer.getRearStandMesh() as THREE.Group;
+      expect(stand.name).toBe('rear-stand');
+      expect(stand.parent?.name).toBe('robot-root');
+
+      const top = stand.getObjectByName('rear-stand-top') as THREE.Mesh<THREE.BoxGeometry>;
+      expect(top.position.z + top.geometry.parameters.depth / 2).toBeCloseTo(0.0, 4);
+
+      // Every tower base sits on the slab footprint.
+      for (const tower of visualizer.getSpindleTowerMeshes() as THREE.Group[]) {
+        expect(Math.abs(tower.position.x - stand.position.x)).toBeLessThanOrEqual(
+          top.geometry.parameters.width / 2,
+        );
+        expect(Math.abs(tower.position.y - stand.position.y)).toBeLessThanOrEqual(
+          top.geometry.parameters.height / 2,
+        );
+      }
+    });
+
     it('mounts dedicated robot pedestal table under robot base with flange and column', async () => {
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {

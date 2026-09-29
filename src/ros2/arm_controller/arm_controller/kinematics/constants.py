@@ -2,6 +2,8 @@
 
 import math
 
+from domain import WHITE_TOWER
+
 # Standard UR5e Denavit-Hartenberg Parameters (meters and radians)
 UR5E_DH_D: tuple[float, ...] = (0.1625, 0.0, 0.0, 0.1333, 0.0997, 0.0996)
 UR5E_DH_A: tuple[float, ...] = (0.0, -0.425, -0.3922, 0.0, 0.0, 0.0)
@@ -21,7 +23,11 @@ DEFAULT_TCP_OFFSET_M: float = (
 )
 MIN_REACH_M: float = 0.20  # Inner reachability limit / base clearance boundary
 MAX_REACH_M: float = 0.85  # Outer operational boundary / reach limit
-DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (0.68, -0.16, 0.0)
+DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (
+    WHITE_TOWER[0],
+    WHITE_TOWER[1],
+    WHITE_TOWER[2],
+)
 APPROACH_LIFT_OFFSET_M: float = 0.10  # Vertical approach and lift clearance offset
 
 # Canonical UR5e joint names matching ROS2 ros2_control / URDF

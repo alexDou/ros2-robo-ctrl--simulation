@@ -3,6 +3,8 @@
  * Matches ROS2 arm_controller/kinematics.py analytical implementation.
  */
 
+import { WHITE_TOWER } from '../../../domain/contracts';
+
 export const UR5E_DH_D: readonly number[] = [0.1625, 0.0, 0.0, 0.1333, 0.0997, 0.0996];
 export const UR5E_DH_A: readonly number[] = [0.0, -0.425, -0.3922, 0.0, 0.0, 0.0];
 export const UR5E_DH_ALPHA: readonly number[] = [
@@ -17,7 +19,7 @@ export const UR5E_DH_ALPHA: readonly number[] = [
 export const DEFAULT_TCP_OFFSET_M = 0.108;
 export const MIN_REACH_M = 0.2;
 export const MAX_REACH_M = 0.85;
-export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [0.68, -0.16, 0.0];
+export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [...WHITE_TOWER];
 export const APPROACH_LIFT_OFFSET_M = 0.1;
 
 export const HOME_JOINT_POSITIONS: readonly number[] = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];

@@ -96,13 +96,13 @@ pub const VALID_GEAR_COLORS: [&str; 3] = [
 pub const DEFAULT_ROBOT_ID: &str = "arm-ur5";
 
 /// White spindle tower base coordinates in meters (REP-103 robot base frame)
-pub const WHITE_TOWER: [f64; 3] = [0.68, -0.16, 0.0];
+pub const WHITE_TOWER: [f64; 3] = [-0.45, -0.26, 0.0];
 
 /// Green spindle tower base coordinates in meters (REP-103 robot base frame)
-pub const GREEN_TOWER: [f64; 3] = [0.68, 0.0, 0.0];
+pub const GREEN_TOWER: [f64; 3] = [-0.45, -0.1, 0.0];
 
 /// Blue spindle tower base coordinates in meters (REP-103 robot base frame)
-pub const BLUE_TOWER: [f64; 3] = [0.68, 0.16, 0.0];
+pub const BLUE_TOWER: [f64; 3] = [-0.45, 0.06, 0.0];
 
 /// Scrap bin coordinates in meters (REP-103 robot base frame)
 pub const SCRAP_BIN: [f64; 3] = [0.4, 0.28, 0.0];

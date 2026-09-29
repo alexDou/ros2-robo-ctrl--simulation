@@ -66,9 +66,9 @@ fn test_unit70_required_color_intact() {
 
     #[allow(clippy::float_cmp)] // comparing codegen literals for exactness, not computed values
     {
-        assert_eq!(WHITE_TOWER, [0.68, -0.16, 0.0]);
-        assert_eq!(GREEN_TOWER, [0.68, 0.0, 0.0]);
-        assert_eq!(BLUE_TOWER, [0.68, 0.16, 0.0]);
+        assert_eq!(WHITE_TOWER, [-0.45, -0.26, 0.0]);
+        assert_eq!(GREEN_TOWER, [-0.45, -0.10, 0.0]);
+        assert_eq!(BLUE_TOWER, [-0.45, 0.06, 0.0]);
         assert_eq!(SCRAP_BIN, [0.4, 0.28, 0.0]);
     }
     assert_eq!(TOWER_CAPACITY, 10);
