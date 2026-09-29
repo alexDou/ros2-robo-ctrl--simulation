@@ -36,10 +36,12 @@ function send(ws: WebSocket, id: string, type: string, payload: object): void {
     }),
   );
 }
-// Spawn registers the gear, then the client dispatches the pick explicitly.
+// Spawn registers the gear, then the client dispatches the pick explicitly (intact gears only:
+// the workcell books a defective gear to the ScrapBin at spawn, no pick is ever sent).
 function sendSpawn(ws: WebSocket, id: string, x = 0.5, y = 0.0): void {
   const cls = nextClassification();
   send(ws, id, 'SPAWN_OBJECT', { x, y, z: 0.0, object_type: 'GEAR', ...cls });
+  if (!cls.intact) return;
   send(ws, `${id}-pick`, 'PICK_AND_PLACE_TARGET', { pick_x: x, pick_y: y, pick_z: 0.0 });
 }
 function sendClear(ws: WebSocket, id: string): void {
@@ -90,16 +92,17 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
     const ws = await openWs(gateway);
     try {
       const seen: Array<[string, boolean]> = [];
-      let prevId: string | null = null;
+      let prevIds = '';
       for (let k = 0; k < 4; k++) {
         sendSpawn(ws, `seq-${k}`);
-        await waitFor(
-          () =>
-            gateway.getWorkcellSnapshot().spawned.length === 1 &&
-            gateway.getWorkcellSnapshot().spawned[0].id !== prevId,
-        );
-        const e = gateway.getWorkcellSnapshot().spawned[0];
-        prevId = e.id;
+        const ids = () => {
+          const snap = gateway.getWorkcellSnapshot();
+          return [...snap.spawned, ...snap.processed].map((g) => g.id).join(',');
+        };
+        await waitFor(() => ids() !== prevIds);
+        prevIds = ids();
+        const snap = gateway.getWorkcellSnapshot();
+        const e = [...snap.spawned, ...snap.processed].find((g) => g.id === `gear-seed-${k + 1}`)!;
         seen.push([e.color, e.intact]);
       }
       expect(seen).toEqual([
@@ -150,27 +153,24 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       ws.close();
     }
   });
-  it('defective BLUE deposits at scrap bin with label DEFECTIVE', async () => {
+  it('defective BLUE is booked to the scrap bin at spawn without arm motion', async () => {
     seedClassification([{ color: 'BLUE', intact: false }]);
     const ws = await openWs(gateway);
-    const labels: string[] = [];
+    const states: string[] = [];
     ws.on('message', (data) => {
       const f = JSON.parse(data.toString());
-      if (f.robot_state && f.inference_metrics?.detected_object)
-        labels.push(f.inference_metrics.detected_object);
+      if (f.robot_state) states.push(f.robot_state);
     });
     try {
       sendSpawn(ws, 'bin-1');
-      await waitFor(
-        () =>
-          gateway.getRobotState() === 'IDLE' &&
-          gateway.getWorkcellSnapshot().processed.length === 1,
-      );
-      const e = gateway.getWorkcellSnapshot().processed[0];
+      await waitFor(() => gateway.getWorkcellSnapshot().processed.length === 1);
+      const snap = gateway.getWorkcellSnapshot();
+      const e = snap.processed[0];
       expect(e.x).toBeCloseTo(SCRAP_BIN[0], 4);
       expect(e.y).toBeCloseTo(SCRAP_BIN[1], 4);
       expect(e.intact).toBe(false);
-      expect(labels).toContain('DEFECTIVE');
+      expect(snap.spawned).toHaveLength(0);
+      expect(states).not.toContain('EXECUTING');
     } finally {
       ws.close();
     }
@@ -282,7 +282,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       id: `def-${k}`,
       x: SCRAP_BIN[0],
       y: SCRAP_BIN[1],
-      z: k * STACK_STEP_M,
+      z: SCRAP_BIN[2] + k * STACK_STEP_M,
       color: 'GREEN' as const,
       intact: false as const,
       origin_x: 0.5,
@@ -294,17 +294,15 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
     const ws = await openWs(gateway);
     try {
       sendSpawn(ws, 'bin-cap-1');
-      await waitFor(
-        () =>
-          gateway.getRobotState() === 'IDLE' &&
-          gateway
-            .getWorkcellSnapshot()
-            .processed.some((e) => !e.intact && e.z === 0 && e.id !== 'def-0'),
+      await waitFor(() =>
+        gateway
+          .getWorkcellSnapshot()
+          .processed.some((e) => !e.intact && e.z === SCRAP_BIN[2] && e.id !== 'def-0'),
       );
       const snap = gateway.getWorkcellSnapshot();
       const rejects = snap.processed.filter((e) => !e.intact);
       expect(rejects).toHaveLength(1);
-      expect(rejects[0].z).toBeCloseTo(0, 6);
+      expect(rejects[0].z).toBeCloseTo(SCRAP_BIN[2], 6);
       expect(snap.processed.map((e) => e.id)).toContain('white-keep');
     } finally {
       ws.close();

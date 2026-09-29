@@ -35,11 +35,11 @@ def _spawn(node, x=0.45, y=0.10, z=0.0, **classification):
 def test_spawn_stores_classification():
     node = WorkcellNode()
     try:
-        out = _spawn(node, color="GREEN", intact=False)
+        out = _spawn(node, color="GREEN", intact=True)
         assert out.success is True
         entry = node.spawned[0]
         assert entry["color"] == "GREEN"
-        assert entry["intact"] is False
+        assert entry["intact"] is True
     finally:
         node.destroy_node()
 
@@ -69,13 +69,13 @@ def test_spawn_rejects_invalid_color():
 def test_grasp_preserves_classification_and_origin():
     node = WorkcellNode()
     try:
-        out = _spawn(node, x=0.45, y=0.10, z=0.0, color="BLUE", intact=False)
+        out = _spawn(node, x=0.45, y=0.10, z=0.0, color="BLUE", intact=True)
         res = node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         assert res.success is True
         entry = node.in_progress[0]
         assert entry["id"] == out.gear_id
         assert entry["color"] == "BLUE"
-        assert entry["intact"] is False
+        assert entry["intact"] is True
         assert (entry["origin_x"], entry["origin_y"], entry["origin_z"]) == (0.45, 0.10, 0.0)
     finally:
         node.destroy_node()
@@ -119,14 +119,14 @@ def test_get_drop_slot_accepts_classification_response_unchanged():
 def test_snapshot_carries_classification():
     node = WorkcellNode()
     try:
-        _spawn(node, color="GREEN", intact=False)
+        _spawn(node, color="GREEN", intact=True)
         snap = node.get_snapshot()
         assert snap["spawned"][0]["color"] == "GREEN"
-        assert snap["spawned"][0]["intact"] is False
+        assert snap["spawned"][0]["intact"] is True
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
         snap = node.get_snapshot()
         assert snap["processed"][0]["color"] == "GREEN"
-        assert snap["processed"][0]["intact"] is False
+        assert snap["processed"][0]["intact"] is True
     finally:
         node.destroy_node()

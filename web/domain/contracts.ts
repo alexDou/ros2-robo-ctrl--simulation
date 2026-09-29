@@ -191,7 +191,7 @@ export const GREEN_TOWER = [-0.45, -0.1, 0.0] as const;
 export const BLUE_TOWER = [-0.45, 0.06, 0.0] as const;
 
 /** Scrap bin coordinates in meters (REP-103 robot base frame) */
-export const SCRAP_BIN = [0.4, 0.28, 0.0] as const;
+export const SCRAP_BIN = [0.4, -0.75, -0.05] as const;
 
 /** Conveyor belt X extent [min, max] in meters (REP-103 robot base frame); the PickZone shares it */
 export const BELT_X_RANGE = [0.25, 0.55] as const;

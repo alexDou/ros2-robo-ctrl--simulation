@@ -18,7 +18,7 @@ from robot_control_interfaces.srv import (
 )
 from workcell_manager.workcell_node import WorkcellNode
 
-from domain import GREEN_TOWER, SCRAP_BIN, WHITE_TOWER
+from domain import BLUE_TOWER, GREEN_TOWER, WHITE_TOWER
 
 
 @pytest.fixture(autouse=True)
@@ -60,12 +60,12 @@ def test_spawn_rejects_unknown_color():
 def test_spawn_accepts_explicit_classification():
     node = WorkcellNode()
     try:
-        out = _spawn(node, color="GREEN", intact=False)
+        out = _spawn(node, color="GREEN", intact=True)
         assert out.success is True
         assert out.gear_id != ""
         entry = node.spawned[0]
         assert entry["color"] == "GREEN"
-        assert entry["intact"] is False
+        assert entry["intact"] is True
     finally:
         node.destroy_node()
 
@@ -96,13 +96,13 @@ def test_bare_drop_slot_follows_active_gear():
         assert pytest.approx(slot.drop_coords.y) == GREEN_TOWER[1]
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        out2 = _spawn(node, color="BLUE", intact=False)
+        out2 = _spawn(node, color="BLUE", intact=True)
         assert out2.success is True
         slot2 = node.handle_get_drop_slot(
             GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
         )
-        assert pytest.approx(slot2.drop_coords.x) == SCRAP_BIN[0]
-        assert pytest.approx(slot2.drop_coords.y) == SCRAP_BIN[1]
+        assert pytest.approx(slot2.drop_coords.x) == BLUE_TOWER[0]
+        assert pytest.approx(slot2.drop_coords.y) == BLUE_TOWER[1]
     finally:
         node.destroy_node()
 

@@ -53,7 +53,7 @@ def test_workcell_constants_match_schema_single_source_of_truth():
     assert WHITE_TOWER == [-0.45, -0.26, 0.0]
     assert GREEN_TOWER == [-0.45, -0.10, 0.0]
     assert BLUE_TOWER == [-0.45, 0.06, 0.0]
-    assert SCRAP_BIN == [0.4, 0.28, 0.0]
+    assert SCRAP_BIN == [0.4, -0.75, -0.05]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02
     assert MAX_SCRAP_BIN_CAPACITY == 100
@@ -746,6 +746,6 @@ def test_unit70_required_color_intact():
     assert WHITE_TOWER == [-0.45, -0.26, 0.0]
     assert GREEN_TOWER == [-0.45, -0.10, 0.0]
     assert BLUE_TOWER == [-0.45, 0.06, 0.0]
-    assert SCRAP_BIN == [0.4, 0.28, 0.0]
+    assert SCRAP_BIN == [0.4, -0.75, -0.05]
     assert TOWER_CAPACITY == 10
     assert STACK_STEP_M == 0.02

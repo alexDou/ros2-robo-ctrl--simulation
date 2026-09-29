@@ -2,6 +2,10 @@ import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { CANONICAL_POSES, PoseName, GREEN_TOWER } from '@contracts';
 import { CustomWorld } from '../support/world';
+import {
+  SCRAP_BIN_EMPTY_COLOR,
+  SCRAP_BIN_FILLED_COLOR,
+} from '../../../src/components/RobotVisualizer/assets/scrapbin';
 
 When(
   'the operator clicks the {string} pose button',
@@ -149,4 +153,24 @@ When('the operator clicks the "Process" button', async function (this: CustomWor
 Then('the intact GREEN gear should rest on the GREEN tower', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectSingleGearOnTower(GREEN_TOWER);
+});
+
+When('a defective gear is spawned', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.dispatchDefectiveSpawn();
+});
+
+Then('the scrap bin should be green', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectScrapBinFloorHex(SCRAP_BIN_EMPTY_COLOR);
+});
+
+Then('the scrap bin should turn red', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectScrapBinFloorHex(SCRAP_BIN_FILLED_COLOR);
+});
+
+Then('the arm should not have moved', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectEventLogNotContains('State: EXECUTING');
 });

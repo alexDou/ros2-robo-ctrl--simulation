@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import { disposeMaterial } from '@/utils/three/dispose';
 import { SCRAP_BIN_COORDS } from '@/components/RobotVisualizer/constants';
 
+/** Binary bin state colors: green while empty, red once it holds a defective gear. */
+export const SCRAP_BIN_EMPTY_COLOR = 0x16a34a;
+export const SCRAP_BIN_FILLED_COLOR = 0xdc2626;
+
 export interface ScrapBinProceduralAssets {
   group: THREE.Group;
   fillMesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;
@@ -16,9 +20,10 @@ export function createScrapBin(): ScrapBinProceduralAssets {
   group.position.set(SCRAP_BIN_COORDS.x, SCRAP_BIN_COORDS.y, SCRAP_BIN_COORDS.z);
 
   // Open box/chute: floor + 4 low walls (0.12m x 0.10m footprint, 0.05m walls).
+  // Floor and walls share the binary green/red state color.
   const floorGeom = new THREE.BoxGeometry(0.12, 0.1, 0.006);
   const floorMat = new THREE.MeshStandardMaterial({
-    color: 0x7f1d1d,
+    color: SCRAP_BIN_EMPTY_COLOR,
     metalness: 0.4,
     roughness: 0.6,
   });
@@ -28,7 +33,7 @@ export function createScrapBin(): ScrapBinProceduralAssets {
   group.add(floorMesh);
 
   const wallMat = new THREE.MeshStandardMaterial({
-    color: 0x991b1b,
+    color: SCRAP_BIN_EMPTY_COLOR,
     metalness: 0.4,
     roughness: 0.55,
   });
@@ -63,6 +68,9 @@ export function createScrapBin(): ScrapBinProceduralAssets {
   const setHasItems = (next: boolean) => {
     hasItems = next;
     fillMesh.visible = next;
+    const color = next ? SCRAP_BIN_FILLED_COLOR : SCRAP_BIN_EMPTY_COLOR;
+    floorMat.color.setHex(color);
+    wallMat.color.setHex(color);
   };
 
   const dispose = () => {

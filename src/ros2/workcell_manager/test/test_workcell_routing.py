@@ -1,5 +1,7 @@
 """4-destination routing tests for WorkcellNode (hand-sim-473u, Unit 7.1b)."""
 
+from types import SimpleNamespace
+
 import pytest
 import rclpy
 from geometry_msgs.msg import Point
@@ -40,6 +42,15 @@ def _spawn(node, x=0.45, y=0.10, z=0.0, **classification):
 def _cycle(node, x=0.45, y=0.10, z=0.0, **classification):
     out = _spawn(node, x, y, z, **classification)
     assert out.success is True
+    if classification.get("intact") is False:
+        # Defective gears are booked to the ScrapBin at spawn; the arm never carries them.
+        entry = node.processed[-1]
+        return SimpleNamespace(
+            success=True,
+            slot_index=round((entry["z"] - SCRAP_BIN[2]) / STACK_STEP_M),
+            overflow_occurred=False,
+            drop_coords=Point(x=entry["x"], y=entry["y"], z=entry["z"]),
+        )
     node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
     return node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
 
@@ -122,7 +133,7 @@ def test_intact_false_any_color_routes_to_bin_capped():
             assert slot.overflow_occurred is False
             assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN[0]
             assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN[1]
-            assert pytest.approx(slot.drop_coords.z) == k * STACK_STEP_M
+            assert pytest.approx(slot.drop_coords.z) == SCRAP_BIN[2] + k * STACK_STEP_M
             res = _cycle(node, color=color, intact=False)
             assert res.success is True
             assert res.slot_index == k
@@ -138,7 +149,9 @@ def test_intact_false_any_color_routes_to_bin_capped():
         slot = _reserve(node, color="WHITE", intact=False)
         assert slot.slot_index == 3 + TOWER_CAPACITY
         assert slot.overflow_occurred is False
-        assert pytest.approx(slot.drop_coords.z) == (3 + TOWER_CAPACITY) * STACK_STEP_M
+        assert (
+            pytest.approx(slot.drop_coords.z) == SCRAP_BIN[2] + (3 + TOWER_CAPACITY) * STACK_STEP_M
+        )
         # 7.3e owns the cap-100 recycle edge; this routing test stays below cap.
     finally:
         node.destroy_node()
@@ -175,10 +188,10 @@ def test_default_reservation_follows_active_entry():
         assert pytest.approx(slot.drop_coords.y) == GREEN_TOWER[1]
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        _spawn(node, color="BLUE", intact=False)
+        _spawn(node, color="BLUE", intact=True)
         slot = _reserve(node)
-        assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN[0]
-        assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN[1]
+        assert pytest.approx(slot.drop_coords.x) == BLUE_TOWER[0]
+        assert pytest.approx(slot.drop_coords.y) == BLUE_TOWER[1]
         assert slot.overflow_occurred is False
     finally:
         node.destroy_node()

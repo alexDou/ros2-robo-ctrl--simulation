@@ -48,3 +48,13 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     Then the event log should record state transition to "EXECUTING"
     And the event log should record state transition to "IDLE"
     And the intact GREEN gear should rest on the GREEN tower
+
+  @conveyor @unit-8.1a
+  Scenario: A defective gear is booked to the scrap bin without arm motion
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    And the scrap bin should be green
+    When a defective gear is spawned
+    Then the scrap bin should turn red
+    And the arm should not have moved

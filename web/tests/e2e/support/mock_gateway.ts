@@ -19,6 +19,7 @@ import {
   type RobotState,
   type RobotTelemetryEvent,
   type ErrorFrame,
+  MAX_SCRAP_BIN_CAPACITY,
 } from '../../../domain/contracts';
 import { PickAndPlaceTrajectoryGenerator, type WaypointStep } from './kinematics';
 
@@ -465,6 +466,13 @@ export class MockGateway {
         const z = Number(cmd.payload?.z ?? 0.0);
         this.spawnCounter += 1;
         const id = `gear-seed-${this.spawnCounter}`;
+        if (!intact) {
+          // Defective gears are booked to the ScrapBin at spawn; the arm is never commanded.
+          this.bookScrap(id, color);
+          this.log(`[EDGE] Defective GEAR ${id} booked to ScrapBin`);
+          this.sendTelemetryToAll(cmd.command_id);
+          break;
+        }
         this.spawned = [{ id, x, y, z, color, intact }];
         this.inProgress = [];
         this.activeId = id;
@@ -555,6 +563,22 @@ export class MockGateway {
         } catch {}
       }
     }
+  }
+
+  /** Mirrors WorkcellNode._book_scrap_locked: cap-100 recycle, then pile at the next bin slot. */
+  private bookScrap(id: string, color: GearColor): void {
+    if (this.processed.filter((e) => !e.intact).length >= MAX_SCRAP_BIN_CAPACITY) {
+      this.processed = this.processed.filter((e) => e.intact);
+    }
+    const fill = this.processed.filter((e) => !e.intact).length;
+    this.processed.push({
+      id,
+      x: SCRAP_BIN[0],
+      y: SCRAP_BIN[1],
+      z: SCRAP_BIN[2] + fill * STACK_STEP_M,
+      color,
+      intact: false,
+    });
   }
 
   private executePickAndPlaceSequence(

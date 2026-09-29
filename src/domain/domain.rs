@@ -105,7 +105,7 @@ pub const GREEN_TOWER: [f64; 3] = [-0.45, -0.1, 0.0];
 pub const BLUE_TOWER: [f64; 3] = [-0.45, 0.06, 0.0];
 
 /// Scrap bin coordinates in meters (REP-103 robot base frame)
-pub const SCRAP_BIN: [f64; 3] = [0.4, 0.28, 0.0];
+pub const SCRAP_BIN: [f64; 3] = [0.4, -0.75, -0.05];
 
 /// Conveyor belt X extent [min, max] in meters (REP-103 robot base frame); the PickZone shares it
 pub const BELT_X_RANGE: [f64; 2] = [0.25, 0.55];
