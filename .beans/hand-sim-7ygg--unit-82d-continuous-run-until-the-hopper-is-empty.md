@@ -1,12 +1,13 @@
 ---
 # hand-sim-7ygg
 title: 'Unit 8.2d: Continuous run until the hopper is empty, with fall-off and flush'
-status: todo
+status: completed
 type: task
+priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:04Z
-updated_at: 2026-09-28T16:06:04Z
+updated_at: 2026-09-29T19:34:19Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-as72
@@ -32,3 +33,5 @@ After a Batch the belt restarts automatically; defective leftovers ride off the 
 - hand-sim-as72 (08)
 
 Spec + decision log: `support_files/specs/unit8/`.
+
+Delivered by 8c014b3 (runDeck batch cycling, carry-over fall-off, flush run, EMPTY gating; unit + seeded E2E). verify: GREEN, no further code needed.
