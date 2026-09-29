@@ -352,5 +352,6 @@ export function useTeleopSession({
     pickAndPlace,
     clearWorkspace,
     sendPing,
+    pushProbeLog,
   };
 }

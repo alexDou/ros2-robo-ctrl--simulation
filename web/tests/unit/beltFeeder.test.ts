@@ -112,3 +112,53 @@ describe('Unit 8.2b: belt feeds one Batch and halts (hand-sim-fe63)', () => {
     expect(feeder.scroll()).toBe(s2);
   });
 });
+
+describe('Unit 8.2c: sorting and carrying defectives (hand-sim-as72)', () => {
+  it('next() hands out the lead gear first; intact leaves the belt, defective stays on it', () => {
+    const { feeder } = runToHalt(3);
+    const batch = [...feeder.gears()];
+    const taken = [];
+    for (let g = feeder.next(); g; g = feeder.next()) taken.push(g);
+    expect(taken.map((g) => g.y)).toEqual(batch.map((g) => g.y));
+    expect(feeder.gears().every((g) => !g.intact)).toBe(true);
+    expect(feeder.gears()).toHaveLength(batch.filter((g) => !g.intact).length);
+  });
+
+  it('next() returns the live gear so a gear moved after the halt is seen at its turn', () => {
+    const { feeder } = runToHalt(3);
+    feeder.gears()[1].x = 0.31;
+    feeder.next();
+    expect(feeder.next()!.x).toBe(0.31);
+  });
+
+  it('the next run carries leftover defectives off the exit end and continues the belt scroll', () => {
+    const deck = buildDeck(5);
+    const first = createBeltFeeder(deck, 5);
+    while (first.status() === 'FEEDING') first.step(0.02);
+    while (first.next());
+    const leftovers = first.gears().length;
+    const second = createBeltFeeder(first.remaining(), 6, {
+      gears: first.gears(),
+      scroll: first.scroll(),
+    });
+    expect(second.scroll()).toBe(first.scroll());
+    expect(second.gears()).toHaveLength(leftovers);
+    let gone = leftovers === 0;
+    while (second.status() === 'FEEDING') {
+      second.step(0.02);
+      if (!gone && second.gears().length < leftovers) gone = true;
+    }
+    // Carried gears never stop the new Batch: it still halts with its lead gear at the edge.
+    expect(gone).toBe(true);
+    expect(second.gears().every((g) => g.y >= PICK_ZONE_Y_RANGE[0] - 1e-9)).toBe(true);
+  });
+
+  it('with an empty hopper the run only flushes: it halts once the carried gears have left', () => {
+    const carried = [{ color: 'WHITE' as const, intact: false, x: 0.4, y: 0.2 }];
+    const flush = createBeltFeeder([], 1, { gears: carried, scroll: 0 });
+    expect(flush.status()).toBe('FEEDING');
+    while (flush.status() === 'FEEDING') flush.step(0.02);
+    expect(flush.gears()).toHaveLength(0);
+    expect(createBeltFeeder([], 1).status()).toBe('HALTED');
+  });
+});

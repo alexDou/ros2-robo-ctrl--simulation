@@ -57,6 +57,27 @@ interface ActiveTrajectory {
   durationMs: number;
 }
 
+export interface ReceivedCommand {
+  /** Arrival time, epoch ms. */
+  atMs: number;
+  type: string;
+  payload: Record<string, unknown>;
+}
+
+/** Arm timing of the simulated edge; tests speed it up through `setMotionSpeed`. */
+interface MotionTiming {
+  pickStartMs: number;
+  pickStepMs: number;
+  pickSettleMs: number;
+  poseMs: number;
+}
+const DEFAULT_MOTION_TIMING: MotionTiming = {
+  pickStartMs: 50,
+  pickStepMs: 70,
+  pickSettleMs: 600,
+  poseMs: 800,
+};
+
 export class MockGateway {
   public port: number;
   public readonly host: string;
@@ -94,6 +115,8 @@ export class MockGateway {
   private pnpTimeout: NodeJS.Timeout | null = null;
   private autoExecutePickAndPlace = true;
   private spawnCounter = 0;
+  private receivedCommands: ReceivedCommand[] = [];
+  private motionTiming: MotionTiming = { ...DEFAULT_MOTION_TIMING };
 
   constructor(options: MockGatewayOptions = {}) {
     this.port = options.port ?? 8085;
@@ -146,7 +169,24 @@ export class MockGateway {
     this.autoExecutePickAndPlace = enabled;
   }
 
+  /** Every RobotCommand the gateway accepted, in arrival order (the contract-level record). */
+  public getReceivedCommands(): readonly ReceivedCommand[] {
+    return this.receivedCommands;
+  }
+
+  /** Runs the simulated arm `factor` times faster than real time. */
+  public setMotionSpeed(factor: number): void {
+    this.motionTiming = {
+      pickStartMs: DEFAULT_MOTION_TIMING.pickStartMs / factor,
+      pickStepMs: DEFAULT_MOTION_TIMING.pickStepMs / factor,
+      pickSettleMs: DEFAULT_MOTION_TIMING.pickSettleMs / factor,
+      poseMs: DEFAULT_MOTION_TIMING.poseMs / factor,
+    };
+  }
+
   public reset(): void {
+    this.receivedCommands = [];
+    this.motionTiming = { ...DEFAULT_MOTION_TIMING };
     this.cancelTrajectory();
     if (this.palmTimeout) {
       clearTimeout(this.palmTimeout);
@@ -384,6 +424,11 @@ export class MockGateway {
   }
 
   private executeCommand(ws: WebSocket, robotId: string, cmd: any): void {
+    this.receivedCommands.push({
+      atMs: Date.now(),
+      type: cmd.type,
+      payload: { ...cmd.payload },
+    });
     switch (cmd.type) {
       case 'PING': {
         this.log(`[EDGE] Received PING command: ${cmd.command_id || ''}`);
@@ -407,7 +452,7 @@ export class MockGateway {
           startJoints: [...this.currentJoints],
           targetJoints: [...target],
           startTime: Date.now(),
-          durationMs: 800,
+          durationMs: this.motionTiming.poseMs,
         };
         this.sendTelemetryToAll(cmd.command_id);
         break;
@@ -728,17 +773,17 @@ export class MockGateway {
           this.palmState = { is_grasped: false };
           this.currentPhase = null;
           this.sendTelemetryToAll(commandId);
-        }, 600);
+        }, this.motionTiming.pickSettleMs);
         return;
       }
 
       this.robotState = 'EXECUTING';
       this.sendTelemetryToAll(commandId);
       stepIdx++;
-      this.pnpTimeout = setTimeout(executeNextStep, 70);
+      this.pnpTimeout = setTimeout(executeNextStep, this.motionTiming.pickStepMs);
     };
 
-    this.pnpTimeout = setTimeout(executeNextStep, 50);
+    this.pnpTimeout = setTimeout(executeNextStep, this.motionTiming.pickStartMs);
   }
 
   private startTickLoop(): void {
