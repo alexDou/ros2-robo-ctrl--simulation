@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, act } from '@testing-library/preact';
 import * as THREE from 'three';
 import { RobotVisualizer } from '@components/RobotVisualizer';
+import { BELT_X_RANGE, BELT_Y_RANGE, PICK_ZONE_Y_RANGE } from '@contracts';
 import * as robotLoader from '@utils/robotLoader';
 describe('Unit 3.2: RobotVisualizer Component', () => {
   let mockRenderer: any;
@@ -137,6 +138,46 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
           top.geometry.parameters.height / 2,
         );
       }
+    });
+
+    it('mounts a static Conveyor spanning the belt extent with its top at Z = 0', async () => {
+      let resolveLoaded: () => void;
+      const loadedPromise = new Promise<void>((res) => {
+        resolveLoaded = res;
+      });
+
+      await act(async () => {
+        render(
+          <RobotVisualizer
+            rendererFactory={() => mockRenderer}
+            controlsFactory={() => mockControls}
+            onRobotLoaded={() => resolveLoaded()}
+          />,
+        );
+      });
+
+      await act(async () => {
+        await loadedPromise;
+      });
+
+      const visualizer = (window as any).__robot_visualizer;
+      const conveyor = visualizer.getConveyorMesh() as THREE.Group;
+      expect(conveyor.name).toBe('conveyor');
+      expect(conveyor.parent?.name).toBe('robot-root');
+
+      const belt = conveyor.getObjectByName('conveyor-belt') as THREE.Mesh<THREE.BoxGeometry>;
+      const { width, height, depth } = belt.geometry.parameters;
+      // Long axis along Y, footprint matches the shared belt extent, top surface at Z = 0.
+      expect(height).toBeGreaterThan(width);
+      expect(width).toBeCloseTo(BELT_X_RANGE[1] - BELT_X_RANGE[0], 4);
+      expect(height).toBeCloseTo(BELT_Y_RANGE[1] - BELT_Y_RANGE[0], 4);
+      expect(conveyor.position.x).toBeCloseTo((BELT_X_RANGE[0] + BELT_X_RANGE[1]) / 2, 4);
+      expect(conveyor.position.y).toBeCloseTo((BELT_Y_RANGE[0] + BELT_Y_RANGE[1]) / 2, 4);
+      expect(belt.position.z + depth / 2).toBeCloseTo(0.0, 4);
+
+      // PickZone lies within the belt.
+      expect(PICK_ZONE_Y_RANGE[0]).toBeGreaterThanOrEqual(BELT_Y_RANGE[0]);
+      expect(PICK_ZONE_Y_RANGE[1]).toBeLessThanOrEqual(BELT_Y_RANGE[1]);
     });
 
     it('mounts dedicated robot pedestal table under robot base with flange and column', async () => {

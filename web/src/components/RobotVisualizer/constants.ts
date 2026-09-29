@@ -3,6 +3,10 @@ import {
   GREEN_TOWER,
   BLUE_TOWER,
   SCRAP_BIN,
+  BELT_X_RANGE,
+  BELT_Y_RANGE,
+  PICK_ZONE_Y_RANGE,
+  BELT_CAPACITY as DOMAIN_BELT_CAPACITY,
   TOWER_CAPACITY as DOMAIN_TOWER_CAPACITY,
 } from '@contracts';
 import type { GearColor } from '@contracts';
@@ -34,3 +38,6 @@ export const SPINDLE_TOWER_COORDS: SpindleTowerCoords = SPINDLE_TOWERS.WHITE;
 export const TOWER_CAPACITY: number = DOMAIN_TOWER_CAPACITY;
 
 export const SCRAP_BIN_COORDS: SpindleTowerCoords = toCoords(SCRAP_BIN);
+
+export const BELT_CAPACITY: number = DOMAIN_BELT_CAPACITY;
+export { BELT_X_RANGE, BELT_Y_RANGE, PICK_ZONE_Y_RANGE };

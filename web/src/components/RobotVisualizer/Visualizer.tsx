@@ -17,6 +17,7 @@ import type {
 import type { GearColor } from '@contracts';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
+import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
@@ -104,6 +105,7 @@ export function RobotVisualizer({
     let palmAssets: PalmProceduralAssets | null = null;
     let pedestalAssets: PedestalProceduralAssets | null = null;
     let rearStandAssets: RearStandProceduralAssets | null = null;
+    let conveyorAssets: ConveyorProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
       null;
@@ -123,6 +125,7 @@ export function RobotVisualizer({
     const robotGroup = stage.robotGroup;
     pedestalAssets = stage.pedestalAssets;
     rearStandAssets = stage.rearStandAssets;
+    conveyorAssets = stage.conveyorAssets;
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
     scrapBinAssets = stage.scrapBinAssets;
@@ -210,6 +213,7 @@ export function RobotVisualizer({
       }),
       getPedestal: () => pedestalAssets,
       getRearStand: () => rearStandAssets,
+      getConveyor: () => conveyorAssets,
       getScrapBin: () => scrapBinAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
@@ -338,6 +342,14 @@ export function RobotVisualizer({
         }
         palmAssets.dispose();
         palmAssets = null;
+      }
+
+      if (conveyorAssets) {
+        if (conveyorAssets.group.parent) {
+          conveyorAssets.group.parent.remove(conveyorAssets.group);
+        }
+        conveyorAssets.dispose();
+        conveyorAssets = null;
       }
 
       if (rearStandAssets) {

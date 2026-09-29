@@ -16,7 +16,14 @@ from arm_controller.kinematics import (
     unwrap_joint_angles_within_limits,
 )
 
-from domain import BLUE_TOWER, GREEN_TOWER, STACK_STEP_M, WHITE_TOWER
+from domain import (
+    BELT_X_RANGE,
+    BLUE_TOWER,
+    GREEN_TOWER,
+    PICK_ZONE_Y_RANGE,
+    STACK_STEP_M,
+    WHITE_TOWER,
+)
 
 
 def test_analytical_ik_solve_time_and_precision():
@@ -289,6 +296,23 @@ def test_every_rear_stand_tower_drop_solves(tower, slot):
             current_joints=list(HOME_JOINT_POSITIONS),
         )
         _assert_within_urdf_limits(steps, f"{tower} slot {slot} pick {pick}")
+
+
+@pytest.mark.parametrize("x", BELT_X_RANGE)
+@pytest.mark.parametrize("y", PICK_ZONE_Y_RANGE)
+@pytest.mark.parametrize("tower", ["WHITE", "GREEN", "BLUE"])
+def test_every_pick_zone_corner_solves_at_pick_and_approach(x, y, tower):
+    """Unit 8.0b: each PickZone corner is reachable at pick height and at the approach/lift height
+    (generate_trajectory solves both and raises on failure), for the bottom and top tower slots."""
+    gen = PickAndPlaceTrajectoryGenerator()
+    tx, ty = _TOWERS[tower]
+    for slot in (0, 9):
+        steps = gen.generate_trajectory(
+            pick_coords=(x, y, 0.0),
+            drop_coords=(tx, ty, slot * STACK_STEP_M),
+            current_joints=list(HOME_JOINT_POSITIONS),
+        )
+        _assert_within_urdf_limits(steps, f"corner ({x}, {y}) -> {tower} slot {slot}")
 
 
 def test_drop_reachable_only_by_branch_switch_is_rejected():
