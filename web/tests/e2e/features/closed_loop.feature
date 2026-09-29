@@ -98,3 +98,18 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the whole deck should be processed
     And every tower counter should read "0/10"
     And the scrap bin should turn red
+
+  @conveyor @unit-8.3a
+  Scenario: Stop mid-Batch freezes the belt, then Process resumes and finishes the run
+    Given the mock arm runs 10 times faster
+    And the deck seed is 7
+    When the operator opens the teleoperation visualizer for robot "arm-ur5"
+    Then the connection status should indicate "CONNECTED / IDLE"
+    And the 3D robot model should be fully loaded in the WebGL scene
+    When the operator clicks the "Fill" button
+    And the operator clicks the "Process" button
+    And the operator clicks the "Stop" button
+    Then the run should be stopped with Fill disabled and Process enabled
+    When the operator clicks the "Process" button
+    Then the whole deck should be processed
+    And every tower counter should read "0/10"

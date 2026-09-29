@@ -62,20 +62,33 @@ export async function dispatchGear(ports: ConveyorPorts, gear: GearOnBelt): Prom
   await ports.waitForSettled();
 }
 
+/** Progress of one Batch across Stop/resume: gears sorted so far decide whether the arm goes HOME. */
+export interface BatchProgress {
+  sorted: number;
+}
+
 /**
  * Sorts one halted Batch gear by gear (lead gear first), then sends the arm HOME. Each gear is
  * taken at its turn (`takeNext`), so one moved after the halt is picked where it now stands.
+ * `shouldStop` is checked before each gear: the pick in flight completes, no new one starts, and
+ * the call returns false (Batch unfinished; call again with the same `progress` to resume).
  */
 export async function processBatch(
   ports: ConveyorPorts,
   takeNext: () => GearOnBelt | undefined,
-): Promise<void> {
-  let sorted = 0;
-  for (let gear = takeNext(); gear; gear = takeNext()) {
+  shouldStop: () => boolean = () => false,
+  progress: BatchProgress = { sorted: 0 },
+): Promise<boolean> {
+  while (!shouldStop()) {
+    const gear = takeNext();
+    if (!gear) {
+      if (progress.sorted > 0) await ports.goHome();
+      return true;
+    }
     await dispatchGear(ports, { color: gear.color, intact: gear.intact, x: gear.x, y: gear.y });
-    sorted += 1;
+    progress.sorted += 1;
   }
-  if (sorted > 0) await ports.goHome();
+  return false;
 }
 
 /** TeleopClient-local hopper/belt lifecycle, separate from RobotState (ADR 0005). */
@@ -122,19 +135,38 @@ export function buildDeck(seed: number = Date.now()): GearSpec[] {
 }
 
 export const canFill = (status: ConveyorStatus): boolean => status === 'EMPTY';
-/** Process runs the whole deck, so it needs a freshly filled (full) hopper. */
+/** Process runs the whole deck (a freshly filled, full hopper) or resumes a stopped run. */
 export const canProcess = (status: ConveyorStatus, hopperCount: number): boolean =>
-  status === 'LOADED' && hopperCount === DECK_SIZE;
+  status === 'STOPPED' || (status === 'LOADED' && hopperCount === DECK_SIZE);
+/** Stop freezes a running belt; it has nothing to do before Process or after the run. */
+export const canStop = (status: ConveyorStatus): boolean =>
+  status === 'FEEDING' || status === 'HALTED';
+
+/** Where a deck run stands, so Stop can freeze it and Process resume it. */
+export interface DeckRun {
+  hopper: readonly GearSpec[];
+  previous: BeltFeeder | null;
+  /** The Batch on the belt (feeding, or halted and not fully sorted); null between Batches. */
+  current: BeltFeeder | null;
+  batch: BatchProgress;
+  index: number;
+}
+
+export function createDeckRun(deck: readonly GearSpec[]): DeckRun {
+  return { hopper: deck, previous: null, current: null, batch: { sorted: 0 }, index: 0 };
+}
 
 /** Seams for `runDeck`: everything beyond the belt logic itself. */
 export interface DeckRunDeps {
   ports: ConveyorPorts;
   /** Seed for the Batch sizes and belt randomness; Batch n uses `seed + n`. */
   seed: number;
-  /** Advances the feeder in real (or fake) time; resolves once it has halted. */
+  /** Advances the feeder in real (or fake) time; resolves once it has halted or `shouldStop`. */
   feedUntilHalted: (feeder: BeltFeeder) => Promise<void>;
   /** Throws when the run was aborted (disconnect / FAULT reset). Checked between phases. */
   assertActive: () => void;
+  /** True once the operator pressed Stop (UI-only; the arm is never commanded to stop). */
+  shouldStop?: () => boolean;
   onFeeder: (feeder: BeltFeeder) => void;
   onStatus: (status: ConveyorStatus) => void;
 }
@@ -143,26 +175,50 @@ export interface DeckRunDeps {
  * Processes ALL gears of the deck: feed a Batch → halt → sort it gear by gear → arm HOME → next
  * Batch, then a final flush run so leftover defectives leave the belt. Ends with the hopper and
  * belt empty (status EMPTY). Rejects if any port rejects; nothing is swallowed here.
+ *
+ * On Stop the belt freezes, the pick in flight completes and the run returns 'STOPPED' (status
+ * STOPPED) with `run` holding its progress; calling `runDeck` with the same `run` resumes it.
  */
-export async function runDeck(deck: readonly GearSpec[], deps: DeckRunDeps): Promise<void> {
+export async function runDeck(
+  deckOrRun: readonly GearSpec[] | DeckRun,
+  deps: DeckRunDeps,
+): Promise<'DONE' | 'STOPPED'> {
   const { ports, seed, feedUntilHalted, assertActive, onFeeder, onStatus } = deps;
-  let hopper: readonly GearSpec[] = deck;
-  let previous: BeltFeeder | null = null;
-  for (let run = 0; hopper.length > 0 || (previous?.gears().length ?? 0) > 0; run++) {
+  const shouldStop = deps.shouldStop ?? (() => false);
+  const run = Array.isArray(deckOrRun) ? createDeckRun(deckOrRun) : (deckOrRun as DeckRun);
+  const stopped = (): 'STOPPED' => {
+    onStatus('STOPPED');
+    return 'STOPPED';
+  };
+  while (run.current || run.hopper.length > 0 || (run.previous?.gears().length ?? 0) > 0) {
     assertActive();
-    const feeder: BeltFeeder = createBeltFeeder(
-      hopper,
-      seed + run,
-      previous ? { gears: previous.gears(), scroll: previous.scroll() } : undefined,
-    );
+    if (shouldStop()) return stopped();
+    if (!run.current) {
+      const prev = run.previous;
+      run.current = createBeltFeeder(
+        run.hopper,
+        seed + run.index,
+        prev ? { gears: prev.gears(), scroll: prev.scroll() } : undefined,
+      );
+    }
+    const feeder = run.current;
     onFeeder(feeder);
-    onStatus('FEEDING');
-    await feedUntilHalted(feeder);
-    assertActive();
+    if (feeder.status() === 'FEEDING') {
+      onStatus('FEEDING');
+      await feedUntilHalted(feeder);
+      assertActive();
+      if (shouldStop()) return stopped();
+    }
     onStatus('HALTED');
-    await processBatch(ports, feeder.next);
-    hopper = feeder.remaining();
-    previous = feeder;
+    const finished = await processBatch(ports, feeder.next, shouldStop, run.batch);
+    assertActive();
+    if (!finished) return stopped();
+    run.hopper = feeder.remaining();
+    run.previous = feeder;
+    run.current = null;
+    run.batch = { sorted: 0 };
+    run.index += 1;
   }
   onStatus('EMPTY');
+  return 'DONE';
 }

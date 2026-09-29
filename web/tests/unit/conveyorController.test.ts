@@ -7,6 +7,8 @@ import {
   buildDeck,
   canFill,
   canProcess,
+  canStop,
+  createDeckRun,
   dispatchGear,
   processBatch,
   runDeck,
@@ -99,11 +101,11 @@ describe('Unit 8.2a: deck generation and button gating (hand-sim-n5lx)', () => {
     expect(buildDeck(7)).not.toEqual(buildDeck(8));
   });
 
-  it('enables Fill only when EMPTY and Process only when LOADED', () => {
+  it('enables Fill only when EMPTY and Process only when LOADED (or STOPPED: resume)', () => {
     const statuses: ConveyorStatus[] = ['EMPTY', 'LOADED', 'FEEDING', 'HALTED', 'STOPPED'];
     for (const s of statuses) {
       expect(canFill(s)).toBe(s === 'EMPTY');
-      expect(canProcess(s, DECK_SIZE)).toBe(s === 'LOADED');
+      expect(canProcess(s, DECK_SIZE)).toBe(s === 'LOADED' || s === 'STOPPED');
     }
   });
 
@@ -319,5 +321,119 @@ describe('Unit 8.2c: workcell progress helpers (hand-sim-as72)', () => {
     expect(isPickSettled('IDLE', { spawned: [{}], inProgress: [] })).toBe(false);
     expect(isPickSettled('IDLE', { spawned: [], inProgress: [{}] })).toBe(false);
     expect(isPickSettled('EXECUTING', { spawned: [], inProgress: [] })).toBe(false);
+  });
+});
+
+describe('Unit 8.3a: Stop and resume (hand-sim-ywrn)', () => {
+  const deps = (ports: ConveyorPorts, over: Partial<Parameters<typeof runDeck>[1]> = {}) => ({
+    ports,
+    seed: 7,
+    feedUntilHalted: feedFast,
+    assertActive: () => undefined,
+    onFeeder: () => undefined,
+    onStatus: () => undefined,
+    shouldStop: () => false,
+    ...over,
+  });
+
+  it('Stop is available only while FEEDING or HALTED; Process resumes from STOPPED', () => {
+    expect(canStop('FEEDING')).toBe(true);
+    expect(canStop('HALTED')).toBe(true);
+    for (const st of ['EMPTY', 'LOADED', 'STOPPED'] as ConveyorStatus[]) {
+      expect(canStop(st)).toBe(false);
+    }
+    expect(canProcess('STOPPED', 40)).toBe(true);
+    expect(canFill('STOPPED')).toBe(false);
+  });
+
+  it('Stop during FEEDING sends no command; resume feeds the same belt and finishes the deck', async () => {
+    const { ports, calls } = fakePorts();
+    const run = createDeckRun(buildDeck(7));
+    let stop = false;
+    const statuses: ConveyorStatus[] = [];
+    const first = await runDeck(
+      run,
+      deps(ports, {
+        feedUntilHalted: async () => {
+          stop = true; // belt frozen mid-feed: the feeder is left as it is
+        },
+        shouldStop: () => stop,
+        onStatus: (s) => statuses.push(s),
+      }),
+    );
+    expect(first).toBe('STOPPED');
+    expect(calls).toEqual([]);
+    expect(statuses.at(-1)).toBe('STOPPED');
+
+    stop = false;
+    const spawns: unknown[] = [];
+    const second = await runDeck(
+      run,
+      deps({ ...ports, spawn: (p) => spawns.push(p) }, { shouldStop: () => stop }),
+    );
+    expect(second).toBe('DONE');
+    expect(spawns).toHaveLength(DECK_SIZE);
+  });
+
+  it('Stop during HALTED lets the pick in flight complete, sends no new pick, and resume continues with the next gear', async () => {
+    const { ports } = fakePorts();
+    const events: string[] = [];
+    const spawned: unknown[] = [];
+    let stop = false;
+    const tracking: ConveyorPorts = {
+      ...ports,
+      spawn: (p) => {
+        spawned.push(p);
+        events.push('spawn');
+      },
+      pickAndPlace: () => {
+        events.push('pick');
+        stop = true; // Stop pressed while this pick is in flight
+      },
+      waitForSettled: async () => {
+        events.push('settled');
+      },
+      goHome: async () => {
+        events.push('home');
+      },
+    };
+    const run = createDeckRun(buildDeck(7));
+    const first = await runDeck(run, deps(tracking, { shouldStop: () => stop }));
+    expect(first).toBe('STOPPED');
+    expect(events.slice(-2)).toEqual(['pick', 'settled']); // completes; nothing after it
+    expect(events.filter((e) => e === 'pick')).toHaveLength(1);
+    const spawnedBeforeResume = spawned.length;
+
+    stop = false;
+    events.length = 0;
+    // Every resumed pick re-triggers our test stop; keep resuming until done.
+    let outcome = await runDeck(run, deps(tracking, { shouldStop: () => stop }));
+    while (outcome === 'STOPPED') {
+      stop = false;
+      outcome = await runDeck(run, deps(tracking, { shouldStop: () => stop }));
+    }
+    expect(outcome).toBe('DONE');
+    expect(spawned).toHaveLength(DECK_SIZE); // no gear registered twice or lost
+    expect(spawnedBeforeResume).toBeLessThan(DECK_SIZE);
+  });
+
+  it('a resumed Batch still sends the arm HOME once it is fully sorted', async () => {
+    const { ports, calls } = fakePorts();
+    let stop = false;
+    const stopAfterFirstPick: ConveyorPorts = {
+      ...ports,
+      pickAndPlace: (p) => {
+        ports.pickAndPlace(p);
+        stop = true;
+      },
+    };
+    const run = createDeckRun(buildDeck(7));
+    let outcome = await runDeck(run, deps(stopAfterFirstPick, { shouldStop: () => stop }));
+    expect(outcome).toBe('STOPPED');
+    expect(calls).not.toContain('home');
+    stop = false;
+    outcome = await runDeck(run, deps(ports, { shouldStop: () => stop }));
+    expect(outcome).toBe('DONE');
+    expect(calls).toContain('home');
   });
 });

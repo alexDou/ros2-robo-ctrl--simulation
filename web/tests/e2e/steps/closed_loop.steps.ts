@@ -157,6 +157,19 @@ Then('the hopper should be full', async function (this: CustomWorld) {
   await this.teleopPage!.expectHopperFull();
 });
 
+When('the operator clicks the "Stop" button', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.clickStop();
+});
+
+Then(
+  'the run should be stopped with Fill disabled and Process enabled',
+  async function (this: CustomWorld) {
+    expect(this.teleopPage).toBeDefined();
+    await this.teleopPage!.expectStopped();
+  },
+);
+
 Then('Process should be enabled and Fill disabled', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectFillDisabledProcessEnabled();

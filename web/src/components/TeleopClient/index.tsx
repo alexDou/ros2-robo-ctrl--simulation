@@ -100,7 +100,7 @@ export function TeleopClient({
     [bufferRef],
   );
   const workcell = useCallback(() => bufferRef.current?.workcellState, [bufferRef]);
-  const { conveyorStatus, deck, feederRef, handleFill, handleProcess } = useConveyor({
+  const { conveyorStatus, deck, feederRef, handleFill, handleProcess, handleStop } = useConveyor({
     connected: connectionState === 'CONNECTED',
     robotState,
     workcell,
@@ -267,6 +267,7 @@ export function TeleopClient({
             onClearWorkspace={handleClearWorkspace}
             onFill={handleFill}
             onProcess={handleProcess}
+            onStop={handleStop}
             errorBanner={errorBanner}
             disabled={toolbarDisabled}
             disabledReason={

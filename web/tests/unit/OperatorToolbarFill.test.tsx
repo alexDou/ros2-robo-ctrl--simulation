@@ -8,6 +8,7 @@ function renderToolbar(
   onFill = vi.fn(),
   onProcess = vi.fn(),
   hopperCount = DECK_SIZE,
+  onStop = vi.fn(),
 ) {
   render(
     <OperatorToolbar
@@ -23,9 +24,10 @@ function renderToolbar(
       onClearWorkspace={vi.fn()}
       onFill={onFill}
       onProcess={onProcess}
+      onStop={onStop}
     />,
   );
-  return { onFill, onProcess };
+  return { onFill, onProcess, onStop };
 }
 
 describe('Unit 8.2a: Fill / Process gating by ConveyorStatus (hand-sim-n5lx)', () => {
@@ -49,9 +51,26 @@ describe('Unit 8.2a: Fill / Process gating by ConveyorStatus (hand-sim-n5lx)', (
     expect((screen.getByTestId('process-button') as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it.each(['FEEDING', 'HALTED', 'STOPPED'] as const)('%s: both disabled', (status) => {
+  it.each(['FEEDING', 'HALTED'] as const)('%s: both disabled', (status) => {
     renderToolbar(status);
     expect((screen.getByTestId('fill-button') as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByTestId('process-button') as HTMLButtonElement).disabled).toBe(true);
+  });
+});
+
+describe('Unit 8.3a: Stop button gating (hand-sim-ywrn)', () => {
+  it('Stop is enabled only while the belt runs, and calls onStop', () => {
+    const { onStop } = renderToolbar('FEEDING', vi.fn(), vi.fn(), 40);
+    const stop = screen.getByTestId('stop-button') as HTMLButtonElement;
+    expect(stop.disabled).toBe(false);
+    fireEvent.click(stop);
+    expect(onStop).toHaveBeenCalledOnce();
+  });
+
+  it('STOPPED: Fill stays disabled, Process enabled, Stop disabled', () => {
+    renderToolbar('STOPPED', vi.fn(), vi.fn(), 40);
+    expect((screen.getByTestId('fill-button') as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByTestId('process-button') as HTMLButtonElement).disabled).toBe(false);
+    expect((screen.getByTestId('stop-button') as HTMLButtonElement).disabled).toBe(true);
   });
 });
