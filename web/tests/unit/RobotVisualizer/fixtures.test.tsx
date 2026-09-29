@@ -54,7 +54,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
     vi.restoreAllMocks();
   });
 
-  describe('Unit 5.1: 3D Workcell Table, Raycaster & Procedural Gear Ingestion', () => {
+  describe('Unit 5.1: Procedural Fixtures', () => {
     let fakeTool0Link: THREE.Object3D;
     let fakeRobot: any;
 
@@ -74,7 +74,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot as any);
     });
 
-    it('mounts WorkcellTable slab (0.8m x 0.6m) inside robotGroup flush at Z = 0.0m with open flanks', async () => {
+    it('mounts no WorkcellTable or landing mat (Flow A removed)', async () => {
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
         resolveLoaded = res;
@@ -94,27 +94,10 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         await loadedPromise;
       });
 
-      const visualizer = (window as any).__robot_visualizer;
-      expect(visualizer).toBeDefined();
-
-      const tableMesh = visualizer.getTableMesh();
-      expect(tableMesh).toBeDefined();
-      expect(tableMesh.name).toBe('workcell-table');
-
-      // Slab dimensions: 0.8m x 0.6m (width and depth)
-      const geom = tableMesh.geometry as THREE.BoxGeometry;
-      expect(geom).toBeDefined();
-      const dims = [geom.parameters.width, geom.parameters.height];
-      expect(dims).toContain(0.8);
-      expect(dims).toContain(0.6);
-
-      // Top surface flush at Z = 0.0m
-      const thickness = geom.parameters.depth;
-      expect(tableMesh.position.z + thickness / 2).toBeCloseTo(0.0, 4);
-
-      // Center position
-      expect(tableMesh.position.x).toBeCloseTo(0.5, 2);
-      expect(tableMesh.position.y).toBeCloseTo(0.0, 2);
+      const scene = (window as any).__robot_visualizer.getScene() as THREE.Scene;
+      expect(scene.getObjectByName('workcell-table')).toBeUndefined();
+      expect(scene.getObjectByName('workcell-landing-mat')).toBeUndefined();
+      expect(scene.getObjectByName('workcell-reticle')).toBeUndefined();
     });
 
     it('mounts dedicated robot pedestal table under robot base with flange and column', async () => {
@@ -151,40 +134,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(flange).toBeDefined();
       expect(col).toBeDefined();
       expect(foot).toBeDefined();
-    });
-
-    it('mounts dark ESD landing mat and technical boundary border across reachability zone', async () => {
-      let resolveLoaded: () => void;
-      const loadedPromise = new Promise<void>((res) => {
-        resolveLoaded = res;
-      });
-
-      await act(async () => {
-        render(
-          <RobotVisualizer
-            rendererFactory={() => mockRenderer}
-            controlsFactory={() => mockControls}
-            onRobotLoaded={() => resolveLoaded()}
-          />,
-        );
-      });
-
-      await act(async () => {
-        await loadedPromise;
-      });
-
-      const visualizer = (window as any).__robot_visualizer;
-      const mat = visualizer.getLandingMatMesh();
-      expect(mat).toBeDefined();
-      expect(mat.name).toBe('workcell-landing-mat');
-
-      const matGeom = mat.geometry as THREE.BoxGeometry;
-      expect(matGeom.parameters.width).toBeCloseTo(0.2, 2);
-      expect(matGeom.parameters.height).toBeCloseTo(0.44, 2);
-      expect(matGeom.parameters.depth).toBeCloseTo(0.004, 3);
-
-      const matMat = mat.material as THREE.MeshStandardMaterial;
-      expect(matMat.color.getHex()).toBe(0x0f172a);
     });
   });
 });

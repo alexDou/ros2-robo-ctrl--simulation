@@ -16,19 +16,6 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the connection status should indicate "CONNECTED / IDLE"
     And the telemetry latency should remain below 50 ms
 
-  @actuation @palm-grasp
-  Scenario: Palm grasp actuates over the wire, highlights nozzle, and updates telemetry
-    When the operator opens the teleoperation visualizer for robot "arm-ur5"
-    Then the connection status should indicate "CONNECTED / IDLE"
-    And the 3D robot model should be fully loaded in the WebGL scene
-    And the 3D workcell table should be mounted in the WebGL scene
-    And the palm nozzle visual material should be idle
-    When the operator clicks the workcell table at coordinates x 0.50 and y 0.00
-    Then the palm status should indicate "Grasped" within 3000 ms
-    And the palm nozzle visual material should be highlighted
-    And the event log should contain a "[TELEMETRY]" event with state "IDLE"
-    And the telemetry latency should remain below 50 ms
-
   @safety @emergency-stop
   Scenario: Triggering Emergency Stop during active motion immediately halts movement and locks toolbar controls
     When the operator opens the teleoperation visualizer for robot "arm-ur5"

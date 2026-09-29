@@ -4,8 +4,6 @@ import type { URDFRobot } from 'urdf-loader';
 import { isTestEnv } from '@utils/env';
 import * as robotLoader from '@utils/robotLoader';
 import {
-  REACHABILITY_MIN_RADIUS,
-  REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
   SCRAP_BIN_COORDS,
@@ -19,7 +17,6 @@ import type {
 import type { GearColor } from '@contracts';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
-import type { TableProceduralAssets } from '@/components/RobotVisualizer/assets/table';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import {
@@ -34,8 +31,6 @@ import {
   createSnapshotStore,
   type SnapshotStore,
 } from '@/components/RobotVisualizer/interaction/snapshot';
-import { getTableCoordinates } from '@/components/RobotVisualizer/interaction/picking';
-import { createPointerHandlers } from '@/components/RobotVisualizer/interaction/handlers';
 import { createFrameState, stepFrame } from '@/components/RobotVisualizer/frame';
 import {
   VisualizerErrorOverlay,
@@ -46,8 +41,6 @@ import { createVisualizerHandle } from '@/components/RobotVisualizer/handle';
 
 export type { WorkcellSnapshotView };
 export {
-  REACHABILITY_MIN_RADIUS,
-  REACHABILITY_MAX_RADIUS,
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
   SCRAP_BIN_COORDS,
@@ -61,7 +54,6 @@ export function RobotVisualizer({
   jointPositionsRef,
   telemetryBufferRef,
   robotState,
-  onSpawnObject,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -97,9 +89,6 @@ export function RobotVisualizer({
   const robotStatePropRef = useRef(robotState);
   robotStatePropRef.current = robotState;
 
-  const onSpawnObjectRef = useRef(onSpawnObject);
-  onSpawnObjectRef.current = onSpawnObject;
-
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
   const binNonEmptyRef = useRef<boolean>(false);
 
@@ -113,14 +102,13 @@ export function RobotVisualizer({
     let loadedRobot: URDFRobot | null = null;
     let palmAssets: PalmProceduralAssets | null = null;
     let pedestalAssets: PedestalProceduralAssets | null = null;
-    let tableAssets: TableProceduralAssets | null = null;
     let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
       null;
     let scrapBinAssets: ScrapBinProceduralAssets | null = null;
     let mountLink: THREE.Object3D | null = null;
     // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
-    // id-keyed from buffer workcellState each frame: spawned -> table mesh
+    // id-keyed from buffer workcellState each frame: spawned -> mesh
     // at entry xyz, in_progress -> flange ride, processed -> tower verbatim.
     const store: SnapshotStore = createSnapshotStore();
     let needsRender = true;
@@ -132,7 +120,6 @@ export function RobotVisualizer({
     const camera = stage.camera;
     const robotGroup = stage.robotGroup;
     pedestalAssets = stage.pedestalAssets;
-    tableAssets = stage.tableAssets;
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
     scrapBinAssets = stage.scrapBinAssets;
@@ -205,24 +192,6 @@ export function RobotVisualizer({
       onSceneReadyRef.current(scene, camera, controls, renderer);
     }
 
-    const pointerHandlers = createPointerHandlers({
-      canvas,
-      camera,
-      robotGroup,
-      getTableAssets: () => tableAssets,
-      isDisposed: () => isDisposed,
-      isIdle: () => !robotStatePropRef.current || robotStatePropRef.current === 'IDLE',
-      isClickLocked: () => {
-        const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-        return store.lockout || !isIdle;
-      },
-      onSpawn: (payload) => onSpawnObjectRef.current?.(payload),
-      onDirty: () => {
-        needsRender = true;
-      },
-    });
-    pointerHandlers.attach();
-
     // Expose debug handle on window for testing and diagnostics
     const visualizerHandle = createVisualizerHandle({
       isLoaded: () => loadedRobot !== null,
@@ -236,71 +205,10 @@ export function RobotVisualizer({
         GREEN: spindleTowerAssetsByColor?.GREEN ?? null,
         BLUE: spindleTowerAssetsByColor?.BLUE ?? null,
       }),
-      getTable: () => tableAssets,
       getPedestal: () => pedestalAssets,
       getScrapBin: () => scrapBinAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
-      isLocked: () => {
-        const isIdle = !robotStatePropRef.current || robotStatePropRef.current === 'IDLE';
-        return store.lockout || !isIdle;
-      },
-      simulatePointerMove: (x: number, y: number) => {
-        pointerHandlers.handleMove(x, y);
-      },
-      simulatePointerLeave: () => {
-        pointerHandlers.handleLeave();
-      },
-      simulateClick: (x: number, y: number) => {
-        return pointerHandlers.handleClick(x, y);
-      },
-      raycastPointer: (clientX: number, clientY: number) => {
-        const coords = getTableCoordinates(
-          {
-            canvas,
-            camera,
-            robotGroup,
-            tableAssets,
-            raycaster: new THREE.Raycaster(),
-            pointerNdc: new THREE.Vector2(),
-          },
-          clientX,
-          clientY,
-        );
-        if (!coords || !tableAssets) return null;
-        const r = Math.sqrt(coords.x * coords.x + coords.y * coords.y);
-        const isInsideMat =
-          coords.x >= tableAssets.matBounds.minX &&
-          coords.x <= tableAssets.matBounds.maxX &&
-          coords.y >= tableAssets.matBounds.minY &&
-          coords.y <= tableAssets.matBounds.maxY;
-        return {
-          x: coords.x,
-          y: coords.y,
-          z: 0.0,
-          isReachable: r >= REACHABILITY_MIN_RADIUS && r <= REACHABILITY_MAX_RADIUS,
-          isInsideTable:
-            coords.x >= tableAssets.bounds.minX &&
-            coords.x <= tableAssets.bounds.maxX &&
-            coords.y >= tableAssets.bounds.minY &&
-            coords.y <= tableAssets.bounds.maxY,
-          isInsideMat,
-        };
-      },
-      getTableScreenCoords: (x: number, y: number): { clientX: number; clientY: number } | null => {
-        if (!tableAssets || isDisposed) return null;
-        camera.updateMatrixWorld();
-        robotGroup.updateMatrixWorld(true);
-        const p = new THREE.Vector3(x, y, 0.0);
-        robotGroup.localToWorld(p);
-        p.project(camera);
-        if (p.z < -1 || p.z > 1 || Math.abs(p.x) > 1 || Math.abs(p.y) > 1) return null;
-        const rect = canvas.getBoundingClientRect();
-        return {
-          clientX: rect.left + ((p.x + 1) * rect.width) / 2,
-          clientY: rect.top + ((-p.y + 1) * rect.height) / 2,
-        };
-      },
     });
 
     if (typeof window !== 'undefined') {
@@ -339,7 +247,6 @@ export function RobotVisualizer({
         store,
         robotGroup,
         mountLink,
-        tableAssets,
         scrapBin: scrapBinAssets,
         controls,
         onDirty: () => {
@@ -389,8 +296,6 @@ export function RobotVisualizer({
         }
       }
 
-      pointerHandlers.detach();
-
       // Dispose snapshot-reconciled gear meshes
       for (const rec of store.gears.values()) {
         if (rec.assets.group.parent) {
@@ -438,24 +343,6 @@ export function RobotVisualizer({
         }
         pedestalAssets.dispose();
         pedestalAssets = null;
-      }
-
-      // Dispose workcell table assets
-      if (tableAssets) {
-        if (tableAssets.tableMesh.parent) {
-          tableAssets.tableMesh.parent.remove(tableAssets.tableMesh);
-        }
-        if (tableAssets.matMesh.parent) {
-          tableAssets.matMesh.parent.remove(tableAssets.matMesh);
-        }
-        if (tableAssets.borderLines.parent) {
-          tableAssets.borderLines.parent.remove(tableAssets.borderLines);
-        }
-        if (tableAssets.reticleMesh.parent) {
-          tableAssets.reticleMesh.parent.remove(tableAssets.reticleMesh);
-        }
-        tableAssets.dispose();
-        tableAssets = null;
       }
 
       // Dispose all geometries and materials across scene

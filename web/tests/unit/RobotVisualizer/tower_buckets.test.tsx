@@ -299,8 +299,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
         expect(g.position.x).toBeCloseTo(0.4, 2);
         expect(g.position.y).toBeCloseTo(-0.3, 2);
       }
-      // Processed tower never drives ClickLockout.
-      expect(visualizer.isLockedOut()).toBe(false);
       expect(visualizer.hasActiveGear()).toBe(false);
     });
 
@@ -380,7 +378,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(visualizer.getSnapshotGearCount()).toBe(0);
       expect(visualizer.getTowerGearCount()).toBe(0);
       expect(visualizer.getGearMesh()).toBeNull();
-      expect(visualizer.isLockedOut()).toBe(false);
     });
 
     it('grasp-bit and phase hints without snapshot entries create no meshes', async () => {

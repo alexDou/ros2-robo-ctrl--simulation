@@ -215,9 +215,6 @@ describe('TeleopClient Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-      act(() => {
-        visualizer.simulateClick(0.5, 0.1);
-      });
 
       const telem = (workcell_state: object, grasped = false) =>
         JSON.stringify({

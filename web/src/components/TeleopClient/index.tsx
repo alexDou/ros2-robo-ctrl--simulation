@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'preact/hooks';
 import { resolveGatewayWsUrl } from '@utils/url';
-import { DEFAULT_ROBOT_ID, type SpawnObjectPayload } from '@contracts';
+import { DEFAULT_ROBOT_ID } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
@@ -24,7 +24,6 @@ export interface TeleopClientProps {
   rendererFactory?: (canvas: HTMLCanvasElement) => any;
   controlsFactory?: (camera: any, domElement: any) => any;
   jointPositionsRef?: { current: readonly number[] };
-  onSpawnObject?: (payload: SpawnObjectPayload) => void;
 }
 
 export function TeleopClient({
@@ -35,7 +34,6 @@ export function TeleopClient({
   rendererFactory,
   controlsFactory,
   jointPositionsRef,
-  onSpawnObject,
 }: TeleopClientProps) {
   const wsUrl = resolveGatewayWsUrl(robotId, gatewayWsUrl);
   const isDesktop = useIsDesktop();
@@ -61,7 +59,6 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
-    spawnObject,
     clearWorkspace,
     sendPing,
   } = useTeleopSession({
@@ -217,7 +214,6 @@ export function TeleopClient({
               telemetryBufferRef={bufferRef}
               jointPositionsRef={jointPositionsRef}
               robotState={effectiveRobotState ?? 'STANDBY'}
-              onSpawnObject={onSpawnObject ?? spawnObject}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}
