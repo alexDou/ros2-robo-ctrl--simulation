@@ -2,6 +2,8 @@ import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from '@playwright/test';
 import { CANONICAL_POSES, PoseName, GREEN_TOWER, STACK_STEP_M } from '@contracts';
 import { CustomWorld } from '../support/world';
+import type { ReceivedCommand } from '../support/mock_gateway';
+import { buildDeck, runDeck } from '../../../src/utils/conveyorController';
 import {
   SCRAP_BIN_EMPTY_COLOR,
   SCRAP_BIN_FILLED_COLOR,
@@ -250,13 +252,90 @@ Then('the GREEN tower stack should have faded out', async function (this: Custom
   await this.teleopPage!.expectTowerGearCount(0);
 });
 
-Then('the halted Batch is sorted gear by gear', async function (this: CustomWorld) {
-  expect(this.teleopPage).toBeDefined();
-  const batch = await this.teleopPage!.getBatchComposition();
-  await this.teleopPage!.expectBatchSorted(batch);
-});
-
 When('the Batch composition is being recorded', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.startRecordingBatch();
+});
+
+Given('the mock arm runs {int} times faster', function (this: CustomWorld, factor: number) {
+  this.harness.setMotionSpeed(factor);
+  this.timeScale = factor;
+});
+
+Given('the deck seed is {int}', function (this: CustomWorld, seed: number) {
+  this.deckSeed = seed;
+});
+
+/** The command stream the client must send for `seed`: what the spec says, derived from the deck. */
+async function expectedCommandStream(seed: number): Promise<string[]> {
+  const stream: string[] = [];
+  await runDeck(buildDeck(seed), {
+    seed,
+    ports: {
+      spawn: (p) => stream.push(`SPAWN ${p.color} ${p.intact ? 'intact' : 'defective'}`),
+      pickAndPlace: () => stream.push('PICK'),
+      waitForRegistered: async () => undefined,
+      waitForSettled: async () => undefined,
+      goHome: async () => {
+        stream.push('HOME');
+      },
+    },
+    feedUntilHalted: async (f) => {
+      for (let t = 0; f.status() === 'FEEDING' && t < 600; t += 0.02) f.step(0.02);
+    },
+    assertActive: () => undefined,
+    onFeeder: () => undefined,
+    onStatus: () => undefined,
+  });
+  return stream;
+}
+
+function describeReceived(cmds: readonly ReceivedCommand[]): string[] {
+  const out: string[] = [];
+  for (const c of cmds) {
+    if (c.type === 'SPAWN_OBJECT') {
+      out.push(`SPAWN ${c.payload.color} ${c.payload.intact ? 'intact' : 'defective'}`);
+    } else if (c.type === 'PICK_AND_PLACE_TARGET') {
+      out.push('PICK');
+    } else if (c.type === 'TRAJECTORY_EXECUTE' && c.payload.pose_name === 'HOME') {
+      out.push('HOME');
+    }
+  }
+  return out;
+}
+
+Then(
+  'the mock gateway should have received the seeded deck sorted Batch by Batch',
+  { timeout: 180000 },
+  async function (this: CustomWorld) {
+    expect(this.deckSeed).toBeDefined();
+    const expected = await expectedCommandStream(this.deckSeed!);
+    await expect
+      .poll(() => describeReceived(this.harness.getReceivedCommands()).length, {
+        timeout: 120000,
+      })
+      .toBeGreaterThanOrEqual(expected.length);
+    const received = this.harness.getReceivedCommands();
+    expect(describeReceived(received)).toEqual(expected);
+    // Every pick targets the coordinates its gear was spawned at (the gear's current position).
+    let spawnedAt: { x: unknown; y: unknown } | null = null;
+    for (const c of received) {
+      if (c.type === 'SPAWN_OBJECT') spawnedAt = { x: c.payload.x, y: c.payload.y };
+      if (c.type === 'PICK_AND_PLACE_TARGET') {
+        expect({ x: c.payload.pick_x, y: c.payload.pick_y }).toEqual(spawnedAt);
+      }
+    }
+  },
+);
+
+Then('the whole deck should be processed', { timeout: 180000 }, async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectRunFinished();
+});
+
+Then('every tower counter should read {string}', async function (this: CustomWorld, text: string) {
+  expect(this.teleopPage).toBeDefined();
+  for (const color of ['WHITE', 'GREEN', 'BLUE']) {
+    await this.teleopPage!.expectTowerCounter(color, `${color}: ${text}`);
+  }
 });

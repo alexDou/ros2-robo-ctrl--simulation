@@ -6,7 +6,10 @@ import { TeleopPage } from '../pages/TeleopPage';
 Given(
   'an operator is actively connected to robot {string}',
   async function (this: CustomWorld, robotId: string) {
-    const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
+    const knobs =
+      (this.deckSeed === undefined ? '' : `&seed=${this.deckSeed}`) +
+      (this.timeScale === undefined ? '' : `&time_scale=${this.timeScale}`);
+    const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}${knobs}`;
     await this.teleopPage!.goto(url);
     await this.teleopPage!.clickConnect();
     await this.teleopPage!.expectConnectionStatus(/CONNECTED/);
@@ -24,7 +27,10 @@ When('the operator clicks the Disconnect button', async function (this: CustomWo
 When(
   'the operator opens the teleoperation visualizer for robot {string}',
   async function (this: CustomWorld, robotId: string) {
-    const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}`;
+    const knobs =
+      (this.deckSeed === undefined ? '' : `&seed=${this.deckSeed}`) +
+      (this.timeScale === undefined ? '' : `&time_scale=${this.timeScale}`);
+    const url = `http://127.0.0.1:${this.harness.webPort}/?robot_id=${robotId}&gateway_port=${this.harness.gatewayPort}${knobs}`;
     await this.teleopPage!.goto(url);
     await this.teleopPage!.clickConnect();
   },

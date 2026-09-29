@@ -7,6 +7,8 @@ export interface OperatorToolbarProps {
   connectionState: ConnectionState;
   hasActiveGear: boolean;
   conveyorStatus: ConveyorStatus;
+  /** Gears left in the hopper; Process needs it full. */
+  hopperCount: number;
   onExecutePose: (poseName: PoseName) => void;
   onConnect: () => void;
   onDisconnect: () => void;
@@ -24,6 +26,7 @@ export function OperatorToolbar({
   connectionState,
   hasActiveGear,
   conveyorStatus,
+  hopperCount,
   onExecutePose,
   onConnect,
   onDisconnect,
@@ -43,7 +46,7 @@ export function OperatorToolbar({
   const resetFaultDisabled = disabled || !isFault;
   const clearWorkspaceDisabled = disabled || !isIdle || !hasActiveGear;
   const fillButtonDisabled = disabled || !canFill(conveyorStatus);
-  const processButtonDisabled = disabled || !isIdle || !canProcess(conveyorStatus);
+  const processButtonDisabled = disabled || !isIdle || !canProcess(conveyorStatus, hopperCount);
   const isConnected = connectionState === 'CONNECTED' || connectionState === 'CONNECTING';
 
   return (

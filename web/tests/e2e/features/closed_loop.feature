@@ -86,12 +86,15 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And Process should be enabled and Fill disabled
 
   @conveyor @unit-8.2c
-  Scenario: A halted Batch is sorted gear by gear onto the towers and bin
+  Scenario: Process sorts the whole seeded deck Batch by Batch onto the towers and bin
+    Given the mock arm runs 10 times faster
+    And the deck seed is 7
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
     When the operator clicks the "Fill" button
-    And the Batch composition is being recorded
     And the operator clicks the "Process" button
-    Then the belt should halt with a Batch of 3 to 10 gears inside the PickZone
-    And the halted Batch is sorted gear by gear
+    Then the mock gateway should have received the seeded deck sorted Batch by Batch
+    And the whole deck should be processed
+    And every tower counter should read "0/10"
+    And the scrap bin should turn red

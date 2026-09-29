@@ -1,17 +1,12 @@
-import { useState, useCallback, useEffect, useRef } from 'preact/hooks';
+import { useState, useCallback, useEffect } from 'preact/hooks';
 import { resolveGatewayWsUrl } from '@utils/url';
-import { DEFAULT_ROBOT_ID } from '@contracts';
+import { CANONICAL_POSES, DEFAULT_ROBOT_ID } from '@contracts';
+import { isAtPose } from '@utils/workcellProgress';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
-import {
-  buildDeck,
-  processBatch,
-  type ConveyorPorts,
-  type ConveyorStatus,
-  type GearSpec,
-} from '@utils/conveyorController';
-import { createBeltFeeder, type BeltFeeder } from '@utils/beltFeeder';
+import { useConveyor } from '@/hooks/useConveyor';
+import { useWorkcellWaiters } from '@/hooks/useWorkcellWaiters';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
 import { ActionProgressBar } from '@components/ActionProgressBar';
@@ -23,8 +18,6 @@ import { OperatorToolbar } from '@components/OperatorToolbar';
 export type { ConnectionState, LogEntry };
 
 const BOOT_TIMEOUT_MS = 10000;
-const FEED_TICK_MS = 33;
-const MAX_FEED_STEP_S = 0.05;
 
 export interface TeleopClientProps {
   robotId?: string;
@@ -34,6 +27,10 @@ export interface TeleopClientProps {
   rendererFactory?: (canvas: HTMLCanvasElement) => any;
   controlsFactory?: (camera: any, domElement: any) => any;
   jointPositionsRef?: { current: readonly number[] };
+  /** Deterministic deck and belt randomness (tests, E2E); defaults to the clock. */
+  seed?: number;
+  /** Belt simulation speed-up for tests; 1 = real time. */
+  timeScale?: number;
 }
 
 export function TeleopClient({
@@ -44,6 +41,8 @@ export function TeleopClient({
   rendererFactory,
   controlsFactory,
   jointPositionsRef,
+  seed,
+  timeScale,
 }: TeleopClientProps) {
   const wsUrl = resolveGatewayWsUrl(robotId, gatewayWsUrl);
   const isDesktop = useIsDesktop();
@@ -73,6 +72,7 @@ export function TeleopClient({
     pickAndPlace,
     clearWorkspace,
     sendPing,
+    pushProbeLog,
   } = useTeleopSession({
     wsUrl,
     handleIncomingFrame,
@@ -93,107 +93,26 @@ export function TeleopClient({
     (snap?.inProgress?.length ?? 0) > 0 ||
     (snap?.processed?.length ?? 0) > 0;
 
-  // Batch sorting: progress is read from the workcell snapshot, the single authority.
-  const robotStateRef = useRef(robotState);
-  robotStateRef.current = robotState;
-  const waitersRef = useRef<
-    Array<{ ready: () => boolean; resolve: () => void; reject: (err: Error) => void }>
-  >([]);
-  useEffect(() => {
-    // Disconnect or FAULT resets the whole system (ADR 0005 §5): abandon any pending dispatch.
-    if (connectionState !== 'CONNECTED' || robotState === 'FAULT') {
-      for (const w of waitersRef.current) w.reject(new Error('conveyor dispatch aborted'));
-      waitersRef.current = [];
-      return;
-    }
-    waitersRef.current = waitersRef.current.filter((w) => {
-      if (!w.ready()) return true;
-      w.resolve();
-      return false;
-    });
-  }, [connectionState, robotState, workcellVersion]);
-  const waitUntil = useCallback(
-    (ready: () => boolean) =>
-      new Promise<void>((resolve, reject) => {
-        if (ready()) resolve();
-        else waitersRef.current.push({ ready, resolve, reject });
-      }),
-    [],
+  const waitUntil = useWorkcellWaiters(connectionState, robotState, workcellVersion);
+  const goHomePose = useCallback(() => executePose('HOME'), [executePose]);
+  const armAtHome = useCallback(
+    () => isAtPose(bufferRef.current?.jointPositions, CANONICAL_POSES.HOME),
+    [bufferRef],
   );
-
-  // ConveyorStatus, the hopper deck and the belt feeder are TeleopClient-local (ADR 0005); never
-  // on the wire.
-  const [conveyorStatus, setConveyorStatus] = useState<ConveyorStatus>('EMPTY');
-  const [deck, setDeck] = useState<GearSpec[]>([]);
-  const feederRef = useRef<BeltFeeder | null>(null);
-  const feedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const stopFeeding = useCallback(() => {
-    if (feedTimerRef.current !== null) clearInterval(feedTimerRef.current);
-    feedTimerRef.current = null;
-  }, []);
-  useEffect(() => stopFeeding, [stopFeeding]);
-
-  const handleFill = useCallback(() => {
-    setDeck(buildDeck());
-    setConveyorStatus('LOADED');
-  }, []);
-  useEffect(() => {
-    // Disconnect or FAULT resets the hopper and belt along with the workcell.
-    if (connectionState !== 'CONNECTED' || robotState === 'FAULT') {
-      stopFeeding();
-      feederRef.current = null;
-      setDeck([]);
-      setConveyorStatus('EMPTY');
-    }
-  }, [connectionState, robotState, stopFeeding]);
-
-  const sortBatch = useCallback(
-    (feeder: BeltFeeder) => {
-      const ws = () => bufferRef.current?.workcellState;
-      const ports: ConveyorPorts = {
-        spawn: spawnObject,
-        pickAndPlace,
-        waitForRegistered: () => waitUntil(() => (ws()?.spawned?.length ?? 0) > 0),
-        waitForSettled: () =>
-          waitUntil(
-            () =>
-              robotStateRef.current === 'IDLE' &&
-              (ws()?.spawned?.length ?? 0) === 0 &&
-              (ws()?.inProgress?.length ?? 0) === 0,
-          ),
-        goHome: () => executePose('HOME'),
-      };
-      processBatch(ports, feeder.take)
-        .then(() => {
-          // Batch done: the belt is cleared; the rest of the deck waits for the next Process.
-          if (feederRef.current === feeder) feederRef.current = null;
-          setConveyorStatus(feeder.remaining().length > 0 ? 'LOADED' : 'EMPTY');
-        })
-        .catch(() => undefined);
-    },
-    [bufferRef, spawnObject, pickAndPlace, executePose, waitUntil],
-  );
-
-  const handleProcess = useCallback(() => {
-    stopFeeding();
-    const feeder = createBeltFeeder(deck, Date.now());
-    feederRef.current = feeder;
-    setConveyorStatus('FEEDING');
-    let last = performance.now();
-    feedTimerRef.current = setInterval(() => {
-      const now = performance.now();
-      // Cap dt so a throttled tab cannot skip the spawn schedule.
-      feeder.step(Math.min((now - last) / 1000, MAX_FEED_STEP_S));
-      last = now;
-      setDeck(feeder.remaining().slice());
-      if (feeder.status() === 'HALTED') {
-        stopFeeding();
-        setConveyorStatus('HALTED');
-        sortBatch(feeder);
-      }
-    }, FEED_TICK_MS);
-  }, [deck, stopFeeding, sortBatch]);
+  const workcell = useCallback(() => bufferRef.current?.workcellState, [bufferRef]);
+  const { conveyorStatus, deck, feederRef, handleFill, handleProcess } = useConveyor({
+    connected: connectionState === 'CONNECTED',
+    robotState,
+    workcell,
+    spawnObject,
+    pickAndPlace,
+    goHomePose,
+    armAtHome,
+    waitUntil,
+    report: pushProbeLog,
+    seed,
+    timeScale,
+  });
 
   const handleClearWorkspace = useCallback(() => {
     clearWorkspace();
@@ -339,9 +258,8 @@ export function TeleopClient({
             robotState={effectiveRobotState ?? 'STANDBY'}
             connectionState={connectionState}
             hasActiveGear={hasActiveGear || workcellHasGears}
-            conveyorStatus={
-              workcellHasGears && conveyorStatus === 'LOADED' ? 'HALTED' : conveyorStatus
-            }
+            conveyorStatus={conveyorStatus}
+            hopperCount={deck.length}
             onExecutePose={executePose}
             onConnect={connect}
             onDisconnect={disconnect}

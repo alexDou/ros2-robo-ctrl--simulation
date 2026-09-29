@@ -1,9 +1,18 @@
+import { createBeltFeeder, type BeltFeeder } from '@utils/beltFeeder';
 import {
   BELT_X_RANGE,
   type GearColor,
   type PickAndPlaceTargetPayload,
   type SpawnObjectPayload,
 } from '@contracts';
+
+/** The run was cancelled on purpose (disconnect / FAULT reset): not a failure. */
+export class ConveyorAbortedError extends Error {
+  constructor(reason: string) {
+    super(reason);
+    this.name = 'ConveyorAbortedError';
+  }
+}
 
 /** A gear standing in the PickZone with its client-assigned classification. */
 export interface GearOnBelt {
@@ -21,8 +30,8 @@ export interface ConveyorPorts {
   waitForRegistered: () => Promise<void>;
   /** Resolves once the pick finished and the arm is IDLE again. */
   waitForSettled: () => Promise<void>;
-  /** Commands the arm to the HOME pose. */
-  goHome: () => void;
+  /** Commands the arm to the HOME pose; resolves once it has arrived and the arm is IDLE. */
+  goHome: () => Promise<void>;
 }
 
 /** Tracer bullet (Unit 8.0c): one known intact gear at the belt centre of the PickZone. */
@@ -55,17 +64,18 @@ export async function dispatchGear(ports: ConveyorPorts, gear: GearOnBelt): Prom
 
 /**
  * Sorts one halted Batch gear by gear (lead gear first), then sends the arm HOME. Each gear is
- * taken off the belt at its turn (`takeNext`), so one moved after the halt is picked where it now
- * stands.
+ * taken at its turn (`takeNext`), so one moved after the halt is picked where it now stands.
  */
 export async function processBatch(
   ports: ConveyorPorts,
   takeNext: () => GearOnBelt | undefined,
 ): Promise<void> {
+  let sorted = 0;
   for (let gear = takeNext(); gear; gear = takeNext()) {
-    await dispatchGear(ports, gear);
+    await dispatchGear(ports, { color: gear.color, intact: gear.intact, x: gear.x, y: gear.y });
+    sorted += 1;
   }
-  ports.goHome();
+  if (sorted > 0) await ports.goHome();
 }
 
 /** TeleopClient-local hopper/belt lifecycle, separate from RobotState (ADR 0005). */
@@ -112,4 +122,47 @@ export function buildDeck(seed: number = Date.now()): GearSpec[] {
 }
 
 export const canFill = (status: ConveyorStatus): boolean => status === 'EMPTY';
-export const canProcess = (status: ConveyorStatus): boolean => status === 'LOADED';
+/** Process runs the whole deck, so it needs a freshly filled (full) hopper. */
+export const canProcess = (status: ConveyorStatus, hopperCount: number): boolean =>
+  status === 'LOADED' && hopperCount === DECK_SIZE;
+
+/** Seams for `runDeck`: everything beyond the belt logic itself. */
+export interface DeckRunDeps {
+  ports: ConveyorPorts;
+  /** Seed for the Batch sizes and belt randomness; Batch n uses `seed + n`. */
+  seed: number;
+  /** Advances the feeder in real (or fake) time; resolves once it has halted. */
+  feedUntilHalted: (feeder: BeltFeeder) => Promise<void>;
+  /** Throws when the run was aborted (disconnect / FAULT reset). Checked between phases. */
+  assertActive: () => void;
+  onFeeder: (feeder: BeltFeeder) => void;
+  onStatus: (status: ConveyorStatus) => void;
+}
+
+/**
+ * Processes ALL gears of the deck: feed a Batch → halt → sort it gear by gear → arm HOME → next
+ * Batch, then a final flush run so leftover defectives leave the belt. Ends with the hopper and
+ * belt empty (status EMPTY). Rejects if any port rejects; nothing is swallowed here.
+ */
+export async function runDeck(deck: readonly GearSpec[], deps: DeckRunDeps): Promise<void> {
+  const { ports, seed, feedUntilHalted, assertActive, onFeeder, onStatus } = deps;
+  let hopper: readonly GearSpec[] = deck;
+  let previous: BeltFeeder | null = null;
+  for (let run = 0; hopper.length > 0 || (previous?.gears().length ?? 0) > 0; run++) {
+    assertActive();
+    const feeder: BeltFeeder = createBeltFeeder(
+      hopper,
+      seed + run,
+      previous ? { gears: previous.gears(), scroll: previous.scroll() } : undefined,
+    );
+    onFeeder(feeder);
+    onStatus('FEEDING');
+    await feedUntilHalted(feeder);
+    assertActive();
+    onStatus('HALTED');
+    await processBatch(ports, feeder.next);
+    hopper = feeder.remaining();
+    previous = feeder;
+  }
+  onStatus('EMPTY');
+}

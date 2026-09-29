@@ -1,5 +1,6 @@
 /// <reference types="vite/client" />
 import type { GearColor } from '../../domain/contracts';
+import type { BeltGearPosition } from '../components/RobotVisualizer/assets/beltgears';
 
 export interface VisualizerRendererInfo {
   memory: {
@@ -55,13 +56,7 @@ export interface RobotVisualizerGlobalHandle {
   getRearStandMesh: () => unknown;
   getConveyorMesh: () => unknown;
   getHopperMesh: () => unknown;
-  getBeltGearPositions: () => Array<{
-    x: number;
-    y: number;
-    z: number;
-    color: GearColor;
-    intact: boolean;
-  }>;
+  getBeltGearPositions: () => BeltGearPosition[];
   getBeltScroll: () => number;
   getHopperFillLevel: () => number;
   getGearMesh: () => unknown;

@@ -5,20 +5,16 @@ import {
   setGearwheelIntact,
   type GearwheelProceduralAssets,
 } from '@/components/RobotVisualizer/assets/gear';
-import type { GearColor } from '@contracts';
 import type { BeltGear } from '@utils/beltFeeder';
+
+/** A belt gear as rendered: its classification and mesh position (belt top is Z = 0). */
+export type BeltGearPosition = BeltGear & { z: number };
 
 export interface BeltGearsAssets {
   group: THREE.Group;
   /** Mirror the feeder's gears (by index); grows/shrinks the mesh pool as needed. */
   sync: (gears: readonly BeltGear[]) => void;
-  getPositions: () => Array<{
-    x: number;
-    y: number;
-    z: number;
-    color: GearColor;
-    intact: boolean;
-  }>;
+  getPositions: () => BeltGearPosition[];
   dispose: () => void;
 }
 
@@ -51,11 +47,10 @@ export function createBeltGears(): BeltGearsAssets {
     },
     getPositions: () =>
       pool.map((a, i) => ({
+        ...current[i],
         x: a.group.position.x,
         y: a.group.position.y,
         z: a.group.position.z,
-        color: current[i].color,
-        intact: current[i].intact,
       })),
     dispose: () => {
       for (const a of pool) {

@@ -7,7 +7,7 @@ priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-09-28T16:06:03Z
-updated_at: 2026-09-29T18:38:59Z
+updated_at: 2026-09-29T19:20:50Z
 parent: hand-sim-d04j
 blocked_by:
     - hand-sim-fe63
@@ -37,3 +37,5 @@ At HALTED the controller processes gears one at a time: SPAWN_OBJECT with the ge
 Spec + decision log: `support_files/specs/unit8/`.
 
 Implemented processBatch + TeleopClient wiring; E2E @unit-8.2c added (unseeded Batch; seeding is a follow-up).
+
+Follow-up: Process runs the whole deck (runDeck), defective gears stay on the belt and are carried off by the next run + final flush, Process needs full hopper, errors reported+rethrown, conveyor logic extracted to useConveyor/useWorkcellWaiters, E2E seeded (?seed, ?time_scale) and verified against the mock's received-command log.
