@@ -112,7 +112,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       ws.close();
     }
   });
-  it('defaults to WHITE sound when no sequence set', async () => {
+  it('defaults to WHITE intact when no sequence set', async () => {
     gateway.setAutoExecutePickAndPlace(false);
     const ws = await openWs(gateway);
     try {
@@ -125,7 +125,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       ws.close();
     }
   });
-  it('sound GREEN deposits at green tower with label GREEN', async () => {
+  it('intact GREEN deposits at green tower with label GREEN', async () => {
     seedClassification([{ color: 'GREEN', intact: true }]);
     const ws = await openWs(gateway);
     const labels: string[] = [];

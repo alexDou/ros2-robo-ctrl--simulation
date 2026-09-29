@@ -74,13 +74,13 @@ Layout: the conveyor replaces the table in front of the arm, running along Y (+Y
         A FeedHopper sits at the upstream end (robot left), the Scrap Bin under the belt exit
         (camera side). Spindle towers stand on a rear stand behind the arm (-X).
 1. User clicks "Fill" (Process disabled). The hopper fills with a deck of 100 gearwheels:
-   exactly 10 defective (random color) + 30 White / 30 Green / 30 Blue sound, shuffled.
+   exactly 10 defective (random color) + 30 White / 30 Green / 30 Blue intact, shuffled.
 2. User clicks "Process" (Fill disabled). The belt starts and gears drop from the hopper one
    by one with a random delay at a random position across the belt. Each belt run carries a
    random batch of 3..BeltCapacity gears (the last batch may be smaller).
 3. The belt stops when the lead gear of the batch reaches the far edge of the PickZone.
 4. The UI registers gears one by one with the workcell (coordinates + color + intact):
-   - Sound gear: the arm picks it and stacks it on its color tower; the UI waits for IDLE.
+   - Intact gear: the arm picks it and stacks it on its color tower; the UI waits for IDLE.
    - Defective gear: the workcell books it into the Scrap Bin at once, the arm does not move;
      the gear stays on the belt and falls into the bin when the belt next runs.
 5. When the batch is done the arm returns HOME and the belt restarts, repeating until the

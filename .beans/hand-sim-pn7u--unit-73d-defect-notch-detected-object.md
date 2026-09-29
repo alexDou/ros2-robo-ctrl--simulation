@@ -25,7 +25,7 @@ As an operator, I want defective Gearwheels to show a visible crack notch and th
 
 ## Acceptance criteria
 
-- [ ] Defective Gearwheel renders a crack notch; sound Gearwheels show none
+- [ ] Defective Gearwheel renders a crack notch; intact Gearwheels show none
 - [ ] Notch survives recolor-on-echo, tower/bin routing, and snapshot reconciliation
 - [ ] Existing inference detected-object label carries WHITE, GREEN, BLUE, or DEFECTIVE; no new channel
 

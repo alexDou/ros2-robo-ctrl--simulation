@@ -23,7 +23,7 @@ export interface ConveyorPorts {
   waitForSettled: () => Promise<void>;
 }
 
-/** Tracer bullet (Unit 8.0c): one known sound gear at the belt centre of the PickZone. */
+/** Tracer bullet (Unit 8.0c): one known intact gear at the belt centre of the PickZone. */
 export const TRACER_GEAR: GearOnBelt = {
   color: 'GREEN',
   intact: true,

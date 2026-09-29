@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> Aligns with [units.md](../units.md#unit-7-multi-color-gear-sorting--defect-qc-inspection) and the Unit 7 epic (`hand-sim-u2tx`). In this unit we extend pick-and-place with simulated quality-and-color classification plus four-destination routing: click still places an initially grey Gearwheel, the Gateway classifies the spawn with color (`WHITE`/`GREEN`/`BLUE`) and `intact` (`false` = defective, ~20%) and passes both to Workcell, the authoritative `WorkcellState` persists classification table-to-grasp-to-drop and routes sound gears to their color tower vs `intact == false` gears of any color to the ScrapBin, and TeleopClient recolors on authoritative echo with crack notch, per-tower `n/10` counters, and empty/non-empty bin icon.
+> Aligns with [units.md](../units.md#unit-7-multi-color-gear-sorting--defect-qc-inspection) and the Unit 7 epic (`hand-sim-u2tx`). In this unit we extend pick-and-place with simulated quality-and-color classification plus four-destination routing: click still places an initially grey Gearwheel, the Gateway classifies the spawn with color (`WHITE`/`GREEN`/`BLUE`) and `intact` (`false` = defective, ~20%) and passes both to Workcell, the authoritative `WorkcellState` persists classification table-to-grasp-to-drop and routes intact gears to their color tower vs `intact == false` gears of any color to the ScrapBin, and TeleopClient recolors on authoritative echo with crack notch, per-tower `n/10` counters, and empty/non-empty bin icon.
 
 Welcome to Unit 7: Multi-Color Gear Sorting & Defect QC Inspection. This unit provides the simulated inspection gate and sorting layer on top of Units 5/6: classification at spawn, four physical destinations in Three.js, and deterministic seeded end-to-end verification.
 
@@ -61,7 +61,7 @@ Lock down classification fields and destination constants across Python, Rust, a
      `intact` key on the spawn wire fails validation.
    - `schemas/robot_telemetry_event.schema.json`, every `GearEntry` (spawned / in_progress / processed):
      add REQUIRED `color` (`WHITE` / `GREEN` / `BLUE`, no default) + REQUIRED `intact`
-     (`boolean`, no default; `false` = unsound, routes to ScrapBin). Required becomes
+     (`boolean`, no default; `false` = defective, routes to ScrapBin). Required becomes
      `["id", "x", "y", "z", "color", "intact"]`. Missing either fails validation —
      no 4th tower, no silent WHITE fallback.
    - `consts` (telemetry schema): lock destination constants —
@@ -112,10 +112,10 @@ Route on the persisted classification. `intact == false` dominates color.
 
 1. **Routing rule** (in `workcell_node.py`, shared by `handle_get_drop_slot` reservation and `handle_commit_drop` commit):
    - `intact == false` (any color) → ScrapBin pile position, `overflow_occurred` never set, pile index increments to a 100-item cap, then wraps to slot 0 (bin recycle).
-   - Sound `WHITE`/`GREEN`/`BLUE` → matching tower base + per-tower slot math $z_k = k \times 0.02$m where $k$ = that tower's own fill count; towers independent.
+   - Intact `WHITE`/`GREEN`/`BLUE` → matching tower base + per-tower slot math $z_k = k \times 0.02$m where $k$ = that tower's own fill count; towers independent.
    - WHITE-only with no defects stays byte-identical to today (same coords, same slot math, same FIFO).
 2. **TDD Verification (`pytest`)**:
-   - Sound gear of each color reserves/commits to its tower coordinates.
+   - Intact gear of each color reserves/commits to its tower coordinates.
    - Per-tower slot height derives from that tower's fill count only.
    - `intact == false` gear of any color reserves/commits to bin pile, overflow never set, positions increment to 100 then wrap to slot 0.
 
@@ -160,12 +160,12 @@ Three towers via the existing builder, grey-until-echo recolor, per-tower counte
 Notch that survives everything; per-tower eviction; bin cap-100 recycle; Clear wipes all four.
 
 1. **Defect notch + inference channel (7.3d)**:
-   - `intact == false` gear mesh carries a visible crack notch (`assets/gear.ts` variant); sound gears show none.
+   - `intact == false` gear mesh carries a visible crack notch (`assets/gear.ts` variant); intact gears show none.
    - Notch survives recolor-on-echo, tower/bin routing, and snapshot reconciliation.
    - Existing inference `detected_object` label carries `WHITE` | `GREEN` | `BLUE` | `DEFECTIVE`; no new channel.
 2. **FIFO + Clear (7.3e)**:
    - 11th arrival to one tower evicts that tower's oldest (bottom), shifts rest down one $0.02$m step, counter stays 10; sibling towers unaffected.
-   - Bin pile caps at 100; 101st unsound wraps to slot 0 (sharp cut, recycle), overflow never reported; bin icon stays binary empty/filled.
+   - Bin pile caps at 100; 101st defective wraps to slot 0 (sharp cut, recycle), overflow never reported; bin icon stays binary empty/filled.
    - `ClearWorkspace` wipes all three towers plus bin, resets every counter, bin icon returns to empty, placement lockout lifts.
 3. **TDD Verification (`vitest` + `pytest`)**: notch presence/absence + survival; per-tower eviction isolation; bin cap-100 recycle; clear-to-empty reset incl. icon and lockout.
 

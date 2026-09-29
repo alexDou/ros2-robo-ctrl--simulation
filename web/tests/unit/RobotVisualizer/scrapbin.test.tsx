@@ -123,7 +123,7 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
     expect(visualizer.getSpindleTowerMeshes()).toHaveLength(3);
   });
 
-  it('indicator empty with no rejects; sound-only processed stays empty with no digits', async () => {
+  it('indicator empty with no rejects; intact-only processed stays empty with no digits', async () => {
     const telemetryBufferRef = snapBuffer(
       [],
       [],

@@ -171,7 +171,7 @@ class WorkcellNode(Node):
         return self._max_capacity - 1, (self._max_capacity - 1) * self._height_step, True
 
     def _destination_for(self, color: str, intact: bool) -> tuple[tuple[float, float, float], bool]:
-        """Returns (base_xyz, uncapped) for a classification; unsound dominates color."""
+        """Returns (base_xyz, uncapped) for a classification; defective dominates color."""
         if not intact:
             return SCRAP_BIN, True
         if color == "GREEN":
@@ -181,7 +181,7 @@ class WorkcellNode(Node):
         return (self._tower_x, self._tower_y, self._tower_z), False
 
     def _tower_fill_locked(self, color: str) -> int:
-        """Counts sound gears of one color resting on its tower."""
+        """Counts intact gears of one color resting on its tower."""
         base = self._destination_for(color, True)[0]
         return sum(
             1
@@ -192,7 +192,7 @@ class WorkcellNode(Node):
         )
 
     def _bin_fill_locked(self) -> int:
-        """Counts unsound gears piled in the ScrapBin (cap-100, sharp-cut recycle)."""
+        """Counts defective gears piled in the ScrapBin (cap-100, sharp-cut recycle)."""
         return sum(1 for e in self._processed if not e.get("intact", True))
 
     def _bin_slot_locked(self) -> tuple[int, float]:
@@ -224,7 +224,7 @@ class WorkcellNode(Node):
 
         Bare-query sentinel: arm client sends empty color + intact=True (no
         classification plumbing). Empty color follows the active gear; when
-        idle the intact bit is honored (sound->WHITE tower, unsound->bin).
+        idle the intact bit is honored (intact->WHITE tower, defective->bin).
         Non-empty color must be WHITE, GREEN, or BLUE; unknown rejected
         with slot_index=-1 and zero coords (no slot).
         """

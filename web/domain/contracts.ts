@@ -211,7 +211,7 @@ export const TOWER_CAPACITY = 10 as const;
 /** Vertical stacking step per gear in meters */
 export const STACK_STEP_M = 0.02 as const;
 
-/** Maximum unsound gears piled in ScrapBin before sharp-cut recycle */
+/** Maximum defective gears piled in ScrapBin before sharp-cut recycle */
 export const MAX_SCRAP_BIN_CAPACITY = 100 as const;
 
 /** Fallback gear color class when classification is absent */

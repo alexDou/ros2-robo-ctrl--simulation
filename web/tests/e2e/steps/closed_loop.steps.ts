@@ -146,7 +146,7 @@ When('the operator clicks the "Process" button', async function (this: CustomWor
   await this.teleopPage!.clickProcess();
 });
 
-Then('the sound GREEN gear should rest on the GREEN tower', async function (this: CustomWorld) {
+Then('the intact GREEN gear should rest on the GREEN tower', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectSingleGearOnTower(GREEN_TOWER);
 });

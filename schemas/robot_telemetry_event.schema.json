@@ -71,7 +71,7 @@
     "MAX_SCRAP_BIN_CAPACITY": {
       "type": "integer",
       "value": 100,
-      "description": "Maximum unsound gears piled in ScrapBin before sharp-cut recycle"
+      "description": "Maximum defective gears piled in ScrapBin before sharp-cut recycle"
     },
     "DEFAULT_GEAR_COLOR": {
       "type": "string",
@@ -255,7 +255,7 @@
               },
               "intact": {
                 "type": "boolean",
-                "description": "False if gear is unsound and must route to scrap bin"
+                "description": "False if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -316,7 +316,7 @@
               },
               "intact": {
                 "type": "boolean",
-                "description": "False if gear is unsound and must route to scrap bin"
+                "description": "False if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false
@@ -377,7 +377,7 @@
               },
               "intact": {
                 "type": "boolean",
-                "description": "False if gear is unsound and must route to scrap bin"
+                "description": "False if gear is defective and must route to scrap bin"
               }
             },
             "additionalProperties": false
