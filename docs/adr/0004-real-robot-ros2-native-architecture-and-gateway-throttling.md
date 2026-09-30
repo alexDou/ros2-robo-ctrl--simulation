@@ -49,3 +49,17 @@ We adopt a three-tier decoupled production architecture:
 - **Zero Custom C++**: All custom robotics logic remains in Python (`rclpy`), while Gateway remains in Rust.
 - **Safe & Predictable Motion**: Python never runs 500 Hz motor loops; high-frequency motion interpolation is handled deterministically by `ros2_control`.
 - **Execution Timing**: Implemented immediately following Unit 6 completion as "Unit 6.5-refactoring".
+
+## Amendment (Unit 8): command limiter is a flood ceiling, not a 20 Hz gap
+The Unit 4.3 ingress limiter enforced a 50 ms minimum gap between commands and *rejected* anything faster. The
+conveyor sequencer legitimately sends SPAWN_OBJECT and then PICK_AND_PLACE_TARGET back-to-back, so the pick was
+dropped, the run stalled with the arm idle, and the operator saw `RATE_LIMIT_EXCEEDED` for correct behaviour.
+
+- **Decision**: replace the fixed gap with a per-ActiveSession token bucket (50 commands/s sustained, burst 20) on
+  the browser -> Gateway direction only. It is an abuse/flood guard for the boundary, sized well above any
+  legitimate operator traffic. `EMERGENCY_STOP` still bypasses it.
+- **Unchanged**: the Gateway -> ROS2/Zenoh command publish has no limiter; the 500 Hz -> 30 Hz Telemetry Throttler
+  is a separate mechanism.
+- **Not a control rate**: the UR5e 500 Hz RTDE loop lives between `ros2_control`/`ur_robot_driver` and the arm and
+  never crosses the Gateway. Commands here are discrete intents. Revisit only if a streaming setpoint channel is
+  added; size that channel separately (binary, direct Zenoh, with a stream watchdog), not via this JSON ingress.

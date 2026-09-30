@@ -107,8 +107,8 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
   - Implements bounded FIFO command queue ($N=5$) for valid commands arriving during `EXECUTING`.
   - Implements full FIFO queue purge and immediate motion abort on `EMERGENCY_STOP`.
   - Dispatches trajectories to ROS2 `joint_trajectory_controller` action server `/joint_trajectory_controller/follow_joint_trajectory` (with lightweight cubic spline interpolation fallback in mock controller).
-- **Unit 4.3: Gateway Safety Gating & 20 Hz Command Throttling**:
-  - Enforces stateless syntactic validation, 6-DoF joint limits $[-\pi, \pi]$, and 20 Hz command rate throttling per ActiveSession.
+- **Unit 4.3: Gateway Safety Gating & Command Flood Ceiling**:
+  - Enforces stateless syntactic validation, 6-DoF joint limits $[-\pi, \pi]$, and a per-ActiveSession command flood ceiling (token bucket, 50 cmd/s sustained, burst 20; superseded the original 20 Hz / 50 ms minimum gap, see [ADR 0004 amendment](../../docs/adr/0004-real-robot-ros2-native-architecture-and-gateway-throttling.md)).
   - Emits structured `ErrorFrame` on schema violations or queue limits without dropping WebSocket connection.
 - **Unit 4.4: TeleopClient Operator Toolbar & Lifecycle Controls**:
   - Implements sleek horizontal toolbar under Three.js canvas containing Canned Pose triggers (`"Home"`, `"Ready"`, `"Inspect"`), Palm toggle (`"Grasp" / "Release"`), and `"Reset Fault"`.

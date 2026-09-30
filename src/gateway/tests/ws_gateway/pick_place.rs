@@ -65,9 +65,9 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
             "pick_z": 0.0
         }),
     };
-    // 1+2. Send valid pick-only + immediate follow-up back-to-back; the follow-up
-    // must be rejected with RATE_LIMIT_EXCEEDED (helper retries on stalls).
-    let rate_limit_cmd = RobotCommand {
+    // 1+2. Send valid pick-only + immediate follow-up back-to-back; both must be
+    // forwarded (legitimate sequencer traffic is never rejected).
+    let follow_up_cmd = RobotCommand {
         command_id: "cmd-pnp-fast".to_string(),
         sender_id: "test-client".to_string(),
         timestamp_ns: 1_700_000_000_000_000_000,
@@ -78,13 +78,18 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
             "pick_z": 0.0
         }),
     };
-    let rx_pick_only = super::support::expect_rate_limited(
-        &mut ws_stream,
-        &mut cmd_rx,
-        &pick_only_cmd,
-        &rate_limit_cmd,
-    )
-    .await;
+    for cmd in [&pick_only_cmd, &follow_up_cmd] {
+        ws_stream
+            .send(Message::Text(
+                serde_json::to_string(cmd).expect("serialize"),
+            ))
+            .await
+            .expect("send pick");
+    }
+    let rx_pick_only = super::support::recv_client_command(&mut cmd_rx).await;
+    assert_eq!(rx_pick_only.command_id, "cmd-pnp-pick-only");
+    let rx_follow_up = super::support::recv_client_command(&mut cmd_rx).await;
+    assert_eq!(rx_follow_up.command_id, "cmd-pnp-fast");
     assert_eq!(rx_pick_only.r#type, CommandType::PickAndPlaceTarget);
     let parsed_pick_only: PickAndPlaceTargetPayload =
         serde_json::from_value(rx_pick_only.payload).expect("parse payload");
@@ -95,7 +100,7 @@ async fn test_ws_pick_and_place_target_handling_and_validation() {
     assert_eq!(parsed_pick_only.drop_y, None);
     assert_eq!(parsed_pick_only.drop_z, None);
 
-    // 3. Send valid PICK_AND_PLACE_TARGET with drop coordinates (after 60ms delay to respect 20 Hz throttle)
+    // 3. Send valid PICK_AND_PLACE_TARGET with drop coordinates
     tokio::time::sleep(Duration::from_millis(120)).await;
     let pnp_with_drop = RobotCommand {
         command_id: "cmd-pnp-with-drop".to_string(),
