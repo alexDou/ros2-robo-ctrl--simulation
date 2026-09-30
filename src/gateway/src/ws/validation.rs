@@ -55,5 +55,3 @@ pub(super) fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Res
         }
     }
 }
-
-pub(super) const MIN_COMMAND_INTERVAL: std::time::Duration = std::time::Duration::from_millis(50);

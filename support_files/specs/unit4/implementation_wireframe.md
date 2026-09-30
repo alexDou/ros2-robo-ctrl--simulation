@@ -136,13 +136,14 @@ Ensure the Gateway enforces boundary defense without state synchronization compl
 1. **Stateless Syntactic & Limit Validation**:
    - Enforces valid Serde schema.
    - Enforces 6-DoF joint limits $[-\pi, \pi]$ and finite floating point numbers.
-2. **20 Hz Command Rate Throttling**:
-   - Enforces minimum 50ms interval between non-priority commands per ActiveSession.
-   - `EMERGENCY_STOP` bypasses rate limiting immediately.
+2. **Command Flood Ceiling** (amended: replaced the 20 Hz / 50 ms minimum gap, which rejected legitimate back-to-back commands such as SPAWN_OBJECT then PICK_AND_PLACE_TARGET):
+   - Token bucket per ActiveSession, browser -> Gateway direction only: 50 commands/s sustained, burst 20.
+   - Legitimate sequencer traffic never hits it; sustained spam gets `RATE_LIMIT_EXCEEDED`.
+   - `EMERGENCY_STOP` bypasses the limiter immediately.
 3. **Structured Error Emission**:
    - Emits structured `ErrorFrame` on violations without dropping the WebSocket connection.
 4. **TDD Verification (`cargo nextest`)**:
-   - Test rate limiter drops/rejects command spamming (>20 Hz).
+   - Test back-to-back commands within a burst are all forwarded; test a sustained flood is rejected.
    - Test E-Stop bypasses rate limiter instantly.
    - Test invalid schemas emit structured `ErrorFrame`.
 

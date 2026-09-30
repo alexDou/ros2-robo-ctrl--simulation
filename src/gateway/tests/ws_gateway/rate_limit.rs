@@ -44,25 +44,75 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
         .expect("cmd rx");
     assert_eq!(engage.r#type, CommandType::Engage);
 
-    // 1. Send first command (Ping) -> Should succeed and reach fabric
-    let cmd1 = RobotCommand {
-        command_id: "cmd-rate-1".to_string(),
+    let ping = |id: String| RobotCommand {
+        command_id: id,
         sender_id: "test-client".to_string(),
         timestamp_ns: 1_700_000_000_000_000_000,
         r#type: CommandType::Ping,
         payload: serde_json::json!({}),
     };
-    // 2. Send pair back-to-back; helper retries on scheduling stalls (see support.rs).
-    let cmd2 = RobotCommand {
-        command_id: "cmd-rate-2".to_string(),
-        sender_id: "test-client".to_string(),
-        timestamp_ns: 1_700_000_000_000_000_000,
-        r#type: CommandType::Ping,
-        payload: serde_json::json!({}),
-    };
-    super::support::expect_rate_limited(&mut ws_stream, &mut cmd_rx, &cmd1, &cmd2).await;
 
-    // 3. Immediately send EMERGENCY_STOP -> Must bypass rate limiting unconditionally!
+    // 1. A burst of legitimate back-to-back commands (well under the burst
+    //    allowance) must ALL be forwarded and never rejected.
+    for i in 0..10 {
+        ws_stream
+            .send(Message::Text(
+                serde_json::to_string(&ping(format!("cmd-burst-{i}"))).expect("serialize ping"),
+            ))
+            .await
+            .expect("send burst ping");
+    }
+    for i in 0..10 {
+        let got = super::support::recv_client_command(&mut cmd_rx).await;
+        assert_eq!(got.command_id, format!("cmd-burst-{i}"));
+    }
+    assert!(
+        tokio::time::timeout(Duration::from_millis(300), ws_stream.next())
+            .await
+            .is_err(),
+        "a legitimate burst must not produce any error frame"
+    );
+
+    // 2. A sustained flood far beyond the ceiling is still rejected.
+    tokio::time::sleep(Duration::from_millis(500)).await; // let the bucket refill
+    let flood = 300;
+    for i in 0..flood {
+        ws_stream
+            .send(Message::Text(
+                serde_json::to_string(&ping(format!("cmd-flood-{i}"))).expect("serialize ping"),
+            ))
+            .await
+            .expect("send flood ping");
+    }
+    let mut rejected = 0;
+    while let Ok(Some(Ok(Message::Text(txt)))) =
+        tokio::time::timeout(Duration::from_millis(500), ws_stream.next()).await
+    {
+        let err: ErrorFrame = serde_json::from_str(&txt).expect("parse error frame");
+        assert_eq!(err.error_code, "RATE_LIMIT_EXCEEDED");
+        rejected += 1;
+    }
+    let mut forwarded = 0;
+    while let Ok(cmd) = cmd_rx.try_recv() {
+        if cmd.sender_id != "gateway" {
+            forwarded += 1;
+        }
+    }
+    assert_eq!(
+        forwarded + rejected,
+        flood,
+        "every flood command is either forwarded or rejected"
+    );
+    assert!(
+        forwarded >= 20,
+        "burst allowance must be honoured, forwarded {forwarded}"
+    );
+    assert!(
+        rejected >= 100,
+        "sustained flood must be rejected, rejected {rejected}"
+    );
+
+    // 3. EMERGENCY_STOP straight after the flood -> Must bypass rate limiting unconditionally!
     let estop_cmd = RobotCommand {
         command_id: "cmd-estop-1".to_string(),
         sender_id: "test-client".to_string(),

@@ -1,5 +1,6 @@
 //! WebSocket teleoperation endpoint.
 
+mod flood_guard;
 mod handshake;
 mod validation;
 
@@ -21,8 +22,9 @@ fn current_time_ns() -> u64 {
         .map_or(0, |d| u64::try_from(d.as_nanos()).unwrap_or(u64::MAX))
 }
 
+use self::flood_guard::CommandFloodGuard;
 use self::handshake::{HANDSHAKE_MAX_RETRIES, HANDSHAKE_RETRY_INTERVAL};
-use self::validation::{validate_command_payload, MIN_COMMAND_INTERVAL};
+use self::validation::validate_command_payload;
 
 /// WebSocket teleoperation endpoint handling handshake, ActiveSession exclusivity,
 /// command forwarding to DataFabric, and telemetry streaming back to client.
@@ -85,7 +87,7 @@ pub async fn teleop_ws(
     actix_web::rt::spawn(async move {
         // Hold guard for duration of connection; dropping guard on exit frees session
         let _active_guard: ActiveSessionGuard = guard;
-        let mut last_command_time: Option<std::time::Instant> = None;
+        let mut flood_guard = CommandFloodGuard::new();
 
         // Handshake: EdgeNode idles in STANDBY until Gateway forwards ENGAGE.
         // Bounded retry: a slow EdgeBridge may miss the first ENGAGE, so retry
@@ -155,12 +157,12 @@ pub async fn teleop_ws(
                                             }
                                         }
                                     } else if command.r#type != crate::domain::CommandType::EmergencyStop
-                                        && last_command_time.is_some_and(|prev| prev.elapsed() < MIN_COMMAND_INTERVAL)
+                                        && !flood_guard.try_acquire()
                                     {
-                                        warn!("Rate limit exceeded for robot {robot_id_for_task} (20 Hz / 50ms interval)");
+                                        warn!("Command flood ceiling exceeded for robot {robot_id_for_task}");
                                         let error_frame = ErrorFrame::new(
                                             "RATE_LIMIT_EXCEEDED",
-                                            "Command rate limit exceeded (maximum 20 Hz / 50ms minimum interval)",
+                                            "Command flood ceiling exceeded (maximum 50 commands/s sustained, burst 20)",
                                             current_time_ns(),
                                         );
                                         if let Ok(err_json) = serde_json::to_string(&error_frame) {
@@ -170,9 +172,7 @@ pub async fn teleop_ws(
                                         }
                                     } else {
                                         if command.r#type == crate::domain::CommandType::EmergencyStop {
-                                            last_command_time = None;
-                                        } else {
-                                            last_command_time = Some(std::time::Instant::now());
+                                            flood_guard.reset();
                                         }
 
                                         if command.r#type == crate::domain::CommandType::PickAndPlaceTarget {

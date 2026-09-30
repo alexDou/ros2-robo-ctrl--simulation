@@ -7,5 +7,5 @@
   * **Test 1 (Domain / Schemas)**: Cross-language serialization tests asserting Python, Rust, and TypeScript validate `PALM_ACTUATE` (`{ "action": "GRASP" | "RELEASE" }`) and canned `TRAJECTORY_EXECUTE` payloads.
   * **Test 2 (TeleopClient / Vitest)**: Component tests asserting procedural suction tool renders parented to `tool0`, color shifts on grasp state changes, and toolbar dispatches commands only when `robot_state === 'IDLE'`.
   * **Test 3 (EdgeNode / Pytest)**: Unit tests asserting lifecycle state transitions, FIFO queueing of valid commands during `EXECUTING`, queue purge and immediate motion cancellation on `EMERGENCY_STOP`, and trajectory dispatch to ROS2 controller / mock.
-  * **Test 4 (Gateway / Cargo Nextest)**: Unit tests asserting 20 Hz command rate throttling and validation error frames for out-of-bound or malformed payloads.
+  * **Test 4 (Gateway / Cargo Nextest)**: Unit tests asserting the command flood ceiling (burst 20, 50/s sustained) and validation error frames for out-of-bound or malformed payloads.
   * **Test 5 (Integration / Playwright)**: Multi-service integration test asserting canned trajectory execution, palm actuation, and emergency stop halt across TeleopClient, Gateway, and EdgeNode within < 50ms latency.
