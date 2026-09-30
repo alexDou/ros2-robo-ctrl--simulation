@@ -9,20 +9,7 @@ export function ActionProgressBar({ progress }: ActionProgressBarProps) {
   const barColor = progress.phase === 'COMPLETED' ? '#10b981' : '#3b82f6';
 
   return (
-    <div
-      data-testid="action-progress-container"
-      style={{
-        backgroundColor: 'rgba(31, 41, 55, 0.92)',
-        backdropFilter: 'blur(4px)',
-        borderRadius: '0.5rem',
-        padding: '0.625rem 1rem',
-        border: '1px solid #374151',
-        boxSizing: 'border-box',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
-        width: '100%',
-        marginBottom: '0.75rem',
-      }}
-    >
+    <div data-testid="action-progress-container" style={{ width: '100%', boxSizing: 'border-box' }}>
       <div
         style={{
           display: 'flex',

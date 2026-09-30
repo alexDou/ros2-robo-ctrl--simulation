@@ -19,7 +19,6 @@ export interface OperatorToolbarProps {
   onStop: () => void;
   errorBanner?: { errorCode: string; message: string } | null;
   disabled?: boolean;
-  disabledReason?: string | null;
 }
 
 export function OperatorToolbar({
@@ -38,7 +37,6 @@ export function OperatorToolbar({
   onStop,
   errorBanner,
   disabled = false,
-  disabledReason = null,
 }: OperatorToolbarProps) {
   const isIdle = robotState === 'IDLE';
   const isFault = robotState === 'FAULT';
@@ -84,14 +82,6 @@ export function OperatorToolbar({
         >
           <span style={{ fontWeight: 'bold' }}>⚠ [{errorBanner.errorCode}]</span>
           <span>{errorBanner.message}</span>
-        </div>
-      )}
-      {disabledReason && (
-        <div
-          data-testid="toolbar-disabled-reason"
-          style={{ color: '#9ca3af', fontSize: '0.8125rem' }}
-        >
-          {disabledReason}
         </div>
       )}
 
