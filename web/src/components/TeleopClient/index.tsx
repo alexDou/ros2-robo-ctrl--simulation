@@ -9,7 +9,7 @@ import { useConveyor } from '@/hooks/useConveyor';
 import { useWorkcellWaiters } from '@/hooks/useWorkcellWaiters';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
-import { ActionProgressBar } from '@components/ActionProgressBar';
+import { ActionStatusRow } from '@components/ActionStatusRow';
 import { EventLog } from '@components/EventLog';
 import { TelemetryMonitor } from '@components/TelemetryMonitor';
 import { RobotVisualizer } from '@components/RobotVisualizer';
@@ -231,7 +231,12 @@ export function TeleopClient({
             position: 'relative',
           }}
         >
-          {actionProgress && <ActionProgressBar progress={actionProgress} />}
+          <ActionStatusRow
+            message={
+              toolbarDisabled || effectiveRobotState !== 'IDLE' ? toolbarDisabledReason : null
+            }
+            progress={actionProgress}
+          />
           <div
             style={{
               flex: 1,
@@ -270,9 +275,6 @@ export function TeleopClient({
             onStop={handleStop}
             errorBanner={errorBanner}
             disabled={toolbarDisabled}
-            disabledReason={
-              toolbarDisabled || effectiveRobotState !== 'IDLE' ? toolbarDisabledReason : null
-            }
           />
         </div>
         <div
