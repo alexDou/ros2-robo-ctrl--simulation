@@ -30,12 +30,15 @@ scaled_joint_trajectory_controller:
     state_publish_rate: 5.0
     action_monitor_rate: 2.0
     allow_partial_joints_goal: false
+    # trajectory: 0.0 disables the path check. The GenericSystem mock mirrors commands into state,
+    # so path error here only measures loop jitter (one 5 Hz overrun at 2 rad/s reads as
+    # 0.3-0.7 rad and aborted PickAndPlace, hand-sim-pabi). Goal check kept; real UR keeps 0.2.
     constraints:
       stopped_velocity_tolerance: 0.2
       goal_time: 0.0
-      shoulder_pan_joint: { trajectory: 0.2, goal: 0.1 }
-      shoulder_lift_joint: { trajectory: 0.2, goal: 0.1 }
-      elbow_joint: { trajectory: 0.2, goal: 0.1 }
-      wrist_1_joint: { trajectory: 0.2, goal: 0.1 }
-      wrist_2_joint: { trajectory: 0.2, goal: 0.1 }
-      wrist_3_joint: { trajectory: 0.2, goal: 0.1 }
+      shoulder_pan_joint: { trajectory: 0.0, goal: 0.1 }
+      shoulder_lift_joint: { trajectory: 0.0, goal: 0.1 }
+      elbow_joint: { trajectory: 0.0, goal: 0.1 }
+      wrist_1_joint: { trajectory: 0.0, goal: 0.1 }
+      wrist_2_joint: { trajectory: 0.0, goal: 0.1 }
+      wrist_3_joint: { trajectory: 0.0, goal: 0.1 }
