@@ -30,6 +30,10 @@ Then(
   'the numerical joint angle readouts in the sidebar should update continuously in sync with the 3D canvas',
   async function (this: CustomWorld) {
     expect(this.teleopPage).toBeDefined();
+    await this.teleopPage!.expectSidebarUpdating();
+    // The canvas eases toward each telemetry frame (JOINT_LERP_ALPHA), so while joints move it
+    // trails the raw sidebar value by design. Once the stream settles it must converge onto it.
+    await this.harness.stopMockPublisher();
     await this.teleopPage!.expectSidebarInSyncWithVisualizer(0.08);
   },
 );
