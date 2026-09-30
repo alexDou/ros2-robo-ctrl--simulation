@@ -18,7 +18,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Python: `python3 -m pytest path::test_name`
   - Web: `npx --prefix web vitest run tests/unit/<file>.test.ts`
 - Each new file in `src/gateway/tests/` needs its own `[[test]]` entry in `src/gateway/Cargo.toml`.
-- Web E2E is Cucumber + Playwright (`npm --prefix web run test:e2e`, mock gateway), not the Playwright runner. Ignore `test:e2e:live` and `@live` scenarios for now.
+- Web E2E is Cucumber + Playwright (`npm --prefix web run test:e2e`), not the Playwright runner. Ignore `test:e2e:live` and `@live` scenarios for now.
+- **Web E2E stops at the TeleopClient boundary.** It never touches the Gateway, Zenoh or ROS2: the communication layer is always mocked (mock gateway). So an E2E failure can only come from web code or the mock, never from the real Gateway, and E2E can never confirm or refute a Gateway/ROS2 bug. Gateway behaviour is proven by `cargo nextest` (`src/gateway/tests/`); never propose E2E (or a "replay against the real gateway") as a check on it.
 
 ## Codegen
 
