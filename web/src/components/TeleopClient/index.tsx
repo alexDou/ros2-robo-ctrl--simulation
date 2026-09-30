@@ -144,7 +144,9 @@ export function TeleopClient({
         ? 'Robot parked in STANDBY. Connect handshake activates controllers.'
         : effectiveRobotState === 'BOOTING'
           ? 'Robot activating (BOOTING): controllers switching, joints subscribing, homing.'
-          : `Robot ${effectiveRobotState}: actions resume when IDLE.`;
+          : effectiveRobotState === 'IDLE'
+            ? 'Robot IDLE: ready.'
+            : `Robot ${effectiveRobotState}: actions resume when IDLE.`;
 
   return (
     <div
@@ -231,12 +233,7 @@ export function TeleopClient({
             position: 'relative',
           }}
         >
-          <ActionStatusRow
-            message={
-              toolbarDisabled || effectiveRobotState !== 'IDLE' ? toolbarDisabledReason : null
-            }
-            progress={actionProgress}
-          />
+          <ActionStatusRow message={toolbarDisabledReason} progress={actionProgress} />
           <div
             style={{
               flex: 1,

@@ -121,10 +121,36 @@ describe('Action status row (robot-state message + progress, above the workspace
     const ws = connect();
     act(() => ws.simulateMessage(telem(RobotState.IDLE)));
     record(); // idle: nothing to show
-    expect(screen.queryByTestId('toolbar-disabled-reason')).toBeNull();
     act(() => ws.simulateMessage(telem(RobotState.EXECUTING)));
     act(() => ws.simulateMessage(feedback(10)));
     record(); // executing: message + progress
     expect(heights.size).toBe(1);
+  });
+
+  it('keeps the same message box mounted in every state, changing only its text', () => {
+    renderClient();
+    const box = screen.getByTestId('toolbar-disabled-reason');
+    const ws = connect();
+    expect(screen.getByTestId('toolbar-disabled-reason')).toBe(box);
+    act(() => ws.simulateMessage(telem(RobotState.IDLE)));
+    expect(screen.getByTestId('toolbar-disabled-reason')).toBe(box);
+    expect(box.textContent).toMatch(/idle.*ready/i);
+    act(() => ws.simulateMessage(telem(RobotState.EXECUTING)));
+    expect(screen.getByTestId('toolbar-disabled-reason')).toBe(box);
+    expect(box.textContent).toMatch(/executing/i);
+    act(() => ws.simulateMessage(telem(RobotState.IDLE)));
+    expect(screen.getByTestId('toolbar-disabled-reason')).toBe(box);
+    expect(box.textContent).toMatch(/idle.*ready/i);
+  });
+
+  it('keeps the progress cell mounted with no action running', () => {
+    renderClient();
+    const cell = screen.getByTestId('action-status-progress');
+    const ws = connect();
+    act(() => ws.simulateMessage(telem(RobotState.EXECUTING)));
+    act(() => ws.simulateMessage(feedback(10)));
+    expect(cell.contains(screen.getByTestId('action-progress-container'))).toBe(true);
+    act(() => ws.simulateMessage(telem(RobotState.IDLE)));
+    expect(screen.getByTestId('action-status-progress')).toBe(cell);
   });
 });
