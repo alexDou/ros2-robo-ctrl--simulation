@@ -259,6 +259,22 @@ export class TeleopPage {
     expect(distance).toBeGreaterThanOrEqual(minDelta);
   }
 
+  /** The sidebar readouts keep changing while the stream moves (they are the raw telemetry). */
+  async expectSidebarUpdating(durationMs = 1000): Promise<void> {
+    const read = () =>
+      this.page.evaluate(
+        (joints) =>
+          joints.map(
+            (j) => document.querySelector(`[data-testid="joint-val-${j}"]`)?.textContent ?? '',
+          ),
+        CANONICAL_UR5E_JOINTS,
+      );
+    const before = await read();
+    await this.page.waitForTimeout(durationMs);
+    const after = await read();
+    expect(after.some((text, i) => text !== before[i])).toBe(true);
+  }
+
   async expectSidebarInSyncWithVisualizer(toleranceRad = 0.05, timeout = 5000): Promise<void> {
     await expect
       .poll(
