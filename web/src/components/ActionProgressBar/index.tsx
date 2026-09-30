@@ -1,15 +1,22 @@
 import type { ActionProgress } from '@/hooks/useTeleopSession';
 
 export interface ActionProgressBarProps {
-  progress: ActionProgress;
+  progress: ActionProgress | null;
 }
 
 export function ActionProgressBar({ progress }: ActionProgressBarProps) {
-  const roundedPercent = Math.round(progress.percentComplete);
-  const barColor = progress.phase === 'COMPLETED' ? '#10b981' : '#3b82f6';
+  const roundedPercent = Math.round(progress?.percentComplete ?? 0);
+  const barColor = progress?.phase === 'COMPLETED' ? '#10b981' : '#3b82f6';
 
   return (
-    <div data-testid="action-progress-container" style={{ width: '100%', boxSizing: 'border-box' }}>
+    <div
+      data-testid="action-progress-container"
+      style={{
+        width: '100%', 
+        boxSizing: 'border-box',
+        padding: '0.75rem 1rem',
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -21,7 +28,7 @@ export function ActionProgressBar({ progress }: ActionProgressBarProps) {
         }}
       >
         <span>
-          Action Phase: <strong data-testid="action-progress-phase">{progress.phase}</strong>
+          Action Phase: <strong data-testid="action-progress-phase">{progress?.phase}</strong>
         </span>
         <span data-testid="action-progress-percent" style={{ fontWeight: 600, color: '#60a5fa' }}>
           {roundedPercent}%
