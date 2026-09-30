@@ -124,7 +124,7 @@ describe('TeleopClient Component', () => {
         ws.simulateMessage(telem(RobotState.IDLE));
       });
       expect(screen.getByTestId('connection-badge').textContent).toMatch(/CONNECTED \/ IDLE/);
-      expect(screen.queryByTestId('toolbar-disabled-reason')).toBeNull();
+      expect(screen.getByTestId('toolbar-disabled-reason').textContent).toMatch(/idle.*ready/i);
     });
 
     it('falls back to STANDBY display when BOOTING times out', () => {

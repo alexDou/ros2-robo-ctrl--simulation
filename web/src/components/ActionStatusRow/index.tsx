@@ -1,12 +1,12 @@
 import type { ActionProgress } from '@/hooks/useTeleopSession';
 import { ActionProgressBar } from '../ActionProgressBar';
 
-/** Fixed height: the row renders even when empty, so nothing below it shifts. */
+/** Fixed height, and every cell stays mounted: only content changes, so nothing blinks or shifts. */
 export const ACTION_STATUS_ROW_HEIGHT = '2.75rem';
 
 export interface ActionStatusRowProps {
-  /** Why the controls are unavailable (robot state), shown on the left. */
-  message: string | null;
+  /** Robot-state message on the left; always shown, only its text changes. */
+  message: string;
   /** Running action, shown on the right. */
   progress: ActionProgress | null;
 }
@@ -27,24 +27,25 @@ export function ActionStatusRow({ message, progress }: ActionStatusRowProps) {
         marginBottom: '0.75rem',
       }}
     >
-      <div style={{ flex: '1 1 0', minWidth: 0 }}>
-        {message && (
-          <div
-            data-testid="toolbar-disabled-reason"
-            title={message}
-            style={{
-              color: '#9ca3af',
-              fontSize: '0.8125rem',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {message}
-          </div>
-        )}
+      <div
+        data-testid="toolbar-disabled-reason"
+        title={message}
+        style={{
+          flex: '1 1 0',
+          minWidth: 0,
+          backgroundColor: '#1f2937',
+          borderRadius: '0.5rem',
+          padding: '0.75rem 1rem',
+          color: '#9ca3af',
+          fontSize: '0.8125rem',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {message}
       </div>
-      <div style={{ flex: '0 0 40%', minWidth: 0 }}>
+      <div data-testid="action-status-progress" style={{ flex: '0 0 40%', minWidth: 0 }}>
         {progress && <ActionProgressBar progress={progress} />}
       </div>
     </div>
