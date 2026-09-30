@@ -69,7 +69,10 @@ export function reconcileSnapshotGears(
   const desired = new Map<string, { entry: GearEntry; bucket: string }>();
   for (const e of snap.spawned) desired.set(e.id, { entry: e, bucket: 'spawned' });
   for (const e of snap.inProgress) desired.set(e.id, { entry: e, bucket: 'in_progress' });
-  for (const e of snap.processed) desired.set(e.id, { entry: e, bucket: 'processed' });
+  // The bin is binary (green/red, ScrapBin below): a binned defective gear gets no mesh.
+  for (const e of snap.processed) {
+    if (e.intact !== false) desired.set(e.id, { entry: e, bucket: 'processed' });
+  }
 
   // Remove meshes whose id left the snapshot.
   for (const [id, rec] of Array.from(store.gears)) {

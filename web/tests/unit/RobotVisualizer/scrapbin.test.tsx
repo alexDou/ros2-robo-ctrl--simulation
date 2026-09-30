@@ -3,7 +3,7 @@ import { render, act, screen } from '@testing-library/preact';
 import * as THREE from 'three';
 import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
-import { SCRAP_BIN } from '@contracts';
+import { BELT_X_RANGE, SCRAP_BIN } from '@contracts';
 import { SCRAP_BIN_COORDS } from '@components/RobotVisualizer/constants';
 import {
   createScrapBin,
@@ -116,6 +116,16 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
     bin.dispose();
   });
 
+  it('bin is at least as wide as the belt and centred under it', () => {
+    const bin = createScrapBin();
+    bin.group.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(bin.group);
+    const beltWidth = BELT_X_RANGE[1] - BELT_X_RANGE[0];
+    expect(box.max.x - box.min.x).toBeGreaterThanOrEqual(beltWidth);
+    expect((box.min.x + box.max.x) / 2).toBeCloseTo((BELT_X_RANGE[0] + BELT_X_RANGE[1]) / 2, 2);
+    bin.dispose();
+  });
+
   it('bin renders green when empty and red when it holds a defective gear', () => {
     const bin = createScrapBin();
     const floorColor = () =>
@@ -166,7 +176,7 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
     expect(indicator.textContent).not.toMatch(/\d/);
   });
 
-  it('first defective arrival renders into bin pile and flips icon to non-empty, no count', async () => {
+  it('defective arrival flips the bin to non-empty without rendering a gear, no count', async () => {
     const telemetryBufferRef = snapBuffer();
     const visualizer = await mountVisualizer(telemetryBufferRef);
     act(() => {
@@ -179,9 +189,8 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
       ];
       stepFrame();
     });
-    const pos = visualizer.getSnapshotGearPosition('d1');
-    expect(pos!.x).toBeCloseTo(SCRAP_BIN[0], 4);
-    expect(pos!.y).toBeCloseTo(SCRAP_BIN[1], 4);
+    expect(visualizer.getSnapshotGearPosition('d1')).toBeNull();
+    expect(visualizer.getSnapshotGearCount()).toBe(0);
     expect(visualizer.isScrapBinNonEmpty()).toBe(true);
     const indicator = screen.getByTestId('scrap-bin-indicator');
     expect(indicator.getAttribute('data-state')).toBe('non-empty');

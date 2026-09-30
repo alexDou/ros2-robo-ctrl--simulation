@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { disposeMaterial } from '@/utils/three/dispose';
 import { SCRAP_BIN_COORDS } from '@/components/RobotVisualizer/constants';
 
+/** Footprint in meters: as wide as the belt (BELT_X_RANGE, 0.30 m) plus a margin each side. */
+const BIN_WIDTH_X = 0.34;
+const BIN_DEPTH_Y = 0.1;
+const WALL_T = 0.006;
+
 /** Binary bin state colors: green while empty, red once it holds a defective gear. */
 export const SCRAP_BIN_EMPTY_COLOR = 0x16a34a;
 export const SCRAP_BIN_FILLED_COLOR = 0xdc2626;
@@ -19,9 +24,9 @@ export function createScrapBin(): ScrapBinProceduralAssets {
   group.name = 'scrap-bin';
   group.position.set(SCRAP_BIN_COORDS.x, SCRAP_BIN_COORDS.y, SCRAP_BIN_COORDS.z);
 
-  // Open box/chute: floor + 4 low walls (0.12m x 0.10m footprint, 0.05m walls).
+  // Open box/chute: floor + 4 low walls (BIN_WIDTH_X x BIN_DEPTH_Y footprint, 0.05m walls).
   // Floor and walls share the binary green/red state color.
-  const floorGeom = new THREE.BoxGeometry(0.12, 0.1, 0.006);
+  const floorGeom = new THREE.BoxGeometry(BIN_WIDTH_X, BIN_DEPTH_Y, 0.006);
   const floorMat = new THREE.MeshStandardMaterial({
     color: SCRAP_BIN_EMPTY_COLOR,
     metalness: 0.4,
@@ -46,13 +51,15 @@ export function createScrapBin(): ScrapBinProceduralAssets {
     m.position.set(x, y, 0.025);
     group.add(m);
   };
-  mkWall(0.12, 0.006, 0, -0.047, 0);
-  mkWall(0.12, 0.006, 0, 0.047, 1);
-  mkWall(0.006, 0.1, -0.057, 0, 2);
-  mkWall(0.006, 0.1, 0.057, 0, 3);
+  const edgeY = (BIN_DEPTH_Y - WALL_T) / 2;
+  const edgeX = (BIN_WIDTH_X - WALL_T) / 2;
+  mkWall(BIN_WIDTH_X, WALL_T, 0, -edgeY, 0);
+  mkWall(BIN_WIDTH_X, WALL_T, 0, edgeY, 1);
+  mkWall(WALL_T, BIN_DEPTH_Y, -edgeX, 0, 2);
+  mkWall(WALL_T, BIN_DEPTH_Y, edgeX, 0, 3);
 
   // Fill marker: visible only when bin holds rejects (empty vs has-items).
-  const fillGeom = new THREE.BoxGeometry(0.1, 0.08, 0.03);
+  const fillGeom = new THREE.BoxGeometry(BIN_WIDTH_X - 0.02, BIN_DEPTH_Y - 0.02, 0.03);
   const fillMat = new THREE.MeshStandardMaterial({
     color: 0x475569,
     metalness: 0.3,
