@@ -141,7 +141,7 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
     expect(bodyHex(defective)).toBe(GEAR_CLASSIFIED_HEX.GREEN.body);
   });
 
-  it('notch survives recolor-on-echo, bucket routing, and bin placement', async () => {
+  it('notch survives recolor-on-echo and bucket routing; binning drops the mesh', async () => {
     const telemetryBufferRef = snapBuffer([{ id: 'g1', x: 0.5, y: 0.0, z: 0.0 }]);
     const visualizer = await mountVisualizer(telemetryBufferRef);
     act(() => {
@@ -199,13 +199,13 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
       stepFrame();
     });
     scene = visualizer.getScene() as THREE.Scene;
-    const binned = gearGroupAt(scene, SCRAP_BIN[0], SCRAP_BIN[1], 0.0)!;
-    expect(binned).not.toBeNull();
-    expect(notchVisible(binned)).toBe(true);
+    // Binary bin: the gear leaves the scene, only the bin's state shows it.
+    expect(gearGroupAt(scene, SCRAP_BIN[0], SCRAP_BIN[1], 0.0)).toBeNull();
+    expect(visualizer.getSnapshotGearIds()).not.toContain('g1');
     expect(visualizer.isScrapBinNonEmpty()).toBe(true);
   });
 
-  it('clearing workspace removes notch mesh with the gear', async () => {
+  it('clearing workspace returns the bin to empty (defective entries never get a mesh)', async () => {
     const telemetryBufferRef = snapBuffer(
       [],
       [],
@@ -215,7 +215,8 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
     act(() => {
       stepFrame();
     });
-    expect(visualizer.getSnapshotGearCount()).toBe(1);
+    expect(visualizer.getSnapshotGearCount()).toBe(0);
+    expect(visualizer.isScrapBinNonEmpty()).toBe(true);
     act(() => {
       telemetryBufferRef.current.workcellState.processed = [];
       stepFrame();
