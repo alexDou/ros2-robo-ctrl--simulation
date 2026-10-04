@@ -18,9 +18,9 @@ from workcell_manager.workcell_node import (
 from domain import (
     BLUE_TOWER,
     GREEN_TOWER,
+    PALLET_CAPACITY,
     SCRAP_BIN,
     STACK_STEP_M,
-    TOWER_CAPACITY,
     WHITE_TOWER,
 )
 
@@ -143,14 +143,14 @@ def test_intact_false_any_color_routes_to_bin_capped():
             assert entry["intact"] is False
             assert pytest.approx(entry["x"]) == SCRAP_BIN[0]
             assert pytest.approx(entry["y"]) == SCRAP_BIN[1]
-        for _ in range(TOWER_CAPACITY):
+        for _ in range(PALLET_CAPACITY):
             _cycle(node, color="BLUE", intact=False)
-        assert len(node.processed) == 3 + TOWER_CAPACITY
+        assert len(node.processed) == 3 + PALLET_CAPACITY
         slot = _reserve(node, color="WHITE", intact=False)
-        assert slot.slot_index == 3 + TOWER_CAPACITY
+        assert slot.slot_index == 3 + PALLET_CAPACITY
         assert slot.overflow_occurred is False
         assert (
-            pytest.approx(slot.drop_coords.z) == SCRAP_BIN[2] + (3 + TOWER_CAPACITY) * STACK_STEP_M
+            pytest.approx(slot.drop_coords.z) == SCRAP_BIN[2] + (3 + PALLET_CAPACITY) * STACK_STEP_M
         )
         # 7.3e owns the cap-100 recycle edge; this routing test stays below cap.
     finally:
@@ -211,7 +211,7 @@ def test_invalid_color_reservation_rejected():
 def test_tenth_commit_empties_that_tower_only():
     node = WorkcellNode()
     try:
-        for _ in range(TOWER_CAPACITY - 1):
+        for _ in range(PALLET_CAPACITY - 1):
             _cycle(node, color="GREEN", intact=True)
         _cycle(node, color="WHITE", intact=True)
         _cycle(node, color="WHITE", intact=True)
@@ -219,7 +219,7 @@ def test_tenth_commit_empties_that_tower_only():
         res = _cycle(node, color="GREEN", intact=True)
         assert res.success is True
         assert res.overflow_occurred is True
-        assert res.slot_index == TOWER_CAPACITY - 1
+        assert res.slot_index == PALLET_CAPACITY - 1
         assert [e for e in node.processed if e["color"] == "GREEN"] == []
         whites = [(e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"]
         assert whites == white_before

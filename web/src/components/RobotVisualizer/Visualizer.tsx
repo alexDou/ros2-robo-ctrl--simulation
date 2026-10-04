@@ -7,7 +7,7 @@ import {
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
   SCRAP_BIN_COORDS,
-  TOWER_CAPACITY,
+  PALLET_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 } from '@/components/RobotVisualizer/constants';
 import type {
@@ -54,7 +54,7 @@ export {
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
   SCRAP_BIN_COORDS,
-  TOWER_CAPACITY,
+  PALLET_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 };
 
@@ -560,7 +560,7 @@ export function RobotVisualizer({
       >
         {GEAR_COLORS.map((c) => (
           <span key={c} data-testid={`tower-counter-${c}`}>
-            {c}: {counts[c]}/{TOWER_CAPACITY}
+            {c}: {counts[c]}/{PALLET_CAPACITY}
           </span>
         ))}
       </div>

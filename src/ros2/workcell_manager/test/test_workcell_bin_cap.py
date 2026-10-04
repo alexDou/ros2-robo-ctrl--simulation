@@ -15,7 +15,7 @@ from robot_control_interfaces.srv import (
 from workcell_manager.workcell_node import WorkcellNode
 
 from domain import (
-    MAX_SCRAP_BIN_CAPACITY,
+    BIN_EXCHANGE_THRESHOLD,
     SCRAP_BIN,
     STACK_STEP_M,
     WHITE_TOWER,
@@ -64,13 +64,13 @@ def _bin_entries(node):
 
 
 def test_bin_cap_constant_is_100():
-    assert MAX_SCRAP_BIN_CAPACITY == 100
+    assert BIN_EXCHANGE_THRESHOLD == 100
 
 
 def test_bin_piles_to_cap_with_overflow_never_set():
     node = WorkcellNode()
     try:
-        for k in range(MAX_SCRAP_BIN_CAPACITY):
+        for k in range(BIN_EXCHANGE_THRESHOLD):
             res = _cycle(node, color="GREEN", intact=False)
             assert res.success is True
             assert res.slot_index == k
@@ -78,7 +78,7 @@ def test_bin_piles_to_cap_with_overflow_never_set():
             assert pytest.approx(res.drop_coords.x) == SCRAP_BIN[0]
             assert pytest.approx(res.drop_coords.y) == SCRAP_BIN[1]
             assert pytest.approx(res.drop_coords.z) == SCRAP_BIN[2] + k * STACK_STEP_M
-        assert len(_bin_entries(node)) == MAX_SCRAP_BIN_CAPACITY
+        assert len(_bin_entries(node)) == BIN_EXCHANGE_THRESHOLD
     finally:
         node.destroy_node()
 
@@ -86,7 +86,7 @@ def test_bin_piles_to_cap_with_overflow_never_set():
 def test_101st_defective_recycles_pile_to_slot_0():
     node = WorkcellNode()
     try:
-        for _ in range(MAX_SCRAP_BIN_CAPACITY):
+        for _ in range(BIN_EXCHANGE_THRESHOLD):
             _cycle(node, color="WHITE", intact=False)
         first_ids = {e["id"] for e in _bin_entries(node)}
         res = _cycle(node, color="BLUE", intact=False)
@@ -110,7 +110,7 @@ def test_bin_recycle_leaves_towers_untouched():
         for _ in range(3):
             _cycle(node, color="WHITE", intact=True)
         _cycle(node, color="GREEN", intact=True)
-        for _ in range(MAX_SCRAP_BIN_CAPACITY):
+        for _ in range(BIN_EXCHANGE_THRESHOLD):
             _cycle(node, color="WHITE", intact=False)
         white_before = [
             (e["x"], e["y"], e["z"])
@@ -136,7 +136,7 @@ def test_bin_recycle_leaves_towers_untouched():
 def test_full_bin_reservation_points_at_slot_0_no_overflow():
     node = WorkcellNode()
     try:
-        for _ in range(MAX_SCRAP_BIN_CAPACITY):
+        for _ in range(BIN_EXCHANGE_THRESHOLD):
             _cycle(node, color="WHITE", intact=False)
         slot = _reserve(node, color="GREEN", intact=False)
         assert slot.slot_index == 0
@@ -144,7 +144,7 @@ def test_full_bin_reservation_points_at_slot_0_no_overflow():
         assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN[0]
         assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN[1]
         assert pytest.approx(slot.drop_coords.z) == SCRAP_BIN[2]
-        assert len(node.processed) == MAX_SCRAP_BIN_CAPACITY
+        assert len(node.processed) == BIN_EXCHANGE_THRESHOLD
     finally:
         node.destroy_node()
 
@@ -195,7 +195,7 @@ def test_clear_workspace_empties_gears_towers_and_bin():
 def test_tower_still_empties_at_10_after_bin_recycle():
     node = WorkcellNode()
     try:
-        for _ in range(MAX_SCRAP_BIN_CAPACITY):
+        for _ in range(BIN_EXCHANGE_THRESHOLD):
             _cycle(node, color="WHITE", intact=False)
         _cycle(node, color="BLUE", intact=False)
         for _ in range(9):

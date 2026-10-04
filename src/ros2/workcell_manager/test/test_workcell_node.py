@@ -20,8 +20,8 @@ from workcell_manager.workcell_node import (
 )
 
 from domain import (
+    PALLET_CAPACITY,
     STACK_STEP_M,
-    TOWER_CAPACITY,
     WHITE_TOWER,
 )
 
@@ -61,7 +61,7 @@ def test_get_drop_slot_incremental_height():
     node = WorkcellNode()
     try:
         # Pure reservation: repeated queries return slot 0, no state change.
-        for _ in range(TOWER_CAPACITY):
+        for _ in range(PALLET_CAPACITY):
             out_res = node.handle_get_drop_slot(
                 GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
             )
@@ -72,7 +72,7 @@ def test_get_drop_slot_incremental_height():
             assert out_res.overflow_occurred is False
             assert node.inventory == 0
         # Height grows only via spawn->grasp->commit cycles.
-        for k in range(TOWER_CAPACITY - 1):
+        for k in range(PALLET_CAPACITY - 1):
             out = _full_cycle(node)
             assert out.slot_index == k
             assert pytest.approx(out.drop_coords.z) == k * STACK_STEP_M
@@ -80,7 +80,7 @@ def test_get_drop_slot_incremental_height():
             assert node.tower_count == k + 1
         # The 10th commit lands on the top slot, then the tower empties.
         out = _full_cycle(node)
-        assert out.slot_index == TOWER_CAPACITY - 1
+        assert out.slot_index == PALLET_CAPACITY - 1
         assert node.inventory == 0
         assert node.tower_count == 0
     finally:
@@ -123,9 +123,9 @@ def test_get_drop_slot_custom_tower_elevation():
 def test_get_drop_slot_tenth_commit_empties_tower():
     node = WorkcellNode()
     try:
-        for _ in range(TOWER_CAPACITY - 1):
+        for _ in range(PALLET_CAPACITY - 1):
             _full_cycle(node)
-        assert node.inventory == TOWER_CAPACITY - 1
+        assert node.inventory == PALLET_CAPACITY - 1
 
         node.handle_spawn_object(
             SpawnObject.Request(
@@ -138,10 +138,10 @@ def test_get_drop_slot_tenth_commit_empties_tower():
 
         # The 10th gear still drops on the top slot, then the tower empties.
         assert out10.overflow_occurred is True
-        assert out10.slot_index == TOWER_CAPACITY - 1
+        assert out10.slot_index == PALLET_CAPACITY - 1
         assert pytest.approx(out10.drop_coords.x) == WHITE_TOWER[0]
         assert pytest.approx(out10.drop_coords.y) == WHITE_TOWER[1]
-        assert pytest.approx(out10.drop_coords.z) == (TOWER_CAPACITY - 1) * STACK_STEP_M
+        assert pytest.approx(out10.drop_coords.z) == (PALLET_CAPACITY - 1) * STACK_STEP_M
         assert node.inventory == 0
         assert node.tower_count == 0
 

@@ -7,7 +7,7 @@ import {
   BELT_Y_RANGE,
   PICK_ZONE_Y_RANGE,
   BELT_CAPACITY as DOMAIN_BELT_CAPACITY,
-  TOWER_CAPACITY as DOMAIN_TOWER_CAPACITY,
+  PALLET_CAPACITY as DOMAIN_PALLET_CAPACITY,
 } from '@contracts';
 import type { GearColor } from '@contracts';
 
@@ -35,7 +35,7 @@ export const SPINDLE_TOWERS: Record<GearColor, SpindleTowerCoords> = {
 
 export const SPINDLE_TOWER_COORDS: SpindleTowerCoords = SPINDLE_TOWERS.WHITE;
 
-export const TOWER_CAPACITY: number = DOMAIN_TOWER_CAPACITY;
+export const PALLET_CAPACITY: number = DOMAIN_PALLET_CAPACITY;
 
 /** Tower stack fade-out after auto-empty; the arm does not wait for it. */
 export const TOWER_FADE_MS = 1500;

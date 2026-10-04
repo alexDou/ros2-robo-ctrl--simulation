@@ -7,6 +7,6 @@ export {
   SPINDLE_TOWER_COORDS,
   SPINDLE_TOWERS,
   SCRAP_BIN_COORDS,
-  TOWER_CAPACITY,
+  PALLET_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
 } from '@/components/RobotVisualizer/constants';

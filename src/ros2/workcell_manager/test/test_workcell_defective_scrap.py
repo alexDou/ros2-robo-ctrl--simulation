@@ -6,7 +6,7 @@ from geometry_msgs.msg import Point
 from robot_control_interfaces.srv import MarkGrasped, SpawnObject
 from workcell_manager.workcell_node import WorkcellNode
 
-from domain import MAX_SCRAP_BIN_CAPACITY, SCRAP_BIN
+from domain import BIN_EXCHANGE_THRESHOLD, SCRAP_BIN
 
 
 @pytest.fixture(autouse=True)
@@ -65,9 +65,9 @@ def test_defective_spawn_does_not_disturb_active_intact_pick():
 def test_bin_empties_at_capacity():
     node = WorkcellNode()
     try:
-        for _ in range(MAX_SCRAP_BIN_CAPACITY):
+        for _ in range(BIN_EXCHANGE_THRESHOLD):
             _spawn(node)
-        assert len(_bin_entries(node)) == MAX_SCRAP_BIN_CAPACITY
+        assert len(_bin_entries(node)) == BIN_EXCHANGE_THRESHOLD
         _spawn(node, color="WHITE")
         remaining = _bin_entries(node)
         assert len(remaining) == 1

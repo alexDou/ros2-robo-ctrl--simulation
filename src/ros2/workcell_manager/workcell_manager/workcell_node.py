@@ -19,13 +19,13 @@ from robot_control_interfaces.srv import (
 from std_msgs.msg import Int32, String
 
 from domain import (
+    BIN_EXCHANGE_THRESHOLD,
     BLUE_TOWER,
     DEFAULT_GEAR_COLOR,
     GREEN_TOWER,
-    MAX_SCRAP_BIN_CAPACITY,
+    PALLET_CAPACITY,
     SCRAP_BIN,
     STACK_STEP_M,
-    TOWER_CAPACITY,
     VALID_GEAR_COLORS,
     WHITE_TOWER,
 )
@@ -41,7 +41,7 @@ class WorkcellNode(Node):
         self.declare_parameter("tower_y", WHITE_TOWER[1])
         self.declare_parameter("tower_z", WHITE_TOWER[2])
         self.declare_parameter("height_step", STACK_STEP_M)
-        self.declare_parameter("max_capacity", TOWER_CAPACITY)
+        self.declare_parameter("max_capacity", PALLET_CAPACITY)
 
         self._tower_x = float(self.get_parameter("tower_x").value)
         self._tower_y = float(self.get_parameter("tower_y").value)
@@ -198,7 +198,7 @@ class WorkcellNode(Node):
     def _bin_slot_locked(self) -> tuple[int, float]:
         """Returns (slot_index, z_k) for next bin arrival; wraps to 0 at cap."""
         count = self._bin_fill_locked()
-        if count >= MAX_SCRAP_BIN_CAPACITY:
+        if count >= BIN_EXCHANGE_THRESHOLD:
             return 0, 0.0
         return count, count * self._height_step
 
@@ -208,7 +208,7 @@ class WorkcellNode(Node):
 
     def _book_scrap_locked(self, x: float, y: float, z: float, color: str) -> str:
         """Commits a defective gear straight to the ScrapBin pile; returns its id."""
-        if self._bin_fill_locked() >= MAX_SCRAP_BIN_CAPACITY:
+        if self._bin_fill_locked() >= BIN_EXCHANGE_THRESHOLD:
             self._recycle_bin_locked()
         _, z_k = self._bin_slot_locked()
         base = SCRAP_BIN
@@ -419,7 +419,7 @@ class WorkcellNode(Node):
             intact = bool(entry.get("intact", False))
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
-                if self._bin_fill_locked() >= MAX_SCRAP_BIN_CAPACITY:
+                if self._bin_fill_locked() >= BIN_EXCHANGE_THRESHOLD:
                     self._recycle_bin_locked()
                 slot_index, z_k = self._bin_slot_locked()
                 overflow_occurred = False

@@ -21,8 +21,8 @@ from workcell_manager.workcell_node import (
 )
 
 from domain import (
+    PALLET_CAPACITY,
     STACK_STEP_M,
-    TOWER_CAPACITY,
     WHITE_TOWER,
 )
 
@@ -174,17 +174,17 @@ def test_get_drop_slot_pure_reservation():
 def test_tenth_commit_empties_tower():
     node = WorkcellNode()
     try:
-        for _ in range(TOWER_CAPACITY - 1):
+        for _ in range(PALLET_CAPACITY - 1):
             _spawn(node)
             node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
             node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
-        assert len(node.processed) == TOWER_CAPACITY - 1
+        assert len(node.processed) == PALLET_CAPACITY - 1
         _spawn(node, x=0.50, y=0.20)
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         res = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
         assert res.success is True
         assert res.overflow_occurred is True
-        assert res.slot_index == TOWER_CAPACITY - 1
+        assert res.slot_index == PALLET_CAPACITY - 1
         assert len(node.processed) == 0
         assert node.tower_count == 0
     finally:

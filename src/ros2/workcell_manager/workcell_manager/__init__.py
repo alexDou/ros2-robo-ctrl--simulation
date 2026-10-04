@@ -1,13 +1,13 @@
 """Workcell manager package for ROS2 native robot simulation."""
 
 from domain import (
+    BIN_EXCHANGE_THRESHOLD,
     BLUE_TOWER,
     DEFAULT_GEAR_COLOR,
     GREEN_TOWER,
-    MAX_SCRAP_BIN_CAPACITY,
+    PALLET_CAPACITY,
     SCRAP_BIN,
     STACK_STEP_M,
-    TOWER_CAPACITY,
     VALID_GEAR_COLORS,
     WHITE_TOWER,
 )
@@ -17,10 +17,10 @@ __all__ = [
     "BLUE_TOWER",
     "DEFAULT_GEAR_COLOR",
     "GREEN_TOWER",
-    "MAX_SCRAP_BIN_CAPACITY",
+    "BIN_EXCHANGE_THRESHOLD",
     "SCRAP_BIN",
     "STACK_STEP_M",
-    "TOWER_CAPACITY",
+    "PALLET_CAPACITY",
     "VALID_GEAR_COLORS",
     "WHITE_TOWER",
     "WorkcellNode",

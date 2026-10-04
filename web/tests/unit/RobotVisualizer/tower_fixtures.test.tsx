@@ -7,13 +7,13 @@ import { createSpindleTower } from '@components/RobotVisualizer/assets/tower';
 import {
   SPINDLE_TOWERS,
   SPINDLE_TOWER_COORDS,
-  TOWER_CAPACITY,
+  PALLET_CAPACITY,
 } from '@components/RobotVisualizer/constants';
 import {
   WHITE_TOWER,
   GREEN_TOWER,
   BLUE_TOWER,
-  TOWER_CAPACITY as DOMAIN_CAPACITY,
+  PALLET_CAPACITY as DOMAIN_CAPACITY,
 } from '@contracts';
 
 describe('Unit 7.3a: Web tower fixtures + constants', () => {
@@ -30,8 +30,8 @@ describe('Unit 7.3a: Web tower fixtures + constants', () => {
   });
 
   it('capacity constant 10 shared with domain bindings', () => {
-    expect(TOWER_CAPACITY).toBe(10);
-    expect(TOWER_CAPACITY).toBe(DOMAIN_CAPACITY);
+    expect(PALLET_CAPACITY).toBe(10);
+    expect(PALLET_CAPACITY).toBe(DOMAIN_CAPACITY);
   });
 
   it('builder is parameterized by color with no duplicated logic', () => {

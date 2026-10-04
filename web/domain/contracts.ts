@@ -206,13 +206,13 @@ export const PICK_ZONE_Y_RANGE = [-0.51, 0.51] as const;
 export const BELT_CAPACITY = 10 as const;
 
 /** Maximum gears per spindle tower */
-export const TOWER_CAPACITY = 10 as const;
+export const PALLET_CAPACITY = 10 as const;
 
 /** Vertical stacking step per gear in meters */
 export const STACK_STEP_M = 0.02 as const;
 
 /** Maximum defective gears piled in ScrapBin before sharp-cut recycle */
-export const MAX_SCRAP_BIN_CAPACITY = 100 as const;
+export const BIN_EXCHANGE_THRESHOLD = 100 as const;
 
 /** Fallback gear color class when classification is absent */
 export const DEFAULT_GEAR_COLOR = 'WHITE';

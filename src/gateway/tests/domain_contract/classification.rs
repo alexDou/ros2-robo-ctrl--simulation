@@ -4,8 +4,8 @@ fn test_unit70_required_color_intact() {
     // GearEntry requires color + intact on every bucket, no defaults.
     use gateway::domain::{
         GearColor, GearEntry, RobotState, RobotTelemetryEvent, SpawnObjectPayload, SpawnObjectType,
-        BELT_CAPACITY, BELT_X_RANGE, BELT_Y_RANGE, BLUE_TOWER, GREEN_TOWER, PICK_ZONE_Y_RANGE,
-        SCRAP_BIN, STACK_STEP_M, TOWER_CAPACITY, WHITE_TOWER,
+        BELT_CAPACITY, BELT_X_RANGE, BELT_Y_RANGE, BLUE_TOWER, GREEN_TOWER, PALLET_CAPACITY,
+        PICK_ZONE_Y_RANGE, SCRAP_BIN, STACK_STEP_M, WHITE_TOWER,
     };
     let payload = SpawnObjectPayload {
         x: 0.5,
@@ -81,7 +81,7 @@ fn test_unit70_required_color_intact() {
         assert_eq!(BELT_Y_RANGE, [-0.66, 0.95]);
         assert_eq!(PICK_ZONE_Y_RANGE, [-0.51, 0.51]);
     }
-    assert_eq!(TOWER_CAPACITY, 10);
+    assert_eq!(PALLET_CAPACITY, 10);
     assert_eq!(BELT_CAPACITY, 10);
     assert!((STACK_STEP_M - 0.02).abs() < 1e-12);
 }

@@ -34,14 +34,14 @@ def test_workcell_constants_match_schema_single_source_of_truth():
         BELT_CAPACITY,
         BELT_X_RANGE,
         BELT_Y_RANGE,
+        BIN_EXCHANGE_THRESHOLD,
         BLUE_TOWER,
         DEFAULT_GEAR_COLOR,
         GREEN_TOWER,
-        MAX_SCRAP_BIN_CAPACITY,
+        PALLET_CAPACITY,
         PICK_ZONE_Y_RANGE,
         SCRAP_BIN,
         STACK_STEP_M,
-        TOWER_CAPACITY,
         VALID_GEAR_COLORS,
         WHITE_TOWER,
     )
@@ -54,9 +54,9 @@ def test_workcell_constants_match_schema_single_source_of_truth():
     assert GREEN_TOWER == [-0.45, -0.10, 0.0]
     assert BLUE_TOWER == [-0.45, 0.06, 0.0]
     assert SCRAP_BIN == [0.4, -0.75, -0.05]
-    assert TOWER_CAPACITY == 10
+    assert PALLET_CAPACITY == 10
     assert STACK_STEP_M == 0.02
-    assert MAX_SCRAP_BIN_CAPACITY == 100
+    assert BIN_EXCHANGE_THRESHOLD == 100
     assert DEFAULT_GEAR_COLOR == "WHITE"
     assert VALID_GEAR_COLORS == ["WHITE", "GREEN", "BLUE"]
 
@@ -661,9 +661,9 @@ def test_unit70_required_color_intact():
     from domain import (
         BLUE_TOWER,
         GREEN_TOWER,
+        PALLET_CAPACITY,
         SCRAP_BIN,
         STACK_STEP_M,
-        TOWER_CAPACITY,
         WHITE_TOWER,
         GearColor,
         GearEntry,
@@ -747,5 +747,5 @@ def test_unit70_required_color_intact():
     assert GREEN_TOWER == [-0.45, -0.10, 0.0]
     assert BLUE_TOWER == [-0.45, 0.06, 0.0]
     assert SCRAP_BIN == [0.4, -0.75, -0.05]
-    assert TOWER_CAPACITY == 10
+    assert PALLET_CAPACITY == 10
     assert STACK_STEP_M == 0.02

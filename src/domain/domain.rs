@@ -120,13 +120,13 @@ pub const PICK_ZONE_Y_RANGE: [f64; 2] = [-0.51, 0.51];
 pub const BELT_CAPACITY: i64 = 10;
 
 /// Maximum gears per spindle tower
-pub const TOWER_CAPACITY: i64 = 10;
+pub const PALLET_CAPACITY: i64 = 10;
 
 /// Vertical stacking step per gear in meters
 pub const STACK_STEP_M: f64 = 0.02;
 
 /// Maximum defective gears piled in ScrapBin before sharp-cut recycle
-pub const MAX_SCRAP_BIN_CAPACITY: i64 = 100;
+pub const BIN_EXCHANGE_THRESHOLD: i64 = 100;
 
 /// Fallback gear color class when classification is absent
 pub const DEFAULT_GEAR_COLOR: &str = "WHITE";

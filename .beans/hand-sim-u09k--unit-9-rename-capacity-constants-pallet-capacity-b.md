@@ -1,13 +1,13 @@
 ---
 # hand-sim-u09k
 title: 'Unit 9.02: rename capacity constants (PALLET_CAPACITY, BIN_EXCHANGE_THRESHOLD)'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-04T20:33:07Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-r966
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-r966 (01)
+
+Renamed in schema, regenerated domain, all call sites. No old names remain. verify: GREEN.

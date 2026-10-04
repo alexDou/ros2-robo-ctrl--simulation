@@ -11,7 +11,7 @@ import {
   SCRAP_BIN,
   VALID_GEAR_COLORS,
   STACK_STEP_M,
-  TOWER_CAPACITY,
+  PALLET_CAPACITY,
   type ArmJointPositions,
   type GearColor,
   type GearEntry,
@@ -19,7 +19,7 @@ import {
   type RobotState,
   type RobotTelemetryEvent,
   type ErrorFrame,
-  MAX_SCRAP_BIN_CAPACITY,
+  BIN_EXCHANGE_THRESHOLD,
 } from '../../../domain/contracts';
 import { PickAndPlaceTrajectoryGenerator, type WaypointStep } from './kinematics';
 
@@ -610,7 +610,7 @@ export class MockGateway {
 
   /** Mirrors WorkcellNode._book_scrap_locked: cap-100 recycle, then pile at the next bin slot. */
   private bookScrap(id: string, color: GearColor): void {
-    if (this.processed.filter((e) => !e.intact).length >= MAX_SCRAP_BIN_CAPACITY) {
+    if (this.processed.filter((e) => !e.intact).length >= BIN_EXCHANGE_THRESHOLD) {
       this.processed = this.processed.filter((e) => e.intact);
     }
     const fill = this.processed.filter((e) => !e.intact).length;
@@ -646,7 +646,8 @@ export class MockGateway {
     const towerFill = cls.intact
       ? this.processed.filter(sameTower).length
       : this.processed.filter((e) => !e.intact).length;
-    const dropZ = (cls.intact ? Math.min(towerFill, TOWER_CAPACITY - 1) : towerFill) * STACK_STEP_M;
+    const dropZ =
+      (cls.intact ? Math.min(towerFill, PALLET_CAPACITY - 1) : towerFill) * STACK_STEP_M;
     const dropCoords: [number, number, number] = [base[0], base[1], dropZ];
 
     let steps: WaypointStep[];
@@ -702,7 +703,7 @@ export class MockGateway {
           e.color === cls.color &&
           Math.abs(e.x - base[0]) < 1e-6 &&
           Math.abs(e.y - base[1]) < 1e-6;
-        if (this.processed.filter(inTower).length >= TOWER_CAPACITY) {
+        if (this.processed.filter(inTower).length >= PALLET_CAPACITY) {
           this.processed = this.processed.filter((e) => !inTower(e));
         }
       }

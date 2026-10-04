@@ -58,7 +58,7 @@
       "value": 10,
       "description": "Maximum gears on the belt at once"
     },
-    "TOWER_CAPACITY": {
+    "PALLET_CAPACITY": {
       "type": "integer",
       "value": 10,
       "description": "Maximum gears per spindle tower"
@@ -68,7 +68,7 @@
       "value": 0.02,
       "description": "Vertical stacking step per gear in meters"
     },
-    "MAX_SCRAP_BIN_CAPACITY": {
+    "BIN_EXCHANGE_THRESHOLD": {
       "type": "integer",
       "value": 100,
       "description": "Maximum defective gears piled in ScrapBin before sharp-cut recycle"
