@@ -28,6 +28,9 @@ Per ADR 0004 & Unit Refactoring-A (hand-sim-bjcw):
 - If use_fake_hardware is false:
   - Invokes ur_robot_driver launch configuration for physical robot.
 - Launches workcell_node and arm_controller_node.
+- Unit 9: virtual_plc (SIM cell controller, Modbus TCP) starts only when use_fake_hardware
+  and use_virtual_plc are both true; controller_host/controller_port address the controller
+  (virtual_plc binds there in SIM, device nodes connect there).
 """
 
 import os
@@ -61,6 +64,13 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
     robot_ip = LaunchConfiguration("robot_ip").perform(context)
     controllers_file = LaunchConfiguration("controllers_file").perform(context)
     robot_id = LaunchConfiguration("robot_id").perform(context)
+    use_virtual_plc = LaunchConfiguration("use_virtual_plc").perform(context).lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    controller_host = LaunchConfiguration("controller_host").perform(context)
+    controller_port = int(LaunchConfiguration("controller_port").perform(context))
 
     if not use_fake_hardware and controllers_file.endswith("ur_controllers.yaml"):
         # Default sim config is 5 Hz; physical UR needs 500 Hz RTDE loop.
@@ -166,7 +176,19 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
                 f"but ur_robot_driver is not installed: {err}"
             ) from err
 
-    # 5. Standalone Workcell Node
+    # 5. SIM cell controller (never alongside a physical cell)
+    if use_fake_hardware and use_virtual_plc:
+        entities.append(
+            Node(
+                package="cell_devices",
+                executable="virtual_plc",
+                name="virtual_plc",
+                output="both",
+                parameters=[{"host": controller_host, "port": controller_port}],
+            )
+        )
+
+    # 6. Standalone Workcell Node
     workcell_node = Node(
         package="workcell_manager",
         executable="workcell_node",
@@ -175,7 +197,7 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
     )
     entities.append(workcell_node)
 
-    # 6. Standalone Arm Controller Node
+    # 7. Standalone Arm Controller Node
     arm_controller_node = Node(
         package="arm_controller",
         executable="arm_controller_node",
@@ -184,7 +206,7 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
     )
     entities.append(arm_controller_node)
 
-    # 7. Edge Bridge Node (Zenoh DataFabric command bridge)
+    # 8. Edge Bridge Node (Zenoh DataFabric command bridge)
     edge_bridge_node = Node(
         package="arm_controller",
         executable="edge_bridge_node",
@@ -229,6 +251,21 @@ def generate_launch_description() -> LaunchDescription:
             "robot_ip",
             default_value="192.168.1.100",
             description="IP address of physical Universal Robot",
+        ),
+        DeclareLaunchArgument(
+            "use_virtual_plc",
+            default_value="true",
+            description="Start the SIM cell controller (virtual_plc); ignored when use_fake_hardware=false",
+        ),
+        DeclareLaunchArgument(
+            "controller_host",
+            default_value="127.0.0.1",
+            description="Cell controller Modbus TCP host (virtual_plc bind address in SIM)",
+        ),
+        DeclareLaunchArgument(
+            "controller_port",
+            default_value="5020",
+            description="Cell controller Modbus TCP port",
         ),
         DeclareLaunchArgument(
             "controllers_file",

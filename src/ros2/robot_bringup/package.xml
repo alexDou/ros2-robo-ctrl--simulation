@@ -17,6 +17,7 @@
   <depend>ur_controllers</depend>
   <depend>robot_state_publisher</depend>
   <depend>workcell_manager</depend>
+  <depend>cell_devices</depend>
   <depend>arm_controller</depend>
   <depend>robot_control_interfaces</depend>
 

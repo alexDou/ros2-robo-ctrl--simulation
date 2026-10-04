@@ -64,7 +64,7 @@ lane_python() {
     source install/setup.bash
     # Root tests/ symlinks the ROS package tests; run those in-package so their conftest applies.
     step "pytest tests/" python3 -m pytest -q -p no:cacheprovider $(find tests -maxdepth 1 -type f -name 'test_*.py')
-    step "pytest ros2 pkgs" python3 -m pytest -q -p no:cacheprovider src/ros2/workcell_manager/test/ src/ros2/arm_controller/test/
+    step "pytest ros2 pkgs" python3 -m pytest -q -p no:cacheprovider src/ros2/workcell_manager/test/ src/ros2/arm_controller/test/ src/ros2/cell_devices/test/ src/ros2/robot_bringup/test/test_virtual_plc_launch.py
   fi
   set -u
   [[ ${#FAILS[@]} -eq 0 ]] || { echo "python failed: ${FAILS[*]}"; return 1; }
