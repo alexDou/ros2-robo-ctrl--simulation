@@ -1,13 +1,13 @@
 ---
 # hand-sim-kkwu
 title: 'Unit 9.04: Conveyor device in SIM (eye stop, encoder, exit counter)'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-04T20:47:47Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-280q
@@ -29,3 +29,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-280q (03)
+
+Added belt_sim (ramps, 32-bit encoder, eye stop, latched 16-bit exit counter, HELD_BIN_AWAY), virtual_plc Conveyor block with seq-gated commands, ConveyorDevice, conveyor_node (ConveyorRun action + ConveyorStop service + conveyor/status JSON), interfaces in robot_control_interfaces. Items enter the belt via VirtualPlcServer.add_belt_item (FlexFeeder 9.07 seam). Launch wiring of conveyor_node deferred to the orchestrator tickets.

@@ -7,7 +7,34 @@ the controller reports it in input register `map_version` so a mismatched peer i
 detected on connect.
 """
 
+from enum import IntEnum
+
 MAP_VERSION = 1
+
+
+class BeltCmd(IntEnum):
+    NONE = 0
+    RUN_TO_PICKZONE = 1
+    FLUSH = 2
+    STOP = 3
+
+
+class BeltState(IntEnum):
+    IDLE = 0
+    RUNNING = 1
+    STOPPED_AT_EYE = 2
+    FLUSH_DONE = 3
+    HELD_BIN_AWAY = 4
+    FAULT = 5
+
+
+class StationState(IntEnum):
+    HOME = 0
+    LEAVING = 1
+    AWAY = 2
+    RETURNING = 3
+    FAULT = 4
+
 
 STATIONS = ("white", "green", "blue", "scrap")
 

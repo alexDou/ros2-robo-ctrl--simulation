@@ -1,0 +1,13 @@
+# Goal
+uint8 RUN_TO_PICKZONE=1
+uint8 FLUSH=2
+uint8 mode
+---
+# Result: stop_reason is one of STOPPED_AT_EYE, FLUSH_DONE, HELD_BIN_AWAY, STOPPED, FAULT
+bool success
+string stop_reason
+uint32 exit_count_delta
+---
+# Feedback
+string belt_state
+float32 encoder_mm
