@@ -12,7 +12,7 @@ export function ActionProgressBar({ progress }: ActionProgressBarProps) {
     <div
       data-testid="action-progress-container"
       style={{
-        width: '100%', 
+        width: '100%',
         boxSizing: 'border-box',
         padding: '0.75rem 1rem',
       }}

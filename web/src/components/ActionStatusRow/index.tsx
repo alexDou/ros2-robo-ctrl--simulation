@@ -46,7 +46,7 @@ export function ActionStatusRow({ message, progress }: ActionStatusRowProps) {
         {message}
       </div>
       <div data-testid="action-status-progress" style={{ flex: '0 0 40%', minWidth: 0 }}>
-        <ActionProgressBar progress={progress} />
+        {progress && <ActionProgressBar progress={progress} />}
       </div>
     </div>
   );

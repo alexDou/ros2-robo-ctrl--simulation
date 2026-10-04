@@ -1,13 +1,13 @@
 ---
 # hand-sim-r966
 title: 'Unit 9.01: fix web gate failures from 749012c'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-04T20:24:23Z
 parent: hand-sim-rqpy
 ---
 
@@ -26,3 +26,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 None (can start immediately)
+
+Fixed: ActionStatusRow renders ActionProgressBar only when progress is set (wrapper stays mounted, so no layout shift); oxfmt applied. verify: GREEN.
