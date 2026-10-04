@@ -113,6 +113,8 @@ export const CommandType = {
   SPAWN_OBJECT: 'SPAWN_OBJECT',
   CLEAR_WORKSPACE: 'CLEAR_WORKSPACE',
   PICK_AND_PLACE_TARGET: 'PICK_AND_PLACE_TARGET',
+  CELL_PROCESS: 'CELL_PROCESS',
+  CELL_STOP: 'CELL_STOP',
 } as const;
 
 export const CommandTypeSchema = z.enum([
@@ -127,6 +129,8 @@ export const CommandTypeSchema = z.enum([
   'SPAWN_OBJECT',
   'CLEAR_WORKSPACE',
   'PICK_AND_PLACE_TARGET',
+  'CELL_PROCESS',
+  'CELL_STOP',
 ], { message: 'Invalid command type' });
 
 export const commandTypeSchema = CommandTypeSchema;
@@ -153,6 +157,31 @@ export const RobotStateSchema = z.enum([
 export const robotStateSchema = RobotStateSchema;
 
 export type RobotState = z.infer<typeof RobotStateSchema>;
+
+/** Cell flow state machine position */
+export const ConveyorStatus = {
+  EMPTY: 'EMPTY',
+  LOADED: 'LOADED',
+  FEEDING: 'FEEDING',
+  HALTED: 'HALTED',
+  STOPPED: 'STOPPED',
+  FAULT: 'FAULT',
+  RESETTING: 'RESETTING',
+} as const;
+
+export const ConveyorStatusSchema = z.enum([
+  'EMPTY',
+  'LOADED',
+  'FEEDING',
+  'HALTED',
+  'STOPPED',
+  'FAULT',
+  'RESETTING',
+], { message: 'Invalid conveyor status' });
+
+export const conveyorStatusSchema = ConveyorStatusSchema;
+
+export type ConveyorStatus = z.infer<typeof ConveyorStatusSchema>;
 
 /** Canonical UR5e 6-DoF joint names in kinematic sequence */
 export const UR5E_JOINTS = [
@@ -334,6 +363,30 @@ export const spawnObjectPayloadSchema = SpawnObjectPayloadSchema;
 
 export type SpawnObjectPayload = z.infer<typeof rawSpawnObjectPayloadSchema>;
 
+/** Typed payload for CELL_PROCESS command starting or resuming the conveyor cell */
+export const rawCellProcessPayloadSchema = z.object(
+  {
+  },
+  { message: 'CellProcessPayload payload must be an object' }
+).strict();
+
+export const CellProcessPayloadSchema = jsonInput.pipe(rawCellProcessPayloadSchema);
+export const cellProcessPayloadSchema = CellProcessPayloadSchema;
+
+export type CellProcessPayload = z.infer<typeof rawCellProcessPayloadSchema>;
+
+/** Typed payload for CELL_STOP command freezing the belt and FlexFeeder */
+export const rawCellStopPayloadSchema = z.object(
+  {
+  },
+  { message: 'CellStopPayload payload must be an object' }
+).strict();
+
+export const CellStopPayloadSchema = jsonInput.pipe(rawCellStopPayloadSchema);
+export const cellStopPayloadSchema = CellStopPayloadSchema;
+
+export type CellStopPayload = z.infer<typeof rawCellStopPayloadSchema>;
+
 /** Typed payload for CLEAR_WORKSPACE command */
 export const rawClearWorkspacePayloadSchema = z.object(
   {
@@ -429,6 +482,20 @@ export const workcellStateSchema = WorkcellStateSchema;
 
 export type WorkcellState = z.infer<typeof rawWorkcellStateSchema>;
 
+/** Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel */
+export const rawCellStateSchema = z.object(
+  {
+    conveyor_status: ConveyorStatusSchema,
+    belt_offset_m: z.number({ message: "Field 'belt_offset_m' must be a number" }).refine(Number.isFinite, { message: "Field 'belt_offset_m' must be a finite number" }),
+  },
+  { message: 'CellState payload must be an object' }
+).strict();
+
+export const CellStateSchema = jsonInput.pipe(rawCellStateSchema);
+export const cellStateSchema = CellStateSchema;
+
+export type CellState = z.infer<typeof rawCellStateSchema>;
+
 /** Canonical schema for structured error frames returned by Gateway over WebSocket */
 export const rawErrorFrameSchema = z.object(
   {
@@ -472,6 +539,7 @@ export const rawRobotTelemetryEventSchema = z.object(
     inference_metrics: rawInferenceMetricsSchema.nullish(),
     command_id: z.string().nullish(),
     workcell_state: rawWorkcellStateSchema,
+    cell_state: rawCellStateSchema.nullish(),
     phase: z.string().nullish(),
   },
   { message: 'RobotTelemetryEvent payload must be an object' }
@@ -551,6 +619,22 @@ export function isSpawnObjectPayload(input: unknown): input is SpawnObjectPayloa
   return spawnObjectPayloadSchema.safeParse(input).success;
 }
 
+export function parseCellProcessPayload(input: unknown): CellProcessPayload {
+  return unwrapZod<CellProcessPayload>(cellProcessPayloadSchema.safeParse(input));
+}
+
+export function isCellProcessPayload(input: unknown): input is CellProcessPayload {
+  return cellProcessPayloadSchema.safeParse(input).success;
+}
+
+export function parseCellStopPayload(input: unknown): CellStopPayload {
+  return unwrapZod<CellStopPayload>(cellStopPayloadSchema.safeParse(input));
+}
+
+export function isCellStopPayload(input: unknown): input is CellStopPayload {
+  return cellStopPayloadSchema.safeParse(input).success;
+}
+
 export function parseClearWorkspacePayload(input: unknown): ClearWorkspacePayload {
   return unwrapZod<ClearWorkspacePayload>(clearWorkspacePayloadSchema.safeParse(input));
 }
@@ -597,6 +681,14 @@ export function parseWorkcellState(input: unknown): WorkcellState {
 
 export function isWorkcellState(input: unknown): input is WorkcellState {
   return workcellStateSchema.safeParse(input).success;
+}
+
+export function parseCellState(input: unknown): CellState {
+  return unwrapZod<CellState>(cellStateSchema.safeParse(input));
+}
+
+export function isCellState(input: unknown): input is CellState {
+  return cellStateSchema.safeParse(input).success;
 }
 
 export function parseErrorFrame(input: unknown): ErrorFrame {

@@ -1,0 +1,57 @@
+use gateway::domain::{
+    CellProcessPayload, CellState, CellStopPayload, CommandType, ConveyorStatus, RobotCommand,
+};
+use serde_json::json;
+
+#[test]
+fn test_cell_command_types_round_trip() {
+    for (wire, expected) in [
+        ("CELL_PROCESS", CommandType::CellProcess),
+        ("CELL_STOP", CommandType::CellStop),
+    ] {
+        let raw = json!({
+            "command_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+            "sender_id": "ui-client",
+            "timestamp_ns": 1_725_894_942_000_000_000u64,
+            "type": wire,
+            "payload": {},
+        })
+        .to_string();
+        let cmd: RobotCommand = serde_json::from_str(&raw).expect("deserialize cell command");
+        assert_eq!(cmd.r#type, expected);
+        let again = serde_json::to_string(&cmd).expect("serialize cell command");
+        assert!(again.contains(&format!(r#""type":"{wire}""#)));
+    }
+}
+
+#[test]
+fn test_cell_payloads_are_empty_and_strict() {
+    assert_eq!(
+        serde_json::to_string(&CellProcessPayload::default()).expect("serialize empty payload"),
+        "{}"
+    );
+    assert_eq!(
+        serde_json::to_string(&CellStopPayload::default()).expect("serialize empty payload"),
+        "{}"
+    );
+    assert!(serde_json::from_str::<CellProcessPayload>(r#"{"x":1}"#).is_err());
+    assert!(serde_json::from_str::<CellStopPayload>(r#"{"x":1}"#).is_err());
+}
+
+#[test]
+fn test_cell_state_round_trip_and_strictness() {
+    let state = CellState {
+        conveyor_status: ConveyorStatus::Feeding,
+        belt_offset_m: 0.25,
+    };
+    let text = serde_json::to_string(&state).expect("serialize CellState");
+    assert!(text.contains(r#""conveyor_status":"FEEDING""#));
+    let back: CellState = serde_json::from_str(&text).expect("deserialize CellState");
+    assert_eq!(state, back);
+
+    assert!(serde_json::from_str::<CellState>(
+        r#"{"conveyor_status":"BOGUS","belt_offset_m":0.0}"#
+    )
+    .is_err());
+    assert!(serde_json::from_str::<CellState>(r#"{"conveyor_status":"EMPTY"}"#).is_err());
+}

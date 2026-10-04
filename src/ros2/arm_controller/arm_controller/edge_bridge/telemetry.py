@@ -10,6 +10,7 @@ from std_msgs.msg import String
 
 from domain import (
     CANONICAL_UR5E_JOINTS,
+    CellState,
     ErrorFrame,
     InferenceMetrics,
     PalmState,
@@ -90,6 +91,20 @@ class EdgeBridgeTelemetryMixin:
         with self._lock:
             self._workcell_state = snapshot
 
+    def _on_cell_state(self, msg: String) -> None:
+        """Caches the orchestrator's cell snapshot and pushes it out on change."""
+        try:
+            snapshot = CellState.model_validate_json(msg.data)
+        except Exception as e:
+            self.get_logger().warning(f"Ignoring malformed cell/state snapshot: {e}")
+            return
+        with self._lock:
+            changed = snapshot != self._cell_state
+            self._cell_state = snapshot
+            standby = self._robot_state == RobotState.STANDBY
+        if changed and not standby:
+            self.publish_telemetry()
+
     def _on_telemetry_timer(self) -> RobotTelemetryEvent | None:
         """Steady 10 Hz cached snapshot while engaged; None while STANDBY."""
         with self._lock:
@@ -159,6 +174,7 @@ class EdgeBridgeTelemetryMixin:
             is_grasped = self._is_grasped
             phase = self._current_phase
             workcell_state = self._workcell_state
+            cell_state = self._cell_state
 
         event = RobotTelemetryEvent(
             timestamp_ns=time.time_ns(),
@@ -167,6 +183,7 @@ class EdgeBridgeTelemetryMixin:
             palm_state=PalmState(is_grasped=is_grasped),
             inference_metrics=self._inference_for_workcell(workcell_state),
             workcell_state=workcell_state,
+            cell_state=cell_state,
             command_id=command_id,
             phase=phase,
         )
@@ -259,6 +276,18 @@ class EdgeBridgeTelemetryMixin:
             with contextlib.suppress(Exception):
                 self.destroy_subscription(self._workcell_state_sub)
             self._workcell_state_sub = None
+
+        for attr in ("_cell_process_client", "_cell_stop_client"):
+            client = getattr(self, attr)
+            if client is not None:
+                with contextlib.suppress(Exception):
+                    self.destroy_client(client)
+                setattr(self, attr, None)
+
+        if self._cell_state_sub is not None:
+            with contextlib.suppress(Exception):
+                self.destroy_subscription(self._cell_state_sub)
+            self._cell_state_sub = None
 
         if self._telemetry_timer is not None:
             with contextlib.suppress(Exception):

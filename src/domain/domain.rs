@@ -59,6 +59,8 @@ pub enum CommandType {
     SpawnObject,
     ClearWorkspace,
     PickAndPlaceTarget,
+    CellProcess,
+    CellStop,
 }
 
 /// Current lifecycle state of the robotic manipulator
@@ -70,6 +72,19 @@ pub enum RobotState {
     Idle,
     Executing,
     Fault,
+}
+
+/// Cell flow state machine position
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ConveyorStatus {
+    Empty,
+    Loaded,
+    Feeding,
+    Halted,
+    Stopped,
+    Fault,
+    Resetting,
 }
 
 /// Canonical UR5e 6-DoF joint names in kinematic sequence
@@ -215,6 +230,18 @@ pub struct SpawnObjectPayload {
     pub object_type: SpawnObjectType,
 }
 
+/// Typed payload for CELL_PROCESS command starting or resuming the conveyor cell
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct CellProcessPayload {
+}
+
+/// Typed payload for CELL_STOP command freezing the belt and FlexFeeder
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct CellStopPayload {
+}
+
 /// Typed payload for CLEAR_WORKSPACE command
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -282,6 +309,14 @@ pub struct WorkcellState {
     pub active_id: Option<String>,
 }
 
+/// Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CellState {
+    pub conveyor_status: ConveyorStatus,
+    pub belt_offset_m: f64,
+}
+
 /// Canonical schema for structured error frames returned by Gateway over WebSocket
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -330,6 +365,8 @@ pub struct RobotTelemetryEvent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub command_id: Option<String>,
     pub workcell_state: WorkcellState,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cell_state: Option<CellState>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub phase: Option<String>,
 }

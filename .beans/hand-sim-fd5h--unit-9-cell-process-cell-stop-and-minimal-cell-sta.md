@@ -1,13 +1,13 @@
 ---
 # hand-sim-fd5h
 title: 'Unit 9.05: CELL_PROCESS / CELL_STOP and minimal cell_state through ROS'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-04T21:02:17Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-u09k
@@ -30,3 +30,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 
 - hand-sim-u09k (02)
 - hand-sim-kkwu (04)
+
+Done: CELL_PROCESS/CELL_STOP + cell_state schema, cell_orchestrator package, EdgeNode mapping, throttler sample-hold. Launch wiring left to the launch ticket.

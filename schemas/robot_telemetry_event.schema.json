@@ -390,6 +390,28 @@
       },
       "additionalProperties": false
     },
+    "cell_state": {
+      "type": "object",
+      "title": "CellState",
+      "description": "Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel",
+      "required": [
+        "conveyor_status",
+        "belt_offset_m"
+      ],
+      "properties": {
+        "conveyor_status": {
+          "type": "string",
+          "title": "ConveyorStatus",
+          "enum": ["EMPTY", "LOADED", "FEEDING", "HALTED", "STOPPED", "FAULT", "RESETTING"],
+          "description": "Cell flow state machine position"
+        },
+        "belt_offset_m": {
+          "type": "number",
+          "description": "Belt travel in meters since the cell controller started counting; the UI extrapolates between updates"
+        }
+      },
+      "additionalProperties": false
+    },
     "phase": {
       "type": "string",
       "description": "Optional PickAndPlace action phase (e.g. RELEASING) tracked by EdgeNode from action feedback"

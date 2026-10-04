@@ -28,6 +28,7 @@ async fn test_telemetry_throttler_preserves_phase() {
             active_id: None,
         },
         phase: Some("RELEASING".to_string()),
+        cell_state: None,
     };
     throttler.push_event(event);
     let out = tokio::time::timeout(Duration::from_millis(500), rx.recv())
@@ -64,6 +65,7 @@ async fn test_telemetry_throttler_500hz_to_30hz_stability() {
                     active_id: None,
                 },
                 phase: None,
+                cell_state: None,
             };
             throttler_feed.push_event(event);
         }
@@ -132,6 +134,7 @@ async fn test_telemetry_throttler_5hz_slow_upstream_no_repeat() {
                     active_id: None,
                 },
                 phase: None,
+                cell_state: None,
             };
             throttler_feed.push_event(event);
         }

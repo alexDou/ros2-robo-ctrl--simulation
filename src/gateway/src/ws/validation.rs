@@ -2,8 +2,9 @@
 
 pub(super) fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Result<(), String> {
     use crate::domain::{
-        ClearWorkspacePayload, CommandType, EmergencyStopPayload, PalmActuatePayload,
-        PickAndPlaceTargetPayload, ResetFaultPayload, SpawnObjectPayload, TrajectoryExecutePayload,
+        CellProcessPayload, CellStopPayload, ClearWorkspacePayload, CommandType,
+        EmergencyStopPayload, PalmActuatePayload, PickAndPlaceTargetPayload, ResetFaultPayload,
+        SpawnObjectPayload, TrajectoryExecutePayload,
     };
     use serde::Deserialize;
     match cmd.r#type {
@@ -27,6 +28,12 @@ pub(super) fn validate_command_payload(cmd: &crate::domain::RobotCommand) -> Res
             }
             Ok(())
         }
+        CommandType::CellProcess => CellProcessPayload::deserialize(&cmd.payload)
+            .map(|_| ())
+            .map_err(|e| e.to_string()),
+        CommandType::CellStop => CellStopPayload::deserialize(&cmd.payload)
+            .map(|_| ())
+            .map_err(|e| e.to_string()),
         CommandType::ClearWorkspace => ClearWorkspacePayload::deserialize(&cmd.payload)
             .map(|_| ())
             .map_err(|e| e.to_string()),

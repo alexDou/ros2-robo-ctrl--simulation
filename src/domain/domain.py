@@ -49,6 +49,8 @@ class CommandType(str, Enum):
     SPAWN_OBJECT = "SPAWN_OBJECT"
     CLEAR_WORKSPACE = "CLEAR_WORKSPACE"
     PICK_AND_PLACE_TARGET = "PICK_AND_PLACE_TARGET"
+    CELL_PROCESS = "CELL_PROCESS"
+    CELL_STOP = "CELL_STOP"
 
 
 class RobotState(str, Enum):
@@ -59,6 +61,18 @@ class RobotState(str, Enum):
     IDLE = "IDLE"
     EXECUTING = "EXECUTING"
     FAULT = "FAULT"
+
+
+class ConveyorStatus(str, Enum):
+    """Cell flow state machine position"""
+
+    EMPTY = "EMPTY"
+    LOADED = "LOADED"
+    FEEDING = "FEEDING"
+    HALTED = "HALTED"
+    STOPPED = "STOPPED"
+    FAULT = "FAULT"
+    RESETTING = "RESETTING"
 
 
 UR5E_JOINTS: list[str] = [
@@ -185,6 +199,20 @@ class SpawnObjectPayload(BaseModel):
     object_type: SpawnObjectType = Field(..., description="Type of object to spawn")
 
 
+class CellProcessPayload(BaseModel):
+    """Typed payload for CELL_PROCESS command starting or resuming the conveyor cell"""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+
+class CellStopPayload(BaseModel):
+    """Typed payload for CELL_STOP command freezing the belt and FlexFeeder"""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+
 class ClearWorkspacePayload(BaseModel):
     """Typed payload for CLEAR_WORKSPACE command"""
 
@@ -250,6 +278,15 @@ class WorkcellState(BaseModel):
     active_id: Optional[str] = Field(default=None, description="Optional id of the gear currently targeted")
 
 
+class CellState(BaseModel):
+    """Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    conveyor_status: ConveyorStatus = Field(..., description="Cell flow state machine position")
+    belt_offset_m: FiniteFloat = Field(..., allow_inf_nan=False, description="Belt travel in meters since the cell controller started counting; the UI extrapolates between updates")
+
+
 class ErrorFrame(BaseModel):
     """Canonical schema for structured error frames returned by Gateway over WebSocket"""
 
@@ -285,6 +322,7 @@ class RobotTelemetryEvent(BaseModel):
     inference_metrics: Optional[InferenceMetrics] = Field(default=None, description="Edge AI inference latency and object classification metrics")
     command_id: Optional[str] = Field(default=None, description="Optional command identifier acknowledged by this telemetry event")
     workcell_state: WorkcellState = Field(..., description="Authoritative workcell gear snapshot: spawned, in-progress, and processed buckets plus active gear id")
+    cell_state: Optional[CellState] = Field(default=None, description="Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel")
     phase: Optional[str] = Field(default=None, description="Optional PickAndPlace action phase (e.g. RELEASING) tracked by EdgeNode from action feedback")
 
 

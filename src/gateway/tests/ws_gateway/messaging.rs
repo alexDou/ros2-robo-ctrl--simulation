@@ -113,6 +113,7 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     let telem_json = serde_json::to_string(&telem_event).expect("serialize telemetry");
     fabric

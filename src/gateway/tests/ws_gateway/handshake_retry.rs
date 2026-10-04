@@ -56,6 +56,7 @@ async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     fabric
         .publish_telemetry(
@@ -86,6 +87,7 @@ async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     fabric
         .publish_telemetry(

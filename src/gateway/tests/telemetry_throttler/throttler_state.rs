@@ -87,13 +87,19 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
         command_id: None,
         workcell_state: snapshot.clone(),
         phase: Some("GRASPING".to_string()),
+        cell_state: Some(gateway::domain::CellState {
+            conveyor_status: gateway::domain::ConveyorStatus::Halted,
+            belt_offset_m: 0.75,
+        }),
     };
+    let event_cell_state = event.cell_state.clone();
     throttler.push_event(event);
     let out = tokio::time::timeout(Duration::from_millis(500), rx.recv())
         .await
         .expect("throttled frame")
         .expect("channel open");
     assert_eq!(out.workcell_state, snapshot);
+    assert_eq!(out.cell_state, event_cell_state);
     assert_eq!(out.workcell_state.in_progress[0].origin_x, Some(0.45));
     assert_eq!(out.workcell_state.processed[0].origin_y, Some(0.15));
     assert_eq!(out.workcell_state.active_id.as_deref(), Some("gear-1"));
@@ -129,6 +135,7 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
     throttler.push_bytes(&cdr_bytes).expect("ingest CDR joints");
     let synth = throttler.sample_latest().expect("latest present");
     assert_eq!(synth.workcell_state, snapshot);
+    assert_eq!(synth.cell_state, event_cell_state);
     assert!((synth.joint_positions[0] - 0.1).abs() < 1e-4);
     throttler.stop();
 }

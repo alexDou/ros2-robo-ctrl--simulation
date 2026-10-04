@@ -54,6 +54,7 @@ async fn test_ws_30hz_telemetry_high_throughput() {
                 active_id: None,
             },
             phase: None,
+            cell_state: None,
         };
         let telem_json = serde_json::to_string(&telem_event).expect("serialize telemetry");
         fabric

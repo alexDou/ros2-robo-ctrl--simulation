@@ -10,6 +10,7 @@ Per Unit 6.5-Bugfix.2.1 (hand-sim-o5es) & Unit 6.5-Bugfix.2.2 (hand-sim-1h63):
 - Streams ActionFeedbackFrame to Zenoh on rt/arm_controller/pick_and_place/_action/feedback.
 - Dynamically reflects gripper/palm state (is_grasped) during GRASPING and RELEASING phases.
 - Bridges SPAWN_OBJECT and CLEAR_WORKSPACE commands to /workcell/spawn_object and /workcell/clear_workspace services.
+- Bridges CELL_PROCESS and CELL_STOP to /cell/process and /cell/stop; forwards /cell/state into telemetry.
 - Implements non-blocking EMERGENCY_STOP (cancels trajectory & PickAndPlace, sets FAULT) and RESET_FAULT handling.
 - Emits RobotTelemetryEvent and ErrorFrame over Zenoh on robot/{id}/telemetry.
 """
@@ -24,8 +25,16 @@ from rclpy.action import ActionClient
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
+from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from robot_control_interfaces.action import PickAndPlace
-from robot_control_interfaces.srv import ClearWorkspace, CommitDrop, MarkGrasped, SpawnObject
+from robot_control_interfaces.srv import (
+    CellProcess,
+    CellStop,
+    ClearWorkspace,
+    CommitDrop,
+    MarkGrasped,
+    SpawnObject,
+)
 from std_msgs.msg import String
 
 from arm_controller.edge_bridge.actions import EdgeBridgeActionsMixin
@@ -36,6 +45,7 @@ from arm_controller.edge_bridge.trajectory import EdgeBridgeTrajectoryMixin
 from domain import (
     CANONICAL_POSES,
     DEFAULT_ROBOT_ID,
+    CellState,
     PoseName,
     RobotState,
     WorkcellState,
@@ -98,6 +108,9 @@ class EdgeBridgeNode(
             "commit_drop_service_name",
             "/workcell/commit_drop",
         )
+        self.declare_parameter("cell_state_topic", "cell/state")
+        self.declare_parameter("cell_process_service_name", "/cell/process")
+        self.declare_parameter("cell_stop_service_name", "/cell/stop")
         self.declare_parameter("switch_service_name", "/controller_manager/switch_controller")
         self.declare_parameter("switch_timeout", 5.0)
         self.declare_parameter("standby_park_timeout", 10.0)
@@ -126,6 +139,10 @@ class EdgeBridgeNode(
         self._mark_grasped_service_name = str(self.get_parameter("mark_grasped_service_name").value)
         self._commit_drop_service_name = str(self.get_parameter("commit_drop_service_name").value)
 
+        self._cell_state_topic = str(self.get_parameter("cell_state_topic").value)
+        self._cell_process_service_name = str(self.get_parameter("cell_process_service_name").value)
+        self._cell_stop_service_name = str(self.get_parameter("cell_stop_service_name").value)
+
         self._lock = threading.RLock()
         self._cb_group = ReentrantCallbackGroup()
         self._telem_cb_group = MutuallyExclusiveCallbackGroup()
@@ -138,6 +155,7 @@ class EdgeBridgeNode(
         self._workcell_state: WorkcellState = WorkcellState(
             spawned=[], in_progress=[], processed=[]
         )
+        self._cell_state: CellState | None = None
         self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
         self._active_traj_handle: Any | None = None
         self._active_pnp_handle: Any | None = None
@@ -202,6 +220,31 @@ class EdgeBridgeNode(
             self._workcell_state_topic,
             self._on_workcell_state,
             10,
+            callback_group=self._telem_cb_group,
+        )
+
+        self._cell_process_client = self.create_client(
+            CellProcess,
+            self._cell_process_service_name,
+            callback_group=self._cb_group,
+        )
+
+        self._cell_stop_client = self.create_client(
+            CellStop,
+            self._cell_stop_service_name,
+            callback_group=self._cb_group,
+        )
+
+        # Transient local: the orchestrator's last state reaches an EdgeNode that starts later.
+        self._cell_state_sub = self.create_subscription(
+            String,
+            self._cell_state_topic,
+            self._on_cell_state,
+            QoSProfile(
+                depth=1,
+                reliability=ReliabilityPolicy.RELIABLE,
+                durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            ),
             callback_group=self._telem_cb_group,
         )
 

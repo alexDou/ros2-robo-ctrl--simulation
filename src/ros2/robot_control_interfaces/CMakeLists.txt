@@ -15,6 +15,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/PickAndPlace.action"
   "action/ConveyorRun.action"
   "srv/ConveyorStop.srv"
+  "srv/CellProcess.srv"
+  "srv/CellStop.srv"
   "srv/GetDropSlot.srv"
   "srv/ClearWorkspace.srv"
   "srv/SpawnObject.srv"

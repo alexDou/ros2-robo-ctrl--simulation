@@ -27,6 +27,7 @@ fn test_robot_telemetry_event_workcell_state_required_round_trip() {
             active_id: Some("gear-1".to_string()),
         },
         phase: None,
+        cell_state: None,
     };
     let serialized = serde_json::to_string(&event).expect("Serialization failed");
     let deserialized: RobotTelemetryEvent =
@@ -92,6 +93,7 @@ fn test_robot_telemetry_event_workcell_origin_optional_round_trip() {
             active_id: Some("gear-1".to_string()),
         },
         phase: None,
+        cell_state: None,
     };
     let serialized = serde_json::to_string(&event).expect("Serialization failed");
     // Spawned entry omits origin keys (skip_serializing_if None); moved entries carry them verbatim.

@@ -91,6 +91,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     assert_eq!(valid_event.validate(), Ok(()));
 
@@ -108,6 +109,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     assert_eq!(
         nan_event.validate(),
@@ -128,6 +130,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     assert_eq!(
         inf_event.validate(),
@@ -148,6 +151,7 @@ fn test_robot_telemetry_event_non_finite_validation() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     assert_eq!(
         neg_inf_event.validate(),

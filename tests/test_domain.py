@@ -4,8 +4,12 @@ from pydantic import ValidationError
 from domain import (
     CANONICAL_UR5E_JOINTS,
     UR5E_JOINTS,
+    CellProcessPayload,
+    CellState,
+    CellStopPayload,
     ClearWorkspacePayload,
     CommandType,
+    ConveyorStatus,
     EmergencyStopPayload,
     ErrorFrame,
     InferenceMetrics,
@@ -749,3 +753,55 @@ def test_unit70_required_color_intact():
     assert SCRAP_BIN == [0.4, -0.75, -0.05]
     assert PALLET_CAPACITY == 10
     assert STACK_STEP_M == 0.02
+
+
+@pytest.mark.parametrize(
+    ("command_type", "payload_cls"),
+    [(CommandType.CELL_PROCESS, CellProcessPayload), (CommandType.CELL_STOP, CellStopPayload)],
+)
+def test_cell_command_payloads_are_empty_and_strict(command_type, payload_cls):
+    payload = payload_cls()
+    assert payload.model_dump() == {}
+    cmd = RobotCommand(
+        command_id="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        sender_id="ui-client",
+        timestamp_ns=1_725_894_942_000_000_000,
+        type=command_type,
+        payload=payload.model_dump(),
+    )
+    restored = RobotCommand.model_validate_json(cmd.model_dump_json())
+    assert restored.type == command_type
+    assert restored.payload == {}
+    with pytest.raises(ValidationError):
+        payload_cls.model_validate_json('{"unexpected": "field"}')
+
+
+def test_cell_state_round_trips_inside_telemetry():
+    event = RobotTelemetryEvent(
+        timestamp_ns=1,
+        robot_state=RobotState.IDLE,
+        joint_positions=[0.0] * 6,
+        palm_state=PalmState(is_grasped=False),
+        workcell_state=WorkcellState(spawned=[], in_progress=[], processed=[]),
+        cell_state=CellState(conveyor_status=ConveyorStatus.FEEDING, belt_offset_m=0.25),
+    )
+    restored = RobotTelemetryEvent.model_validate_json(event.model_dump_json(exclude_none=True))
+    assert restored.cell_state.conveyor_status == ConveyorStatus.FEEDING
+    assert restored.cell_state.belt_offset_m == 0.25
+
+
+def test_cell_state_is_optional_and_strict():
+    base = {
+        "timestamp_ns": 1,
+        "robot_state": "IDLE",
+        "joint_positions": [0.0] * 6,
+        "palm_state": {"is_grasped": False},
+        "workcell_state": {"spawned": [], "in_progress": [], "processed": []},
+    }
+    assert RobotTelemetryEvent.model_validate(base).cell_state is None
+    with pytest.raises(ValidationError):
+        CellState.model_validate({"conveyor_status": "BOGUS", "belt_offset_m": 0.0})
+    with pytest.raises(ValidationError):
+        CellState.model_validate({"conveyor_status": "EMPTY"})
+    with pytest.raises(ValidationError):
+        CellState.model_validate({"conveyor_status": "EMPTY", "belt_offset_m": 0.0, "x": 1})

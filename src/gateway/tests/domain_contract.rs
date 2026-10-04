@@ -1,6 +1,8 @@
 //! Domain contract tests, one module per domain chunk.
 //! Verbatim split of the former `domain_contract_test.rs`; no logic changed.
 
+#[path = "domain_contract/cell.rs"]
+mod cell;
 #[path = "domain_contract/classification.rs"]
 mod classification;
 #[path = "domain_contract/error.rs"]

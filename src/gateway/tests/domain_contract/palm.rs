@@ -57,6 +57,7 @@ fn test_robot_telemetry_event_with_palm_state() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
     let serialized = serde_json::to_string(&event).expect("Serialize telemetry event");
     assert!(serialized.contains(r#""palm_state":{"is_grasped":true}"#));

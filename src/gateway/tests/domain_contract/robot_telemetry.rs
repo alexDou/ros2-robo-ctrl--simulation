@@ -23,6 +23,7 @@ fn test_robot_telemetry_event_serialization_round_trip() {
             active_id: None,
         },
         phase: None,
+        cell_state: None,
     };
 
     let serialized = serde_json::to_string(&event).expect("Serialization failed");
@@ -51,6 +52,7 @@ fn test_robot_telemetry_event_phase_optional_round_trip() {
             active_id: None,
         },
         phase: Some("RELEASING".to_string()),
+        cell_state: None,
     };
     let serialized = serde_json::to_string(&event).expect("Serialization failed");
     let deserialized: RobotTelemetryEvent =
