@@ -226,3 +226,39 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
   - Seedable deck, Fill/Process/Stop state machine (ConveyorStatus `EMPTY`/`LOADED`/`FEEDING`/`HALTED`/`STOPPED`), belt feed + stop rule + final flush, per-gear `SPAWN_OBJECT` → `PICK_AND_PLACE_TARGET` loop; connect/FAULT → local reset + `CLEAR_WORKSPACE`.
 - **Unit 8.4: Seeded Hermetic E2E**:
   - Cucumber + Playwright (Mock Gateway): full Fill → Process run, Stop/resume, EmergencyStop reset, reload reset, tower auto-empty, bin color.
+
+---
+
+## Unit 9: Conveyor Devices
+
+* **Objective**: Make every moving part of the Flow B cell drivable with real, purchasable devices through new ROS2 nodes, on branch `feat/conveyor-devices` (cut from `feat/conveyor-flow`; neither `feat/conveyor-flow` nor `main` changes).
+  - A FlexFeeder places Gearwheels onto the running Conveyor. The belt stops when the lead Gearwheel trips the PickZone eye.
+  - The arm sorts the Batch in SortCycles (belt order). Intact Gearwheels go to their colour's Pallet; defectives become Rejected, then Scrapped when they fall off the belt end on the next run.
+  - A full Pallet (10) makes a PalletExchange (−X off-scene and back) with the arm at HOME.
+  - At a belt stop with ≥ 20 Scrapped, the ScrapBin makes a BinExchange (+X, tip, back) while sorting continues; the belt never moves while it is away.
+  - Connect, reload and RESET_FAULT run one physical flush reset (`RESETTING`).
+  - A display panel beside the cell shows FlexFeeder remaining, ScrapBin count and Pallet counts.
+  - Full spec and decision log: `support_files/specs/unit9/`.
+* **Architecture**: ROS2 owns the flow (ADR 0006).
+  - `cell_orchestrator` commands the device nodes (Conveyor, FlexFeeder, PalletLanes ×3, ScrapBin exchange). They talk Modbus TCP (`pymodbus`) to a programmable cell controller that owns belt stop, exit counting and interlocks.
+  - In SIM, `virtual_plc` serves the same register map. Gearwheel positions come from encoder tracking; classification stays mocked in the SIM FlexFeeder.
+  - TeleopClient becomes operator panel + visualizer.
+  - Contract-first: 9.0 first, 9.1–9.4 in parallel against mocked seams, 9.5 integration.
+
+### Sub-Unit Breakdown
+- **Unit 9.0: Contracts**:
+  - `CELL_FILL` / `CELL_PROCESS` / `CELL_STOP`; `cell_state` telemetry; Rejected / Scrapped in WorkcellState; `PALLET_CAPACITY` 10, `BIN_EXCHANGE_THRESHOLD` 20, PalletStation / lane / panel constants.
+  - ROS interfaces (conveyor run, station exchange, FlexFeeder, ResetStation, orchestrator), cell controller register map, codegen, cross-language contract tests.
+- **Unit 9.1: Device Nodes + virtual_plc**:
+  - Conveyor, FlexFeeder and station (×4) nodes behind a Modbus TCP `FieldIoPort`; 5 Hz poll with latched counters.
+  - `virtual_plc` with belt / feeder / lane / bin simulation and the controller-local logic.
+- **Unit 9.2: Orchestrator + WorkcellNode + EdgeNode**:
+  - ConveyorStatus (incl. `FAULT`, `RESETTING`), Batch registration, SortCycles, exchanges, Stop, flush reset.
+  - PalletStation FULL + ResetStation, Scrapped on exit eye, no auto-empty; EdgeNode `CELL_*` / reset mapping, device freeze on EmergencyStop, `cell_state` forwarding.
+- **Unit 9.3: Gateway Pass-Through**:
+  - New commands and `cell_state` validated and forwarded; throttler keeps latest `cell_state`.
+- **Unit 9.4: TeleopClient + Scene**:
+  - Deck / sequencer / belt physics removed; intents + gating from `cell_state`; `CLEAR_WORKSPACE` on connect.
+  - FlexFeeder, PalletLanes + Pallets, ScrapBin slide / tip, display panel.
+- **Unit 9.5: Integration**:
+  - Seeded mock-gateway Cucumber E2E (web only) + ROS launch test of the full SIM graph with `virtual_plc`.

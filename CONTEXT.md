@@ -65,16 +65,28 @@ Deterministic grasping mechanism in simulation parenting an object mesh to the D
 _Avoid_: Physics grip, collision grab, magnetic lock
 
 **Conveyor**:
-Linear belt in front of the manipulator carrying Gearwheels from the FeedHopper toward the ScrapBin; it runs until the lead Gearwheel of the current Batch reaches the far edge of the PickZone, then stops while the Batch is sorted.
+Linear belt in front of the manipulator carrying Gearwheels from the FlexFeeder toward the ScrapBin; it runs until the lead Gearwheel reaches the far edge of the PickZone, then stops while the Batch is sorted. It never moves while the ScrapBin is away.
 _Avoid_: Indexing conveyor, step feeder, conveyor line, moving belt
 
-**FeedHopper**:
-Reservoir at the upstream end of the Conveyor, filled on demand with a fixed deck of 100 Gearwheels whose color and intactness are already known.
-_Avoid_: Container, holder, magazine, feeder
+**FlexFeeder**:
+Flexible-feeder module at the upstream end of the Conveyor that holds the Gearwheel supply and places Gearwheels one at a time onto the running belt; filled on demand with a fixed deck of 100 Gearwheels whose color and intactness are already known.
+_Avoid_: FeedHopper, hopper, container, magazine
 
 **Batch**:
-The Gearwheels dropped onto the Conveyor during one belt run, between 3 and BeltCapacity (fewer only when the FeedHopper runs out).
+The Gearwheels standing inside the PickZone when the Conveyor stops; Gearwheels placed further upstream wait for the next Batch.
 _Avoid_: Wave, load, lot
+
+**SortCycle**:
+The processing of one Gearwheel from dispatch to completion, including any PalletExchange it triggers; the next SortCycle starts only when the previous one is complete.
+_Avoid_: Pick cycle, iteration, PickAndPlaceSequence
+
+**Rejected**:
+A defective Gearwheel registered at a stopped Conveyor: known not to be processed, still lying on the belt.
+_Avoid_: Scrapped, discarded, binned
+
+**Scrapped**:
+A Rejected Gearwheel that has fallen off the belt end into the ScrapBin; only Scrapped Gearwheels count as ScrapBin contents.
+_Avoid_: Rejected, deleted
 
 **PickZone**:
 The stretch of the Conveyor within the manipulator's reach where a stopped Batch is sorted.
@@ -85,35 +97,47 @@ Maximum number of Gearwheels one Batch may hold, set by the size of the PickZone
 _Avoid_: Belt limit, N_max
 
 **ConveyorStatus**:
-Operational state of the Conveyor and FeedHopper (`EMPTY`, `LOADED`, `FEEDING`, `HALTED`, `STOPPED`), independent of RobotState.
+Operational state of the Conveyor and FlexFeeder (`EMPTY`, `LOADED`, `FEEDING`, `HALTED`, `STOPPED`, `FAULT`, `RESETTING`), independent of RobotState.
 _Avoid_: Belt mode, feed state, RobotState
 
 **Stop**:
-Operator pause of feeding: the Conveyor freezes and no further Gearwheels are dispatched, while the pick already under way completes; processing resumes from where it paused.
+Operator pause of feeding: the Conveyor and FlexFeeder freeze and no further Gearwheels are dispatched, while the SortCycle and any exchange already under way complete; processing resumes from where it paused.
 _Avoid_: Pause, halt, EmergencyStop
 
-**RearStand**:
-Fixture behind the manipulator carrying the three SpindleTowers.
-_Avoid_: Tower rack, shelf, back table
+**Pallet**:
+Outbound carrier with a single vertical rod holding up to 10 intact Gearwheels of one color (`WHITE`, `GREEN`, `BLUE`); when full it leaves the cell for packing or assembly and returns empty.
+_Avoid_: SpindleTower, tower, tray, peg
 
-**SpindleTower**:
-Physical sorting destination vertical post receiving inspected intact gearwheels by color (`WHITE`, `GREEN`, `BLUE`); it empties itself once it holds 10.
-_Avoid_: Peg, stacker, pole
+**PalletStation**:
+The position within the manipulator's reach where a Pallet of one color stands while it receives Gearwheels.
+_Avoid_: Tower slot, drop point, RearStand
+
+**PalletLane**:
+The transport that carries a Pallet from its PalletStation out of the cell and back.
+_Avoid_: Tower slide, shuttle, track
+
+**PalletExchange**:
+A full Pallet leaving on its PalletLane and returning empty; the manipulator waits at home meanwhile.
+_Avoid_: Tower empty, unload, swap
 
 **ScrapBin**:
-Physical disposal destination at the Conveyor exit receiving defective gearwheels of any color by dropping off the belt end; shown only as empty or not empty, and emptied once it holds 100.
+Physical disposal destination at the Conveyor exit receiving Rejected Gearwheels of any color as they drop off the belt end; shown as empty or not empty.
 _Avoid_: Trash, reject pile, discard box, recycle bin
+
+**BinExchange**:
+The ScrapBin leaving the cell once it holds 20 or more Scrapped Gearwheels at a Conveyor stop, dumping them for recycling, and returning empty while sorting continues.
+_Avoid_: Bin empty, recycle, dump
 
 **Gearwheel**:
 Cylindrical manufactured workpiece with perimeter teeth, carrying a color (`WHITE`, `GREEN`, `BLUE`) and intactness (intact or defective), targeted for feeding, pickup, and sorting.
 _Avoid_: Item, puck, token, part, gear
 
 **ClearWorkspace**:
-Explicit administrative command resetting all registered Gearwheels, SpindleTowers and the ScrapBin; also issued on every TeleopClient connect and after FAULT.
+Full system reset issued on every TeleopClient connect: the cell physically flushes (belt emptied into the ScrapBin, non-empty Pallets and the ScrapBin exchanged, FlexFeeder emptied) and ends empty; recovery from FAULT runs the same reset.
 _Avoid_: Reset scene, wipe table, delete objects
 
 **WorkcellState**:
-Authoritative domain state component tracking registered Gearwheels, their coordinates, color and intactness, and SpindleTower and ScrapBin inventory. A Gearwheel enters it only when registered at a stopped Conveyor; FeedHopper and belt contents belong to TeleopClient alone.
+Authoritative domain state component tracking registered Gearwheels (including Rejected and Scrapped), their color and intactness, and Pallet and ScrapBin inventory. A Gearwheel enters it only when registered at a stopped Conveyor; where a Gearwheel lies on the belt is known from the Conveyor, not from WorkcellState.
 _Avoid_: Scene graph, world model, spawn manager, entity repo
 
 **AnalyticalInverseKinematics**:
@@ -125,7 +149,7 @@ Deterministic multi-phase waypoint trajectory executing workpiece approach, pick
 _Avoid_: Motion script, pick routine, macro
 
 **WorkcellNode**:
-Authoritative standalone ROS2 node managing SpindleTower inventory, workpiece presence, and workspace lifecycle services.
+Authoritative standalone ROS2 node managing Pallet and ScrapBin inventory, workpiece presence, and workspace lifecycle services.
 _Avoid_: Inventory tracker, table node, workcell manager
 
 **ArmControllerNode**:

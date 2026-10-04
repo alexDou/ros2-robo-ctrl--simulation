@@ -12,6 +12,15 @@ Single source of truth. Read before any rate/frequency claim. Do NOT re-ask user
   5 Hz sim feed = passthrough/sample-hold; 500 Hz live feed = decimate 500->30.
 - Direction: lower freqs where possible, stay real-ready.
 
+## Unit 9 cell devices (branch feat/conveyor-devices, planned 2026-10-04)
+
+- Cell controller status poll (device nodes -> Modbus TCP) = 5 Hz, latched
+  counters + sequence numbers so no event is lost between polls.
+- `/cell/state` = on every event + belt offset at 5 Hz while the belt moves;
+  TeleopClient extrapolates belt motion from state + speed.
+- Fast reactions (belt stop at eye, exit counting, interlocks) run in the
+  controller scan cycle, never in ROS. Nothing here touches the arm path.
+
 ## Browser optimisation (current workflow)
 
 - Connect-gated WS, manual Connect, no auto-connect (b81e928).
