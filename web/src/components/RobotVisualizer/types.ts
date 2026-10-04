@@ -2,7 +2,6 @@ import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js
 import type * as THREE from 'three';
 import type { URDFRobot } from 'urdf-loader';
 import type { RobotState, GearEntry } from '@contracts';
-import type { BeltFeeder } from '@utils/beltFeeder';
 
 export interface WorkcellSnapshotView {
   spawned: GearEntry[];
@@ -32,8 +31,8 @@ export interface RobotVisualizerProps {
   robotState?: RobotState | string;
   /** Gears currently in the FeedHopper deck; drives the hopper fill level. */
   hopperCount?: number;
-  /** Client-local belt feeder: its gears and travel drive the belt gear meshes and surface animation. */
-  beltFeederRef?: { current: BeltFeeder | null };
+  /** Belt travel in meters (from cell_state, extrapolated); drives the belt surface animation. */
+  getBeltScroll?: () => number;
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,

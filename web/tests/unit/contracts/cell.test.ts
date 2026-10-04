@@ -69,3 +69,17 @@ describe('Unit 9.05: cell commands and cell_state contracts', () => {
     );
   });
 });
+
+describe('Unit 9.06: cell command factories (hand-sim-42d4)', () => {
+  it('builds valid CELL_PROCESS and CELL_STOP commands with empty payloads', async () => {
+    const { createCellProcessCommand, createCellStopCommand } = await import('@domain/parsers');
+    for (const [cmd, type] of [
+      [createCellProcessCommand({ senderId: 'ui-client' }), 'CELL_PROCESS'],
+      [createCellStopCommand({ senderId: 'ui-client' }), 'CELL_STOP'],
+    ] as const) {
+      expect(cmd.type).toBe(type);
+      expect(cmd.payload).toEqual({});
+      expect(isRobotCommand(cmd)).toBe(true);
+    }
+  });
+});

@@ -1,6 +1,7 @@
 import { createBeltFeeder, type BeltFeeder } from '@utils/beltFeeder';
 import {
   BELT_X_RANGE,
+  type ConveyorStatus as WireConveyorStatus,
   type GearColor,
   type PickAndPlaceTargetPayload,
   type SpawnObjectPayload,
@@ -91,8 +92,8 @@ export async function processBatch(
   return false;
 }
 
-/** TeleopClient-local hopper/belt lifecycle, separate from RobotState (ADR 0005). */
-export type ConveyorStatus = 'EMPTY' | 'LOADED' | 'FEEDING' | 'HALTED' | 'STOPPED';
+/** Cell flow status (ADR 0006); the same enum `cell_state` carries on the wire. */
+export type ConveyorStatus = WireConveyorStatus;
 
 export const DECK_SIZE = 100;
 const DEFECTIVE_COUNT = 10;

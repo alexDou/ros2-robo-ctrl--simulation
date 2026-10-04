@@ -1,12 +1,11 @@
 import { useState, useCallback, useEffect } from 'preact/hooks';
 import { resolveGatewayWsUrl } from '@utils/url';
-import { CANONICAL_POSES, DEFAULT_ROBOT_ID } from '@contracts';
-import { isAtPose } from '@utils/workcellProgress';
+import { DEFAULT_ROBOT_ID } from '@contracts';
 import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useConveyor } from '@/hooks/useConveyor';
-import { useWorkcellWaiters } from '@/hooks/useWorkcellWaiters';
+import { extrapolateBeltOffset } from '@utils/beltExtrapolation';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
 import { ActionStatusRow } from '@components/ActionStatusRow';
@@ -42,7 +41,6 @@ export function TeleopClient({
   controlsFactory,
   jointPositionsRef,
   seed,
-  timeScale,
 }: TeleopClientProps) {
   const wsUrl = resolveGatewayWsUrl(robotId, gatewayWsUrl);
   const isDesktop = useIsDesktop();
@@ -53,6 +51,7 @@ export function TeleopClient({
     robotState,
     palmState,
     workcellVersion,
+    cellStatus,
     handleIncomingFrame,
     resetStream,
   } = useTelemetryStream();
@@ -68,11 +67,10 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
-    spawnObject,
-    pickAndPlace,
+    cellProcess,
+    cellStop,
     clearWorkspace,
     sendPing,
-    pushProbeLog,
   } = useTeleopSession({
     wsUrl,
     handleIncomingFrame,
@@ -93,26 +91,18 @@ export function TeleopClient({
     (snap?.inProgress?.length ?? 0) > 0 ||
     (snap?.processed?.length ?? 0) > 0;
 
-  const waitUntil = useWorkcellWaiters(connectionState, robotState, workcellVersion);
-  const goHomePose = useCallback(() => executePose('HOME'), [executePose]);
-  const armAtHome = useCallback(
-    () => isAtPose(bufferRef.current?.jointPositions, CANONICAL_POSES.HOME),
-    [bufferRef],
-  );
-  const workcell = useCallback(() => bufferRef.current?.workcellState, [bufferRef]);
-  const { conveyorStatus, deck, feederRef, handleFill, handleProcess, handleStop } = useConveyor({
+  const { conveyorStatus, deck, handleFill, handleProcess, handleStop } = useConveyor({
     connected: connectionState === 'CONNECTED',
     robotState,
-    workcell,
-    spawnObject,
-    pickAndPlace,
-    goHomePose,
-    armAtHome,
-    waitUntil,
-    report: pushProbeLog,
+    cellStatus,
+    cellProcess,
+    cellStop,
     seed,
-    timeScale,
   });
+  const getBeltScroll = useCallback(
+    () => extrapolateBeltOffset(bufferRef.current?.cellState ?? null, performance.now()),
+    [bufferRef],
+  );
 
   const handleClearWorkspace = useCallback(() => {
     clearWorkspace();
@@ -250,7 +240,7 @@ export function TeleopClient({
               jointPositionsRef={jointPositionsRef}
               robotState={effectiveRobotState ?? 'STANDBY'}
               hopperCount={deck.length}
-              beltFeederRef={feederRef}
+              getBeltScroll={getBeltScroll}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}

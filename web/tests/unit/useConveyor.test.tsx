@@ -1,92 +1,60 @@
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/preact';
 import { useConveyor, type UseConveyorParams } from '@/hooks/useConveyor';
 import { DECK_SIZE } from '@utils/conveyorController';
-
-afterEach(() => {
-  vi.useRealTimers();
-});
+import type { ConveyorStatus } from '@contracts';
 
 function params(overrides: Partial<UseConveyorParams> = {}): UseConveyorParams {
   return {
     connected: true,
     robotState: 'IDLE',
-    workcell: () => undefined,
-    spawnObject: vi.fn(),
-    pickAndPlace: vi.fn(),
-    goHomePose: vi.fn(),
-    armAtHome: () => true,
-    waitUntil: () => new Promise<void>(() => undefined),
-    report: vi.fn(),
+    cellStatus: null,
+    cellProcess: vi.fn(),
+    cellStop: vi.fn(),
     seed: 7,
     ...overrides,
   };
 }
 
-describe('Unit 8.2c: useConveyor (hand-sim-as72)', () => {
-  it('Fill loads a full deck; a disconnect empties hopper and belt and reports the abort', async () => {
-    vi.useFakeTimers();
+const render = (p: UseConveyorParams) =>
+  renderHook((props: UseConveyorParams) => useConveyor(props), { initialProps: p });
+
+describe('Unit 9.06: useConveyor sends intents (hand-sim-42d4)', () => {
+  it('Fill loads the hopper locally; Process and Stop only send CELL_* intents', () => {
     const base = params();
-    const { result, rerender } = renderHook((p: UseConveyorParams) => useConveyor(p), {
-      initialProps: base,
-    });
+    const { result } = render(base);
     act(() => result.current.handleFill());
     expect(result.current.conveyorStatus).toBe('LOADED');
     expect(result.current.deck).toHaveLength(DECK_SIZE);
 
     act(() => result.current.handleProcess());
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(200);
-    });
-    expect(result.current.conveyorStatus).toBe('FEEDING');
-
-    await act(async () => {
-      rerender({ ...base, connected: false });
-      await vi.advanceTimersByTimeAsync(0);
-    });
-    expect(result.current.conveyorStatus).toBe('EMPTY');
-    expect(result.current.deck).toHaveLength(0);
-    expect(result.current.feederRef.current).toBeNull();
-    // Aborting is reported, never silent.
-    await vi.waitFor(() =>
-      expect(base.report).toHaveBeenCalledWith('CONVEYOR_ABORTED', expect.any(String)),
-    );
-  });
-});
-
-describe('Unit 8.3a: useConveyor Stop / resume (hand-sim-ywrn)', () => {
-  it('Stop freezes the belt (STOPPED, hopper count holds); Process resumes the same run', async () => {
-    vi.useFakeTimers();
-    const base = params();
-    const { result } = renderHook((p: UseConveyorParams) => useConveyor(p), { initialProps: base });
-    act(() => result.current.handleFill());
-    act(() => result.current.handleProcess());
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(800);
-    });
-    expect(result.current.conveyorStatus).toBe('FEEDING');
+    expect(base.cellProcess).toHaveBeenCalledTimes(1);
+    // Status is owned by the cell: no optimistic local FEEDING.
+    expect(result.current.conveyorStatus).toBe('LOADED');
 
     act(() => result.current.handleStop());
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(0);
-    });
-    expect(result.current.conveyorStatus).toBe('STOPPED');
-    const scroll = result.current.feederRef.current!.scroll();
-    const hopper = result.current.deck.length;
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000);
-    });
-    expect(result.current.feederRef.current!.scroll()).toBe(scroll); // frozen
-    expect(result.current.deck.length).toBe(hopper);
-    expect(base.spawnObject).not.toHaveBeenCalled();
+    expect(base.cellStop).toHaveBeenCalledTimes(1);
+  });
 
-    const feeder = result.current.feederRef.current;
-    act(() => result.current.handleProcess());
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(300);
-    });
-    expect(result.current.conveyorStatus).toBe('FEEDING');
-    expect(result.current.feederRef.current).toBe(feeder); // same belt, not a fresh run
-    expect(result.current.feederRef.current!.scroll()).toBeGreaterThan(scroll);
+  it('derives the status from cell_state once the cell is running', () => {
+    const base = params();
+    const { result, rerender } = render(base);
+    act(() => result.current.handleFill());
+    for (const status of ['FEEDING', 'HALTED', 'STOPPED', 'FAULT'] as ConveyorStatus[]) {
+      rerender({ ...base, cellStatus: status });
+      expect(result.current.conveyorStatus).toBe(status);
+    }
+    // Back to the cell's idle states: the local Fill state shows again.
+    rerender({ ...base, cellStatus: 'EMPTY' });
+    expect(result.current.conveyorStatus).toBe('LOADED');
+  });
+
+  it('a disconnect empties the hopper', () => {
+    const base = params();
+    const { result, rerender } = render(base);
+    act(() => result.current.handleFill());
+    rerender({ ...base, connected: false });
+    expect(result.current.conveyorStatus).toBe('EMPTY');
+    expect(result.current.deck).toHaveLength(0);
   });
 });

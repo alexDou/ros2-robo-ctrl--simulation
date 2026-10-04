@@ -1,13 +1,13 @@
 ---
 # hand-sim-42d4
 title: 'Unit 9.06: Process/Stop drive the SIM belt from TeleopClient'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-04T22:07:28Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-fd5h
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-fd5h (05)
+
+Web-only: gateway side already covered by 9.05. Process/Stop send CELL_* intents; status from cell_state; belt scroll extrapolated at belt speed (cap 1 s). Known: 5 closed_loop E2E scenarios (local deck sort) fail until later Unit 9 tickets and need mock-gateway cell_state emulation; dead local-run code removed in a later ticket.

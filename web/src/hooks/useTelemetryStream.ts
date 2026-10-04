@@ -5,6 +5,7 @@ import {
   type ArmJointPositions,
   type RobotState,
   type GearEntry,
+  type ConveyorStatus,
 } from '@contracts';
 
 export interface WorkcellSnapshot {
@@ -12,6 +13,13 @@ export interface WorkcellSnapshot {
   inProgress: GearEntry[];
   processed: GearEntry[];
   activeId: string | null;
+}
+
+/** Latest cell_state with its arrival time, so the belt offset can be extrapolated between reports. */
+export interface CellStateSample {
+  conveyorStatus: ConveyorStatus;
+  beltOffsetM: number;
+  receivedAtMs: number;
 }
 
 export interface TelemetryBuffer {
@@ -22,6 +30,7 @@ export interface TelemetryBuffer {
   inferenceMetrics?: { latency_ms: number; confidence: number; detected_object: string } | null;
   phase?: string | null;
   workcellState: WorkcellSnapshot;
+  cellState: CellStateSample | null;
   frequencyHz: number;
   latencyMs: number;
   lastPacketTime: number;
@@ -60,6 +69,7 @@ export function useTelemetryStream() {
     palmState: { is_grasped: false },
     phase: null,
     workcellState: { ...EMPTY_WORKCELL },
+    cellState: null,
     frequencyHz: 0,
     latencyMs: 0,
     lastPacketTime: 0,
@@ -73,6 +83,8 @@ export function useTelemetryStream() {
   // UI state from bufferRef.current.workcellState (e.g. Clear button)
   // re-render. Buffer mutation alone triggers no render.
   const [workcellVersion, setWorkcellVersion] = useState(0);
+  // Only the status is reactive; the belt offset is read from the buffer every frame.
+  const [cellStatus, setCellStatus] = useState<ConveyorStatus | null>(null);
   const lastWorkcellSigRef = useRef<string>('');
   const frameTimestampsRef = useRef<number[]>([]);
   const lastStreamingRef = useRef(false);
@@ -96,6 +108,15 @@ export function useTelemetryStream() {
     if (sig !== lastWorkcellSigRef.current) {
       lastWorkcellSigRef.current = sig;
       setWorkcellVersion((v) => v + 1);
+    }
+    // The gateway holds the latest cell_state, so a frame without one keeps the previous sample.
+    if (data.cell_state) {
+      buf.cellState = {
+        conveyorStatus: data.cell_state.conveyor_status,
+        beltOffsetM: data.cell_state.belt_offset_m,
+        receivedAtMs: now,
+      };
+      setCellStatus(data.cell_state.conveyor_status);
     }
     buf.timestampNs = data.timestamp_ns;
     buf.lastPacketTime = now;
@@ -151,6 +172,7 @@ export function useTelemetryStream() {
     setRobotState('STANDBY');
     setPalmState({ is_grasped: false });
     setWorkcellVersion((v) => v + 1);
+    setCellStatus(null);
     frameTimestampsRef.current = [];
     bufferRef.current = {
       jointPositions: [...CANONICAL_POSES.HOME],
@@ -159,6 +181,7 @@ export function useTelemetryStream() {
       palmState: { is_grasped: false },
       phase: null,
       workcellState: { ...EMPTY_WORKCELL },
+      cellState: null,
       frequencyHz: 0,
       latencyMs: 0,
       lastPacketTime: 0,
@@ -172,6 +195,7 @@ export function useTelemetryStream() {
     robotState,
     palmState,
     workcellVersion,
+    cellStatus,
     handleIncomingFrame,
     resetStream,
   };

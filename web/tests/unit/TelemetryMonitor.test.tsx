@@ -41,6 +41,7 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
         jointPositions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         timestampNs: 0n.toString(),
         robotState: RobotState.IDLE,
+        cellState: null,
         workcellState: { spawned: [], inProgress: [], processed: [], activeId: null },
         frequencyHz: 0,
         latencyMs: 0,
@@ -73,6 +74,7 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
         jointPositions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         timestampNs: 0n.toString(),
         robotState: RobotState.IDLE,
+        cellState: null,
         workcellState: { spawned: [], inProgress: [], processed: [], activeId: null },
         frequencyHz: 30,
         latencyMs: 12,
@@ -147,5 +149,49 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
     expect(hookResult.robotState).toBe(RobotState.IDLE);
     expect(hookResult.bufferRef.current.jointPositions).toEqual([0.1, 0.2, 0.3, 0.4, 0.5, 0.6]);
     expect(hookResult.bufferRef.current.latencyMs).toBeLessThanOrEqual(50);
+  });
+
+  it('keeps the latest cell_state in the buffer and re-renders only when the status changes', () => {
+    let hookResult!: ReturnType<typeof useTelemetryStream>;
+    let renders = 0;
+    function TestComponent() {
+      hookResult = useTelemetryStream();
+      renders++;
+      return <div>Test</div>;
+    }
+    render(<TestComponent />);
+    const frame = (cell?: { conveyor_status: string; belt_offset_m: number }) =>
+      ({
+        timestamp_ns: (BigInt(Date.now()) * 1_000_000n).toString(),
+        robot_state: RobotState.IDLE,
+        joint_positions: [0, 0, 0, 0, 0, 0],
+        workcell_state: { spawned: [], in_progress: [], processed: [] },
+        palm_state: { is_grasped: false },
+        ...(cell ? { cell_state: cell } : {}),
+      }) as unknown as RobotTelemetryEvent;
+
+    expect(hookResult.cellStatus).toBeNull();
+    act(() => {
+      hookResult.handleIncomingFrame(frame({ conveyor_status: 'FEEDING', belt_offset_m: 0.5 }));
+    });
+    expect(hookResult.cellStatus).toBe('FEEDING');
+    expect(hookResult.bufferRef.current.cellState).toMatchObject({
+      conveyorStatus: 'FEEDING',
+      beltOffsetM: 0.5,
+    });
+    const before = renders;
+    act(() => {
+      hookResult.handleIncomingFrame(frame({ conveyor_status: 'FEEDING', belt_offset_m: 0.6 }));
+    });
+    expect(hookResult.bufferRef.current.cellState?.beltOffsetM).toBe(0.6);
+    expect(renders).toBe(before); // offset updates are buffer-only
+    // A frame without cell_state (sample-hold upstream) keeps the last one.
+    act(() => {
+      hookResult.handleIncomingFrame(frame());
+    });
+    expect(hookResult.cellStatus).toBe('FEEDING');
+    act(() => hookResult.resetStream());
+    expect(hookResult.cellStatus).toBeNull();
+    expect(hookResult.bufferRef.current.cellState).toBeNull();
   });
 });

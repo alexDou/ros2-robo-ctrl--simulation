@@ -65,7 +65,7 @@ export function RobotVisualizer({
   telemetryBufferRef,
   robotState,
   hopperCount = 0,
-  beltFeederRef,
+  getBeltScroll,
   onRobotLoaded,
   onSceneReady,
   rendererFactory,
@@ -104,8 +104,8 @@ export function RobotVisualizer({
 
   const hopperCountRef = useRef(hopperCount);
   hopperCountRef.current = hopperCount;
-  const beltFeederRefProp = useRef(beltFeederRef);
-  beltFeederRefProp.current = beltFeederRef;
+  const getBeltScrollRef = useRef(getBeltScroll);
+  getBeltScrollRef.current = getBeltScroll;
 
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
   const binNonEmptyRef = useRef<boolean>(false);
@@ -309,15 +309,13 @@ export function RobotVisualizer({
         setCounts(nextCounts);
       }
 
-      // Belt gears and surface follow the client-local feeder (empty belt when there is none).
+      // Belt surface follows the cell's belt offset. Belt gearwheels return with their cell_state ticket.
       if (beltGearsAssets && conveyorAssets) {
-        const feeder = beltFeederRefProp.current?.current ?? null;
-        const scroll = feeder ? feeder.scroll() : 0;
-        const gears = feeder ? feeder.gears() : [];
-        if (scroll !== lastBeltScroll || gears.length !== beltGearsAssets.group.children.length) {
+        const scroll = getBeltScrollRef.current?.() ?? 0;
+        if (scroll !== lastBeltScroll || beltGearsAssets.group.children.length > 0) {
           lastBeltScroll = scroll;
           conveyorAssets.setScroll(scroll);
-          beltGearsAssets.sync(gears);
+          beltGearsAssets.sync([]);
           needsRender = true;
         }
       }

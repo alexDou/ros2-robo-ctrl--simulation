@@ -128,6 +128,34 @@ export function createClearWorkspaceCommand(params?: {
   };
 }
 
+export function createCellProcessCommand(params?: {
+  senderId?: string;
+  commandId?: string;
+  timestampNs?: bigint | number;
+}): RobotCommand {
+  return {
+    command_id: generateCommandId(params?.commandId),
+    sender_id: params?.senderId ?? 'teleop-ui',
+    timestamp_ns: getTimestampNs(params?.timestampNs),
+    type: CommandType.CELL_PROCESS,
+    payload: {},
+  };
+}
+
+export function createCellStopCommand(params?: {
+  senderId?: string;
+  commandId?: string;
+  timestampNs?: bigint | number;
+}): RobotCommand {
+  return {
+    command_id: generateCommandId(params?.commandId),
+    sender_id: params?.senderId ?? 'teleop-ui',
+    timestamp_ns: getTimestampNs(params?.timestampNs),
+    type: CommandType.CELL_STOP,
+    payload: {},
+  };
+}
+
 export function createPickAndPlaceTargetCommand(
   payload: PickAndPlaceTargetPayload,
   params?: {
