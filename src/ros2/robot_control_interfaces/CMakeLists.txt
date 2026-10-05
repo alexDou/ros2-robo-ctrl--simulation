@@ -24,6 +24,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/GetDropSlot.srv"
   "srv/ClearWorkspace.srv"
   "srv/RegisterGear.srv"
+  "srv/ScrapRejected.srv"
   "srv/SpawnObject.srv"
   "srv/MarkGrasped.srv"
   "srv/CommitDrop.srv"

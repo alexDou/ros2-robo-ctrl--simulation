@@ -280,6 +280,7 @@ def test_heartbeat_publishes_snapshot_without_mutation():
             "in_progress": [],
             "processed": [],
             "rejected": [],
+            "scrapped": [],
             "active_id": None,
         }
     finally:

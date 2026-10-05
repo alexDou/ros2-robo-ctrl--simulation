@@ -55,6 +55,7 @@ fn test_robot_telemetry_event_with_palm_state() {
             in_progress: Vec::new(),
             processed: Vec::new(),
             rejected: None,
+            scrapped: None,
             active_id: None,
         },
         phase: None,

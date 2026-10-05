@@ -32,6 +32,7 @@ from robot_control_interfaces.srv import (
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
+    ScrapRejected,
 )
 from std_msgs.msg import String
 
@@ -91,6 +92,9 @@ class CellOrchestratorNode(Node):
         )
         self._drop_slot_client = self.create_client(
             GetDropSlot, "workcell/get_drop_slot", callback_group=group
+        )
+        self._scrap_client = self.create_client(
+            ScrapRejected, "workcell/scrap_rejected", callback_group=group
         )
         self._mark_client = self.create_client(
             MarkGrasped, "workcell/mark_grasped", callback_group=group
@@ -239,6 +243,9 @@ class CellOrchestratorNode(Node):
     def _on_result(self, future: Any, run_id: int, mode: int) -> None:
         result = future.result().result
         reason = result.stop_reason
+        if result.exit_count_delta and not self._scrap_exited(result.exit_count_delta):
+            self._finish_run(run_id, ConveyorStatus.FAULT)
+            return
         if result.success and mode == ConveyorRun.Goal.RUN_TO_PICKZONE:
             if reason != "STOPPED_AT_EYE":
                 self._finish_run(run_id, ConveyorStatus.FAULT)
@@ -253,6 +260,16 @@ class CellOrchestratorNode(Node):
             self._finish_run(run_id, ConveyorStatus.STOPPED)
         else:
             self._finish_run(run_id, ConveyorStatus.FAULT)
+
+    def _scrap_exited(self, count: int) -> bool:
+        """The exit eye counted `count` Gearwheels: the oldest Rejected ones are now Scrapped.
+
+        Counted on any result, a stopped or superseded run included: they did fall off the belt.
+        """
+        if self._notify(self._scrap_client, ScrapRejected.Request(count=count)):
+            return True
+        self.get_logger().error(f"WorkcellNode refused to scrap {count} Gearwheels; cell FAULT")
+        return False
 
     def _register_batch(self, run_id: int) -> bool:
         """Registers each new Gearwheel in the PickZone with WorkcellNode, lead first.

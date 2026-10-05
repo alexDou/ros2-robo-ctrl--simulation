@@ -111,6 +111,7 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
             in_progress: Vec::new(),
             processed: Vec::new(),
             rejected: None,
+            scrapped: None,
             active_id: None,
         },
         phase: None,

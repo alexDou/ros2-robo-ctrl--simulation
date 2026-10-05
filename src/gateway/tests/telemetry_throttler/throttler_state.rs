@@ -77,6 +77,7 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
             intact: true,
         }],
         rejected: None,
+        scrapped: None,
         active_id: Some("gear-1".to_string()),
     };
     let event = RobotTelemetryEvent {

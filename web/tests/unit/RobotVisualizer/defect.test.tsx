@@ -224,4 +224,25 @@ describe('Unit 7.3d: defect notch + detected_object', () => {
     expect(visualizer.getSnapshotGearCount()).toBe(0);
     expect(visualizer.isScrapBinNonEmpty()).toBe(false);
   });
+
+  it('Unit 9.12: the bin turns red on Scrapped only, never on Rejected', async () => {
+    const telemetryBufferRef = snapBuffer();
+    const gear = { id: 'd1', x: 0.4, y: -0.7, z: 0.0, color: 'BLUE', intact: false };
+    telemetryBufferRef.current.workcellState = {
+      ...telemetryBufferRef.current.workcellState,
+      rejected: [gear],
+    } as any;
+    const visualizer = await mountVisualizer(telemetryBufferRef);
+    act(() => {
+      stepFrame();
+    });
+    expect(visualizer.isScrapBinNonEmpty()).toBe(false);
+    act(() => {
+      const ws = telemetryBufferRef.current.workcellState as any;
+      ws.rejected = [];
+      ws.scrapped = [gear];
+      stepFrame();
+    });
+    expect(visualizer.isScrapBinNonEmpty()).toBe(true);
+  });
 });

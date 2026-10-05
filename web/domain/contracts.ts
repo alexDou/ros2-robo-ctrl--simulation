@@ -507,6 +507,7 @@ export const rawWorkcellStateSchema = z.object(
     in_progress: z.array(gearEntrySchema),
     processed: z.array(gearEntrySchema),
     rejected: z.array(gearEntrySchema).nullish(),
+    scrapped: z.array(gearEntrySchema).nullish(),
     active_id: z.string().nullish(),
   },
   { message: 'WorkcellState payload must be an object' }

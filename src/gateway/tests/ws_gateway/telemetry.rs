@@ -52,6 +52,7 @@ async fn test_ws_30hz_telemetry_high_throughput() {
                 in_progress: Vec::new(),
                 processed: Vec::new(),
                 rejected: None,
+                scrapped: None,
                 active_id: None,
             },
             phase: None,

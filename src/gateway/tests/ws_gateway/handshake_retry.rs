@@ -4,6 +4,7 @@ use gateway::{teleop_ws, ActiveSessionRegistry, DataFabricPort};
 use std::time::Duration;
 use tokio_tungstenite::connect_async;
 
+#[allow(clippy::too_many_lines)]
 #[tokio::test]
 async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
     let registry = web::Data::new(ActiveSessionRegistry::default());
@@ -54,6 +55,7 @@ async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
             in_progress: Vec::new(),
             processed: Vec::new(),
             rejected: None,
+            scrapped: None,
             active_id: None,
         },
         phase: None,
@@ -86,6 +88,7 @@ async fn test_ws_handshake_retry_until_idle_and_standby_exactly_once() {
             in_progress: Vec::new(),
             processed: Vec::new(),
             rejected: None,
+            scrapped: None,
             active_id: None,
         },
         phase: None,

@@ -24,6 +24,7 @@ from robot_control_interfaces.srv import (
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
+    ScrapRejected,
 )
 from std_msgs.msg import String
 
@@ -43,6 +44,7 @@ class FakeConveyor:
         self.running = 0  # goals currently inside _execute
         self.stop_reason = "STOPPED_AT_EYE"
         self.success = True
+        self.exit_count_delta = 0  # what the exit eye reports for the next goal
         group = ReentrantCallbackGroup()
         self.action = ActionServer(
             node,
@@ -69,7 +71,10 @@ class FakeConveyor:
             reason = self.stop_reason
             if mode == ConveyorRun.Goal.FLUSH and reason == "STOPPED_AT_EYE":
                 reason = "FLUSH_DONE"
-            result = ConveyorRun.Result(success=self.success, stop_reason=reason)
+            result = ConveyorRun.Result(
+                success=self.success, stop_reason=reason, exit_count_delta=self.exit_count_delta
+            )
+            self.exit_count_delta = 0
             (goal_handle.succeed if self.success else goal_handle.abort)()
             return result
         finally:
@@ -161,6 +166,8 @@ class FakeWorkcell:
     def __init__(self, node, log: list[str]) -> None:
         self.log = log
         self.registered: list[tuple[str, float, float, str, bool]] = []
+        self.scrap_counts: list[int] = []
+        self.scrap_ok = True
         self.ok = True
         group = ReentrantCallbackGroup()
         node.create_service(
@@ -169,6 +176,9 @@ class FakeWorkcell:
         node.create_service(
             GetDropSlot, "workcell/get_drop_slot", self._drop_slot, callback_group=group
         )
+        node.create_service(
+            ScrapRejected, "workcell/scrap_rejected", self._scrap, callback_group=group
+        )
         node.create_service(MarkGrasped, "workcell/mark_grasped", self._mark, callback_group=group)
         node.create_service(CommitDrop, "workcell/commit_drop", self._commit, callback_group=group)
 
@@ -176,6 +186,12 @@ class FakeWorkcell:
         self.log.append(f"slot:{req.color}")
         res.slot_index = 0
         res.drop_coords = Point(x=-0.45, y={"WHITE": -0.26, "GREEN": -0.1, "BLUE": 0.06}[req.color])
+        return res
+
+    def _scrap(self, req, res):
+        self.log.append("scrap")
+        self.scrap_counts.append(req.count)
+        res.success = self.scrap_ok
         return res
 
     def _mark(self, _req, res):
@@ -613,3 +629,38 @@ def test_failed_pickandplace_faults_the_cell(cell):
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
     time.sleep(0.2)
     assert len(fake.arm.goals) == 1
+
+
+def test_exit_count_on_the_next_run_scraps_that_many_rejected(cell):
+    fake, states, process, _ = cell
+
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+    assert _wait(lambda: len(fake.goals) == 2)
+    assert fake.workcell.scrap_counts == []  # Rejected stays on the belt through its own stop
+    fake.exit_count_delta = 1
+    fake.release.set()
+
+    assert _wait(lambda: fake.workcell.scrap_counts == [1])
+    assert _wait(lambda: len(fake.goals) == 3)  # scrapping does not stop the cycle
+
+
+def test_no_exit_count_means_no_scrap_call(cell):
+    fake, states, process, _ = cell
+
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+    assert _wait(lambda: len(fake.goals) == 2)
+    fake.release.set()
+
+    assert _wait(lambda: len(fake.goals) == 3)  # the run finished and the next one began
+    assert fake.workcell.scrap_counts == []
+
+
+def test_failed_scrap_faults_the_cell(cell):
+    fake, states, process, _ = cell
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+    assert _wait(lambda: len(fake.goals) == 2)
+    fake.workcell.scrap_ok = False
+    fake.exit_count_delta = 1
+    fake.release.set()
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)

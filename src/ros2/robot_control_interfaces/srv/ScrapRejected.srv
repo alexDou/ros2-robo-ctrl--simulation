@@ -1,0 +1,6 @@
+# The exit eye counted `count` Gearwheels: the oldest Rejected ones become Scrapped (ScrapBin contents).
+uint32 count
+---
+bool success
+string message
+uint32 scrapped

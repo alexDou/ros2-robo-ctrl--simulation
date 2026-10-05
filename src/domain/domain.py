@@ -294,6 +294,7 @@ class WorkcellState(BaseModel):
     in_progress: list[GearEntry] = Field(..., description="Gears currently grasped or in transit")
     processed: list[GearEntry] = Field(..., description="Gears deposited at drop slots")
     rejected: Optional[list[GearEntry]] = Field(default=None, description="Defective Gearwheels registered at a stopped Conveyor: known not to be processed, still lying on the belt")
+    scrapped: Optional[list[GearEntry]] = Field(default=None, description="Rejected Gearwheels the exit eye counted on a later belt run: the only Gearwheels that count as ScrapBin contents")
     active_id: Optional[str] = Field(default=None, description="Optional id of the gear currently targeted")
 
 

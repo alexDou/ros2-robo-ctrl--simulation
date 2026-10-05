@@ -327,6 +327,8 @@ pub struct WorkcellState {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rejected: Option<Vec<GearEntry>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scrapped: Option<Vec<GearEntry>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub active_id: Option<String>,
 }
 

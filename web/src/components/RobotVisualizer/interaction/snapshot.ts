@@ -50,6 +50,7 @@ export function readSnapshot(bufferRef?: TelemetryBufferLike): WorkcellSnapshotV
     spawned: Array.isArray(ws.spawned) ? ws.spawned : [],
     inProgress: Array.isArray(ws.inProgress) ? ws.inProgress : [],
     processed: Array.isArray(ws.processed) ? ws.processed : [],
+    scrapped: Array.isArray(ws.scrapped) ? ws.scrapped : [],
     activeId: typeof ws.activeId === 'string' ? ws.activeId : null,
   };
 }
@@ -136,10 +137,12 @@ export function reconcileSnapshotGears(
       }
     }
   }
-  // ScrapBin binary state: non-empty iff any processed entry is defective.
+  // ScrapBin binary state: non-empty iff a Gearwheel is Scrapped (Rejected ones still lie on the belt)
+  // or, in Flow A, a defective one was booked straight to processed.
   // Defective gears render into bin pile verbatim (workcell owns coords).
   if (ctx.scrapBin) {
-    const hasRejects = snap.processed.some((e) => e.intact === false);
+    const hasRejects =
+      (snap.scrapped?.length ?? 0) > 0 || snap.processed.some((e) => e.intact === false);
     if (ctx.scrapBin.hasItems !== hasRejects) {
       ctx.scrapBin.setHasItems(hasRejects);
       ctx.onDirty();

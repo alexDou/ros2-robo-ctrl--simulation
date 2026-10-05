@@ -7,6 +7,7 @@ export interface WorkcellSnapshotView {
   spawned: GearEntry[];
   inProgress: GearEntry[];
   processed: GearEntry[];
+  scrapped?: GearEntry[];
   activeId: string | null;
 }
 

@@ -15,6 +15,7 @@ from robot_control_interfaces.srv import (
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
+    ScrapRejected,
     SpawnObject,
 )
 from std_msgs.msg import Int32, String
@@ -55,6 +56,7 @@ class WorkcellNode(Node):
         self._in_progress: dict[str, dict] = {}
         self._processed: list[dict] = []
         self._rejected: dict[str, dict] = {}
+        self._scrapped: list[dict] = []
 
         # Publisher for inventory count updates (compat: len(processed))
         self._inventory_pub = self.create_publisher(Int32, "workcell/inventory", 10)
@@ -73,6 +75,9 @@ class WorkcellNode(Node):
         )
         self._register_gear_srv = self.create_service(
             RegisterGear, "workcell/register_gear", self.handle_register_gear
+        )
+        self._scrap_rejected_srv = self.create_service(
+            ScrapRejected, "workcell/scrap_rejected", self.handle_scrap_rejected
         )
         self._mark_grasped_srv = self.create_service(
             MarkGrasped, "workcell/mark_grasped", self.handle_mark_grasped
@@ -112,6 +117,18 @@ class WorkcellNode(Node):
         """Returns defective gears registered at a stopped Conveyor, still lying on the belt."""
         with self._lock:
             return [dict(e) for e in self._rejected.values()]
+
+    @property
+    def scrapped(self) -> list[dict]:
+        """Returns Rejected gears the exit eye has counted: the ScrapBin contents, in fall order."""
+        with self._lock:
+            return [dict(e) for e in self._scrapped]
+
+    @property
+    def bin_count(self) -> int:
+        """Returns the ScrapBin count: Scrapped only, never a Rejected gear still on the belt."""
+        with self._lock:
+            return len(self._scrapped) + self._bin_fill_locked()
 
     @property
     def inventory(self) -> int:
@@ -160,6 +177,7 @@ class WorkcellNode(Node):
             "in_progress": [dict(e) for e in self._in_progress.values()],
             "processed": [dict(e) for e in self._processed],
             "rejected": [dict(e) for e in self._rejected.values()],
+            "scrapped": [dict(e) for e in self._scrapped],
             "active_id": active_id,
         }
 
@@ -309,6 +327,7 @@ class WorkcellNode(Node):
             self._in_progress.clear()
             self._processed.clear()
             self._rejected.clear()
+            self._scrapped.clear()
         self._publish_state()
         self.publish_inventory(0)
 
@@ -414,6 +433,25 @@ class WorkcellNode(Node):
             return response
         response.success = False
         self.get_logger().warning(f"Rejecting register_gear: {response.message}")
+        return response
+
+    def handle_scrap_rejected(
+        self, request: ScrapRejected.Request, response: ScrapRejected.Response
+    ) -> ScrapRejected.Response:
+        """Exit eye counted `count` Gearwheels: the oldest Rejected ones become Scrapped.
+
+        Rejected stays in belt order (dict insertion). A count beyond the Rejected ones is
+        normal: intact Gearwheels also fall off the belt on a flush, and they are not tracked here.
+        """
+        with self._lock:
+            ids = list(self._rejected)[: int(request.count)]
+            for gear_id in ids:
+                self._scrapped.append(self._rejected.pop(gear_id))
+        if ids:
+            self._publish_state()
+        response.success = True
+        response.scrapped = len(ids)
+        response.message = f"{len(ids)} Rejected -> Scrapped"
         return response
 
     def handle_mark_grasped(
