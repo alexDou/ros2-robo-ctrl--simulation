@@ -23,17 +23,20 @@ from cell_devices.register_map import (
     RING_BASE,
     RING_ENTRIES,
     RING_WORDS,
+    STATIONS,
     BeltCmd,
     BeltState,
     FeederCmd,
     StationState,
 )
+from cell_devices.station_sim import BIN_EXCHANGE, PALLET_EXCHANGE, StationParams, StationSim
 
 _FC_HOLDING = 3
 _FC_INPUT = 4
 _TICK_S = 0.02
-# The belt and feeder blocks ack their own sequence after executing the command.
-_OWN_ACK = ("belt_seq", "feeder_seq")
+_EXCHANGE = 1
+# The belt, feeder and station blocks ack their own sequence after executing the command.
+_OWN_ACK = ("belt_seq", "feeder_seq", *(f"station_{s}_seq" for s in STATIONS))
 _ECHO_PAIRS = tuple(pair for pair in ACK_PAIRS if pair[0] not in _OWN_ACK)
 
 
@@ -61,12 +64,16 @@ class VirtualPlcServer:
         port: int,
         belt: BeltParams | None = None,
         feeder: FeederParams | None = None,
+        stations: dict[str, StationParams] | None = None,
     ) -> None:
         self._lock = threading.Lock()
         self._belt = BeltSim(belt)
         self._feeder = FeederSim(
             feeder or FeederParams(counts_per_mm=self._belt.params.counts_per_mm)
         )
+        defaults = {s: BIN_EXCHANGE if s == "scrap" else PALLET_EXCHANGE for s in STATIONS}
+        self._stations = {s: StationSim(p) for s, p in {**defaults, **(stations or {})}.items()}
+        self._last_station_seq = dict.fromkeys(STATIONS, 0)
         self._last_belt_seq = 0
         self._last_feeder_seq = 0
         self._prev_belt_state = BeltState.IDLE
@@ -117,16 +124,40 @@ class VirtualPlcServer:
             self._context.setValues(_FC_INPUT, INPUT["exit_count"], [count])
 
     def set_station_state(self, station: str, state: StationState) -> None:
+        """SIM seam: park a station in `state` (e.g. the bin AWAY) until the PLC is restarted."""
         with self._lock:
-            self._context.setValues(_FC_INPUT, INPUT[f"station_{station}_state"], [int(state)])
+            self._stations[station].force(state)
+            self._publish_station(station)
+
+    def break_station_sensor(self, station: str, end: str) -> None:
+        """SIM seam: the station's `away` or `home` end sensor never trips (-> FAULT on timeout)."""
+        with self._lock:
+            self._stations[station].break_sensor(end)
 
     def tick(self, dt: float = _TICK_S) -> None:
         with self._lock:
             for seq_name, ack_name in _ECHO_PAIRS:
                 (seq,) = self._context.getValues(_FC_HOLDING, HOLDING[seq_name], 1)
                 self._context.setValues(_FC_INPUT, INPUT[ack_name], [seq])
+            self._tick_stations(dt)
             self._tick_belt(dt)
             self._tick_feeder(dt)
+
+    def _tick_stations(self, dt: float) -> None:
+        for name, station in self._stations.items():
+            cmd, seq = self._context.getValues(_FC_HOLDING, HOLDING[f"station_{name}_cmd"], 2)
+            if seq != self._last_station_seq[name]:
+                self._last_station_seq[name] = seq
+                if cmd == _EXCHANGE:
+                    station.exchange()
+                self._context.setValues(_FC_INPUT, INPUT[f"station_{name}_ack_seq"], [seq])
+            station.step(dt)
+            self._publish_station(name)
+
+    def _publish_station(self, name: str) -> None:
+        station = self._stations[name]
+        self._context.setValues(_FC_INPUT, INPUT[f"station_{name}_state"], [int(station.state)])
+        self._context.setValues(_FC_INPUT, INPUT[f"station_{name}_fault"], [station.fault])
 
     def _tick_belt(self, dt: float) -> None:
         (scrap_state,) = self._context.getValues(_FC_INPUT, INPUT["station_scrap_state"], 1)

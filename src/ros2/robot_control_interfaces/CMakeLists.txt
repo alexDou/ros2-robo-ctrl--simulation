@@ -14,6 +14,7 @@ find_package(builtin_interfaces REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/PickAndPlace.action"
   "action/ConveyorRun.action"
+  "action/StationExchange.action"
   "srv/ConveyorStop.srv"
   "srv/CellFill.srv"
   "srv/CellProcess.srv"

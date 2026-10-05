@@ -1,13 +1,13 @@
 ---
 # hand-sim-ahr9
 title: 'Unit 9.14: station device (exchange state machine)'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-05T16:18:31Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-280q
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-280q (03)
+
+Done: StationSim (HOME/LEAVING/AWAY/RETURNING/FAULT, 6 s pallet / 8 s bin, end-sensor timeout), virtual_plc station blocks, StationDevice, station_node (station param), StationExchange action. FAULT latches; FAULT_ACK recovery and the bin_home interlock bit are not implemented (not in this ticket).

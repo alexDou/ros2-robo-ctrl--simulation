@@ -22,6 +22,7 @@ setup(
             "virtual_plc = cell_devices.virtual_plc_node:main",
             "conveyor_node = cell_devices.conveyor_node:main",
             "flexfeeder_node = cell_devices.flexfeeder_node:main",
+            "station_node = cell_devices.station_node:main",
         ],
     },
 )

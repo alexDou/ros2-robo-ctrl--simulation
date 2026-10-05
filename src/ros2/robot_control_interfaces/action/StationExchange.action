@@ -1,0 +1,9 @@
+# Goal (empty): run one exchange HOME -> LEAVING -> AWAY -> RETURNING -> HOME
+---
+# Result: final_state is HOME on success, FAULT on an end-sensor timeout or an unreachable controller
+bool success
+string final_state
+uint16 fault
+---
+# Feedback
+string exchange_state
