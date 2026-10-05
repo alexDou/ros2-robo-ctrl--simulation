@@ -1,13 +1,13 @@
 ---
 # hand-sim-xhsn
 title: 'Unit 9.10: SortCycle loop in the orchestrator'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-05T14:41:13Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-ull1
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-ull1 (09)
+
+Orchestrator runs SortCycles (GetDropSlot -> PickAndPlace with custom drop -> MarkGrasped/CommitDrop) in belt order, one at a time; batch end -> next feed run, or final FLUSH -> EMPTY when feeder empty and nothing waits upstream. Picked Gearwheels leave cell_state.belt_gears. Process from HALTED removed (HALTED is now automatic); Stop mid-Batch finishes the in-flight cycle, Process resumes the Batch.

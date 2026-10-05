@@ -16,14 +16,35 @@ from cell_devices.feeder_sim import FeederParams
 from cell_devices.flexfeeder_node import FlexFeederNode
 from cell_devices.virtual_plc import VirtualPlcServer
 from cell_orchestrator.orchestrator_node import CellOrchestratorNode
+from rclpy.action import ActionServer, CancelResponse
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
+from robot_control_interfaces.action import PickAndPlace
 from workcell_manager.workcell_node import WorkcellNode
 
 from domain import PICK_ZONE_Y_RANGE, CommandType, ConveyorStatus, RobotCommand, RobotState
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
 QUICK_FEEDER = FeederParams(cycle_s_range=(0.05, 0.1), emptying_s=0.0)
+
+
+class _HeldArm:
+    """PickAndPlace server that keeps its SortCycle in flight, so the cell stays HALTED."""
+
+    def __init__(self, node) -> None:
+        self.stop = threading.Event()
+        self.server = ActionServer(
+            node,
+            PickAndPlace,
+            "arm_controller/pick_and_place",
+            execute_callback=self._execute,
+            cancel_callback=lambda _: CancelResponse.ACCEPT,
+        )
+
+    def _execute(self, goal_handle):
+        self.stop.wait()
+        goal_handle.abort()
+        return PickAndPlace.Result()
 
 
 def _free_port() -> int:
@@ -103,7 +124,9 @@ def edge(make_switch_server):
     _engage(executor, node)
     assert _wait_for(lambda: node._cell_process_client.service_is_ready())
     node.workcell = nodes[-1]
+    arm = _HeldArm(nodes[-1])
     yield node, plc
+    arm.stop.set()
     executor.shutdown()
     node.close()
     for n in (node, *nodes):

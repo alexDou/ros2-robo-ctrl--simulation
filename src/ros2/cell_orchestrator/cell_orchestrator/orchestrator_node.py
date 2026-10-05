@@ -1,28 +1,36 @@
-"""CellOrchestratorNode: owns ConveyorStatus and drives the conveyor device.
+"""CellOrchestratorNode: owns ConveyorStatus and drives the conveyor device and the arm.
 
-Tracer slice: Fill loads the FlexFeeder (EMPTY -> LOADED), Process enables the feeder and runs
-the belt to the PickZone eye, Stop freezes both. SortCycles, exchanges and the flush reset land
-in later Unit 9 tickets.
+Fill loads the FlexFeeder (EMPTY -> LOADED), Process enables the feeder and runs the belt to the
+PickZone eye, Stop freezes both. At every eye stop the Batch is registered and sorted: one
+SortCycle (PickAndPlace to the colour's PalletStation, then commit the drop) per intact
+Gearwheel in belt order. PickAndPlace ends with the arm HOME, so a finished Batch leaves it
+there. Then the next feed run starts, or the final flush when nothing is left (-> EMPTY).
+Exchanges and the flush reset land in later Unit 9 tickets.
 """
 
 import json
 import threading
+from dataclasses import dataclass
 from typing import Any
 
 import rclpy
+from geometry_msgs.msg import Point
 from rclpy.action import ActionClient
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
-from robot_control_interfaces.action import ConveyorRun
+from robot_control_interfaces.action import ConveyorRun, PickAndPlace
 from robot_control_interfaces.srv import (
     CellFill,
     CellProcess,
     CellStop,
+    CommitDrop,
     ConveyorStop,
     FeederEnable,
     FeederFill,
+    GetDropSlot,
+    MarkGrasped,
     RegisterGear,
 )
 from std_msgs.msg import String
@@ -30,16 +38,24 @@ from std_msgs.msg import String
 from domain import PICK_ZONE_Y_RANGE, BeltGear, CellState, ConveyorStatus
 
 _FILL_FROM = (ConveyorStatus.EMPTY,)
-_PROCESS_FROM = (
-    ConveyorStatus.LOADED,
-    ConveyorStatus.STOPPED,
-    ConveyorStatus.HALTED,
-)
+_PROCESS_FROM = (ConveyorStatus.LOADED, ConveyorStatus.STOPPED)
 _STOP_FROM = (ConveyorStatus.FEEDING, ConveyorStatus.HALTED)
 _STATE_QOS = QoSProfile(
     depth=1, reliability=ReliabilityPolicy.RELIABLE, durability=DurabilityPolicy.TRANSIENT_LOCAL
 )
 _OFFSET_PUBLISH_HZ = 5.0
+_SORT_POLL_S = 0.02
+_SORT_TIMEOUT_S = 120.0
+
+
+@dataclass(frozen=True)
+class _Pick:
+    """An intact Gearwheel registered at an eye stop, waiting for its SortCycle."""
+
+    id: str
+    x: float
+    y: float
+    color: str
 
 
 class CellOrchestratorNode(Node):
@@ -51,6 +67,12 @@ class CellOrchestratorNode(Node):
         self._feeder_remaining = 0
         self._belt_gears: list[BeltGear] = []
         self._published_belt: tuple[float, list[BeltGear]] | None = None
+        self._registered: set[str] = set()
+        self._picked: set[str] = set()
+        self._pending: list[_Pick] = []
+        # Held by a SortCycle worker for its whole run, so a resumed Batch waits for the old one.
+        self._sort_lock = threading.Lock()
+        self._sort_thread: threading.Thread | None = None
         # Bumped on every Process and Stop so a late result of an old goal is ignored.
         self._run_id = 0
 
@@ -67,6 +89,18 @@ class CellOrchestratorNode(Node):
         self._register_client = self.create_client(
             RegisterGear, "workcell/register_gear", callback_group=group
         )
+        self._drop_slot_client = self.create_client(
+            GetDropSlot, "workcell/get_drop_slot", callback_group=group
+        )
+        self._mark_client = self.create_client(
+            MarkGrasped, "workcell/mark_grasped", callback_group=group
+        )
+        self._commit_client = self.create_client(
+            CommitDrop, "workcell/commit_drop", callback_group=group
+        )
+        self._arm_client = ActionClient(
+            self, PickAndPlace, "arm_controller/pick_and_place", callback_group=group
+        )
         self.create_subscription(
             String, "feeder/status", self._on_feeder_status, 10, callback_group=group
         )
@@ -79,16 +113,28 @@ class CellOrchestratorNode(Node):
         self.create_timer(1.0 / _OFFSET_PUBLISH_HZ, self._on_offset_timer, callback_group=group)
         self._publish_state()
 
+    def destroy_node(self) -> None:
+        with self._lock:
+            self._run_id += 1  # no further run or SortCycle starts
+        thread = self._sort_thread
+        if thread is not None:
+            thread.join(timeout=5.0)
+        super().destroy_node()
+
     def _publish_state(self) -> None:
         with self._lock:
             state = CellState(
                 conveyor_status=self._status,
                 feeder_remaining=self._feeder_remaining,
                 belt_offset_m=self._belt_offset_m,
-                belt_gears=self._belt_gears,
+                belt_gears=self._visible_gears_locked(),
             )
-            self._published_belt = (self._belt_offset_m, self._belt_gears)
+            self._published_belt = (self._belt_offset_m, self._visible_gears_locked())
         self._state_pub.publish(String(data=state.model_dump_json()))
+
+    def _visible_gears_locked(self) -> list[BeltGear]:
+        """Gearwheels the arm has taken off the belt no longer ride it."""
+        return [g for g in self._belt_gears if g.id not in self._picked]
 
     def _set_status(self, status: ConveyorStatus) -> None:
         with self._lock:
@@ -121,7 +167,7 @@ class CellOrchestratorNode(Node):
 
     def _on_offset_timer(self) -> None:
         with self._lock:
-            changed = (self._belt_offset_m, self._belt_gears) != self._published_belt
+            changed = (self._belt_offset_m, self._visible_gears_locked()) != self._published_belt
         if changed:
             self._publish_state()
 
@@ -159,46 +205,70 @@ class CellOrchestratorNode(Node):
                 response.message = f"Process refused in {self._status.value}"
                 return response
             previous = self._status
-            self._status = ConveyorStatus.FEEDING
+            resume = bool(self._pending)  # Stopped mid-Batch: finish sorting before the belt runs
+            self._status = ConveyorStatus.HALTED if resume else ConveyorStatus.FEEDING
             self._run_id += 1
             run_id = self._run_id
         self._publish_state()
-        # Enabling is idempotent and the controller disables the feeder itself at the eye stop.
-        self._feeder_enable_client.call_async(FeederEnable.Request(enable=True))
-        goal = ConveyorRun.Goal(mode=ConveyorRun.Goal.RUN_TO_PICKZONE)
-        self._run_client.send_goal_async(goal).add_done_callback(
-            lambda fut: self._on_goal_response(fut, run_id, previous)
-        )
+        if resume:
+            self._start_sorting(run_id)
+        else:
+            self._start_run(run_id, ConveyorRun.Goal.RUN_TO_PICKZONE, previous)
         response.success, response.message = True, "Process started"
         return response
 
-    def _on_goal_response(self, future: Any, run_id: int, previous: ConveyorStatus) -> None:
+    def _start_run(self, run_id: int, mode: int, previous: ConveyorStatus) -> None:
+        """Sends one belt run; the cell is already FEEDING."""
+        if mode == ConveyorRun.Goal.RUN_TO_PICKZONE:
+            # Enabling is idempotent and the controller disables the feeder itself at the eye stop.
+            self._feeder_enable_client.call_async(FeederEnable.Request(enable=True))
+        goal = ConveyorRun.Goal(mode=mode)
+        self._run_client.send_goal_async(goal).add_done_callback(
+            lambda fut: self._on_goal_response(fut, run_id, previous, mode)
+        )
+
+    def _on_goal_response(
+        self, future: Any, run_id: int, previous: ConveyorStatus, mode: int
+    ) -> None:
         handle = future.result()
         if not handle.accepted:
             self._finish_run(run_id, previous)
             return
-        handle.get_result_async().add_done_callback(lambda fut: self._on_result(fut, run_id))
+        handle.get_result_async().add_done_callback(lambda fut: self._on_result(fut, run_id, mode))
 
-    def _on_result(self, future: Any, run_id: int) -> None:
+    def _on_result(self, future: Any, run_id: int, mode: int) -> None:
         result = future.result().result
-        if result.success and result.stop_reason == "STOPPED_AT_EYE":
-            registered = self._register_batch(run_id)
-            self._finish_run(run_id, ConveyorStatus.HALTED if registered else ConveyorStatus.FAULT)
-        elif result.stop_reason == "STOPPED":
+        reason = result.stop_reason
+        if result.success and mode == ConveyorRun.Goal.RUN_TO_PICKZONE:
+            if reason != "STOPPED_AT_EYE":
+                self._finish_run(run_id, ConveyorStatus.FAULT)
+            elif self._register_batch(run_id):
+                self._finish_run(run_id, ConveyorStatus.HALTED)
+                self._start_sorting(run_id)
+            else:
+                self._finish_run(run_id, ConveyorStatus.FAULT)
+        elif result.success and reason == "FLUSH_DONE":
+            self._finish_flush(run_id)
+        elif reason == "STOPPED":
             self._finish_run(run_id, ConveyorStatus.STOPPED)
         else:
             self._finish_run(run_id, ConveyorStatus.FAULT)
 
     def _register_batch(self, run_id: int) -> bool:
-        """Registers each Gearwheel in the PickZone with WorkcellNode, lead (most downstream) first.
+        """Registers each new Gearwheel in the PickZone with WorkcellNode, lead first.
 
-        WorkcellNode makes the intact ones pickable and the defective ones Rejected.
+        WorkcellNode makes the intact ones pickable and the defective ones Rejected; the intact
+        ones become the pending SortCycles. Gearwheels seen at an earlier stop are skipped.
         """
         with self._lock:
             if run_id != self._run_id:
                 return True
             lo, hi = PICK_ZONE_Y_RANGE
-            batch = sorted((g for g in self._belt_gears if lo <= g.y <= hi), key=lambda g: g.y)
+            batch = sorted(
+                (g for g in self._belt_gears if lo <= g.y <= hi and g.id not in self._registered),
+                key=lambda g: g.y,
+            )
+        picks: list[_Pick] = []
         for gear in batch:
             request = RegisterGear.Request(id=gear.id, color=gear.color.value, intact=gear.intact)
             request.coords.x, request.coords.y = gear.x, gear.y
@@ -206,7 +276,111 @@ class CellOrchestratorNode(Node):
             if result is None or not result.success:
                 self.get_logger().error(f"WorkcellNode refused to register {gear.id}; cell FAULT")
                 return False
+            with self._lock:
+                self._registered.add(gear.id)
+            if gear.intact:
+                picks.append(_Pick(gear.id, gear.x, gear.y, gear.color.value))
+        with self._lock:
+            if run_id == self._run_id:
+                self._pending = picks
         return True
+
+    def _start_sorting(self, run_id: int) -> None:
+        thread = threading.Thread(target=self._sort_batch, args=(run_id,), daemon=True)
+        self._sort_thread = thread
+        thread.start()
+
+    def _sort_batch(self, run_id: int) -> None:
+        """Runs the pending SortCycles one at a time, then moves the cell on."""
+        with self._sort_lock:
+            while True:
+                with self._lock:
+                    if run_id != self._run_id:
+                        return  # Stopped (or reset): the in-flight cycle was the last
+                    pick = self._pending[0] if self._pending else None
+                if pick is None:
+                    break
+                if not self._sort_cycle(pick):
+                    self.get_logger().error(f"SortCycle for {pick.id} failed; cell FAULT")
+                    with self._lock:
+                        self._pending.clear()
+                    self._finish_run(run_id, ConveyorStatus.FAULT)
+                    return
+                with self._lock:
+                    if self._pending and self._pending[0] is pick:
+                        self._pending.pop(0)
+                    self._picked.add(pick.id)
+                self._publish_state()
+            self._advance(run_id)
+
+    def _sort_cycle(self, pick: _Pick) -> bool:
+        """PickAndPlace to the colour's PalletStation, committing the drop as the arm releases."""
+        slot = self._call_blocking(
+            self._drop_slot_client, GetDropSlot.Request(color=pick.color, intact=True)
+        )
+        if slot is None or slot.slot_index < 0:
+            return False
+        goal = PickAndPlace.Goal(use_custom_drop=True)
+        goal.pick_coords = Point(x=pick.x, y=pick.y, z=0.0)
+        goal.drop_coords = slot.drop_coords
+        grasping, releasing = threading.Event(), threading.Event()
+        phases = {"GRASPING": grasping, "RELEASING": releasing}
+
+        def on_feedback(msg: Any) -> None:
+            event = phases.get(msg.feedback.phase)
+            if event is not None:
+                event.set()
+
+        sent = threading.Event()
+        send = self._arm_client.send_goal_async(goal, feedback_callback=on_feedback)
+        send.add_done_callback(lambda _: sent.set())
+        if not sent.wait(5.0) or not send.result().accepted:
+            return False
+        finished = threading.Event()
+        result_future = send.result().get_result_async()
+        result_future.add_done_callback(lambda _: finished.set())
+        marked = committed = False
+        waited = 0.0
+        while not finished.wait(_SORT_POLL_S):
+            waited += _SORT_POLL_S
+            if waited > _SORT_TIMEOUT_S:
+                return False
+            if grasping.is_set() and not marked:
+                marked = self._notify(self._mark_client, MarkGrasped.Request())
+            if marked and releasing.is_set() and not committed:
+                committed = self._notify(self._commit_client, CommitDrop.Request())
+        if not result_future.result().result.success:
+            return False
+        if not marked:
+            marked = self._notify(self._mark_client, MarkGrasped.Request())
+        if marked and not committed:
+            committed = self._notify(self._commit_client, CommitDrop.Request())
+        return marked and committed
+
+    def _notify(self, client: Any, request: Any) -> bool:
+        result = self._call_blocking(client, request)
+        return result is not None and result.success
+
+    def _advance(self, run_id: int) -> None:
+        """Batch sorted and the arm HOME: next feed run, or the final flush when nothing is left."""
+        with self._lock:
+            if run_id != self._run_id:
+                return
+            waiting = any(g.id not in self._registered for g in self._belt_gears)
+            more = self._feeder_remaining > 0 or waiting
+            self._status = ConveyorStatus.FEEDING
+        self._publish_state()
+        mode = ConveyorRun.Goal.RUN_TO_PICKZONE if more else ConveyorRun.Goal.FLUSH
+        self._start_run(run_id, mode, ConveyorStatus.HALTED)
+
+    def _finish_flush(self, run_id: int) -> None:
+        with self._lock:
+            if run_id != self._run_id:
+                return
+            self._registered.clear()
+            self._picked.clear()
+            self._pending.clear()
+        self._set_status(ConveyorStatus.EMPTY)
 
     def _finish_run(self, run_id: int, status: ConveyorStatus) -> None:
         with self._lock:

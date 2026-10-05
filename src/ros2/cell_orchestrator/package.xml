@@ -9,6 +9,7 @@
 
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
   <depend>robot_control_interfaces</depend>
 
   <test_depend>python3-pytest</test_depend>
