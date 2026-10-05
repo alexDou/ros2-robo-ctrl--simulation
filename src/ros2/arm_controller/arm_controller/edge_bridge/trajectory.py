@@ -51,6 +51,7 @@ class EdgeBridgeTrajectoryMixin:
                     completion_event.set()
                 return event
 
+            epoch = self._goal_epoch
             send_goal_future = self._traj_client.send_goal_async(goal)
 
         def on_goal_response(future: Any) -> None:
@@ -79,7 +80,7 @@ class EdgeBridgeTrajectoryMixin:
                 return
 
             with self._lock:
-                if self._robot_state == RobotState.EXECUTING:
+                if self._robot_state == RobotState.EXECUTING and epoch == self._goal_epoch:
                     self._active_traj_handle = goal_handle
                 else:
                     goal_handle.cancel_goal_async()

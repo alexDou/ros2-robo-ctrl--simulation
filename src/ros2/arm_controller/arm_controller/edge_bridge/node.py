@@ -162,6 +162,9 @@ class EdgeBridgeNode(
         self._current_joints: list[float] = list(CANONICAL_POSES[PoseName.HOME])
         self._active_traj_handle: Any | None = None
         self._active_pnp_handle: Any | None = None
+        # Bumped by STANDBY: a goal dispatched before it that is accepted after it is cancelled,
+        # never adopted (the state is still EXECUTING while STANDBY parks home).
+        self._goal_epoch = 0
         self._homing_done_event = threading.Event()
         self._startup_motion_event = threading.Event()
         self._grasp_notified = False

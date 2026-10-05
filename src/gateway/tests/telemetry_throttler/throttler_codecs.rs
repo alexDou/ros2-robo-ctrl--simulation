@@ -113,7 +113,7 @@ async fn test_telemetry_throttler_cdr_joint_states_ingestion() {
     throttler.stop();
 }
 
-#[tokio::test]
+#[tokio::test(start_paused = true)]
 async fn test_telemetry_throttler_500hz_cdr_to_30hz_json_decimation() {
     let throttler = TelemetryThrottler::new();
     let mut rx_json = throttler.subscribe_json();
@@ -166,7 +166,7 @@ async fn test_telemetry_throttler_500hz_cdr_to_30hz_json_decimation() {
 
     let mut count = 0;
     let mut observed_executing = false;
-    let start = std::time::Instant::now();
+    let start = tokio::time::Instant::now();
     let target_duration = Duration::from_millis(600);
 
     while start.elapsed() < target_duration {

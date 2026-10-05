@@ -142,6 +142,7 @@ class EdgeBridgeActionsMixin:
                     completion_event.set()
                 return event
 
+            epoch = self._goal_epoch
             send_goal_future = self._pnp_client.send_goal_async(goal, feedback_callback=on_feedback)
 
         def on_goal_response(future: Any) -> None:
@@ -172,7 +173,7 @@ class EdgeBridgeActionsMixin:
                 return
 
             with self._lock:
-                if self._robot_state == RobotState.EXECUTING:
+                if self._robot_state == RobotState.EXECUTING and epoch == self._goal_epoch:
                     self._active_pnp_handle = goal_handle
                 else:
                     goal_handle.cancel_goal_async()

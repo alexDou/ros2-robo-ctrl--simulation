@@ -41,7 +41,7 @@ async fn test_telemetry_throttler_preserves_phase() {
     throttler.stop();
 }
 
-#[tokio::test]
+#[tokio::test(start_paused = true)]
 async fn test_telemetry_throttler_500hz_to_30hz_stability() {
     let throttler = TelemetryThrottler::new();
     let mut rx = throttler.subscribe();
@@ -79,7 +79,7 @@ async fn test_telemetry_throttler_500hz_to_30hz_stability() {
     let _ = rx.recv().await;
 
     let mut count = 0;
-    let start = std::time::Instant::now();
+    let start = tokio::time::Instant::now();
     let target_duration = Duration::from_millis(600);
 
     while start.elapsed() < target_duration {
@@ -110,7 +110,7 @@ async fn test_telemetry_throttler_500hz_to_30hz_stability() {
     );
 }
 
-#[tokio::test]
+#[tokio::test(start_paused = true)]
 async fn test_telemetry_throttler_5hz_slow_upstream_no_repeat() {
     // Sim loop runs 5 Hz (hand-sim-h7tu); throttler ticks 30 Hz.
     // Worker takes pending per tick, so slow upstream must pass through
@@ -147,7 +147,7 @@ async fn test_telemetry_throttler_5hz_slow_upstream_no_repeat() {
     });
 
     let mut stamps = Vec::new();
-    let start = std::time::Instant::now();
+    let start = tokio::time::Instant::now();
     while start.elapsed() < Duration::from_millis(2500) {
         match tokio::time::timeout(Duration::from_millis(300), rx.recv()).await {
             Ok(Ok(event)) => stamps.push(event.timestamp_ns),

@@ -184,6 +184,7 @@ class EdgeBridgeLifecycleMixin:
         """
         with self._lock:
             prev_state = self._robot_state
+            self._goal_epoch += 1
             active_handle = self._active_traj_handle
             self._active_traj_handle = None
             active_pnp = self._active_pnp_handle

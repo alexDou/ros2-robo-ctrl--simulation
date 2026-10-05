@@ -28,6 +28,11 @@ def test_edge_bridge_actions_schema_validation_and_rejection():
     node = EdgeBridgeNode(
         parameter_overrides=[
             Parameter("robot_id", Parameter.Type.STRING, "test-arm-actions-err"),
+            # A name no test serves: the default one may still be advertised by an earlier
+            # test's mock server, which made "controller unavailable" depend on DDS timing.
+            Parameter(
+                "pick_and_place_action_name", Parameter.Type.STRING, "/test_validation/no_pnp"
+            ),
             Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
             Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
             Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),

@@ -31,6 +31,8 @@ cdr = "0.2.4"
 [dev-dependencies]
 actix-web = { workspace = true }
 tokio-tungstenite = "0.24"
+# Virtual clock for the rate tests: a 30 Hz band asserted on wall time jitters under CPU load.
+tokio = { workspace = true, features = ["test-util"] }
 
 [[test]]
 name = "domain_contract"
