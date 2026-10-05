@@ -22,7 +22,6 @@ from robot_control_interfaces.srv import (
 from std_msgs.msg import Int32, String
 
 from domain import (
-    BIN_EXCHANGE_THRESHOLD,
     BLUE_TOWER,
     DEFAULT_GEAR_COLOR,
     GREEN_TOWER,
@@ -226,24 +225,20 @@ class WorkcellNode(Node):
         )
 
     def _bin_fill_locked(self) -> int:
-        """Counts defective gears piled in the ScrapBin (cap-100, sharp-cut recycle)."""
+        """Counts defective gears booked straight to the ScrapBin pile."""
         return sum(1 for e in self._processed if not e.get("intact", True))
 
     def _bin_slot_locked(self) -> tuple[int, float]:
-        """Returns (slot_index, z_k) for next bin arrival; wraps to 0 at cap."""
+        """Returns (slot_index, z_k) for the next bin arrival; the BinExchange empties the pile."""
         count = self._bin_fill_locked()
-        if count >= BIN_EXCHANGE_THRESHOLD:
-            return 0, 0.0
         return count, count * self._height_step
 
-    def _recycle_bin_locked(self) -> None:
-        """Discards the old bin pile in place; towers untouched (sharp cut)."""
+    def _empty_bin_locked(self) -> None:
+        """BinExchange done: the defective pile leaves, Pallets untouched."""
         self._processed = [e for e in self._processed if e.get("intact", True)]
 
     def _book_scrap_locked(self, x: float, y: float, z: float, color: str) -> str:
         """Commits a defective gear straight to the ScrapBin pile; returns its id."""
-        if self._bin_fill_locked() >= BIN_EXCHANGE_THRESHOLD:
-            self._recycle_bin_locked()
         _, z_k = self._bin_slot_locked()
         base = SCRAP_BIN
         gear_id = uuid.uuid4().hex
@@ -461,8 +456,19 @@ class WorkcellNode(Node):
     def handle_reset_station(
         self, request: ResetStation.Request, response: ResetStation.Response
     ) -> ResetStation.Response:
-        """A PalletExchange finished: empties that colour's Pallet, siblings and ScrapBin untouched."""
+        """An exchange finished: empties that colour's Pallet (or the ScrapBin), the rest untouched."""
         color = str(request.station)
+        if color == "SCRAP":
+            with self._lock:
+                emptied = len(self._scrapped) + self._bin_fill_locked()
+                self._scrapped.clear()
+                self._empty_bin_locked()
+                new_count = len(self._processed)
+            self._publish_state()
+            self.publish_inventory(new_count)
+            response.success = True
+            response.message = f"ScrapBin emptied ({emptied} Gearwheels left with it)"
+            return response
         if color not in VALID_GEAR_COLORS:
             response.success = False
             response.message = f"Unknown PalletStation '{color}'"
@@ -541,8 +547,6 @@ class WorkcellNode(Node):
             intact = bool(entry.get("intact", False))
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
-                if self._bin_fill_locked() >= BIN_EXCHANGE_THRESHOLD:
-                    self._recycle_bin_locked()
                 slot_index, z_k = self._bin_slot_locked()
                 overflow_occurred = False
             else:

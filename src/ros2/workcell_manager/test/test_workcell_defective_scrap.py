@@ -6,7 +6,7 @@ from geometry_msgs.msg import Point
 from robot_control_interfaces.srv import MarkGrasped, SpawnObject
 from workcell_manager.workcell_node import WorkcellNode
 
-from domain import BIN_EXCHANGE_THRESHOLD, SCRAP_BIN
+from domain import BIN_EXCHANGE_THRESHOLD, SCRAP_BIN, STACK_STEP_M
 
 
 @pytest.fixture(autouse=True)
@@ -62,17 +62,16 @@ def test_defective_spawn_does_not_disturb_active_intact_pick():
         node.destroy_node()
 
 
-def test_bin_empties_at_capacity():
+def test_bin_keeps_piling_past_the_exchange_threshold():
     node = WorkcellNode()
     try:
         for _ in range(BIN_EXCHANGE_THRESHOLD):
             _spawn(node)
         assert len(_bin_entries(node)) == BIN_EXCHANGE_THRESHOLD
         _spawn(node, color="WHITE")
-        remaining = _bin_entries(node)
-        assert len(remaining) == 1
-        assert remaining[0]["color"] == "WHITE"
-        assert pytest.approx(remaining[0]["z"]) == SCRAP_BIN[2]
+        piled = _bin_entries(node)
+        assert len(piled) == BIN_EXCHANGE_THRESHOLD + 1
+        assert pytest.approx(piled[-1]["z"]) == SCRAP_BIN[2] + BIN_EXCHANGE_THRESHOLD * STACK_STEP_M
     finally:
         node.destroy_node()
 

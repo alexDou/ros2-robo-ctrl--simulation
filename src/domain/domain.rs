@@ -176,8 +176,8 @@ pub const PALLET_CAPACITY: i64 = 10;
 /// Vertical stacking step per gear in meters
 pub const STACK_STEP_M: f64 = 0.02;
 
-/// Maximum defective gears piled in ScrapBin before sharp-cut recycle
-pub const BIN_EXCHANGE_THRESHOLD: i64 = 100;
+/// Scrapped Gearwheels at which a belt stop starts the BinExchange
+pub const BIN_EXCHANGE_THRESHOLD: i64 = 20;
 
 /// Fallback gear color class when classification is absent
 pub const DEFAULT_GEAR_COLOR: &str = "WHITE";

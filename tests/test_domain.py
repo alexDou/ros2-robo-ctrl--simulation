@@ -61,7 +61,7 @@ def test_workcell_constants_match_schema_single_source_of_truth():
     assert SCRAP_BIN == [0.4, -0.75, -0.05]
     assert PALLET_CAPACITY == 10
     assert STACK_STEP_M == 0.02
-    assert BIN_EXCHANGE_THRESHOLD == 100
+    assert BIN_EXCHANGE_THRESHOLD == 20
     assert DEFAULT_GEAR_COLOR == "WHITE"
     assert VALID_GEAR_COLORS == ["WHITE", "GREEN", "BLUE"]
 

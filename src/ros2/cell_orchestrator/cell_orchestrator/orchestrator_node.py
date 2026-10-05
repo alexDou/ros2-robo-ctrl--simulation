@@ -7,7 +7,9 @@ Gearwheel in belt order. PickAndPlace ends with the arm HOME, so a finished Batc
 there. The 10th drop on a Pallet makes it FULL: PalletExchange runs (the arm is already HOME),
 then ResetStation empties that colour, and only then does the next SortCycle start. Then the next
 feed run starts, or the final flush when nothing is left (-> EMPTY).
-BinExchange and the flush reset land in later Unit 9 tickets.
+At an eye stop with Scrapped >= BIN_EXCHANGE_THRESHOLD the BinExchange starts and overlaps the
+sorting; the next belt run waits until the bin is HOME again. The flush reset lands in a later
+Unit 9 ticket.
 """
 
 import json
@@ -40,6 +42,7 @@ from robot_control_interfaces.srv import (
 from std_msgs.msg import String
 
 from domain import (
+    BIN_EXCHANGE_THRESHOLD,
     PICK_ZONE_Y_RANGE,
     BeltGear,
     CellState,
@@ -60,6 +63,7 @@ _SORT_POLL_S = 0.02
 _SORT_TIMEOUT_S = 120.0
 _EXCHANGE_TIMEOUT_S = 120.0
 _PALLET_COLORS = tuple(name.value for name in StationName)
+_BIN = "SCRAP"  # the ScrapBin station: same exchange machine, not a PalletStation
 
 
 @dataclass(frozen=True)
@@ -85,7 +89,12 @@ class CellOrchestratorNode(Node):
         self._picked: set[str] = set()
         # PalletStation view: counts follow WorkcellNode's snapshot, exchange states the devices.
         self._pallet_counts = dict.fromkeys(_PALLET_COLORS, 0)
-        self._exchange_states = dict.fromkeys(_PALLET_COLORS, ExchangeState.HOME)
+        self._exchange_states = dict.fromkeys((*_PALLET_COLORS, _BIN), ExchangeState.HOME)
+        self._scrapped_count = 0
+        # Cleared while the BinExchange runs: the belt must not move with the bin away.
+        self._bin_home = threading.Event()
+        self._bin_home.set()
+        self._bin_thread: threading.Thread | None = None
         self._pending: list[_Pick] = []
         # Held by a SortCycle worker for its whole run, so a resumed Batch waits for the old one.
         self._sort_lock = threading.Lock()
@@ -126,7 +135,7 @@ class CellOrchestratorNode(Node):
             color: ActionClient(
                 self, StationExchange, f"station/{color.lower()}/exchange", callback_group=group
             )
-            for color in _PALLET_COLORS
+            for color in (*_PALLET_COLORS, _BIN)
         }
         self._arm_client = ActionClient(
             self, PickAndPlace, "arm_controller/pick_and_place", callback_group=group
@@ -149,9 +158,9 @@ class CellOrchestratorNode(Node):
     def destroy_node(self) -> None:
         with self._lock:
             self._run_id += 1  # no further run or SortCycle starts
-        thread = self._sort_thread
-        if thread is not None:
-            thread.join(timeout=5.0)
+        for thread in (self._sort_thread, self._bin_thread):
+            if thread is not None:
+                thread.join(timeout=5.0)
         super().destroy_node()
 
     def _publish_state(self) -> None:
@@ -197,7 +206,9 @@ class CellOrchestratorNode(Node):
     def _on_workcell_state(self, msg: String) -> None:
         """Pallet counts are WorkcellNode's truth: intact Gearwheels dropped, per colour."""
         try:
-            processed = json.loads(msg.data)["processed"]
+            raw = json.loads(msg.data)
+            processed = raw["processed"]
+            scrapped = len(raw.get("scrapped", []))
             counts = dict.fromkeys(_PALLET_COLORS, 0)
             for entry in processed:
                 if entry.get("intact", True) and entry["color"] in counts:
@@ -206,6 +217,7 @@ class CellOrchestratorNode(Node):
             self.get_logger().warning("Ignoring malformed workcell/state", throttle_duration_sec=5)
             return
         with self._lock:
+            self._scrapped_count = scrapped
             changed = counts != self._pallet_counts
             self._pallet_counts = counts
         if changed:
@@ -305,6 +317,7 @@ class CellOrchestratorNode(Node):
                 self._finish_run(run_id, ConveyorStatus.FAULT)
             elif self._register_batch(run_id):
                 self._finish_run(run_id, ConveyorStatus.HALTED)
+                self._start_bin_exchange(run_id)
                 self._start_sorting(run_id)
             else:
                 self._finish_run(run_id, ConveyorStatus.FAULT)
@@ -449,6 +462,33 @@ class CellOrchestratorNode(Node):
 
     def _exchange_pallet(self, color: str) -> bool:
         """PalletExchange, then ResetStation: only after both may the next SortCycle start."""
+        return self._exchange_station(color)
+
+    def _start_bin_exchange(self, run_id: int) -> None:
+        """At a belt stop a full-enough ScrapBin leaves while the arm sorts the new Batch."""
+        with self._lock:
+            if run_id != self._run_id or self._scrapped_count < BIN_EXCHANGE_THRESHOLD:
+                return
+            if not self._bin_home.is_set():
+                return
+            self._bin_home.clear()
+        thread = threading.Thread(target=self._exchange_bin, args=(run_id,), daemon=True)
+        self._bin_thread = thread
+        thread.start()
+
+    def _exchange_bin(self, run_id: int) -> None:
+        ok = False
+        try:
+            ok = self._exchange_station(_BIN)
+            if not ok:
+                self.get_logger().error("BinExchange failed; cell FAULT")
+                with self._lock:
+                    self._pending.clear()
+                self._finish_run(run_id, ConveyorStatus.FAULT)  # before the belt is released
+        finally:
+            self._bin_home.set()
+
+    def _exchange_station(self, color: str) -> bool:
         client = self._exchange_clients[color]
         if not client.wait_for_server(timeout_sec=1.0):
             self._set_exchange_state(color, ExchangeState.FAULT)
@@ -500,6 +540,14 @@ class CellOrchestratorNode(Node):
                 return
             waiting = any(g.id not in self._registered for g in self._belt_gears)
             more = self._feeder_remaining > 0 or waiting
+        # The controller refuses belt runs while the bin is away: don't ask until it is HOME.
+        while not self._bin_home.wait(_SORT_POLL_S):
+            with self._lock:
+                if run_id != self._run_id:
+                    return
+        with self._lock:
+            if run_id != self._run_id or self._status == ConveyorStatus.FAULT:
+                return
             self._status = ConveyorStatus.FEEDING
         self._publish_state()
         mode = ConveyorRun.Goal.RUN_TO_PICKZONE if more else ConveyorRun.Goal.FLUSH

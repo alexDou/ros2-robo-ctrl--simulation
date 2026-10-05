@@ -1,13 +1,13 @@
 ---
 # hand-sim-2hi0
 title: 'Unit 9.17: BinExchange in the orchestrator'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:40Z
-updated_at: 2026-10-04T13:36:35Z
+updated_at: 2026-10-05T22:28:48Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-mt82
@@ -31,3 +31,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 
 - hand-sim-mt82 (12)
 - hand-sim-kmyv (15)
+
+BinExchange in orchestrator: starts at belt stop when Scrapped >= 20, overlaps SortCycles, next belt run waits for bin HOME; ResetStation SCRAP empties the bin; auto-recycle at 100 removed; BIN_EXCHANGE_THRESHOLD=20.

@@ -184,7 +184,7 @@ def test_reset_station_zeroes_only_that_colour():
         node.destroy_node()
 
 
-@pytest.mark.parametrize("station", ["", "SCRAP", "RED", "white"])
+@pytest.mark.parametrize("station", ["", "RED", "white"])
 def test_reset_station_rejects_anything_but_a_pallet_colour(station):
     node = WorkcellNode()
     try:

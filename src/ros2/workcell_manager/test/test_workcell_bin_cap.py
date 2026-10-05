@@ -1,4 +1,4 @@
-"""Bin cap-100 recycle tests for WorkcellNode (hand-sim-lilk, Unit 7.3e)."""
+"""ScrapBin pile tests for WorkcellNode: no auto-empty, only a BinExchange (ResetStation SCRAP) empties it."""
 
 from types import SimpleNamespace
 
@@ -10,6 +10,9 @@ from robot_control_interfaces.srv import (
     CommitDrop,
     GetDropSlot,
     MarkGrasped,
+    RegisterGear,
+    ResetStation,
+    ScrapRejected,
     SpawnObject,
 )
 from workcell_manager.workcell_node import WorkcellNode
@@ -63,8 +66,8 @@ def _bin_entries(node):
     return [e for e in node.processed if not e.get("intact", True)]
 
 
-def test_bin_cap_constant_is_100():
-    assert BIN_EXCHANGE_THRESHOLD == 100
+def test_bin_exchange_threshold_is_20():
+    assert BIN_EXCHANGE_THRESHOLD == 20
 
 
 def test_bin_piles_to_cap_with_overflow_never_set():
@@ -83,68 +86,41 @@ def test_bin_piles_to_cap_with_overflow_never_set():
         node.destroy_node()
 
 
-def test_101st_defective_recycles_pile_to_slot_0():
+def test_bin_never_empties_itself_past_the_exchange_threshold():
     node = WorkcellNode()
     try:
         for _ in range(BIN_EXCHANGE_THRESHOLD):
             _cycle(node, color="WHITE", intact=False)
-        first_ids = {e["id"] for e in _bin_entries(node)}
         res = _cycle(node, color="BLUE", intact=False)
-        assert res.success is True
-        assert res.slot_index == 0
-        assert res.overflow_occurred is False
-        assert pytest.approx(res.drop_coords.x) == SCRAP_BIN[0]
-        assert pytest.approx(res.drop_coords.y) == SCRAP_BIN[1]
-        assert pytest.approx(res.drop_coords.z) == SCRAP_BIN[2]
-        remaining = _bin_entries(node)
-        assert len(remaining) == 1
-        assert remaining[0]["color"] == "BLUE"
-        assert remaining[0]["id"] not in first_ids
+        assert res.slot_index == BIN_EXCHANGE_THRESHOLD
+        assert len(_bin_entries(node)) == BIN_EXCHANGE_THRESHOLD + 1
     finally:
         node.destroy_node()
 
 
-def test_bin_recycle_leaves_towers_untouched():
+def test_reset_scrap_empties_the_bin_and_leaves_pallets_untouched():
     node = WorkcellNode()
     try:
-        for _ in range(3):
-            _cycle(node, color="WHITE", intact=True)
         _cycle(node, color="GREEN", intact=True)
-        for _ in range(BIN_EXCHANGE_THRESHOLD):
+        for _ in range(3):
             _cycle(node, color="WHITE", intact=False)
-        white_before = [
-            (e["x"], e["y"], e["z"])
-            for e in node.processed
-            if e["color"] == "WHITE" and e.get("intact", True)
-        ]
-        green_before = [(e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "GREEN"]
-        res = _cycle(node, color="BLUE", intact=False)
+        node.handle_register_gear(
+            RegisterGear.Request(id="r1", color="BLUE", intact=False), RegisterGear.Response()
+        )
+        node.handle_scrap_rejected(ScrapRejected.Request(count=1), ScrapRejected.Response())
+        assert len(node.scrapped) == 1
+
+        out = node.handle_reset_station(
+            ResetStation.Request(station="SCRAP"), ResetStation.Response()
+        )
+
+        assert out.success is True
+        assert _bin_entries(node) == []
+        assert node.scrapped == []
+        assert [e["color"] for e in node.processed] == ["GREEN"]
+        assert node.inventory == 1
+        res = _cycle(node, color="WHITE", intact=False)
         assert res.slot_index == 0
-        assert [
-            (e["x"], e["y"], e["z"])
-            for e in node.processed
-            if e["color"] == "WHITE" and e.get("intact", True)
-        ] == white_before
-        assert [
-            (e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "GREEN"
-        ] == green_before
-        assert pytest.approx(node.processed[-1]["x"]) == SCRAP_BIN[0]
-    finally:
-        node.destroy_node()
-
-
-def test_full_bin_reservation_points_at_slot_0_no_overflow():
-    node = WorkcellNode()
-    try:
-        for _ in range(BIN_EXCHANGE_THRESHOLD):
-            _cycle(node, color="WHITE", intact=False)
-        slot = _reserve(node, color="GREEN", intact=False)
-        assert slot.slot_index == 0
-        assert slot.overflow_occurred is False
-        assert pytest.approx(slot.drop_coords.x) == SCRAP_BIN[0]
-        assert pytest.approx(slot.drop_coords.y) == SCRAP_BIN[1]
-        assert pytest.approx(slot.drop_coords.z) == SCRAP_BIN[2]
-        assert len(node.processed) == BIN_EXCHANGE_THRESHOLD
     finally:
         node.destroy_node()
 
@@ -192,19 +168,17 @@ def test_clear_workspace_empties_gears_towers_and_bin():
         node.destroy_node()
 
 
-def test_pallet_stays_full_at_10_after_bin_recycle():
+def test_pallet_stays_full_at_10_with_a_full_bin():
     node = WorkcellNode()
     try:
         for _ in range(BIN_EXCHANGE_THRESHOLD):
             _cycle(node, color="WHITE", intact=False)
-        _cycle(node, color="BLUE", intact=False)
         for _ in range(9):
             _cycle(node, color="GREEN", intact=True)
         res = _cycle(node, color="GREEN", intact=True)
         assert res.overflow_occurred is True
         assert res.slot_index == 9
         assert len([e for e in node.processed if e["color"] == "GREEN" and e["intact"]]) == 10
-        assert len(_bin_entries(node)) == 1
-        assert pytest.approx(_bin_entries(node)[0]["x"]) == SCRAP_BIN[0]
+        assert len(_bin_entries(node)) == BIN_EXCHANGE_THRESHOLD
     finally:
         node.destroy_node()

@@ -80,8 +80,8 @@
     },
     "BIN_EXCHANGE_THRESHOLD": {
       "type": "integer",
-      "value": 100,
-      "description": "Maximum defective gears piled in ScrapBin before sharp-cut recycle"
+      "value": 20,
+      "description": "Scrapped Gearwheels at which a belt stop starts the BinExchange"
     },
     "DEFAULT_GEAR_COLOR": {
       "type": "string",

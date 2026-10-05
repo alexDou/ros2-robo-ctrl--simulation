@@ -303,8 +303,8 @@ export const PALLET_CAPACITY = 10 as const;
 /** Vertical stacking step per gear in meters */
 export const STACK_STEP_M = 0.02 as const;
 
-/** Maximum defective gears piled in ScrapBin before sharp-cut recycle */
-export const BIN_EXCHANGE_THRESHOLD = 100 as const;
+/** Scrapped Gearwheels at which a belt stop starts the BinExchange */
+export const BIN_EXCHANGE_THRESHOLD = 20 as const;
 
 /** Fallback gear color class when classification is absent */
 export const DEFAULT_GEAR_COLOR = 'WHITE';

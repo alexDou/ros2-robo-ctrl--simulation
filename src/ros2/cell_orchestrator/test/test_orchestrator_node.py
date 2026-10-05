@@ -29,7 +29,7 @@ from robot_control_interfaces.srv import (
 )
 from std_msgs.msg import String
 
-from domain import PALLET_CAPACITY, CellState, ConveyorStatus
+from domain import BIN_EXCHANGE_THRESHOLD, PALLET_CAPACITY, CellState, ConveyorStatus
 
 TIMEOUT = 5.0
 
@@ -134,7 +134,7 @@ class FakeArm:
 
 
 class FakeStations:
-    """Stands in for the three PalletStation device nodes: an exchange is held until released."""
+    """Stands in for the three PalletStation and the ScrapBin device nodes: an exchange is held until released."""
 
     def __init__(self, node, log: list[str]) -> None:
         self.log = log
@@ -151,7 +151,7 @@ class FakeStations:
                 cancel_callback=lambda _: CancelResponse.REJECT,
                 callback_group=ReentrantCallbackGroup(),
             )
-            for name in ("WHITE", "GREEN", "BLUE")
+            for name in ("WHITE", "GREEN", "BLUE", "SCRAP")
         ]
 
     def _execute(self, goal_handle, name: str):
@@ -233,14 +233,18 @@ class FakeWorkcell:
             ResetStation, "workcell/reset_station", self._reset, callback_group=group
         )
 
-    def publish_pallets(self, counts: dict[str, int]) -> None:
+    def publish_pallets(self, counts: dict[str, int], scrapped: int = 0) -> None:
         """WorkcellNode's snapshot as far as the orchestrator reads it: intact Gearwheels dropped."""
         processed = [
             {"id": f"{c}-{i}", "x": -0.45, "y": 0.0, "z": 0.0, "color": c, "intact": True}
             for c, n in counts.items()
             for i in range(n)
         ]
-        self.state_pub.publish(String(data=json.dumps({"processed": processed})))
+        bin_gears = [
+            {"id": f"scrap-{i}", "color": "WHITE", "intact": False} for i in range(scrapped)
+        ]
+        state = {"processed": processed, "scrapped": bin_gears}
+        self.state_pub.publish(String(data=json.dumps(state)))
 
     def _reset(self, req, res):
         self.log.append(f"reset:{req.station}")
@@ -838,3 +842,74 @@ def test_station_counts_follow_workcell_state(cell):
     assert _wait(lambda: [st.count for st in states[-1].stations] == [3, 10, 0])
     fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 0, "BLUE": 0})
     assert _wait(lambda: _station(states, "GREEN").count == 0)
+
+
+def _scrapped_batch(fake, states, process, scrapped, gears=MIXED_BATCH):
+    """The bin holds `scrapped` Gearwheels when the belt stops at the eye and sorting begins."""
+    fake.workcell.publish_pallets({}, scrapped=scrapped)
+    time.sleep(0.3)  # workcell/state reaches the orchestrator before the eye stop
+    _sorted_batch(fake, states, process, gears)
+
+
+def test_bin_exchange_starts_at_the_belt_stop_and_overlaps_the_sortcycles(cell):
+    fake, states, process, _ = cell
+    fake.stations.hold.set()
+
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
+
+    assert _wait(lambda: "exchange:SCRAP" in fake.log)
+    assert _wait(lambda: len(fake.arm.goals) == 3)  # all three intact Gearwheels sorted meanwhile
+    assert "exchange_done:SCRAP" not in fake.log
+    assert fake.log.index("exchange:SCRAP") < fake.log.index("slot:BLUE")
+
+
+def test_the_belt_is_held_while_the_bin_is_away(cell):
+    fake, states, process, _ = cell
+    fake.stations.hold.set()
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
+    assert _wait(lambda: len(fake.arm.goals) == 3 and fake.log.count("home") == 3)
+
+    time.sleep(0.3)
+    assert len(fake.goals) == 1  # no next belt run while the bin is away
+
+    fake.stations.release.set()
+    assert _wait(lambda: len(fake.goals) == 2)
+    assert fake.workcell.resets == ["SCRAP"]
+
+
+def test_a_bin_below_the_threshold_never_exchanges(cell):
+    fake, states, process, _ = cell
+
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD - 1)
+
+    assert _wait(lambda: len(fake.goals) == 2)
+    assert not [e for e in fake.log if e.startswith(("exchange", "reset"))]
+
+
+def test_pallet_and_bin_exchanges_may_overlap(cell):
+    fake, states, process, _ = cell
+    fake.workcell.full_colors = {"GREEN"}
+    fake.stations.hold.set()
+
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
+
+    assert _wait(lambda: "exchange:GREEN" in fake.log and "exchange:SCRAP" in fake.log)
+    assert not [e for e in fake.log if e.startswith("exchange_done")]
+
+    def release_both() -> bool:
+        fake.stations.release.set()
+        return sorted(fake.workcell.resets) == ["GREEN", "SCRAP"]
+
+    assert _wait(release_both)
+
+
+def test_a_failed_bin_exchange_faults_the_cell_without_a_reset(cell):
+    fake, states, process, _ = cell
+    fake.stations.success = False
+
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    time.sleep(0.2)
+    assert fake.workcell.resets == []
+    assert len(fake.goals) == 1

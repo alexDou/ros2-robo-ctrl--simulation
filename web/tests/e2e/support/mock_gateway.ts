@@ -19,7 +19,6 @@ import {
   type RobotState,
   type RobotTelemetryEvent,
   type ErrorFrame,
-  BIN_EXCHANGE_THRESHOLD,
 } from '../../../domain/contracts';
 import { PickAndPlaceTrajectoryGenerator, type WaypointStep } from './kinematics';
 import { MockCell } from './mock_cell';
@@ -636,11 +635,8 @@ export class MockGateway {
     }
   }
 
-  /** Mirrors WorkcellNode._book_scrap_locked: cap-100 recycle, then pile at the next bin slot. */
+  /** Mirrors WorkcellNode._book_scrap_locked: pile at the next bin slot (the BinExchange, not a cap, empties it). */
   private bookScrap(id: string, color: GearColor): void {
-    if (this.processed.filter((e) => !e.intact).length >= BIN_EXCHANGE_THRESHOLD) {
-      this.processed = this.processed.filter((e) => e.intact);
-    }
     const fill = this.processed.filter((e) => !e.intact).length;
     this.processed.push({
       id,

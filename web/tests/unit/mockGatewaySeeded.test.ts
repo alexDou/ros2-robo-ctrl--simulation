@@ -259,7 +259,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       ws.close();
     }
   });
-  it('bin cap-100 sharp-cut recycle: 101st defective wraps to z=0, towers untouched', async () => {
+  it('bin never recycles itself: the 101st defective piles on top, towers untouched', async () => {
     const tower = {
       id: 'white-keep',
       x: WHITE_TOWER[0],
@@ -290,12 +290,12 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       await waitFor(() =>
         gateway
           .getWorkcellSnapshot()
-          .processed.some((e) => !e.intact && e.z === SCRAP_BIN[2] && e.id !== 'def-0'),
+          .processed.some((e) => !e.intact && e.id !== 'def-0' && !e.id.startsWith('def-')),
       );
       const snap = gateway.getWorkcellSnapshot();
       const rejects = snap.processed.filter((e) => !e.intact);
-      expect(rejects).toHaveLength(1);
-      expect(rejects[0].z).toBeCloseTo(SCRAP_BIN[2], 6);
+      expect(rejects).toHaveLength(101);
+      expect(rejects[100].z).toBeCloseTo(SCRAP_BIN[2] + 100 * STACK_STEP_M, 6);
       expect(snap.processed.map((e) => e.id)).toContain('white-keep');
     } finally {
       ws.close();
