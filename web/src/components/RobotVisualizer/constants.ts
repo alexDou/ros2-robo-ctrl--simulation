@@ -38,8 +38,12 @@ export const SPINDLE_TOWER_COORDS: SpindleTowerCoords = SPINDLE_TOWERS.WHITE;
 
 export const PALLET_CAPACITY: number = DOMAIN_PALLET_CAPACITY;
 
-/** Tower stack fade-out after auto-empty; the arm does not wait for it. */
-export const TOWER_FADE_MS = 1500;
+/** PalletLane length beyond the PalletStation along -X: a Pallet exchange ends off-scene. */
+export const PALLET_LANE_TRAVEL_M = 1.0;
+/** Nominal PalletExchange legs (virtual_plc PALLET_EXCHANGE, ~6 s): leave, dwell AWAY, return. */
+export const PALLET_LEAVE_MS = 2000;
+export const PALLET_AWAY_MS = 2000;
+export const PALLET_RETURN_MS = 2000;
 
 export const SCRAP_BIN_COORDS: SpindleTowerCoords = toCoords(SCRAP_BIN);
 

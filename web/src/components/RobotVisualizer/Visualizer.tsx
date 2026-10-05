@@ -41,6 +41,8 @@ import {
   type SnapshotStore,
 } from '@/components/RobotVisualizer/interaction/snapshot';
 import { createFrameState, stepFrame } from '@/components/RobotVisualizer/frame';
+import { createPalletMotion } from '@/components/RobotVisualizer/interaction/palletMotion';
+import type { PalletLanesAssets } from '@/components/RobotVisualizer/assets/palletlanes';
 import {
   VisualizerErrorOverlay,
   VisualizerLoadingOverlay,
@@ -126,6 +128,7 @@ export function RobotVisualizer({
     let palmAssets: PalmProceduralAssets | null = null;
     let pedestalAssets: PedestalProceduralAssets | null = null;
     let rearStandAssets: RearStandProceduralAssets | null = null;
+    let palletLanesAssets: PalletLanesAssets | null = null;
     let conveyorAssets: ConveyorProceduralAssets | null = null;
     let hopperAssets: HopperProceduralAssets | null = null;
     let beltGearsAssets: BeltGearsAssets | null = null;
@@ -150,6 +153,14 @@ export function RobotVisualizer({
     const robotGroup = stage.robotGroup;
     pedestalAssets = stage.pedestalAssets;
     rearStandAssets = stage.rearStandAssets;
+    palletLanesAssets = stage.palletLanesAssets;
+    const palletMotion = createPalletMotion();
+    const towerHomeX: Record<GearColor, number> = {
+      WHITE: SPINDLE_TOWERS.WHITE.x,
+      GREEN: SPINDLE_TOWERS.GREEN.x,
+      BLUE: SPINDLE_TOWERS.BLUE.x,
+    };
+    let lastPalletOffsets: Record<GearColor, number> = { WHITE: 0, GREEN: 0, BLUE: 0 };
     conveyorAssets = stage.conveyorAssets;
     hopperAssets = stage.hopperAssets;
     beltGearsAssets = stage.beltGearsAssets;
@@ -243,6 +254,7 @@ export function RobotVisualizer({
       }),
       getPedestal: () => pedestalAssets,
       getRearStand: () => rearStandAssets,
+      getPalletLanes: () => palletLanesAssets,
       getConveyor: () => conveyorAssets,
       getHopper: () => hopperAssets,
       getBeltGears: () => beltGearsAssets,
@@ -278,6 +290,28 @@ export function RobotVisualizer({
     const renderLoop = () => {
       if (isDisposed) return;
 
+      // Each Pallet slides along its lane with its exchange state; the stack rides with it.
+      const offsets = palletMotion.update(
+        telemetryBufferRefProp.current?.current?.cellState?.stations,
+        performance.now(),
+      );
+      const pallets = {
+        offsetM: offsets,
+        unloaded: {
+          WHITE: palletMotion.isUnloaded('WHITE'),
+          GREEN: palletMotion.isUnloaded('GREEN'),
+          BLUE: palletMotion.isUnloaded('BLUE'),
+        },
+      };
+      for (const color of GEAR_COLORS) {
+        const tower = spindleTowerAssetsByColor?.[color];
+        if (tower && offsets[color] !== lastPalletOffsets[color]) {
+          tower.group.position.x = towerHomeX[color] - offsets[color];
+          needsRender = true;
+        }
+      }
+      lastPalletOffsets = offsets;
+
       stepFrame({
         frame,
         loadedRobot,
@@ -290,6 +324,7 @@ export function RobotVisualizer({
         robotGroup,
         mountLink,
         scrapBin: scrapBinAssets,
+        pallets,
         controls,
         onDirty: () => {
           needsRender = true;
@@ -399,11 +434,6 @@ export function RobotVisualizer({
         rec.assets.dispose();
       }
       store.gears.clear();
-      for (const f of store.fading.values()) {
-        if (f.assets.group.parent) f.assets.group.parent.remove(f.assets.group);
-        f.assets.dispose();
-      }
-      store.fading.clear();
 
       // Dispose SpindleTower fixture assets (all three color towers)
       if (spindleTowerAssetsByColor) {
@@ -463,6 +493,12 @@ export function RobotVisualizer({
         }
         hopperAssets.dispose();
         hopperAssets = null;
+      }
+
+      if (palletLanesAssets) {
+        palletLanesAssets.group.parent?.remove(palletLanesAssets.group);
+        palletLanesAssets.dispose();
+        palletLanesAssets = null;
       }
 
       if (rearStandAssets) {

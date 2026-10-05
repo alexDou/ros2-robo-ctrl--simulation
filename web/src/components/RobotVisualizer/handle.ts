@@ -10,6 +10,7 @@ import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/ass
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { DisplayPanelAssets } from '@/components/RobotVisualizer/assets/panel';
+import type { PalletLanesAssets } from '@/components/RobotVisualizer/assets/palletlanes';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 
 export interface HandleDeps {
@@ -24,6 +25,7 @@ export interface HandleDeps {
   getDisplayPanel: () => DisplayPanelAssets | null;
   getPedestal: () => PedestalProceduralAssets | null;
   getRearStand: () => RearStandProceduralAssets | null;
+  getPalletLanes: () => PalletLanesAssets | null;
   getConveyor: () => ConveyorProceduralAssets | null;
   getHopper: () => HopperProceduralAssets | null;
   getBeltGears: () => BeltGearsAssets | null;
@@ -138,6 +140,7 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
     },
     getPedestalMesh: () => deps.getPedestal()?.group ?? null,
     getRearStandMesh: () => deps.getRearStand()?.group ?? null,
+    getPalletLaneMesh: (color: GearColor) => deps.getPalletLanes()?.lanes[color] ?? null,
     getConveyorMesh: () => deps.getConveyor()?.group ?? null,
     getBeltGearPositions: () => deps.getBeltGears()?.getPositions() ?? [],
     getBeltScroll: () => deps.getConveyorScroll(),

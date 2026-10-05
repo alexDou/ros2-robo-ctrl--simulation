@@ -56,6 +56,7 @@ export interface RobotVisualizerGlobalHandle {
   getAttachedGearMesh: () => unknown;
   getPedestalMesh: () => unknown;
   getRearStandMesh: () => unknown;
+  getPalletLaneMesh: (color: 'WHITE' | 'GREEN' | 'BLUE') => unknown;
   getConveyorMesh: () => unknown;
   getHopperMesh: () => unknown;
   getBeltGearPositions: () => BeltGearPosition[];

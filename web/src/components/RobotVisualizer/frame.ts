@@ -8,6 +8,7 @@ import { setJointOnRobot } from '@/components/RobotVisualizer/scene/robot';
 import {
   readSnapshot,
   reconcileSnapshotGears,
+  type PalletView,
   type SnapshotStore,
 } from '@/components/RobotVisualizer/interaction/snapshot';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
@@ -40,6 +41,7 @@ export interface FrameArgs {
   robotGroup: THREE.Group;
   mountLink: THREE.Object3D | null;
   scrapBin?: ScrapBinProceduralAssets | null;
+  pallets?: PalletView;
   controls?: { update?: () => boolean };
   onDirty: () => void;
 }
@@ -102,6 +104,7 @@ export function stepFrame(args: FrameArgs): void {
     robotGroup: args.robotGroup,
     mountLink: args.mountLink,
     scrapBin: args.scrapBin ?? null,
+    pallets: args.pallets,
     onDirty: args.onDirty,
   });
 }

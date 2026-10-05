@@ -1,5 +1,5 @@
 import type * as THREE from 'three';
-import type { GearEntry } from '@contracts';
+import type { GearColor, GearEntry } from '@contracts';
 import type { WorkcellSnapshotView, TelemetryBufferLike } from '@/components/RobotVisualizer/types';
 import type { GearwheelProceduralAssets } from '@/components/RobotVisualizer/assets/gear';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
@@ -8,39 +8,22 @@ import {
   setGearwheelColor,
   setGearwheelIntact,
 } from '@/components/RobotVisualizer/assets/gear';
-import { GRASP_RIDE_OFFSET_Z_M, TOWER_FADE_MS } from '@/components/RobotVisualizer/constants';
+import { GRASP_RIDE_OFFSET_Z_M } from '@/components/RobotVisualizer/constants';
 
 export interface SnapshotStore {
   gears: Map<string, { assets: GearwheelProceduralAssets; bucket: string }>;
-  /** Tower gears whose id left the snapshot (tower auto-emptied), fading out. */
-  fading: Map<string, { assets: GearwheelProceduralAssets; startMs: number }>;
 }
 
 export function createSnapshotStore(): SnapshotStore {
-  return { gears: new Map(), fading: new Map() };
+  return { gears: new Map() };
 }
 
-function setGearOpacity(assets: GearwheelProceduralAssets, opacity: number): void {
-  assets.group.traverse((obj) => {
-    const mat = (obj as THREE.Mesh).material as THREE.Material | undefined;
-    if (!mat) return;
-    mat.transparent = true;
-    mat.opacity = opacity;
-  });
-}
-
-function advanceFades(store: SnapshotStore, now: number, onDirty: () => void): void {
-  for (const [id, f] of Array.from(store.fading)) {
-    const t = (now - f.startMs) / TOWER_FADE_MS;
-    if (t >= 1) {
-      if (f.assets.group.parent) f.assets.group.parent.remove(f.assets.group);
-      f.assets.dispose();
-      store.fading.delete(id);
-    } else {
-      setGearOpacity(f.assets, 1 - Math.max(0, t));
-    }
-    onDirty();
-  }
+/** Where a Pallet is in its lane exchange, as far as the Gearwheels on it are concerned. */
+export interface PalletView {
+  /** Meters displaced toward -X along the lane. */
+  offsetM: Record<GearColor, number>;
+  /** AWAY or RETURNING: the next line took the Gearwheels, so none are drawn. */
+  unloaded: Record<GearColor, boolean>;
 }
 
 export function readSnapshot(bufferRef?: TelemetryBufferLike): WorkcellSnapshotView {
@@ -55,6 +38,16 @@ export function readSnapshot(bufferRef?: TelemetryBufferLike): WorkcellSnapshotV
   };
 }
 
+function palletOf(
+  entry: GearEntry,
+  pallets: PalletView | undefined,
+): { offsetM: number; unloaded: boolean } | null {
+  if (!pallets) return null;
+  const color = entry.color as GearColor;
+  if (!(color in pallets.offsetM)) return null;
+  return { offsetM: pallets.offsetM[color], unloaded: pallets.unloaded[color] };
+}
+
 export function reconcileSnapshotGears(
   store: SnapshotStore,
   snap: WorkcellSnapshotView,
@@ -62,11 +55,10 @@ export function reconcileSnapshotGears(
     robotGroup: THREE.Group;
     mountLink: THREE.Object3D | null;
     scrapBin?: ScrapBinProceduralAssets | null;
+    pallets?: PalletView;
     onDirty: () => void;
-    now?: number;
   },
 ): void {
-  const now = ctx.now ?? performance.now();
   const desired = new Map<string, { entry: GearEntry; bucket: string }>();
   for (const e of snap.spawned) desired.set(e.id, { entry: e, bucket: 'spawned' });
   for (const e of snap.inProgress) desired.set(e.id, { entry: e, bucket: 'in_progress' });
@@ -79,17 +71,11 @@ export function reconcileSnapshotGears(
   for (const [id, rec] of Array.from(store.gears)) {
     if (!desired.has(id)) {
       store.gears.delete(id);
-      if (rec.bucket === 'processed' && rec.assets.intact !== false) {
-        // Tower reset: fade the stack out; a new stack may already be growing.
-        store.fading.set(id, { assets: rec.assets, startMs: now });
-      } else {
-        if (rec.assets.group.parent) rec.assets.group.parent.remove(rec.assets.group);
-        rec.assets.dispose();
-      }
+      if (rec.assets.group.parent) rec.assets.group.parent.remove(rec.assets.group);
+      rec.assets.dispose();
       ctx.onDirty();
     }
   }
-  advanceFades(store, now, ctx.onDirty);
   // Create meshes for new ids; reparent/position in-progress rides.
   for (const [id, d] of desired) {
     let rec = store.gears.get(id);
@@ -118,7 +104,20 @@ export function reconcileSnapshotGears(
         ctx.robotGroup.add(rec.assets.group);
       }
       rec.assets.group.rotation.set(0, 0, 0);
-      rec.assets.group.position.set(d.entry.x, d.entry.y, d.entry.z);
+      // A Gearwheel on a Pallet rides with it along the lane; unloaded Pallets carry none.
+      const pallet = d.bucket === 'processed' ? palletOf(d.entry, ctx.pallets) : null;
+      const x = d.entry.x - (pallet?.offsetM ?? 0);
+      const visible = !pallet?.unloaded;
+      if (
+        rec.assets.group.position.x !== x ||
+        rec.assets.group.position.y !== d.entry.y ||
+        rec.assets.group.position.z !== d.entry.z ||
+        rec.assets.group.visible !== visible
+      ) {
+        ctx.onDirty();
+      }
+      rec.assets.group.visible = visible;
+      rec.assets.group.position.set(x, d.entry.y, d.entry.z);
     } else if (d.bucket === 'in_progress') {
       if (ctx.mountLink) {
         if (rec.assets.group.parent !== ctx.mountLink) {

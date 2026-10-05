@@ -1,7 +1,7 @@
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type * as THREE from 'three';
 import type { URDFRobot } from 'urdf-loader';
-import type { RobotState, GearEntry, BeltGear } from '@contracts';
+import type { RobotState, GearEntry, BeltGear, StationStatus } from '@contracts';
 
 export interface WorkcellSnapshotView {
   spawned: GearEntry[];
@@ -17,6 +17,7 @@ export interface TelemetryBufferLike {
     palmState?: { is_grasped: boolean };
     phase?: string | null;
     workcellState?: WorkcellSnapshotView | null;
+    cellState?: { stations?: readonly StationStatus[] } | null;
   };
 }
 

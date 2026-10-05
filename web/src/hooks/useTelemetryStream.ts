@@ -7,6 +7,7 @@ import {
   type GearEntry,
   type ConveyorStatus,
   type BeltGear,
+  type StationStatus,
 } from '@contracts';
 
 export interface WorkcellSnapshot {
@@ -21,6 +22,8 @@ export interface CellStateSample {
   conveyorStatus: ConveyorStatus;
   beltOffsetM: number;
   beltGears: BeltGear[];
+  /** PalletStation exchange devices; absent when the cell reports none. */
+  stations?: StationStatus[];
   receivedAtMs: number;
 }
 
@@ -119,6 +122,7 @@ export function useTelemetryStream() {
         conveyorStatus: data.cell_state.conveyor_status,
         beltOffsetM: data.cell_state.belt_offset_m,
         beltGears: data.cell_state.belt_gears,
+        stations: data.cell_state.stations ?? undefined,
         receivedAtMs: now,
       };
       setCellStatus(data.cell_state.conveyor_status);

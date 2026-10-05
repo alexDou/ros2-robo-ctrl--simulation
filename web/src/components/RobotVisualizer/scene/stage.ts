@@ -16,6 +16,10 @@ import { createHopper } from '@/components/RobotVisualizer/assets/hopper';
 import { createRearStand } from '@/components/RobotVisualizer/assets/rearstand';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
 import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
+import {
+  createPalletLanes,
+  type PalletLanesAssets,
+} from '@/components/RobotVisualizer/assets/palletlanes';
 import { createScrapBin } from '@/components/RobotVisualizer/assets/scrapbin';
 import { DEFAULT_CAMERA_POSE, repToWorld } from '@/components/RobotVisualizer/scene/cameraPose';
 import type { GearColor } from '@contracts';
@@ -31,6 +35,7 @@ export interface StageAssets {
   conveyorAssets: ConveyorProceduralAssets;
   hopperAssets: HopperProceduralAssets;
   beltGearsAssets: BeltGearsAssets;
+  palletLanesAssets: PalletLanesAssets;
   spindleTowerAssets: SpindleTowerProceduralAssets;
   spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
   scrapBinAssets: ScrapBinProceduralAssets;
@@ -91,6 +96,10 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const beltGearsAssets = createBeltGears();
   robotGroup.add(beltGearsAssets.group);
 
+  // PalletLanes run from each PalletStation along -X, off-scene
+  const palletLanesAssets = createPalletLanes();
+  robotGroup.add(palletLanesAssets.group);
+
   // Mount three color SpindleTowers at canonical WHITE/GREEN/BLUE coords.
   // WHITE keeps legacy position so single-tower scene renders identically.
   const whiteTower = createSpindleTower('WHITE');
@@ -123,6 +132,7 @@ export function createStage(container: HTMLDivElement): StageAssets {
     conveyorAssets,
     hopperAssets,
     beltGearsAssets,
+    palletLanesAssets,
     spindleTowerAssets,
     spindleTowerAssetsByColor,
     scrapBinAssets,
