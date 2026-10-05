@@ -12,7 +12,7 @@ from rclpy.action import ActionServer, CancelResponse
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
-from robot_control_interfaces.action import ConveyorRun, PickAndPlace
+from robot_control_interfaces.action import ConveyorRun, PickAndPlace, StationExchange
 from robot_control_interfaces.srv import (
     CellFill,
     CellProcess,
@@ -24,11 +24,12 @@ from robot_control_interfaces.srv import (
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
+    ResetStation,
     ScrapRejected,
 )
 from std_msgs.msg import String
 
-from domain import CellState, ConveyorStatus
+from domain import PALLET_CAPACITY, CellState, ConveyorStatus
 
 TIMEOUT = 5.0
 
@@ -132,6 +133,48 @@ class FakeArm:
             self.running -= 1
 
 
+class FakeStations:
+    """Stands in for the three PalletStation device nodes: an exchange is held until released."""
+
+    def __init__(self, node, log: list[str]) -> None:
+        self.log = log
+        self.hold = threading.Event()  # set -> exchanges wait for `release`
+        self.release = threading.Event()
+        self.success = True
+        self.running = 0
+        self.actions = [
+            ActionServer(
+                node,
+                StationExchange,
+                f"station/{name.lower()}/exchange",
+                execute_callback=lambda gh, name=name: self._execute(gh, name),
+                cancel_callback=lambda _: CancelResponse.REJECT,
+                callback_group=ReentrantCallbackGroup(),
+            )
+            for name in ("WHITE", "GREEN", "BLUE")
+        ]
+
+    def _execute(self, goal_handle, name: str):
+        self.running += 1
+        try:
+            self.log.append(f"exchange:{name}")
+            goal_handle.publish_feedback(StationExchange.Feedback(exchange_state="LEAVING"))
+            while self.hold.is_set() and not self.release.wait(0.01):
+                pass
+            self.release.clear()
+            for state in ("AWAY", "RETURNING"):
+                goal_handle.publish_feedback(StationExchange.Feedback(exchange_state=state))
+                time.sleep(0.02)
+            self.log.append(f"exchange_done:{name}")
+            if self.success:
+                goal_handle.succeed()
+                return StationExchange.Result(success=True, final_state="HOME")
+            goal_handle.abort()
+            return StationExchange.Result(success=False, final_state="FAULT", fault=1)
+        finally:
+            self.running -= 1
+
+
 class FakeFeeder:
     """Stands in for the FlexFeeder device node: services in, feeder/status out."""
 
@@ -169,6 +212,11 @@ class FakeWorkcell:
         self.scrap_counts: list[int] = []
         self.scrap_ok = True
         self.ok = True
+        self.full_colors: set[str] = set()  # a commit for these colours fills the Pallet
+        self.resets: list[str] = []
+        self.reset_ok = True
+        self._last_color = ""
+        self.state_pub = node.create_publisher(String, "workcell/state", 10)
         group = ReentrantCallbackGroup()
         node.create_service(
             RegisterGear, "workcell/register_gear", self._register, callback_group=group
@@ -181,8 +229,27 @@ class FakeWorkcell:
         )
         node.create_service(MarkGrasped, "workcell/mark_grasped", self._mark, callback_group=group)
         node.create_service(CommitDrop, "workcell/commit_drop", self._commit, callback_group=group)
+        node.create_service(
+            ResetStation, "workcell/reset_station", self._reset, callback_group=group
+        )
+
+    def publish_pallets(self, counts: dict[str, int]) -> None:
+        """WorkcellNode's snapshot as far as the orchestrator reads it: intact Gearwheels dropped."""
+        processed = [
+            {"id": f"{c}-{i}", "x": -0.45, "y": 0.0, "z": 0.0, "color": c, "intact": True}
+            for c, n in counts.items()
+            for i in range(n)
+        ]
+        self.state_pub.publish(String(data=json.dumps({"processed": processed})))
+
+    def _reset(self, req, res):
+        self.log.append(f"reset:{req.station}")
+        self.resets.append(req.station)
+        res.success = self.reset_ok
+        return res
 
     def _drop_slot(self, req, res):
+        self._last_color = req.color
         self.log.append(f"slot:{req.color}")
         res.slot_index = 0
         res.drop_coords = Point(x=-0.45, y={"WHITE": -0.26, "GREEN": -0.1, "BLUE": 0.06}[req.color])
@@ -202,6 +269,8 @@ class FakeWorkcell:
     def _commit(self, _req, res):
         self.log.append("commit")
         res.success = True
+        if self._last_color in self.full_colors:
+            res.slot_index, res.overflow_occurred = PALLET_CAPACITY - 1, True
         return res
 
     def _register(self, req, res):
@@ -222,6 +291,7 @@ def cell():
     fake.feeder = FakeFeeder(fake_node)
     fake.workcell = FakeWorkcell(fake_node, log)
     fake.arm = FakeArm(fake_node, log)
+    fake.stations = FakeStations(fake_node, log)
     fake.arm.hold.set()  # a SortCycle stays in flight until a test releases the arm
     fake.fill = client.create_client(CellFill, "cell/fill")
     states: list[CellState] = []
@@ -252,8 +322,11 @@ def cell():
     with node._lock:
         node._run_id += 1  # no further run or SortCycle may start
     fake.arm.hold.clear()
+    fake.stations.hold.clear()
     fake.release.set()
-    assert _wait(lambda: fake.running == 0 and fake.arm.running == 0)  # goals end before nodes die
+    assert _wait(
+        lambda: fake.running == 0 and fake.arm.running == 0 and fake.stations.running == 0
+    )  # goals end before nodes die
     time.sleep(0.3)  # the executor still publishes the goal result after _execute returns
     executor.shutdown()
     spinner.join(timeout=TIMEOUT)  # no callback may run on a destroyed node
@@ -664,3 +737,104 @@ def test_failed_scrap_faults_the_cell(cell):
     fake.release.set()
 
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+
+
+def _station(states, name):
+    return next(st for st in states[-1].stations if st.name == name)
+
+
+def test_a_full_pallet_exchanges_then_resets_before_the_next_sortcycle(cell):
+    fake, states, process, _ = cell
+    fake.workcell.full_colors = {"GREEN"}
+
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+
+    assert _wait(lambda: fake.log.count("home") == 3)
+    log = fake.log
+    first = ["commit", "home", "exchange:GREEN", "exchange_done:GREEN", "reset:GREEN", "slot:WHITE"]
+    start = log.index("commit")
+    assert [e for e in log[start:] if e in first][: len(first)] == first
+    assert fake.workcell.resets == ["GREEN"]
+
+
+def test_the_next_sortcycle_waits_while_the_pallet_is_away(cell):
+    fake, states, process, _ = cell
+    fake.workcell.full_colors = {"GREEN"}
+    fake.stations.hold.set()
+
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+
+    assert _wait(lambda: "exchange:GREEN" in fake.log)
+    time.sleep(0.3)
+    assert "slot:WHITE" not in fake.log
+    assert fake.workcell.resets == []
+    assert _station(states, "GREEN").exchange_state.value == "LEAVING"
+
+    fake.stations.release.set()
+    assert _wait(lambda: "slot:WHITE" in fake.log)
+    assert fake.log.index("reset:GREEN") < fake.log.index("slot:WHITE")
+    assert _wait(lambda: _station(states, "GREEN").exchange_state.value == "HOME")
+
+
+def test_a_pallet_below_capacity_never_exchanges(cell):
+    fake, states, process, _ = cell
+
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+
+    assert _wait(lambda: fake.goals == [ConveyorRun.Goal.RUN_TO_PICKZONE] * 2)
+    assert not [e for e in fake.log if e.startswith(("exchange", "reset"))]
+
+
+def test_a_failed_exchange_faults_the_cell_without_a_reset(cell):
+    fake, states, process, _ = cell
+    fake.workcell.full_colors = {"GREEN"}
+    fake.stations.success = False
+
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    time.sleep(0.2)
+    assert fake.workcell.resets == []
+    assert len(fake.arm.goals) == 1
+    assert _station(states, "GREEN").exchange_state.value == "FAULT"
+
+
+def test_a_failed_reset_faults_the_cell(cell):
+    fake, states, process, _ = cell
+    fake.workcell.full_colors = {"GREEN"}
+    fake.workcell.reset_ok = False
+
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    time.sleep(0.2)
+    assert len(fake.arm.goals) == 1
+
+
+def test_stop_lets_the_pallet_exchange_finish_but_starts_no_new_sortcycle(cell):
+    fake, states, process, stop = cell
+    fake.workcell.full_colors = {"GREEN"}
+    fake.stations.hold.set()
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+    assert _wait(lambda: "exchange:GREEN" in fake.log)
+
+    assert _call(stop, CellStop.Request()).success
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.STOPPED)
+    fake.stations.release.set()
+
+    assert _wait(lambda: fake.workcell.resets == ["GREEN"])
+    time.sleep(0.3)
+    assert len(fake.arm.goals) == 1
+    assert states[-1].conveyor_status == ConveyorStatus.STOPPED
+
+
+def test_station_counts_follow_workcell_state(cell):
+    fake, states, process, _ = cell
+    assert _wait(lambda: states)
+    assert [st.name.value for st in states[-1].stations] == ["WHITE", "GREEN", "BLUE"]
+
+    fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 10, "BLUE": 0})
+
+    assert _wait(lambda: [st.count for st in states[-1].stations] == [3, 10, 0])
+    fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 0, "BLUE": 0})
+    assert _wait(lambda: _station(states, "GREEN").count == 0)

@@ -171,7 +171,7 @@ def test_get_drop_slot_pure_reservation():
         node.destroy_node()
 
 
-def test_tenth_commit_empties_tower():
+def test_tenth_commit_leaves_the_pallet_full():
     node = WorkcellNode()
     try:
         for _ in range(PALLET_CAPACITY - 1):
@@ -185,8 +185,8 @@ def test_tenth_commit_empties_tower():
         assert res.success is True
         assert res.overflow_occurred is True
         assert res.slot_index == PALLET_CAPACITY - 1
-        assert len(node.processed) == 0
-        assert node.tower_count == 0
+        assert len(node.processed) == PALLET_CAPACITY
+        assert node.tower_count == PALLET_CAPACITY
     finally:
         node.destroy_node()
 

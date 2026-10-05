@@ -1,0 +1,6 @@
+# A PalletStation was exchanged: its Pallet is empty again. Zeroes only that colour's count.
+# station is WHITE, GREEN or BLUE.
+string station
+---
+bool success
+string message

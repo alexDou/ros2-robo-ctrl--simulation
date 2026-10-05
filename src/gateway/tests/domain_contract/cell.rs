@@ -1,6 +1,6 @@
 use gateway::domain::{
     BeltGear, CellFillPayload, CellProcessPayload, CellState, CellStopPayload, Color, CommandType,
-    ConveyorStatus, RobotCommand,
+    ConveyorStatus, ExchangeState, RobotCommand, StationName, StationStatus,
 };
 use serde_json::json;
 
@@ -58,9 +58,15 @@ fn test_cell_state_round_trip_and_strictness() {
             color: Color::Green,
             intact: false,
         }],
+        stations: Some(vec![StationStatus {
+            name: StationName::Green,
+            exchange_state: ExchangeState::Away,
+            count: 10,
+        }]),
     };
     let text = serde_json::to_string(&state).expect("serialize CellState");
     assert!(text.contains(r#""conveyor_status":"FEEDING""#));
+    assert!(text.contains(r#""exchange_state":"AWAY""#));
     let back: CellState = serde_json::from_str(&text).expect("deserialize CellState");
     assert_eq!(state, back);
 

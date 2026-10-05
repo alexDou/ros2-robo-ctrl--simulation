@@ -208,7 +208,7 @@ def test_invalid_color_reservation_rejected():
         node.destroy_node()
 
 
-def test_tenth_commit_empties_that_tower_only():
+def test_tenth_commit_fills_that_pallet_only():
     node = WorkcellNode()
     try:
         for _ in range(PALLET_CAPACITY - 1):
@@ -220,7 +220,7 @@ def test_tenth_commit_empties_that_tower_only():
         assert res.success is True
         assert res.overflow_occurred is True
         assert res.slot_index == PALLET_CAPACITY - 1
-        assert [e for e in node.processed if e["color"] == "GREEN"] == []
+        assert len([e for e in node.processed if e["color"] == "GREEN"]) == PALLET_CAPACITY
         whites = [(e["x"], e["y"], e["z"]) for e in node.processed if e["color"] == "WHITE"]
         assert whites == white_before
     finally:

@@ -97,6 +97,26 @@ pub enum Color {
     Blue,
 }
 
+/// Station, named after the colour of its Pallet
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum StationName {
+    White,
+    Green,
+    Blue,
+}
+
+/// Exchange state machine position
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ExchangeState {
+    Home,
+    Leaving,
+    Away,
+    Returning,
+    Fault,
+}
+
 /// Canonical UR5e 6-DoF joint names in kinematic sequence
 pub const UR5E_JOINTS: [&str; 6] = [
     "shoulder_pan_joint",
@@ -346,6 +366,15 @@ pub struct BeltGear {
     pub intact: bool,
 }
 
+/// One station: its exchange state and how many Gearwheels it holds
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct StationStatus {
+    pub name: StationName,
+    pub exchange_state: ExchangeState,
+    pub count: u64,
+}
+
 /// Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -354,6 +383,8 @@ pub struct CellState {
     pub feeder_remaining: u64,
     pub belt_offset_m: f64,
     pub belt_gears: Vec<BeltGear>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub stations: Option<Vec<StationStatus>>,
 }
 
 /// Canonical schema for structured error frames returned by Gateway over WebSocket

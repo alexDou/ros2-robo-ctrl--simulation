@@ -192,7 +192,7 @@ def test_clear_workspace_empties_gears_towers_and_bin():
         node.destroy_node()
 
 
-def test_tower_still_empties_at_10_after_bin_recycle():
+def test_pallet_stays_full_at_10_after_bin_recycle():
     node = WorkcellNode()
     try:
         for _ in range(BIN_EXCHANGE_THRESHOLD):
@@ -203,7 +203,7 @@ def test_tower_still_empties_at_10_after_bin_recycle():
         res = _cycle(node, color="GREEN", intact=True)
         assert res.overflow_occurred is True
         assert res.slot_index == 9
-        assert [e for e in node.processed if e["color"] == "GREEN"] == []
+        assert len([e for e in node.processed if e["color"] == "GREEN" and e["intact"]]) == 10
         assert len(_bin_entries(node)) == 1
         assert pytest.approx(_bin_entries(node)[0]["x"]) == SCRAP_BIN[0]
     finally:

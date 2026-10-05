@@ -565,6 +565,22 @@
             },
             "additionalProperties": false
           }
+        },
+        "stations": {
+          "type": "array",
+          "description": "PalletStation exchange devices as the orchestrator last saw them; absent from snapshots that predate Unit 9.15",
+          "items": {
+            "type": "object",
+            "title": "StationStatus",
+            "description": "One station: its exchange state and how many Gearwheels it holds",
+            "required": ["name", "exchange_state", "count"],
+            "properties": {
+              "name": { "type": "string", "title": "StationName", "enum": ["WHITE", "GREEN", "BLUE"], "description": "Station, named after the colour of its Pallet" },
+              "exchange_state": { "type": "string", "title": "ExchangeState", "enum": ["HOME", "LEAVING", "AWAY", "RETURNING", "FAULT"], "description": "Exchange state machine position" },
+              "count": { "type": "integer", "minimum": 0, "description": "Gearwheels on the Pallet; PALLET_CAPACITY means FULL" }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false

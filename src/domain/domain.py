@@ -84,6 +84,24 @@ class Color(str, Enum):
     BLUE = "BLUE"
 
 
+class StationName(str, Enum):
+    """Station, named after the colour of its Pallet"""
+
+    WHITE = "WHITE"
+    GREEN = "GREEN"
+    BLUE = "BLUE"
+
+
+class ExchangeState(str, Enum):
+    """Exchange state machine position"""
+
+    HOME = "HOME"
+    LEAVING = "LEAVING"
+    AWAY = "AWAY"
+    RETURNING = "RETURNING"
+    FAULT = "FAULT"
+
+
 UR5E_JOINTS: list[str] = [
     "shoulder_pan_joint",
     "shoulder_lift_joint",
@@ -312,6 +330,16 @@ class BeltGear(BaseModel):
     intact: bool = Field(...)
 
 
+class StationStatus(BaseModel):
+    """One station: its exchange state and how many Gearwheels it holds"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: StationName = Field(..., description="Station, named after the colour of its Pallet")
+    exchange_state: ExchangeState = Field(..., description="Exchange state machine position")
+    count: int = Field(..., ge=0, description="Gearwheels on the Pallet; PALLET_CAPACITY means FULL")
+
+
 class CellState(BaseModel):
     """Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel"""
 
@@ -321,6 +349,7 @@ class CellState(BaseModel):
     feeder_remaining: int = Field(..., ge=0, description="Gearwheels still in the FlexFeeder deck")
     belt_offset_m: FiniteFloat = Field(..., allow_inf_nan=False, description="Belt travel in meters since the cell controller started counting; the UI extrapolates between updates")
     belt_gears: list[BeltGear] = Field(..., description="Gearwheels lying on the belt, from belt tracking (placement records plus encoder travel); positions are as of the last report and the UI extrapolates")
+    stations: Optional[list[StationStatus]] = Field(default=None, description="PalletStation exchange devices as the orchestrator last saw them; absent from snapshots that predate Unit 9.15")
 
 
 class ErrorFrame(BaseModel):

@@ -202,6 +202,44 @@ export const colorSchema = ColorSchema;
 
 export type Color = z.infer<typeof ColorSchema>;
 
+/** Station, named after the colour of its Pallet */
+export const StationName = {
+  WHITE: 'WHITE',
+  GREEN: 'GREEN',
+  BLUE: 'BLUE',
+} as const;
+
+export const StationNameSchema = z.enum([
+  'WHITE',
+  'GREEN',
+  'BLUE',
+], { message: 'Invalid station name' });
+
+export const stationNameSchema = StationNameSchema;
+
+export type StationName = z.infer<typeof StationNameSchema>;
+
+/** Exchange state machine position */
+export const ExchangeState = {
+  HOME: 'HOME',
+  LEAVING: 'LEAVING',
+  AWAY: 'AWAY',
+  RETURNING: 'RETURNING',
+  FAULT: 'FAULT',
+} as const;
+
+export const ExchangeStateSchema = z.enum([
+  'HOME',
+  'LEAVING',
+  'AWAY',
+  'RETURNING',
+  'FAULT',
+], { message: 'Invalid exchange state' });
+
+export const exchangeStateSchema = ExchangeStateSchema;
+
+export type ExchangeState = z.infer<typeof ExchangeStateSchema>;
+
 /** Canonical UR5e 6-DoF joint names in kinematic sequence */
 export const UR5E_JOINTS = [
   'shoulder_pan_joint',
@@ -538,6 +576,32 @@ export const beltGearSchema = BeltGearSchema;
 
 export type BeltGear = z.infer<typeof rawBeltGearSchema>;
 
+/** One station: its exchange state and how many Gearwheels it holds */
+export const rawStationStatusSchema = z.object(
+  {
+    name: StationNameSchema,
+    exchange_state: ExchangeStateSchema,
+    count: z.union([z.bigint(), z.number(), z.string()], { message: "Missing required field 'count'" }).refine(
+      (val) => {
+        try {
+          if (typeof val === 'number' && !Number.isFinite(val)) return false;
+          const num = typeof val === 'bigint' ? val : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));
+          return num >= BigInt(0);
+        } catch {
+          return false;
+        }
+      },
+      { message: "Field 'count' must be a non-negative integer" }
+    ),
+  },
+  { message: 'StationStatus payload must be an object' }
+).strict();
+
+export const StationStatusSchema = jsonInput.pipe(rawStationStatusSchema);
+export const stationStatusSchema = StationStatusSchema;
+
+export type StationStatus = z.infer<typeof rawStationStatusSchema>;
+
 /** Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel */
 export const rawCellStateSchema = z.object(
   {
@@ -556,6 +620,7 @@ export const rawCellStateSchema = z.object(
     ),
     belt_offset_m: z.number({ message: "Field 'belt_offset_m' must be a number" }).refine(Number.isFinite, { message: "Field 'belt_offset_m' must be a finite number" }),
     belt_gears: z.array(beltGearSchema),
+    stations: z.array(stationStatusSchema).nullish(),
   },
   { message: 'CellState payload must be an object' }
 ).strict();
@@ -766,6 +831,14 @@ export function parseBeltGear(input: unknown): BeltGear {
 
 export function isBeltGear(input: unknown): input is BeltGear {
   return beltGearSchema.safeParse(input).success;
+}
+
+export function parseStationStatus(input: unknown): StationStatus {
+  return unwrapZod<StationStatus>(stationStatusSchema.safeParse(input));
+}
+
+export function isStationStatus(input: unknown): input is StationStatus {
+  return stationStatusSchema.safeParse(input).success;
 }
 
 export function parseCellState(input: unknown): CellState {

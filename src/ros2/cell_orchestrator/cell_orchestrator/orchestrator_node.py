@@ -4,8 +4,10 @@ Fill loads the FlexFeeder (EMPTY -> LOADED), Process enables the feeder and runs
 PickZone eye, Stop freezes both. At every eye stop the Batch is registered and sorted: one
 SortCycle (PickAndPlace to the colour's PalletStation, then commit the drop) per intact
 Gearwheel in belt order. PickAndPlace ends with the arm HOME, so a finished Batch leaves it
-there. Then the next feed run starts, or the final flush when nothing is left (-> EMPTY).
-Exchanges and the flush reset land in later Unit 9 tickets.
+there. The 10th drop on a Pallet makes it FULL: PalletExchange runs (the arm is already HOME),
+then ResetStation empties that colour, and only then does the next SortCycle start. Then the next
+feed run starts, or the final flush when nothing is left (-> EMPTY).
+BinExchange and the flush reset land in later Unit 9 tickets.
 """
 
 import json
@@ -20,7 +22,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
-from robot_control_interfaces.action import ConveyorRun, PickAndPlace
+from robot_control_interfaces.action import ConveyorRun, PickAndPlace, StationExchange
 from robot_control_interfaces.srv import (
     CellFill,
     CellProcess,
@@ -32,11 +34,20 @@ from robot_control_interfaces.srv import (
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
+    ResetStation,
     ScrapRejected,
 )
 from std_msgs.msg import String
 
-from domain import PICK_ZONE_Y_RANGE, BeltGear, CellState, ConveyorStatus
+from domain import (
+    PICK_ZONE_Y_RANGE,
+    BeltGear,
+    CellState,
+    ConveyorStatus,
+    ExchangeState,
+    StationName,
+    StationStatus,
+)
 
 _FILL_FROM = (ConveyorStatus.EMPTY,)
 _PROCESS_FROM = (ConveyorStatus.LOADED, ConveyorStatus.STOPPED)
@@ -47,6 +58,8 @@ _STATE_QOS = QoSProfile(
 _OFFSET_PUBLISH_HZ = 5.0
 _SORT_POLL_S = 0.02
 _SORT_TIMEOUT_S = 120.0
+_EXCHANGE_TIMEOUT_S = 120.0
+_PALLET_COLORS = tuple(name.value for name in StationName)
 
 
 @dataclass(frozen=True)
@@ -70,12 +83,16 @@ class CellOrchestratorNode(Node):
         self._published_belt: tuple[float, list[BeltGear]] | None = None
         self._registered: set[str] = set()
         self._picked: set[str] = set()
+        # PalletStation view: counts follow WorkcellNode's snapshot, exchange states the devices.
+        self._pallet_counts = dict.fromkeys(_PALLET_COLORS, 0)
+        self._exchange_states = dict.fromkeys(_PALLET_COLORS, ExchangeState.HOME)
         self._pending: list[_Pick] = []
         # Held by a SortCycle worker for its whole run, so a resumed Batch waits for the old one.
         self._sort_lock = threading.Lock()
         self._sort_thread: threading.Thread | None = None
         # Bumped on every Process and Stop so a late result of an old goal is ignored.
         self._run_id = 0
+        self._full_color: str | None = None  # set by the commit of a Pallet's 10th Gearwheel
 
         group = ReentrantCallbackGroup()
         self._state_pub = self.create_publisher(String, "cell/state", _STATE_QOS)
@@ -102,8 +119,20 @@ class CellOrchestratorNode(Node):
         self._commit_client = self.create_client(
             CommitDrop, "workcell/commit_drop", callback_group=group
         )
+        self._reset_station_client = self.create_client(
+            ResetStation, "workcell/reset_station", callback_group=group
+        )
+        self._exchange_clients = {
+            color: ActionClient(
+                self, StationExchange, f"station/{color.lower()}/exchange", callback_group=group
+            )
+            for color in _PALLET_COLORS
+        }
         self._arm_client = ActionClient(
             self, PickAndPlace, "arm_controller/pick_and_place", callback_group=group
+        )
+        self.create_subscription(
+            String, "workcell/state", self._on_workcell_state, 10, callback_group=group
         )
         self.create_subscription(
             String, "feeder/status", self._on_feeder_status, 10, callback_group=group
@@ -132,6 +161,14 @@ class CellOrchestratorNode(Node):
                 feeder_remaining=self._feeder_remaining,
                 belt_offset_m=self._belt_offset_m,
                 belt_gears=self._visible_gears_locked(),
+                stations=[
+                    StationStatus(
+                        name=StationName(color),
+                        exchange_state=self._exchange_states[color],
+                        count=self._pallet_counts[color],
+                    )
+                    for color in _PALLET_COLORS
+                ],
             )
             self._published_belt = (self._belt_offset_m, self._visible_gears_locked())
         self._state_pub.publish(String(data=state.model_dump_json()))
@@ -156,6 +193,23 @@ class CellOrchestratorNode(Node):
         with self._lock:
             self._belt_offset_m = encoder_mm / 1000.0
             self._belt_gears = gears
+
+    def _on_workcell_state(self, msg: String) -> None:
+        """Pallet counts are WorkcellNode's truth: intact Gearwheels dropped, per colour."""
+        try:
+            processed = json.loads(msg.data)["processed"]
+            counts = dict.fromkeys(_PALLET_COLORS, 0)
+            for entry in processed:
+                if entry.get("intact", True) and entry["color"] in counts:
+                    counts[entry["color"]] += 1
+        except (ValueError, KeyError, TypeError):
+            self.get_logger().warning("Ignoring malformed workcell/state", throttle_duration_sec=5)
+            return
+        with self._lock:
+            changed = counts != self._pallet_counts
+            self._pallet_counts = counts
+        if changed:
+            self._publish_state()
 
     def _on_feeder_status(self, msg: String) -> None:
         try:
@@ -328,6 +382,12 @@ class CellOrchestratorNode(Node):
                         self._pending.pop(0)
                     self._picked.add(pick.id)
                 self._publish_state()
+                if self._pallet_full(pick.color) and not self._exchange_pallet(pick.color):
+                    self.get_logger().error(f"PalletExchange for {pick.color} failed; cell FAULT")
+                    with self._lock:
+                        self._pending.clear()
+                    self._finish_run(run_id, ConveyorStatus.FAULT)
+                    return
             self._advance(run_id)
 
     def _sort_cycle(self, pick: _Pick) -> bool:
@@ -357,6 +417,7 @@ class CellOrchestratorNode(Node):
         result_future = send.result().get_result_async()
         result_future.add_done_callback(lambda _: finished.set())
         marked = committed = False
+        self._full_color = None
         waited = 0.0
         while not finished.wait(_SORT_POLL_S):
             waited += _SORT_POLL_S
@@ -365,14 +426,68 @@ class CellOrchestratorNode(Node):
             if grasping.is_set() and not marked:
                 marked = self._notify(self._mark_client, MarkGrasped.Request())
             if marked and releasing.is_set() and not committed:
-                committed = self._notify(self._commit_client, CommitDrop.Request())
+                committed = self._commit(pick.color)
         if not result_future.result().result.success:
             return False
         if not marked:
             marked = self._notify(self._mark_client, MarkGrasped.Request())
         if marked and not committed:
-            committed = self._notify(self._commit_client, CommitDrop.Request())
+            committed = self._commit(pick.color)
         return marked and committed
+
+    def _commit(self, color: str) -> bool:
+        """Commits the drop; the 10th Gearwheel on a Pallet (overflow flag) makes it FULL."""
+        result = self._call_blocking(self._commit_client, CommitDrop.Request())
+        if result is None or not result.success:
+            return False
+        if result.overflow_occurred:
+            self._full_color = color
+        return True
+
+    def _pallet_full(self, color: str) -> bool:
+        return self._full_color == color
+
+    def _exchange_pallet(self, color: str) -> bool:
+        """PalletExchange, then ResetStation: only after both may the next SortCycle start."""
+        client = self._exchange_clients[color]
+        if not client.wait_for_server(timeout_sec=1.0):
+            self._set_exchange_state(color, ExchangeState.FAULT)
+            return False
+        done = threading.Event()
+        outcome: dict[str, bool] = {"success": False}
+
+        def on_feedback(msg: Any) -> None:
+            self._set_exchange_state(color, ExchangeState(msg.feedback.exchange_state))
+
+        def on_result(fut: Any) -> None:
+            outcome["success"] = bool(fut.result().result.success)
+            done.set()
+
+        def on_goal(fut: Any) -> None:
+            handle = fut.result()
+            if handle.accepted:
+                handle.get_result_async().add_done_callback(on_result)
+            else:
+                done.set()
+
+        client.send_goal_async(
+            StationExchange.Goal(), feedback_callback=on_feedback
+        ).add_done_callback(on_goal)
+        ok = done.wait(_EXCHANGE_TIMEOUT_S) and outcome["success"]
+        if not ok:
+            self._set_exchange_state(color, ExchangeState.FAULT)
+            return False
+        if not self._notify(self._reset_station_client, ResetStation.Request(station=color)):
+            return False
+        self._set_exchange_state(color, ExchangeState.HOME)
+        return True
+
+    def _set_exchange_state(self, color: str, state: ExchangeState) -> None:
+        with self._lock:
+            if self._exchange_states[color] == state:
+                return
+            self._exchange_states[color] = state
+        self._publish_state()
 
     def _notify(self, client: Any, request: Any) -> bool:
         result = self._call_blocking(client, request)

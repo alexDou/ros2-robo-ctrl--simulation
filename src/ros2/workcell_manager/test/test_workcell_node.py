@@ -12,6 +12,7 @@ from robot_control_interfaces.srv import (
     CommitDrop,
     GetDropSlot,
     MarkGrasped,
+    ResetStation,
     SpawnObject,
 )
 from std_msgs.msg import Int32
@@ -78,11 +79,11 @@ def test_get_drop_slot_incremental_height():
             assert pytest.approx(out.drop_coords.z) == k * STACK_STEP_M
             assert node.inventory == k + 1
             assert node.tower_count == k + 1
-        # The 10th commit lands on the top slot, then the tower empties.
+        # The 10th commit lands on the top slot and the Pallet stays FULL.
         out = _full_cycle(node)
         assert out.slot_index == PALLET_CAPACITY - 1
-        assert node.inventory == 0
-        assert node.tower_count == 0
+        assert node.inventory == PALLET_CAPACITY
+        assert node.tower_count == PALLET_CAPACITY
     finally:
         node.destroy_node()
 
@@ -120,36 +121,81 @@ def test_get_drop_slot_custom_tower_elevation():
         node.destroy_node()
 
 
-def test_get_drop_slot_tenth_commit_empties_tower():
+def test_tenth_commit_marks_the_pallet_full_and_does_not_empty_it():
     node = WorkcellNode()
     try:
         for _ in range(PALLET_CAPACITY - 1):
-            _full_cycle(node)
+            out = _full_cycle(node)
+            assert out.overflow_occurred is False
         assert node.inventory == PALLET_CAPACITY - 1
 
-        node.handle_spawn_object(
-            SpawnObject.Request(
-                coords=Point(x=0.50, y=0.20, z=0.0), object_type="GEAR", color="WHITE", intact=True
-            ),
-            SpawnObject.Response(),
-        )
-        node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
-        out10 = node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
+        out10 = _full_cycle(node, x=0.50, y=0.20)
 
-        # The 10th gear still drops on the top slot, then the tower empties.
+        # The 10th gear drops on the top slot and the Pallet is FULL until ResetStation.
         assert out10.overflow_occurred is True
         assert out10.slot_index == PALLET_CAPACITY - 1
         assert pytest.approx(out10.drop_coords.x) == WHITE_TOWER[0]
         assert pytest.approx(out10.drop_coords.y) == WHITE_TOWER[1]
         assert pytest.approx(out10.drop_coords.z) == (PALLET_CAPACITY - 1) * STACK_STEP_M
-        assert node.inventory == 0
-        assert node.tower_count == 0
+        assert node.inventory == PALLET_CAPACITY
+        assert node.tower_count == PALLET_CAPACITY
+    finally:
+        node.destroy_node()
 
-        # Next gear starts a fresh stack.
-        out11 = _full_cycle(node)
-        assert out11.slot_index == 0
-        assert out11.overflow_occurred is False
+
+def test_reset_station_empties_the_pallet_and_the_next_gear_starts_a_fresh_stack():
+    node = WorkcellNode()
+    try:
+        for _ in range(PALLET_CAPACITY):
+            _full_cycle(node)
+
+        res = node.handle_reset_station(
+            ResetStation.Request(station="WHITE"), ResetStation.Response()
+        )
+
+        assert res.success is True
+        assert node.inventory == 0
+        out = _full_cycle(node)
+        assert out.slot_index == 0
+        assert out.overflow_occurred is False
         assert node.tower_count == 1
+    finally:
+        node.destroy_node()
+
+
+def test_reset_station_zeroes_only_that_colour():
+    node = WorkcellNode()
+    try:
+        for color, n in (("WHITE", 10), ("GREEN", 4), ("BLUE", 7)):
+            for _ in range(n):
+                _full_cycle(node, color=color)
+        _full_cycle(node, color="WHITE", intact=False)  # a ScrapBin gear is not on any Pallet
+
+        node.handle_reset_station(ResetStation.Request(station="GREEN"), ResetStation.Response())
+
+        snapshot = node.get_snapshot()
+        by_color = {c: 0 for c in ("WHITE", "GREEN", "BLUE")}
+        for e in snapshot["processed"]:
+            if e["intact"]:
+                by_color[e["color"]] += 1
+        assert by_color == {"WHITE": 10, "GREEN": 0, "BLUE": 7}
+        assert node.bin_count == 1
+    finally:
+        node.destroy_node()
+
+
+@pytest.mark.parametrize("station", ["", "SCRAP", "RED", "white"])
+def test_reset_station_rejects_anything_but_a_pallet_colour(station):
+    node = WorkcellNode()
+    try:
+        _full_cycle(node)
+
+        res = node.handle_reset_station(
+            ResetStation.Request(station=station), ResetStation.Response()
+        )
+
+        assert res.success is False
+        assert node.inventory == 1
     finally:
         node.destroy_node()
 

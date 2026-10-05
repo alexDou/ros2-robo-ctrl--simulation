@@ -15,6 +15,7 @@ from robot_control_interfaces.srv import (
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
+    ResetStation,
     ScrapRejected,
     SpawnObject,
 )
@@ -78,6 +79,9 @@ class WorkcellNode(Node):
         )
         self._scrap_rejected_srv = self.create_service(
             ScrapRejected, "workcell/scrap_rejected", self.handle_scrap_rejected
+        )
+        self._reset_station_srv = self.create_service(
+            ResetStation, "workcell/reset_station", self.handle_reset_station
         )
         self._mark_grasped_srv = self.create_service(
             MarkGrasped, "workcell/mark_grasped", self.handle_mark_grasped
@@ -454,6 +458,36 @@ class WorkcellNode(Node):
         response.message = f"{len(ids)} Rejected -> Scrapped"
         return response
 
+    def handle_reset_station(
+        self, request: ResetStation.Request, response: ResetStation.Response
+    ) -> ResetStation.Response:
+        """A PalletExchange finished: empties that colour's Pallet, siblings and ScrapBin untouched."""
+        color = str(request.station)
+        if color not in VALID_GEAR_COLORS:
+            response.success = False
+            response.message = f"Unknown PalletStation '{color}'"
+            self.get_logger().warning(f"Rejecting reset_station: {response.message}")
+            return response
+        with self._lock:
+            base = self._destination_for(color, True)[0]
+            before = len(self._processed)
+            self._processed = [
+                e
+                for e in self._processed
+                if not (
+                    e.get("color", DEFAULT_GEAR_COLOR) == color
+                    and e.get("intact", True)
+                    and (e["x"], e["y"]) == (base[0], base[1])
+                )
+            ]
+            removed = before - len(self._processed)
+            new_count = len(self._processed)
+        self._publish_state()
+        self.publish_inventory(new_count)
+        response.success = True
+        response.message = f"{color} Pallet reset ({removed} Gearwheels left with it)"
+        return response
+
     def handle_mark_grasped(
         self, request: MarkGrasped.Request, response: MarkGrasped.Response
     ) -> MarkGrasped.Response:
@@ -527,17 +561,8 @@ class WorkcellNode(Node):
             }
             self._processed.append(drop_entry)
             if not uncapped and fill + 1 >= self._max_capacity:
-                # Tower full: this commit empties it (siblings untouched).
+                # Pallet FULL: it stays until ResetStation (the exchange emptied it); no auto-empty.
                 overflow_occurred = True
-                self._processed = [
-                    e
-                    for e in self._processed
-                    if not (
-                        e.get("color", DEFAULT_GEAR_COLOR) == color
-                        and e.get("intact", True)
-                        and (e["x"], e["y"]) == (base[0], base[1])
-                    )
-                ]
             new_count = len(self._processed)
         self._publish_state()
         self.publish_inventory(new_count)
