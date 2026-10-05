@@ -23,6 +23,7 @@ import type { BeltGearsAssets } from '@/components/RobotVisualizer/assets/beltge
 import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
+import type { DisplayPanelAssets } from '@/components/RobotVisualizer/assets/panel';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import {
   createStage,
@@ -32,7 +33,7 @@ import {
 } from '@/components/RobotVisualizer/scene/stage';
 import { loadRobot } from '@/components/RobotVisualizer/scene/robot';
 import { disposeMaterial } from '@/utils/three/dispose';
-import { towerCounts } from '@/utils/towerCounts';
+import { binCount, towerCounts } from '@/utils/towerCounts';
 import { DECK_SIZE } from '@utils/conveyorGating';
 import {
   createSnapshotStore,
@@ -133,6 +134,7 @@ export function RobotVisualizer({
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
       null;
     let scrapBinAssets: ScrapBinProceduralAssets | null = null;
+    let displayPanelAssets: DisplayPanelAssets | null = null;
     let mountLink: THREE.Object3D | null = null;
     // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
     // id-keyed from buffer workcellState each frame: spawned -> mesh
@@ -155,6 +157,7 @@ export function RobotVisualizer({
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
     scrapBinAssets = stage.scrapBinAssets;
+    displayPanelAssets = stage.displayPanelAssets;
 
     // 3. Renderer instantiation
     let renderer: THREE.WebGLRenderer;
@@ -245,6 +248,7 @@ export function RobotVisualizer({
       getBeltGears: () => beltGearsAssets,
       getConveyorScroll: () => lastBeltScroll,
       getScrapBin: () => scrapBinAssets,
+      getDisplayPanel: () => displayPanelAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
     });
@@ -306,6 +310,20 @@ export function RobotVisualizer({
             : undefined,
         ).processed,
       );
+      if (displayPanelAssets) {
+        const ws = readSnapshot(
+          telemetryBufferRefProp.current?.current
+            ? { current: telemetryBufferRefProp.current.current }
+            : undefined,
+        );
+        const before = displayPanelAssets.getText().join('\n');
+        displayPanelAssets.setValues({
+          feederRemaining: hopperCountRef.current,
+          binCount: binCount(ws.scrapped, ws.processed),
+          palletCounts: nextCounts,
+        });
+        if (displayPanelAssets.getText().join('\n') !== before) needsRender = true;
+      }
       const prevCounts = towerCountsRef.current;
       if (GEAR_COLORS.some((c) => nextCounts[c] !== prevCounts[c])) {
         towerCountsRef.current = nextCounts;
@@ -401,6 +419,11 @@ export function RobotVisualizer({
       }
       spindleTowerAssets = null;
 
+      if (displayPanelAssets) {
+        displayPanelAssets.group.parent?.remove(displayPanelAssets.group);
+        displayPanelAssets.dispose();
+        displayPanelAssets = null;
+      }
       if (scrapBinAssets) {
         if (scrapBinAssets.group.parent) {
           scrapBinAssets.group.parent.remove(scrapBinAssets.group);

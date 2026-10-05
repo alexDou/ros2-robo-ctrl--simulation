@@ -38,6 +38,8 @@ export interface RobotVisualizerGlobalHandle {
   getSpindleBaseFlangeMesh: () => unknown;
   getSpindlePinMesh: () => unknown;
   getScrapBinMesh: () => unknown;
+  getDisplayPanelMesh: () => unknown;
+  getDisplayPanelText: () => string[];
   isScrapBinNonEmpty: () => boolean;
   getSnapshotGearCount: () => number;
   getSnapshotGearPosition: (

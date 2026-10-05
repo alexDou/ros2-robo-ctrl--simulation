@@ -7,3 +7,11 @@ export function towerCounts(processed: readonly GearEntry[]): Record<GearColor, 
   }
   return counts;
 }
+
+/** ScrapBin count: Scrapped Gearwheels, plus Flow A defectives booked straight to `processed`. */
+export function binCount(
+  scrapped: readonly GearEntry[] | undefined,
+  processed: readonly GearEntry[] | undefined,
+): number {
+  return (scrapped?.length ?? 0) + (processed ?? []).filter((e) => e.intact === false).length;
+}

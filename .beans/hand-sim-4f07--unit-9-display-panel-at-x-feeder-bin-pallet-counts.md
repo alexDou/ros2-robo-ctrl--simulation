@@ -1,13 +1,13 @@
 ---
 # hand-sim-4f07
 title: 'Unit 9.13: display panel at +X (feeder, bin, pallet counts)'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-05T16:09:40Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-q2ur
@@ -30,3 +30,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 
 - hand-sim-q2ur (11)
 - hand-sim-mt82 (12)
+
+Done: DISPLAY_PANEL schema constant (0.85, 0, 0), assets/panel.ts canvas-texture panel, driven by hopperCount (feeder), WorkcellState scrapped/processed (bin) and pallet counts. Screenshot-checked from default camera.
