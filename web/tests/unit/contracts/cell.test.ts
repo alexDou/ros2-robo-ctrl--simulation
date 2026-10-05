@@ -87,6 +87,30 @@ describe('Unit 9.05: cell commands and cell_state contracts', () => {
   });
 });
 
+describe('Unit 9.09: Rejected Gearwheels in WorkcellState (hand-sim-ull1)', () => {
+  const rejected = { id: 'belt-2', x: 0.4, y: 0.1, z: 0, color: 'BLUE', intact: false };
+  const event = (workcell_state: object) => ({
+    timestamp_ns: 1,
+    robot_state: 'IDLE',
+    joint_positions: [0, 0, 0, 0, 0, 0],
+    palm_state: { is_grasped: false },
+    workcell_state,
+  });
+
+  it('accepts a rejected bucket and stays optional', () => {
+    const buckets = { spawned: [], in_progress: [], processed: [] };
+    expect(isRobotTelemetryEvent(event({ ...buckets, rejected: [rejected] }))).toBe(true);
+    expect(isRobotTelemetryEvent(event(buckets))).toBe(true);
+  });
+
+  it('rejects a malformed rejected entry', () => {
+    const buckets = { spawned: [], in_progress: [], processed: [] };
+    expect(
+      isRobotTelemetryEvent(event({ ...buckets, rejected: [{ ...rejected, color: 'RED' }] })),
+    ).toBe(false);
+  });
+});
+
 describe('Unit 9.06: cell command factories (hand-sim-42d4)', () => {
   it('builds valid CELL_PROCESS and CELL_STOP commands with empty payloads', async () => {
     const { createCellFillCommand, createCellProcessCommand, createCellStopCommand } =

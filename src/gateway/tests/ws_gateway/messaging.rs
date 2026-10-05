@@ -110,6 +110,7 @@ async fn test_ws_end_to_end_messaging_and_session_lifecycle() {
             spawned: Vec::new(),
             in_progress: Vec::new(),
             processed: Vec::new(),
+            rejected: None,
             active_id: None,
         },
         phase: None,

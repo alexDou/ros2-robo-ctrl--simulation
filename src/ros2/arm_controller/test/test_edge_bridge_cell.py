@@ -18,8 +18,9 @@ from cell_devices.virtual_plc import VirtualPlcServer
 from cell_orchestrator.orchestrator_node import CellOrchestratorNode
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
+from workcell_manager.workcell_node import WorkcellNode
 
-from domain import CommandType, ConveyorStatus, RobotCommand, RobotState
+from domain import PICK_ZONE_Y_RANGE, CommandType, ConveyorStatus, RobotCommand, RobotState
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
 QUICK_FEEDER = FeederParams(cycle_s_range=(0.05, 0.1), emptying_s=0.0)
@@ -94,12 +95,14 @@ def edge(make_switch_server):
             ]
         ),
         CellOrchestratorNode(),
+        WorkcellNode(),
     ]
     for n in nodes:
         executor.add_node(n)
     node = _make_edge(executor, make_switch_server)
     _engage(executor, node)
     assert _wait_for(lambda: node._cell_process_client.service_is_ready())
+    node.workcell = nodes[-1]
     yield node, plc
     executor.shutdown()
     node.close()
@@ -149,6 +152,16 @@ def test_cell_process_runs_sim_belt_and_telemetry_reports_it(edge):
     cell = node.publish_telemetry().cell_state
     assert cell.belt_offset_m > 0.0
     assert 0 < cell.feeder_remaining < 100  # the feeder placed Gearwheels on the way
+    # the eye stop registered the Batch: every Gearwheel in the PickZone is pickable or Rejected
+    registered = {e["id"]: e["intact"] for e in node.workcell.spawned + node.workcell.rejected}
+    assert registered
+    assert all(
+        g.id in registered
+        for g in cell.belt_gears
+        if PICK_ZONE_Y_RANGE[0] <= g.y <= PICK_ZONE_Y_RANGE[1]
+    )
+    assert [e for e in node.workcell.spawned if not e["intact"]] == []
+    assert [e for e in node.workcell.rejected if e["intact"]] == []
     assert node.errors == []
 
 

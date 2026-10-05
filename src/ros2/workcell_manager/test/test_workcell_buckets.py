@@ -279,6 +279,7 @@ def test_heartbeat_publishes_snapshot_without_mutation():
             "spawned": [],
             "in_progress": [],
             "processed": [],
+            "rejected": [],
             "active_id": None,
         }
     finally:

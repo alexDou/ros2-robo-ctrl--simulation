@@ -76,6 +76,7 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
             color: GearColor::White,
             intact: true,
         }],
+        rejected: None,
         active_id: Some("gear-1".to_string()),
     };
     let event = RobotTelemetryEvent {

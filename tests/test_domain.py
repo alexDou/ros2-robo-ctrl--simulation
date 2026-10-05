@@ -824,3 +824,22 @@ def test_cell_state_is_optional_and_strict():
         CellState.model_validate(
             {"conveyor_status": "EMPTY", "feeder_remaining": 0, "belt_offset_m": 0.0, "x": 1}
         )
+
+
+def test_workcell_state_rejected_bucket_round_trips_and_is_optional():
+    entry = {"id": "belt-2", "x": 0.4, "y": 0.1, "z": 0.0, "color": "BLUE", "intact": False}
+    state = WorkcellState.model_validate(
+        {"spawned": [], "in_progress": [], "processed": [], "rejected": [entry]}
+    )
+    assert state.rejected[0].id == "belt-2"
+    assert WorkcellState.model_validate_json(state.model_dump_json()).rejected == state.rejected
+    assert WorkcellState(spawned=[], in_progress=[], processed=[]).rejected is None
+    with pytest.raises(ValidationError):
+        WorkcellState.model_validate(
+            {
+                "spawned": [],
+                "in_progress": [],
+                "processed": [],
+                "rejected": [{**entry, "color": "RED"}],
+            }
+        )

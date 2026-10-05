@@ -23,10 +23,11 @@ from robot_control_interfaces.srv import (
     ConveyorStop,
     FeederEnable,
     FeederFill,
+    RegisterGear,
 )
 from std_msgs.msg import String
 
-from domain import BeltGear, CellState, ConveyorStatus
+from domain import PICK_ZONE_Y_RANGE, BeltGear, CellState, ConveyorStatus
 
 _FILL_FROM = (ConveyorStatus.EMPTY,)
 _PROCESS_FROM = (
@@ -62,6 +63,9 @@ class CellOrchestratorNode(Node):
         )
         self._feeder_enable_client = self.create_client(
             FeederEnable, "feeder/enable", callback_group=group
+        )
+        self._register_client = self.create_client(
+            RegisterGear, "workcell/register_gear", callback_group=group
         )
         self.create_subscription(
             String, "feeder/status", self._on_feeder_status, 10, callback_group=group
@@ -178,11 +182,31 @@ class CellOrchestratorNode(Node):
     def _on_result(self, future: Any, run_id: int) -> None:
         result = future.result().result
         if result.success and result.stop_reason == "STOPPED_AT_EYE":
-            self._finish_run(run_id, ConveyorStatus.HALTED)
+            registered = self._register_batch(run_id)
+            self._finish_run(run_id, ConveyorStatus.HALTED if registered else ConveyorStatus.FAULT)
         elif result.stop_reason == "STOPPED":
             self._finish_run(run_id, ConveyorStatus.STOPPED)
         else:
             self._finish_run(run_id, ConveyorStatus.FAULT)
+
+    def _register_batch(self, run_id: int) -> bool:
+        """Registers each Gearwheel in the PickZone with WorkcellNode, lead (most downstream) first.
+
+        WorkcellNode makes the intact ones pickable and the defective ones Rejected.
+        """
+        with self._lock:
+            if run_id != self._run_id:
+                return True
+            lo, hi = PICK_ZONE_Y_RANGE
+            batch = sorted((g for g in self._belt_gears if lo <= g.y <= hi), key=lambda g: g.y)
+        for gear in batch:
+            request = RegisterGear.Request(id=gear.id, color=gear.color.value, intact=gear.intact)
+            request.coords.x, request.coords.y = gear.x, gear.y
+            result = self._call_blocking(self._register_client, request)
+            if result is None or not result.success:
+                self.get_logger().error(f"WorkcellNode refused to register {gear.id}; cell FAULT")
+                return False
+        return True
 
     def _finish_run(self, run_id: int, status: ConveyorStatus) -> None:
         with self._lock:

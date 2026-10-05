@@ -1,0 +1,9 @@
+# Registers a Gearwheel seen at a stopped Conveyor. intact -> pickable (spawned); defective -> Rejected.
+# Idempotent per tracking id.
+string id
+geometry_msgs/Point coords
+string color
+bool intact
+---
+bool success
+string message

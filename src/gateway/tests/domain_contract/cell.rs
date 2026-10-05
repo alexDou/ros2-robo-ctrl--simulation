@@ -77,3 +77,25 @@ fn test_cell_state_round_trip_and_strictness() {
     )
     .is_err());
 }
+
+#[test]
+fn test_workcell_state_rejected_bucket_is_optional_and_strict() {
+    use gateway::domain::WorkcellState;
+    let entry = r#"{"id":"belt-2","x":0.4,"y":0.1,"z":0.0,"color":"BLUE","intact":false}"#;
+    let with = format!(r#"{{"spawned":[],"in_progress":[],"processed":[],"rejected":[{entry}]}}"#);
+    let state: WorkcellState = serde_json::from_str(&with).expect("rejected bucket");
+    assert_eq!(state.rejected.as_ref().map(Vec::len), Some(1));
+    let again = serde_json::to_string(&state).expect("serialize");
+    assert!(again.contains(r#""rejected":[{"id":"belt-2""#));
+
+    let without: WorkcellState =
+        serde_json::from_str(r#"{"spawned":[],"in_progress":[],"processed":[]}"#)
+            .expect("rejected is optional");
+    assert!(without.rejected.is_none());
+    assert!(!serde_json::to_string(&without)
+        .expect("serialize")
+        .contains("rejected"));
+
+    let bad = with.replace("BLUE", "RED");
+    assert!(serde_json::from_str::<WorkcellState>(&bad).is_err());
+}

@@ -14,6 +14,7 @@ from robot_control_interfaces.srv import (
     CommitDrop,
     GetDropSlot,
     MarkGrasped,
+    RegisterGear,
     SpawnObject,
 )
 from std_msgs.msg import Int32, String
@@ -53,6 +54,7 @@ class WorkcellNode(Node):
         self._spawned: dict[str, dict] = {}
         self._in_progress: dict[str, dict] = {}
         self._processed: list[dict] = []
+        self._rejected: dict[str, dict] = {}
 
         # Publisher for inventory count updates (compat: len(processed))
         self._inventory_pub = self.create_publisher(Int32, "workcell/inventory", 10)
@@ -68,6 +70,9 @@ class WorkcellNode(Node):
         )
         self._spawn_object_srv = self.create_service(
             SpawnObject, "workcell/spawn_object", self.handle_spawn_object
+        )
+        self._register_gear_srv = self.create_service(
+            RegisterGear, "workcell/register_gear", self.handle_register_gear
         )
         self._mark_grasped_srv = self.create_service(
             MarkGrasped, "workcell/mark_grasped", self.handle_mark_grasped
@@ -101,6 +106,12 @@ class WorkcellNode(Node):
         """Returns gears deposited at drop slots, in stack order."""
         with self._lock:
             return [dict(e) for e in self._processed]
+
+    @property
+    def rejected(self) -> list[dict]:
+        """Returns defective gears registered at a stopped Conveyor, still lying on the belt."""
+        with self._lock:
+            return [dict(e) for e in self._rejected.values()]
 
     @property
     def inventory(self) -> int:
@@ -148,6 +159,7 @@ class WorkcellNode(Node):
             "spawned": [dict(e) for e in self._spawned.values()],
             "in_progress": [dict(e) for e in self._in_progress.values()],
             "processed": [dict(e) for e in self._processed],
+            "rejected": [dict(e) for e in self._rejected.values()],
             "active_id": active_id,
         }
 
@@ -296,6 +308,7 @@ class WorkcellNode(Node):
             self._spawned.clear()
             self._in_progress.clear()
             self._processed.clear()
+            self._rejected.clear()
         self._publish_state()
         self.publish_inventory(0)
 
@@ -364,6 +377,43 @@ class WorkcellNode(Node):
         self.get_logger().info(
             f"Spawned gear {gear_id} at ({request.coords.x:.3f}, {request.coords.y:.3f}, {request.coords.z:.3f})"
         )
+        return response
+
+    def handle_register_gear(
+        self, request: RegisterGear.Request, response: RegisterGear.Response
+    ) -> RegisterGear.Response:
+        """Registers a belt gear at an eye stop: intact -> spawned (pickable), defective -> rejected."""
+        gear_id = str(request.id)
+        color = str(request.color)
+        cx, cy, cz = request.coords.x, request.coords.y, request.coords.z
+        if not gear_id:
+            response.message = "Missing gear id"
+        elif color not in VALID_GEAR_COLORS:
+            response.message = f"Invalid gear color '{color}'"
+        elif not (math.isfinite(cx) and math.isfinite(cy) and math.isfinite(cz)):
+            response.message = "Registration coordinates must be finite floats"
+        else:
+            entry = {
+                "id": gear_id,
+                "x": cx,
+                "y": cy,
+                "z": cz,
+                "color": color,
+                "intact": bool(request.intact),
+            }
+            with self._lock:
+                known = gear_id in self._spawned or gear_id in self._in_progress
+                known = known or gear_id in self._rejected
+                if not known:
+                    bucket = self._spawned if request.intact else self._rejected
+                    bucket[gear_id] = entry
+            if not known:
+                self._publish_state()
+            response.success = True
+            response.message = "Gear registered"
+            return response
+        response.success = False
+        self.get_logger().warning(f"Rejecting register_gear: {response.message}")
         return response
 
     def handle_mark_grasped(

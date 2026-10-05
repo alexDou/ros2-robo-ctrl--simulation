@@ -19,6 +19,7 @@ from robot_control_interfaces.srv import (
     ConveyorStop,
     FeederEnable,
     FeederFill,
+    RegisterGear,
 )
 from std_msgs.msg import String
 
@@ -103,6 +104,25 @@ class FakeFeeder:
         self.status_pub.publish(String(data=json.dumps({"state": state, "remaining": remaining})))
 
 
+class FakeWorkcell:
+    """Stands in for WorkcellNode: records every registration, like a stopped belt's Batch."""
+
+    def __init__(self, node) -> None:
+        self.registered: list[tuple[str, float, float, str, bool]] = []
+        self.ok = True
+        node.create_service(
+            RegisterGear,
+            "workcell/register_gear",
+            self._register,
+            callback_group=ReentrantCallbackGroup(),
+        )
+
+    def _register(self, req, res):
+        self.registered.append((req.id, req.coords.x, req.coords.y, req.color, req.intact))
+        res.success = self.ok
+        return res
+
+
 @pytest.fixture
 def cell():
     rclpy.init()
@@ -111,6 +131,7 @@ def cell():
     client = rclpy.create_node("orchestrator_test_client")
     fake = FakeConveyor(fake_node)
     fake.feeder = FakeFeeder(fake_node)
+    fake.workcell = FakeWorkcell(fake_node)
     fake.fill = client.create_client(CellFill, "cell/fill")
     states: list[CellState] = []
     client.create_subscription(
@@ -329,3 +350,58 @@ def test_belt_gears_follow_the_conveyor_tracking(cell):
 
     assert _wait(lambda: republished([gear], [gear]))
     assert _wait(lambda: republished([], []))
+
+
+def _belt_gear(gear_id, y, intact=True, color="GREEN", x=0.41):
+    return {"id": gear_id, "x": x, "y": y, "color": color, "intact": intact}
+
+
+def _run_to_eye(fake, states, process, gears):
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, gears)
+    assert _wait(lambda: states[-1].belt_gears and len(states[-1].belt_gears) == len(gears))
+    fake.release.set()
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.HALTED)
+
+
+def test_eye_stop_registers_the_batch_lead_first(cell):
+    fake, states, process, _ = cell
+    gears = [
+        _belt_gear("belt-3", 0.0),
+        _belt_gear("belt-1", -0.4, intact=False, color="BLUE"),
+        _belt_gear("belt-2", -0.2),
+        _belt_gear("belt-0", 0.8),  # upstream of the PickZone: not part of this Batch
+    ]
+
+    _run_to_eye(fake, states, process, gears)
+
+    assert fake.workcell.registered == [
+        ("belt-1", 0.41, -0.4, "BLUE", False),
+        ("belt-2", 0.41, -0.2, "GREEN", True),
+        ("belt-3", 0.41, 0.0, "GREEN", True),
+    ]
+    assert fake.goals == [ConveyorRun.Goal.RUN_TO_PICKZONE]  # registering moves no arm
+
+
+def test_nothing_is_registered_before_the_eye_stop(cell):
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(300.0, [_belt_gear("belt-1", 0.0)])
+    time.sleep(0.3)
+    assert fake.workcell.registered == []
+
+
+def test_failed_registration_faults_the_cell(cell):
+    fake, states, process, _ = cell
+    fake.workcell.ok = False
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, [_belt_gear("belt-1", 0.0)])
+    assert _wait(lambda: states[-1].belt_gears)
+    fake.release.set()
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)

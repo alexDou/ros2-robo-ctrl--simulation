@@ -388,6 +388,67 @@
             "additionalProperties": false
           }
         },
+        "rejected": {
+          "type": "array",
+          "description": "Defective Gearwheels registered at a stopped Conveyor: known not to be processed, still lying on the belt",
+          "items": {
+            "type": "object",
+            "title": "GearEntry",
+            "description": "Single gear with id and Cartesian coordinates in robot base frame",
+            "required": [
+              "id",
+              "x",
+              "y",
+              "z",
+              "color",
+              "intact"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Backend-assigned gear identifier, never cut"
+              },
+              "x": {
+                "type": "number",
+                "description": "Cartesian X in meters (REP-103 robot base frame)"
+              },
+              "y": {
+                "type": "number",
+                "description": "Cartesian Y in meters (REP-103 robot base frame)"
+              },
+              "z": {
+                "type": "number",
+                "description": "Cartesian Z in meters (REP-103 robot base frame)"
+              },
+              "origin_x": {
+                "type": "number",
+                "description": "Pick-place origin X in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_y": {
+                "type": "number",
+                "description": "Pick-place origin Y in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "origin_z": {
+                "type": "number",
+                "description": "Pick-place origin Z in meters (REP-103 robot base frame); absent on spawned entries"
+              },
+              "color": {
+                "type": "string",
+                "title": "GearColor",
+                "enum": ["WHITE", "GREEN", "BLUE"],
+                "description": "Gear color class routing to its spindle tower",
+                "x-constant-name": "VALID_GEAR_COLORS",
+                "x-constant-alias": "VALID_GEAR_COLORS"
+              },
+              "intact": {
+                "type": "boolean",
+                "description": "False if gear is defective and must route to scrap bin"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
         "active_id": {
           "type": "string",
           "description": "Optional id of the gear currently targeted"

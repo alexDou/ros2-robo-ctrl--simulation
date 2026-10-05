@@ -23,6 +23,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CellStop.srv"
   "srv/GetDropSlot.srv"
   "srv/ClearWorkspace.srv"
+  "srv/RegisterGear.srv"
   "srv/SpawnObject.srv"
   "srv/MarkGrasped.srv"
   "srv/CommitDrop.srv"

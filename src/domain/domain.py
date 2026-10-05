@@ -293,6 +293,7 @@ class WorkcellState(BaseModel):
     spawned: list[GearEntry] = Field(..., description="Gears resting on the workcell table awaiting pickup")
     in_progress: list[GearEntry] = Field(..., description="Gears currently grasped or in transit")
     processed: list[GearEntry] = Field(..., description="Gears deposited at drop slots")
+    rejected: Optional[list[GearEntry]] = Field(default=None, description="Defective Gearwheels registered at a stopped Conveyor: known not to be processed, still lying on the belt")
     active_id: Optional[str] = Field(default=None, description="Optional id of the gear currently targeted")
 
 

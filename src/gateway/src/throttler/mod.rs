@@ -69,6 +69,7 @@ impl Default for ThrottlerState {
                 spawned: Vec::new(),
                 in_progress: Vec::new(),
                 processed: Vec::new(),
+                rejected: None,
                 active_id: None,
             },
             current_cell_state: None,

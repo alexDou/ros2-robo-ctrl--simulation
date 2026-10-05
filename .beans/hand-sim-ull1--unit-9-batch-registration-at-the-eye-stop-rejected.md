@@ -1,13 +1,13 @@
 ---
 # hand-sim-ull1
 title: 'Unit 9.09: Batch registration at the eye stop (Rejected)'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-05T14:24:48Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-o9vg
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-o9vg (08)
+
+Added RegisterGear service (workcell/register_gear), WorkcellState.rejected (optional), orchestrator registers the PickZone Batch at the eye stop (registration failure -> FAULT). Tests: workcell, orchestrator, edge-bridge e2e, contract (py/rs/ts).
