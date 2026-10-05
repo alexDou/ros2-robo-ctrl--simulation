@@ -62,8 +62,8 @@ _OFFSET_PUBLISH_HZ = 5.0
 _SORT_POLL_S = 0.02
 _SORT_TIMEOUT_S = 120.0
 _EXCHANGE_TIMEOUT_S = 120.0
-_PALLET_COLORS = tuple(name.value for name in StationName)
-_BIN = "SCRAP"  # the ScrapBin station: same exchange machine, not a PalletStation
+_BIN = StationName.SCRAP.value  # the ScrapBin: same exchange machine, not a PalletStation
+_PALLET_COLORS = tuple(name.value for name in StationName if name.value != _BIN)
 
 
 @dataclass(frozen=True)
@@ -177,6 +177,13 @@ class CellOrchestratorNode(Node):
                         count=self._pallet_counts[color],
                     )
                     for color in _PALLET_COLORS
+                ]
+                + [
+                    StationStatus(
+                        name=StationName(_BIN),
+                        exchange_state=self._exchange_states[_BIN],
+                        count=self._scrapped_count,
+                    )
                 ],
             )
             self._published_belt = (self._belt_offset_m, self._visible_gears_locked())
@@ -217,8 +224,8 @@ class CellOrchestratorNode(Node):
             self.get_logger().warning("Ignoring malformed workcell/state", throttle_duration_sec=5)
             return
         with self._lock:
+            changed = (counts, scrapped) != (self._pallet_counts, self._scrapped_count)
             self._scrapped_count = scrapped
-            changed = counts != self._pallet_counts
             self._pallet_counts = counts
         if changed:
             self._publish_state()

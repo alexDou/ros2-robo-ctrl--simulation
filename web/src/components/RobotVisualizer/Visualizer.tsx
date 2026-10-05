@@ -24,7 +24,10 @@ import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
 import type { DisplayPanelAssets } from '@/components/RobotVisualizer/assets/panel';
-import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
+import {
+  BIN_WIDTH_X,
+  type ScrapBinProceduralAssets,
+} from '@/components/RobotVisualizer/assets/scrapbin';
 import {
   createStage,
   createRenderer,
@@ -41,6 +44,7 @@ import {
   type SnapshotStore,
 } from '@/components/RobotVisualizer/interaction/snapshot';
 import { createFrameState, stepFrame } from '@/components/RobotVisualizer/frame';
+import { createBinMotion } from '@/components/RobotVisualizer/interaction/binMotion';
 import { createPalletMotion } from '@/components/RobotVisualizer/interaction/palletMotion';
 import type { PalletLanesAssets } from '@/components/RobotVisualizer/assets/palletlanes';
 import {
@@ -160,6 +164,8 @@ export function RobotVisualizer({
       GREEN: SPINDLE_TOWERS.GREEN.x,
       BLUE: SPINDLE_TOWERS.BLUE.x,
     };
+    const binMotion = createBinMotion();
+    let lastBinPose = { offsetM: 0, tipRad: 0 };
     let lastPalletOffsets: Record<GearColor, number> = { WHITE: 0, GREEN: 0, BLUE: 0 };
     conveyorAssets = stage.conveyorAssets;
     hopperAssets = stage.hopperAssets;
@@ -311,6 +317,24 @@ export function RobotVisualizer({
         }
       }
       lastPalletOffsets = offsets;
+
+      // The ScrapBin slides toward +X and tips about its outer end, so that end stays on the slide.
+      const binPose = binMotion.update(
+        telemetryBufferRefProp.current?.current?.cellState?.stations,
+        performance.now(),
+      );
+      if (
+        scrapBinAssets &&
+        (binPose.offsetM !== lastBinPose.offsetM || binPose.tipRad !== lastBinPose.tipRad)
+      ) {
+        const outer = BIN_WIDTH_X / 2;
+        scrapBinAssets.group.position.x =
+          SCRAP_BIN_COORDS.x + binPose.offsetM + outer * (1 - Math.cos(binPose.tipRad));
+        scrapBinAssets.group.position.z = SCRAP_BIN_COORDS.z + outer * Math.sin(binPose.tipRad);
+        scrapBinAssets.group.rotation.y = binPose.tipRad;
+        needsRender = true;
+      }
+      lastBinPose = binPose;
 
       stepFrame({
         frame,

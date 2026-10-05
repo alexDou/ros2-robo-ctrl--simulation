@@ -835,11 +835,11 @@ def test_stop_lets_the_pallet_exchange_finish_but_starts_no_new_sortcycle(cell):
 def test_station_counts_follow_workcell_state(cell):
     fake, states, process, _ = cell
     assert _wait(lambda: states)
-    assert [st.name.value for st in states[-1].stations] == ["WHITE", "GREEN", "BLUE"]
+    assert [st.name.value for st in states[-1].stations] == ["WHITE", "GREEN", "BLUE", "SCRAP"]
 
-    fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 10, "BLUE": 0})
+    fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 10, "BLUE": 0}, scrapped=7)
 
-    assert _wait(lambda: [st.count for st in states[-1].stations] == [3, 10, 0])
+    assert _wait(lambda: [st.count for st in states[-1].stations] == [3, 10, 0, 7])
     fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 0, "BLUE": 0})
     assert _wait(lambda: _station(states, "GREEN").count == 0)
 

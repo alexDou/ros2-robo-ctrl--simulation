@@ -3,7 +3,7 @@ import { disposeMaterial } from '@/utils/three/dispose';
 import { SCRAP_BIN_COORDS } from '@/components/RobotVisualizer/constants';
 
 /** Footprint in meters: as wide as the belt (BELT_X_RANGE, 0.30 m) plus a margin each side. */
-const BIN_WIDTH_X = 0.34;
+export const BIN_WIDTH_X = 0.34;
 const BIN_DEPTH_Y = 0.1;
 const WALL_T = 0.006;
 

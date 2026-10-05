@@ -51,3 +51,11 @@ export const DISPLAY_PANEL_COORDS: SpindleTowerCoords = toCoords(DISPLAY_PANEL);
 
 export const BELT_CAPACITY: number = DOMAIN_BELT_CAPACITY;
 export { BELT_X_RANGE, BELT_Y_RANGE, PICK_ZONE_Y_RANGE };
+
+/** ScrapBin BinExchange: slides toward +X off-scene, tips at the outer end, returns (~8 s). */
+export const BIN_SLIDE_TRAVEL_M = 1.0;
+export const BIN_TIP_ANGLE_RAD = Math.PI / 2.5;
+export const BIN_LEAVE_MS = 3000;
+export const BIN_TIP_MS = 2000;
+export const BIN_UNTIP_MS = 1000;
+export const BIN_RETURN_MS = 3000;

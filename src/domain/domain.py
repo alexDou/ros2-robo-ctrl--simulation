@@ -85,11 +85,12 @@ class Color(str, Enum):
 
 
 class StationName(str, Enum):
-    """Station, named after the colour of its Pallet"""
+    """Station: a Pallet named after its colour, or the ScrapBin (SCRAP)"""
 
     WHITE = "WHITE"
     GREEN = "GREEN"
     BLUE = "BLUE"
+    SCRAP = "SCRAP"
 
 
 class ExchangeState(str, Enum):
@@ -335,9 +336,9 @@ class StationStatus(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    name: StationName = Field(..., description="Station, named after the colour of its Pallet")
+    name: StationName = Field(..., description="Station: a Pallet named after its colour, or the ScrapBin (SCRAP)")
     exchange_state: ExchangeState = Field(..., description="Exchange state machine position")
-    count: int = Field(..., ge=0, description="Gearwheels on the Pallet; PALLET_CAPACITY means FULL")
+    count: int = Field(..., ge=0, description="Gearwheels on the Pallet (PALLET_CAPACITY means FULL) or Scrapped in the ScrapBin")
 
 
 class CellState(BaseModel):

@@ -97,13 +97,14 @@ pub enum Color {
     Blue,
 }
 
-/// Station, named after the colour of its Pallet
+/// Station: a Pallet named after its colour, or the ScrapBin (SCRAP)
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum StationName {
     White,
     Green,
     Blue,
+    Scrap,
 }
 
 /// Exchange state machine position

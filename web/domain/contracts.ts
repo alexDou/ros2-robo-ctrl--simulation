@@ -202,17 +202,19 @@ export const colorSchema = ColorSchema;
 
 export type Color = z.infer<typeof ColorSchema>;
 
-/** Station, named after the colour of its Pallet */
+/** Station: a Pallet named after its colour, or the ScrapBin (SCRAP) */
 export const StationName = {
   WHITE: 'WHITE',
   GREEN: 'GREEN',
   BLUE: 'BLUE',
+  SCRAP: 'SCRAP',
 } as const;
 
 export const StationNameSchema = z.enum([
   'WHITE',
   'GREEN',
   'BLUE',
+  'SCRAP',
 ], { message: 'Invalid station name' });
 
 export const stationNameSchema = StationNameSchema;
