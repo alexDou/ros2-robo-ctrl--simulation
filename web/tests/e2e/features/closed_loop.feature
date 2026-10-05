@@ -94,7 +94,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the 3D robot model should be fully loaded in the WebGL scene
     When the operator clicks the "Fill" button
     And the operator clicks the "Process" button
-    Then the mock gateway should have received the seeded deck sorted Batch by Batch
+    Then the browser should have sent only cell intents to run the deck
     And the whole deck should be processed
     And every tower counter should read "0/10"
     And the scrap bin should turn red

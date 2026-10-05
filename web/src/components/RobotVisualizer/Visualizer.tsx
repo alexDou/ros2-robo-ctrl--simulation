@@ -33,7 +33,7 @@ import {
 import { loadRobot } from '@/components/RobotVisualizer/scene/robot';
 import { disposeMaterial } from '@/utils/three/dispose';
 import { towerCounts } from '@/utils/towerCounts';
-import { DECK_SIZE } from '@utils/conveyorController';
+import { DECK_SIZE } from '@utils/conveyorGating';
 import {
   createSnapshotStore,
   readSnapshot,

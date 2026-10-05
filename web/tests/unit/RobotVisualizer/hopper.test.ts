@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createHopper, HOPPER_FILL_HEIGHT } from '@/components/RobotVisualizer/assets/hopper';
-import { DECK_SIZE } from '@utils/conveyorController';
+import { DECK_SIZE } from '@utils/conveyorGating';
 
 describe('Unit 8.2a: FeedHopper fill level (hand-sim-n5lx)', () => {
   it('sits at the belt upstream end and starts empty', () => {

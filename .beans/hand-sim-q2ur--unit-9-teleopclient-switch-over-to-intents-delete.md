@@ -1,13 +1,13 @@
 ---
 # hand-sim-q2ur
 title: 'Unit 9.11: TeleopClient switch-over to intents (delete browser sequencer)'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-05T15:37:52Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-xhsn
@@ -29,3 +29,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-xhsn (10)
+
+Browser sequencer deleted; gating in conveyorGating.ts; E2E mock gained MockCell (CELL_* intents). Not done: Pallet scene rendering (no pallet state on the wire yet).

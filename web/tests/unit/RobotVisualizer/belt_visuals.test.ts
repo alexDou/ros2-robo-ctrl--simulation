@@ -7,15 +7,15 @@ describe('Unit 8.2b: belt visuals (hand-sim-fe63)', () => {
   it('belt gear meshes mirror the feeder gears and are removed when the belt empties', () => {
     const belt = createBeltGears();
     belt.sync([
-      { color: 'GREEN', intact: true, x: 0.3, y: 0.5 },
-      { color: 'BLUE', intact: false, x: 0.5, y: 0.3 },
+      { id: 'g1', color: 'GREEN', intact: true, x: 0.3, y: 0.5 },
+      { id: 'g2', color: 'BLUE', intact: false, x: 0.5, y: 0.3 },
     ]);
     expect(belt.group.children).toHaveLength(2);
     expect(belt.getPositions()).toEqual([
-      { x: 0.3, y: 0.5, z: 0, color: 'GREEN', intact: true },
-      { x: 0.5, y: 0.3, z: 0, color: 'BLUE', intact: false },
+      { id: 'g1', x: 0.3, y: 0.5, z: 0, color: 'GREEN', intact: true },
+      { id: 'g2', x: 0.5, y: 0.3, z: 0, color: 'BLUE', intact: false },
     ]);
-    belt.sync([{ color: 'GREEN', intact: true, x: 0.3, y: 0.4 }]);
+    belt.sync([{ id: 'g1', color: 'GREEN', intact: true, x: 0.3, y: 0.4 }]);
     expect(belt.group.children).toHaveLength(1);
     expect(belt.getPositions()[0].y).toBe(0.4);
     belt.sync([]);

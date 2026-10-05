@@ -26,10 +26,6 @@ export interface TeleopClientProps {
   rendererFactory?: (canvas: HTMLCanvasElement) => any;
   controlsFactory?: (camera: any, domElement: any) => any;
   jointPositionsRef?: { current: readonly number[] };
-  /** Unused since the deck moved to the cell controller; kept so test URLs with ?seed= still load. */
-  seed?: number;
-  /** Belt simulation speed-up for tests; 1 = real time. */
-  timeScale?: number;
 }
 
 export function TeleopClient({
@@ -60,7 +56,6 @@ export function TeleopClient({
     connectionState,
     conflictReason,
     logs,
-    hasActiveGear,
     actionProgress,
     errorBanner,
     connect,
@@ -256,9 +251,8 @@ export function TeleopClient({
           <OperatorToolbar
             robotState={effectiveRobotState ?? 'STANDBY'}
             connectionState={connectionState}
-            hasActiveGear={hasActiveGear || workcellHasGears}
+            hasActiveGear={workcellHasGears}
             conveyorStatus={conveyorStatus}
-            hopperCount={hopperCount}
             onExecutePose={executePose}
             onConnect={connect}
             onDisconnect={disconnect}

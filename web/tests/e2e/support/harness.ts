@@ -113,6 +113,10 @@ export class ServiceHarness {
     this.mockGateway?.setMotionSpeed(factor);
   }
 
+  public setDeckSeed(seed: number): void {
+    this.mockGateway?.setDeckSeed(seed);
+  }
+
   public reset(): void {
     this.mockGateway?.reset();
   }

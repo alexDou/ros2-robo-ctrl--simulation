@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { disposeMaterial } from '@/utils/three/dispose';
 import { BELT_X_RANGE } from '@/components/RobotVisualizer/constants';
-import { DECK_SIZE } from '@utils/conveyorController';
+import { DECK_SIZE } from '@utils/conveyorGating';
 
 export interface HopperProceduralAssets {
   group: THREE.Group;

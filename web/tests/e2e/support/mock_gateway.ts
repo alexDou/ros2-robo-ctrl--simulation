@@ -22,6 +22,7 @@ import {
   BIN_EXCHANGE_THRESHOLD,
 } from '../../../domain/contracts';
 import { PickAndPlaceTrajectoryGenerator, type WaypointStep } from './kinematics';
+import { MockCell } from './mock_cell';
 
 export interface GearClassification {
   color: GearColor;
@@ -117,6 +118,10 @@ export class MockGateway {
   private spawnCounter = 0;
   private receivedCommands: ReceivedCommand[] = [];
   private motionTiming: MotionTiming = { ...DEFAULT_MOTION_TIMING };
+  // Stand-in for cell_orchestrator: owns Fill / Process / Stop and sorts each Batch with the arm.
+  private cell = new MockCell();
+  private cellSpeed = 1;
+  private lastTickMs = Date.now();
 
   constructor(options: MockGatewayOptions = {}) {
     this.port = options.port ?? 8085;
@@ -176,6 +181,7 @@ export class MockGateway {
 
   /** Runs the simulated arm `factor` times faster than real time. */
   public setMotionSpeed(factor: number): void {
+    this.cellSpeed = factor;
     this.motionTiming = {
       pickStartMs: DEFAULT_MOTION_TIMING.pickStartMs / factor,
       pickStepMs: DEFAULT_MOTION_TIMING.pickStepMs / factor,
@@ -184,8 +190,16 @@ export class MockGateway {
     };
   }
 
+  /** Seed for the deck the next CELL_FILL loads. */
+  public setDeckSeed(seed: number): void {
+    this.cell.setSeed(seed);
+  }
+
   public reset(): void {
     this.receivedCommands = [];
+    this.cellSpeed = 1;
+    this.cell.setSeed(1);
+    this.cell.reset();
     this.motionTiming = { ...DEFAULT_MOTION_TIMING };
     this.cancelTrajectory();
     if (this.palmTimeout) {
@@ -465,6 +479,7 @@ export class MockGateway {
           clearTimeout(this.palmTimeout);
           this.palmTimeout = null;
         }
+        this.cell.reset();
         this.robotState = 'FAULT';
         this.sendTelemetryToAll(cmd.command_id);
         break;
@@ -472,6 +487,7 @@ export class MockGateway {
 
       case 'RESET_FAULT': {
         this.log('[EDGE] Received RESET_FAULT command');
+        this.cell.reset();
         this.cancelTrajectory();
         this.robotState = 'IDLE';
         this.sendTelemetryToAll(cmd.command_id);
@@ -565,6 +581,17 @@ export class MockGateway {
         break;
       }
 
+      case 'CELL_FILL':
+      case 'CELL_PROCESS':
+      case 'CELL_STOP': {
+        if (cmd.type === 'CELL_FILL') this.cell.fill();
+        else if (cmd.type === 'CELL_PROCESS') this.cell.process();
+        else this.cell.stop();
+        this.log(`[EDGE] ${cmd.type} -> ${this.cell.getStatus()}`);
+        this.sendTelemetryToAll(cmd.command_id);
+        break;
+      }
+
       case 'CLEAR_WORKSPACE': {
         // Like the real edge, only EXECUTING refuses; FAULT and connect-time resets must land.
         this.spawned = [];
@@ -572,6 +599,7 @@ export class MockGateway {
         this.processed = [];
         this.activeId = null;
         this.inferenceMetrics = null;
+        this.cell.reset();
         this.cancelTrajectory();
         this.log(`[EDGE] Workspace cleared for command ${cmd.command_id || ''}`);
         this.sendTelemetryToAll(cmd.command_id);
@@ -791,7 +819,39 @@ export class MockGateway {
     }, 33);
   }
 
+  /** Belt motion and, once the belt is halted, the arm sorting the Batch gear by gear. */
+  private tickCell(): void {
+    const now = Date.now();
+    const dt = (now - this.lastTickMs) / 1000;
+    this.lastTickMs = now;
+    this.cell.step(dt * this.cellSpeed);
+    if (this.cell.getStatus() !== 'HALTED') return;
+    if (this.robotState !== 'IDLE' || this.pnpExecuting) return;
+    const gear = this.cell.takeNext();
+    if (!gear) {
+      this.cell.batchSorted();
+      return;
+    }
+    this.spawnCounter += 1;
+    const id = `gear-cell-${this.spawnCounter}`;
+    if (!gear.intact) {
+      this.bookScrap(id, gear.color);
+      return;
+    }
+    const cls = { color: gear.color, intact: gear.intact };
+    this.spawned = [{ id, x: gear.x, y: gear.y, z: 0, color: gear.color, intact: true }];
+    this.inProgress = [];
+    this.activeId = id;
+    this.inferenceMetrics = {
+      latency_ms: 0,
+      confidence: 1,
+      detected_object: this.inferenceLabel(cls.color, cls.intact),
+    };
+    this.executePickAndPlaceSequence(undefined, id, gear.x, gear.y, 0, cls);
+  }
+
   private tick(): void {
+    this.tickCell();
     if (this.robotState === 'FAULT') {
       // Safety invariant: all motion frozen in FAULT state
       this.sendTelemetryToAll();
@@ -854,6 +914,7 @@ export class MockGateway {
       palm_state: { ...this.palmState },
       inference_metrics: this.inferenceMetrics ? { ...this.inferenceMetrics } : null,
       command_id: commandId ?? null,
+      cell_state: this.cell.snapshot(),
       workcell_state: {
         spawned: [...this.spawned],
         in_progress: [...this.inProgress],

@@ -14,9 +14,6 @@ export interface ICustomWorld extends World {
   harness: ServiceHarness;
   baseUrl: string;
   _preResetJoints?: Record<string, number>;
-  /** Query knobs for the app under test: deck/belt seed and belt time scale. */
-  deckSeed?: number;
-  timeScale?: number;
 }
 
 export class CustomWorld extends World implements ICustomWorld {
@@ -30,8 +27,6 @@ export class CustomWorld extends World implements ICustomWorld {
   harness: ServiceHarness;
   baseUrl: string;
   _preResetJoints?: Record<string, number>;
-  deckSeed?: number;
-  timeScale?: number;
 
   constructor(options: IWorldOptions) {
     super(options);

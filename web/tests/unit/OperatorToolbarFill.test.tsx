@@ -1,13 +1,12 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/preact';
 import { OperatorToolbar } from '@components/OperatorToolbar';
-import { DECK_SIZE, type ConveyorStatus } from '@utils/conveyorController';
+import type { ConveyorStatus } from '@utils/conveyorGating';
 
 function renderToolbar(
   status: ConveyorStatus,
   onFill = vi.fn(),
   onProcess = vi.fn(),
-  hopperCount = DECK_SIZE,
   onStop = vi.fn(),
 ) {
   render(
@@ -16,7 +15,6 @@ function renderToolbar(
       connectionState="CONNECTED"
       hasActiveGear={false}
       conveyorStatus={status}
-      hopperCount={hopperCount}
       onExecutePose={vi.fn()}
       onConnect={vi.fn()}
       onDisconnect={vi.fn()}
@@ -40,11 +38,6 @@ describe('Unit 8.2a: Fill / Process gating by ConveyorStatus (hand-sim-n5lx)', (
     expect(onFill).toHaveBeenCalledOnce();
   });
 
-  it('LOADED but hopper not full: Process disabled (it runs the whole deck)', () => {
-    renderToolbar('LOADED', vi.fn(), vi.fn(), DECK_SIZE - 1);
-    expect((screen.getByTestId('process-button') as HTMLButtonElement).disabled).toBe(true);
-  });
-
   it('LOADED: Fill disabled, Process enabled', () => {
     renderToolbar('LOADED');
     expect((screen.getByTestId('fill-button') as HTMLButtonElement).disabled).toBe(true);
@@ -60,7 +53,7 @@ describe('Unit 8.2a: Fill / Process gating by ConveyorStatus (hand-sim-n5lx)', (
 
 describe('Unit 8.3a: Stop button gating (hand-sim-ywrn)', () => {
   it('Stop is enabled only while the belt runs, and calls onStop', () => {
-    const { onStop } = renderToolbar('FEEDING', vi.fn(), vi.fn(), 40);
+    const { onStop } = renderToolbar('FEEDING', vi.fn(), vi.fn());
     const stop = screen.getByTestId('stop-button') as HTMLButtonElement;
     expect(stop.disabled).toBe(false);
     fireEvent.click(stop);
@@ -68,9 +61,27 @@ describe('Unit 8.3a: Stop button gating (hand-sim-ywrn)', () => {
   });
 
   it('STOPPED: Fill stays disabled, Process enabled, Stop disabled', () => {
-    renderToolbar('STOPPED', vi.fn(), vi.fn(), 40);
+    renderToolbar('STOPPED', vi.fn(), vi.fn());
     expect((screen.getByTestId('fill-button') as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByTestId('process-button') as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByTestId('stop-button') as HTMLButtonElement).disabled).toBe(true);
+  });
+});
+
+describe('Unit 9.11: gating derives from cell_state alone (hand-sim-q2ur)', () => {
+  it.each([
+    ['EMPTY', { fill: true, process: false, stop: false }],
+    ['LOADED', { fill: false, process: true, stop: false }],
+    ['FEEDING', { fill: false, process: false, stop: true }],
+    ['HALTED', { fill: false, process: false, stop: true }],
+    ['STOPPED', { fill: false, process: true, stop: false }],
+  ] as const)('%s enables exactly the expected intents', (status, enabled) => {
+    renderToolbar(status);
+    const on = (id: string) => !(screen.getByTestId(id) as HTMLButtonElement).disabled;
+    expect({
+      fill: on('fill-button'),
+      process: on('process-button'),
+      stop: on('stop-button'),
+    }).toEqual(enabled);
   });
 });

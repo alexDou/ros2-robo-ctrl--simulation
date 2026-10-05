@@ -8,8 +8,6 @@ import {
   type RobotTelemetryEvent,
   type ErrorFrame,
   type RobotState,
-  type SpawnObjectPayload,
-  type PickAndPlaceTargetPayload,
 } from '@contracts';
 import {
   createPingCommand,
@@ -17,8 +15,6 @@ import {
   createPalmActuateCommand,
   createEmergencyStopCommand,
   createResetFaultCommand,
-  createSpawnObjectCommand,
-  createPickAndPlaceTargetCommand,
   createCellFillCommand,
   createCellProcessCommand,
   createCellStopCommand,
@@ -81,7 +77,6 @@ export function useTeleopSession({
   const [connectionState, setConnectionState] = useState<ConnectionState>('DISCONNECTED');
   const [conflictReason, setConflictReason] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [hasActiveGear, setHasActiveGear] = useState(false);
   const [actionProgress, setActionProgress] = useState<ActionProgress | null>(null);
   const [errorBanner, setErrorBanner] = useState<ErrorBannerInfo | null>(null);
   const [hasEverConnected, setHasEverConnected] = useState(false);
@@ -99,12 +94,10 @@ export function useTeleopSession({
       // Workcell-authority: gear truth lives in snapshot buckets, not the
       // session flag. Cycle end always clears the flag; Clear button state
       // derives from snapshot (see TeleopClient workcellHasGears).
-      setHasActiveGear(false);
     }
     if (prev !== 'FAULT' && current === 'FAULT' && wsRef.current?.readyState === WebSocket.OPEN) {
       // FAULT (incl. EmergencyStop) = full reset (Q17); the backend clear is not IDLE-gated.
       wsRef.current.send(serializeCommand(createClearWorkspaceCommand({ senderId: 'ui-client' })));
-      setHasActiveGear(false);
     }
     prevRobotStateRef.current = current;
   }, [robotState]);
@@ -269,34 +262,6 @@ export function useTeleopSession({
     wsRef.current.send(serializeCommand(cmd));
   }, []);
 
-  const spawnObject = useCallback(
-    (payload: SpawnObjectPayload) => {
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-      const currentRobotState = robotState ?? 'STANDBY';
-      if (currentRobotState !== 'IDLE') return;
-      // Block a second spawn before the snapshot echo.
-      // Workcell single-active reject is backend backstop; snapshot echo
-      // is the steady-state source of gear state.
-      if (hasActiveGear) return;
-      const cmd = createSpawnObjectCommand(payload, { senderId: 'ui-client' });
-      wsRef.current.send(serializeCommand(cmd));
-      setHasActiveGear(true);
-      setActionProgress(null);
-    },
-    [robotState, hasActiveGear],
-  );
-
-  const pickAndPlace = useCallback(
-    (payload: PickAndPlaceTargetPayload) => {
-      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
-      if ((robotState ?? 'STANDBY') !== 'IDLE') return;
-      const cmd = createPickAndPlaceTargetCommand(payload, { senderId: 'ui-client' });
-      wsRef.current.send(serializeCommand(cmd));
-      setActionProgress(null);
-    },
-    [robotState],
-  );
-
   const cellFill = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     wsRef.current.send(serializeCommand(createCellFillCommand({ senderId: 'ui-client' })));
@@ -321,7 +286,6 @@ export function useTeleopSession({
     setActionProgress(null);
     const cmd = createClearWorkspaceCommand({ senderId: 'ui-client' });
     wsRef.current.send(serializeCommand(cmd));
-    setHasActiveGear(false);
   }, [robotState]);
 
   const pushProbeLog = useCallback((status: string, detail: string) => {
@@ -363,7 +327,6 @@ export function useTeleopSession({
     connectionState,
     conflictReason,
     logs,
-    hasActiveGear,
     actionProgress,
     errorBanner,
     hasEverConnected,
@@ -376,8 +339,6 @@ export function useTeleopSession({
     cellProcess,
     cellStop,
     resetFault,
-    spawnObject,
-    pickAndPlace,
     clearWorkspace,
     sendPing,
     pushProbeLog,

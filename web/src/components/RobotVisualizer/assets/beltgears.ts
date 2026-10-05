@@ -5,7 +5,7 @@ import {
   setGearwheelIntact,
   type GearwheelProceduralAssets,
 } from '@/components/RobotVisualizer/assets/gear';
-import type { BeltGear } from '@utils/beltFeeder';
+import type { BeltGear } from '@contracts';
 
 /** A belt gear as rendered: its classification and mesh position (belt top is Z = 0). */
 export type BeltGearPosition = BeltGear & { z: number };
