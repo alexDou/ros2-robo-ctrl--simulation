@@ -48,10 +48,17 @@ describe('Unit 9.05: cell commands and cell_state contracts', () => {
     expect(ConveyorStatus.FEEDING).toBe('FEEDING');
     expect(ConveyorStatusSchema.parse('RESETTING')).toBe('RESETTING');
     expect(() => ConveyorStatusSchema.parse('BOGUS')).toThrow();
-    const state = { conveyor_status: 'FEEDING', feeder_remaining: 100, belt_offset_m: 0.25 };
+    const gear = { id: 'belt-1', x: 0.4, y: 0.5, color: 'GREEN', intact: false };
+    const state = {
+      conveyor_status: 'FEEDING',
+      feeder_remaining: 100,
+      belt_offset_m: 0.25,
+      belt_gears: [gear],
+    };
     expect(parseCellState(state)).toEqual(state);
     expect(isCellState({ conveyor_status: 'EMPTY' })).toBe(false);
     expect(isCellState({ ...state, rogue: 1 })).toBe(false);
+    expect(isCellState({ ...state, belt_gears: [{ ...gear, color: 'RED' }] })).toBe(false);
   });
 
   it('carries cell_state as an optional telemetry field', () => {
@@ -66,7 +73,12 @@ describe('Unit 9.05: cell commands and cell_state contracts', () => {
     expect(
       isRobotTelemetryEvent({
         ...base,
-        cell_state: { conveyor_status: 'HALTED', feeder_remaining: 12, belt_offset_m: 1.5 },
+        cell_state: {
+          conveyor_status: 'HALTED',
+          belt_gears: [],
+          feeder_remaining: 12,
+          belt_offset_m: 1.5,
+        },
       }),
     ).toBe(true);
     expect(isRobotTelemetryEvent({ ...base, cell_state: { conveyor_status: 'BOGUS' } })).toBe(

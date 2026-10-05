@@ -1,5 +1,6 @@
 """ConveyorNode: ConveyorRun action + ConveyorStop service against an in-process virtual_plc."""
 
+import json
 import socket
 import threading
 import time
@@ -15,6 +16,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
 from robot_control_interfaces.action import ConveyorRun
 from robot_control_interfaces.srv import ConveyorStop
+from std_msgs.msg import String
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
 TIMEOUT = 10.0
@@ -127,3 +129,25 @@ def test_stop_service_ends_a_running_goal_as_stopped(cell):
     assert done.wait(TIMEOUT)
     result = box["result"].result
     assert (result.success, result.stop_reason) == (False, "STOPPED")
+
+
+def test_status_carries_gears_tracked_from_placement_records(cell):
+    plc, _, _ = cell
+    probe = rclpy.create_node("belt_tracking_probe")
+    placement_pub = probe.create_publisher(String, "feeder/placement", 10)
+    seen: list[dict] = []
+    probe.create_subscription(
+        String, "conveyor/status", lambda m: seen.append(json.loads(m.data)), 10
+    )
+    record = {"seq": 1, "lateral_x_mm": 10, "encoder_mm": 0.0, "color": "BLUE", "intact": False}
+
+    deadline = time.monotonic() + TIMEOUT
+    while time.monotonic() < deadline and not any(s.get("gears") for s in seen):
+        placement_pub.publish(String(data=json.dumps(record)))
+        rclpy.spin_once(probe, timeout_sec=0.05)
+    probe.destroy_node()
+
+    gear = next(s["gears"] for s in seen if s.get("gears"))[0]
+    assert (gear["color"], gear["intact"]) == ("BLUE", False)
+    assert gear["x"] == pytest.approx(0.4 + 0.01)
+    assert gear["y"] == pytest.approx(0.85, abs=0.01)

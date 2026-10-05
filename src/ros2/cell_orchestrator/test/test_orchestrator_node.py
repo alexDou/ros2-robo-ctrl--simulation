@@ -65,10 +65,9 @@ class FakeConveyor:
         res.success = True
         return res
 
-    def publish_encoder(self, mm: float) -> None:
-        self.status_pub.publish(
-            String(data=json.dumps({"state": "RUNNING", "encoder_mm": mm, "exit_count_total": 0}))
-        )
+    def publish_encoder(self, mm: float, gears: list[dict] | None = None) -> None:
+        status = {"state": "RUNNING", "encoder_mm": mm, "exit_count_total": 0, "gears": gears or []}
+        self.status_pub.publish(String(data=json.dumps(status)))
 
 
 class FakeFeeder:
@@ -309,3 +308,15 @@ def test_feeder_remaining_follows_feeder_status(cell):
     fake.feeder.publish(87)
 
     assert _wait(lambda: states[-1].feeder_remaining == 87)
+
+
+def test_belt_gears_follow_the_conveyor_tracking(cell):
+    fake, states, _, _ = cell
+    gear = {"id": "belt-1", "x": 0.41, "y": 0.5, "color": "BLUE", "intact": False}
+
+    def republished(gears, expected):
+        fake.publish_encoder(100.0, gears)  # a first message can precede subscription matching
+        return bool(states) and [g.model_dump() for g in states[-1].belt_gears] == expected
+
+    assert _wait(lambda: republished([gear], [gear]))
+    assert _wait(lambda: republished([], []))

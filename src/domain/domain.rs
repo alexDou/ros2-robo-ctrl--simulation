@@ -88,6 +88,15 @@ pub enum ConveyorStatus {
     Resetting,
 }
 
+/// Mocked classification colour
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum Color {
+    White,
+    Green,
+    Blue,
+}
+
 /// Canonical UR5e 6-DoF joint names in kinematic sequence
 pub const UR5E_JOINTS: [&str; 6] = [
     "shoulder_pan_joint",
@@ -131,6 +140,9 @@ pub const BELT_Y_RANGE: [f64; 2] = [-0.66, 0.95];
 
 /// PickZone Y extent [min, max] in meters: the belt stretch the arm can reach at pick and approach heights
 pub const PICK_ZONE_Y_RANGE: [f64; 2] = [-0.51, 0.51];
+
+/// Belt surface speed in m/s while running (single preset; ramps live in the drive); the UI extrapolates belt travel at this rate
+pub const BELT_SPEED_M_S: f64 = 0.15;
 
 /// Maximum gears on the belt at once
 pub const BELT_CAPACITY: i64 = 10;
@@ -316,6 +328,17 @@ pub struct WorkcellState {
     pub active_id: Option<String>,
 }
 
+/// One Gearwheel on the belt in the REP-103 robot base frame
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct BeltGear {
+    pub id: String,
+    pub x: f64,
+    pub y: f64,
+    pub color: Color,
+    pub intact: bool,
+}
+
 /// Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -323,6 +346,7 @@ pub struct CellState {
     pub conveyor_status: ConveyorStatus,
     pub feeder_remaining: u64,
     pub belt_offset_m: f64,
+    pub belt_gears: Vec<BeltGear>,
 }
 
 /// Canonical schema for structured error frames returned by Gateway over WebSocket

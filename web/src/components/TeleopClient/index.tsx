@@ -5,7 +5,7 @@ import { useTelemetryStream } from '@/hooks/useTelemetryStream';
 import { useTeleopSession, type ConnectionState, type LogEntry } from '@/hooks/useTeleopSession';
 import { useIsDesktop } from '@/hooks/useIsDesktop';
 import { useConveyor } from '@/hooks/useConveyor';
-import { extrapolateBeltOffset } from '@utils/beltExtrapolation';
+import { extrapolateBeltGears, extrapolateBeltOffset } from '@utils/beltExtrapolation';
 import { ConnectionBadge } from '@components/ConnectionBadge';
 import { ConflictBanner } from '@components/ConflictBanner';
 import { ActionStatusRow } from '@components/ActionStatusRow';
@@ -102,6 +102,11 @@ export function TeleopClient({
   });
   const getBeltScroll = useCallback(
     () => extrapolateBeltOffset(bufferRef.current?.cellState ?? null, performance.now()),
+    [bufferRef],
+  );
+
+  const getBeltGears = useCallback(
+    () => extrapolateBeltGears(bufferRef.current?.cellState ?? null, performance.now()),
     [bufferRef],
   );
 
@@ -242,6 +247,7 @@ export function TeleopClient({
               robotState={effectiveRobotState ?? 'STANDBY'}
               hopperCount={hopperCount}
               getBeltScroll={getBeltScroll}
+              getBeltGears={getBeltGears}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
               style={{ width: '100%', height: '100%' }}

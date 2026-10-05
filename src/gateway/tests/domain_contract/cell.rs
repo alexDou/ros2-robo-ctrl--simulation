@@ -1,6 +1,6 @@
 use gateway::domain::{
-    CellFillPayload, CellProcessPayload, CellState, CellStopPayload, CommandType, ConveyorStatus,
-    RobotCommand,
+    BeltGear, CellFillPayload, CellProcessPayload, CellState, CellStopPayload, Color, CommandType,
+    ConveyorStatus, RobotCommand,
 };
 use serde_json::json;
 
@@ -51,6 +51,13 @@ fn test_cell_state_round_trip_and_strictness() {
         conveyor_status: ConveyorStatus::Feeding,
         feeder_remaining: 100,
         belt_offset_m: 0.25,
+        belt_gears: vec![BeltGear {
+            id: "belt-1".to_string(),
+            x: 0.4,
+            y: 0.5,
+            color: Color::Green,
+            intact: false,
+        }],
     };
     let text = serde_json::to_string(&state).expect("serialize CellState");
     assert!(text.contains(r#""conveyor_status":"FEEDING""#));
@@ -58,11 +65,15 @@ fn test_cell_state_round_trip_and_strictness() {
     assert_eq!(state, back);
 
     assert!(serde_json::from_str::<CellState>(
-        r#"{"conveyor_status":"BOGUS","feeder_remaining":0,"belt_offset_m":0.0}"#
+        r#"{"conveyor_status":"BOGUS","feeder_remaining":0,"belt_offset_m":0.0,"belt_gears":[]}"#
     )
     .is_err());
     assert!(serde_json::from_str::<CellState>(
-        r#"{"conveyor_status":"EMPTY","belt_offset_m":0.0}"#
+        r#"{"conveyor_status":"EMPTY","belt_offset_m":0.0,"belt_gears":[]}"#
+    )
+    .is_err());
+    assert!(serde_json::from_str::<CellState>(
+        r#"{"conveyor_status":"EMPTY","feeder_remaining":0,"belt_offset_m":0.0}"#
     )
     .is_err());
 }

@@ -1,13 +1,13 @@
 ---
 # hand-sim-o9vg
 title: 'Unit 9.08: belt tracking and Gearwheels riding the belt in the scene'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-05T13:49:35Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-w824
@@ -29,3 +29,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-w824 (07)
+
+Belt tracking in conveyor node (BeltTracker from placement records + encoder), cell_state.belt_gears, BELT_SPEED_M_S constant, scene gears follow cell_state with extrapolation. The existing hopper mesh at the upstream end is kept as the FlexFeeder visual (rename deferred to 9.4 scene work).

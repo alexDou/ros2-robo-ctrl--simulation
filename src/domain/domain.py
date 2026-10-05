@@ -76,6 +76,14 @@ class ConveyorStatus(str, Enum):
     RESETTING = "RESETTING"
 
 
+class Color(str, Enum):
+    """Mocked classification colour"""
+
+    WHITE = "WHITE"
+    GREEN = "GREEN"
+    BLUE = "BLUE"
+
+
 UR5E_JOINTS: list[str] = [
     "shoulder_pan_joint",
     "shoulder_lift_joint",
@@ -118,6 +126,8 @@ BELT_X_RANGE: list[float] = [0.25, 0.55]
 BELT_Y_RANGE: list[float] = [-0.66, 0.95]
 
 PICK_ZONE_Y_RANGE: list[float] = [-0.51, 0.51]
+
+BELT_SPEED_M_S: float = 0.15
 
 BELT_CAPACITY: int = 10
 
@@ -286,6 +296,18 @@ class WorkcellState(BaseModel):
     active_id: Optional[str] = Field(default=None, description="Optional id of the gear currently targeted")
 
 
+class BeltGear(BaseModel):
+    """One Gearwheel on the belt in the REP-103 robot base frame"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(..., min_length=1, description="Tracking identifier, unique per placement")
+    x: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian X in meters")
+    y: FiniteFloat = Field(..., allow_inf_nan=False, description="Cartesian Y in meters")
+    color: Color = Field(..., description="Mocked classification colour")
+    intact: bool = Field(...)
+
+
 class CellState(BaseModel):
     """Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel"""
 
@@ -294,6 +316,7 @@ class CellState(BaseModel):
     conveyor_status: ConveyorStatus = Field(..., description="Cell flow state machine position")
     feeder_remaining: int = Field(..., ge=0, description="Gearwheels still in the FlexFeeder deck")
     belt_offset_m: FiniteFloat = Field(..., allow_inf_nan=False, description="Belt travel in meters since the cell controller started counting; the UI extrapolates between updates")
+    belt_gears: list[BeltGear] = Field(..., description="Gearwheels lying on the belt, from belt tracking (placement records plus encoder travel); positions are as of the last report and the UI extrapolates")
 
 
 class ErrorFrame(BaseModel):

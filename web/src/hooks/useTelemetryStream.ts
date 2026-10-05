@@ -6,6 +6,7 @@ import {
   type RobotState,
   type GearEntry,
   type ConveyorStatus,
+  type BeltGear,
 } from '@contracts';
 
 export interface WorkcellSnapshot {
@@ -19,6 +20,7 @@ export interface WorkcellSnapshot {
 export interface CellStateSample {
   conveyorStatus: ConveyorStatus;
   beltOffsetM: number;
+  beltGears: BeltGear[];
   receivedAtMs: number;
 }
 
@@ -116,6 +118,7 @@ export function useTelemetryStream() {
       buf.cellState = {
         conveyorStatus: data.cell_state.conveyor_status,
         beltOffsetM: data.cell_state.belt_offset_m,
+        beltGears: data.cell_state.belt_gears,
         receivedAtMs: now,
       };
       setCellStatus(data.cell_state.conveyor_status);

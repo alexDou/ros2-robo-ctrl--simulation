@@ -185,6 +185,23 @@ export const conveyorStatusSchema = ConveyorStatusSchema;
 
 export type ConveyorStatus = z.infer<typeof ConveyorStatusSchema>;
 
+/** Mocked classification colour */
+export const Color = {
+  WHITE: 'WHITE',
+  GREEN: 'GREEN',
+  BLUE: 'BLUE',
+} as const;
+
+export const ColorSchema = z.enum([
+  'WHITE',
+  'GREEN',
+  'BLUE',
+], { message: 'Invalid color' });
+
+export const colorSchema = ColorSchema;
+
+export type Color = z.infer<typeof ColorSchema>;
+
 /** Canonical UR5e 6-DoF joint names in kinematic sequence */
 export const UR5E_JOINTS = [
   'shoulder_pan_joint',
@@ -232,6 +249,9 @@ export const BELT_Y_RANGE = [-0.66, 0.95] as const;
 
 /** PickZone Y extent [min, max] in meters: the belt stretch the arm can reach at pick and approach heights */
 export const PICK_ZONE_Y_RANGE = [-0.51, 0.51] as const;
+
+/** Belt surface speed in m/s while running (single preset; ramps live in the drive); the UI extrapolates belt travel at this rate */
+export const BELT_SPEED_M_S = 0.15 as const;
 
 /** Maximum gears on the belt at once */
 export const BELT_CAPACITY = 10 as const;
@@ -496,6 +516,23 @@ export const workcellStateSchema = WorkcellStateSchema;
 
 export type WorkcellState = z.infer<typeof rawWorkcellStateSchema>;
 
+/** One Gearwheel on the belt in the REP-103 robot base frame */
+export const rawBeltGearSchema = z.object(
+  {
+    id: z.string({ message: "Missing required field 'id'" }).min(1, { message: "Missing required field 'id'" }),
+    x: z.number({ message: "Field 'x' must be a number" }).refine(Number.isFinite, { message: "Field 'x' must be a finite number" }),
+    y: z.number({ message: "Field 'y' must be a number" }).refine(Number.isFinite, { message: "Field 'y' must be a finite number" }),
+    color: ColorSchema,
+    intact: z.boolean(),
+  },
+  { message: 'BeltGear payload must be an object' }
+).strict();
+
+export const BeltGearSchema = jsonInput.pipe(rawBeltGearSchema);
+export const beltGearSchema = BeltGearSchema;
+
+export type BeltGear = z.infer<typeof rawBeltGearSchema>;
+
 /** Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel */
 export const rawCellStateSchema = z.object(
   {
@@ -513,6 +550,7 @@ export const rawCellStateSchema = z.object(
       { message: "Field 'feeder_remaining' must be a non-negative integer" }
     ),
     belt_offset_m: z.number({ message: "Field 'belt_offset_m' must be a number" }).refine(Number.isFinite, { message: "Field 'belt_offset_m' must be a finite number" }),
+    belt_gears: z.array(beltGearSchema),
   },
   { message: 'CellState payload must be an object' }
 ).strict();
@@ -715,6 +753,14 @@ export function parseWorkcellState(input: unknown): WorkcellState {
 
 export function isWorkcellState(input: unknown): input is WorkcellState {
   return workcellStateSchema.safeParse(input).success;
+}
+
+export function parseBeltGear(input: unknown): BeltGear {
+  return unwrapZod<BeltGear>(beltGearSchema.safeParse(input));
+}
+
+export function isBeltGear(input: unknown): input is BeltGear {
+  return beltGearSchema.safeParse(input).success;
 }
 
 export function parseCellState(input: unknown): CellState {

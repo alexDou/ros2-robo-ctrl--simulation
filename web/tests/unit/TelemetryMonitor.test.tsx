@@ -4,6 +4,8 @@ import { TelemetryMonitor } from '@components/TelemetryMonitor';
 import { useTelemetryStream, type TelemetryBuffer } from '@/hooks/useTelemetryStream';
 import { CANONICAL_UR5E_JOINTS, RobotState, type RobotTelemetryEvent } from '@contracts';
 
+const GEAR = { id: 'belt-1', x: 0.4, y: 0.5, color: 'GREEN', intact: true };
+
 describe('TelemetryMonitor & useTelemetryStream', () => {
   let rafCallbacks: FrameRequestCallback[] = [];
   let originalRaf: typeof requestAnimationFrame;
@@ -164,6 +166,7 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
       conveyor_status: string;
       feeder_remaining: number;
       belt_offset_m: number;
+      belt_gears: unknown[];
     }) =>
       ({
         timestamp_ns: (BigInt(Date.now()) * 1_000_000n).toString(),
@@ -177,21 +180,33 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
     expect(hookResult.cellStatus).toBeNull();
     act(() => {
       hookResult.handleIncomingFrame(
-        frame({ conveyor_status: 'FEEDING', feeder_remaining: 100, belt_offset_m: 0.5 }),
+        frame({
+          conveyor_status: 'FEEDING',
+          feeder_remaining: 100,
+          belt_offset_m: 0.5,
+          belt_gears: [GEAR],
+        }),
       );
     });
     expect(hookResult.cellStatus).toBe('FEEDING');
     expect(hookResult.bufferRef.current.cellState).toMatchObject({
       conveyorStatus: 'FEEDING',
       beltOffsetM: 0.5,
+      beltGears: [GEAR],
     });
     const before = renders;
     act(() => {
       hookResult.handleIncomingFrame(
-        frame({ conveyor_status: 'FEEDING', feeder_remaining: 100, belt_offset_m: 0.6 }),
+        frame({
+          conveyor_status: 'FEEDING',
+          feeder_remaining: 100,
+          belt_offset_m: 0.6,
+          belt_gears: [],
+        }),
       );
     });
     expect(hookResult.bufferRef.current.cellState?.beltOffsetM).toBe(0.6);
+    expect(hookResult.bufferRef.current.cellState?.beltGears).toEqual([]);
     expect(renders).toBe(before); // offset updates are buffer-only
     // A frame without cell_state (sample-hold upstream) keeps the last one.
     act(() => {

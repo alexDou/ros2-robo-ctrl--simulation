@@ -1,7 +1,7 @@
 import type { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type * as THREE from 'three';
 import type { URDFRobot } from 'urdf-loader';
-import type { RobotState, GearEntry } from '@contracts';
+import type { RobotState, GearEntry, BeltGear } from '@contracts';
 
 export interface WorkcellSnapshotView {
   spawned: GearEntry[];
@@ -33,6 +33,8 @@ export interface RobotVisualizerProps {
   hopperCount?: number;
   /** Belt travel in meters (from cell_state, extrapolated); drives the belt surface animation. */
   getBeltScroll?: () => number;
+  /** Gearwheels lying on the belt (from cell_state, extrapolated); the scene mirrors them each frame. */
+  getBeltGears?: () => readonly BeltGear[];
   onRobotLoaded?: (robot: URDFRobot) => void;
   onSceneReady?: (
     scene: THREE.Scene,

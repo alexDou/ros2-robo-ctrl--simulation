@@ -14,8 +14,11 @@ from robot_control_interfaces.srv import ConveyorStop
 from std_msgs.msg import String
 
 from cell_devices.belt_sim import BeltParams
+from cell_devices.belt_tracking import BeltTracker
 from cell_devices.conveyor import ConveyorDevice, ConveyorStatus
+from cell_devices.feeder_sim import FeederParams
 from cell_devices.field_io import FieldIoError
+from cell_devices.flexfeeder import PlacementRecord
 from cell_devices.modbus_adapter import ModbusFieldIo
 from cell_devices.register_map import BeltState
 
@@ -37,9 +40,14 @@ class ConveyorNode(Node):
         self._io: ModbusFieldIo | None = None
         self._device: ConveyorDevice | None = None
         self._goal_active = False
+        # Tracking is fed by placement records (a topic, never a call into the feeder node).
+        self._tracker = BeltTracker(place_at_mm=FeederParams().place_at_mm)
 
         group = ReentrantCallbackGroup()
         self._status_pub = self.create_publisher(String, "conveyor/status", 10)
+        self.create_subscription(
+            String, "feeder/placement", self._on_placement, 50, callback_group=group
+        )
         self.create_timer(self._poll_period_s, self._poll, callback_group=group)
         self.create_service(ConveyorStop, "conveyor/stop", self._handle_stop, callback_group=group)
         self._action = ActionServer(
@@ -69,6 +77,24 @@ class ConveyorNode(Node):
             self._io.close()
         self._io = self._device = None
 
+    def _on_placement(self, msg: String) -> None:
+        try:
+            raw = json.loads(msg.data)
+            record = PlacementRecord(
+                seq=int(raw["seq"]),
+                lateral_x_mm=int(raw["lateral_x_mm"]),
+                encoder_mm=float(raw["encoder_mm"]),
+                color=str(raw["color"]),
+                intact=bool(raw["intact"]),
+            )
+        except (ValueError, KeyError, TypeError):
+            self.get_logger().warning(
+                "Ignoring malformed feeder/placement", throttle_duration_sec=5
+            )
+            return
+        with self._lock:
+            self._tracker.add(record)
+
     def _poll(self) -> ConveyorStatus | None:
         with self._lock:
             device = self._connected_device_locked()
@@ -79,6 +105,10 @@ class ConveyorNode(Node):
             except FieldIoError:
                 self._drop_connection_locked()
                 return None
+            gears = [
+                {"id": g.id, "x": g.x, "y": g.y, "color": g.color, "intact": g.intact}
+                for g in self._tracker.gears(status.encoder_mm)
+            ]
         self._status_pub.publish(
             String(
                 data=json.dumps(
@@ -86,6 +116,7 @@ class ConveyorNode(Node):
                         "state": status.state.name,
                         "encoder_mm": status.encoder_mm,
                         "exit_count_total": status.exit_count_total,
+                        "gears": gears,
                     }
                 )
             )

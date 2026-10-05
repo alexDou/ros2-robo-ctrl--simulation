@@ -7,7 +7,7 @@ its upstream end; the PickZone eye and the exit eye derive from the domain belt 
 from dataclasses import dataclass
 
 from cell_devices.register_map import BeltCmd, BeltState
-from domain import BELT_Y_RANGE, PICK_ZONE_Y_RANGE
+from domain import BELT_SPEED_M_S, BELT_Y_RANGE, PICK_ZONE_Y_RANGE
 
 _ENCODER_MOD = 2**32
 _COUNTER_MOD = 2**16
@@ -17,7 +17,7 @@ _COUNTER_MOD = 2**16
 class BeltParams:
     """Commissioning parameters; the operator never sets these."""
 
-    speed_mm_s: float = 150.0
+    speed_mm_s: float = BELT_SPEED_M_S * 1000.0
     accel_mm_s2: float = 300.0
     counts_per_mm: float = 10.0
     length_mm: float = (BELT_Y_RANGE[1] - BELT_Y_RANGE[0]) * 1000.0

@@ -26,7 +26,7 @@ from robot_control_interfaces.srv import (
 )
 from std_msgs.msg import String
 
-from domain import CellState, ConveyorStatus
+from domain import BeltGear, CellState, ConveyorStatus
 
 _FILL_FROM = (ConveyorStatus.EMPTY,)
 _PROCESS_FROM = (
@@ -48,7 +48,8 @@ class CellOrchestratorNode(Node):
         self._status = ConveyorStatus.EMPTY
         self._belt_offset_m = 0.0
         self._feeder_remaining = 0
-        self._published_offset_m: float | None = None
+        self._belt_gears: list[BeltGear] = []
+        self._published_belt: tuple[float, list[BeltGear]] | None = None
         # Bumped on every Process and Stop so a late result of an old goal is ignored.
         self._run_id = 0
 
@@ -80,8 +81,9 @@ class CellOrchestratorNode(Node):
                 conveyor_status=self._status,
                 feeder_remaining=self._feeder_remaining,
                 belt_offset_m=self._belt_offset_m,
+                belt_gears=self._belt_gears,
             )
-            self._published_offset_m = self._belt_offset_m
+            self._published_belt = (self._belt_offset_m, self._belt_gears)
         self._state_pub.publish(String(data=state.model_dump_json()))
 
     def _set_status(self, status: ConveyorStatus) -> None:
@@ -91,12 +93,15 @@ class CellOrchestratorNode(Node):
 
     def _on_conveyor_status(self, msg: String) -> None:
         try:
-            encoder_mm = float(json.loads(msg.data)["encoder_mm"])
+            raw = json.loads(msg.data)
+            encoder_mm = float(raw["encoder_mm"])
+            gears = [BeltGear(**g) for g in raw.get("gears", [])]
         except (ValueError, KeyError, TypeError):
             self.get_logger().warning("Ignoring malformed conveyor/status", throttle_duration_sec=5)
             return
         with self._lock:
             self._belt_offset_m = encoder_mm / 1000.0
+            self._belt_gears = gears
 
     def _on_feeder_status(self, msg: String) -> None:
         try:
@@ -112,7 +117,7 @@ class CellOrchestratorNode(Node):
 
     def _on_offset_timer(self) -> None:
         with self._lock:
-            changed = self._belt_offset_m != self._published_offset_m
+            changed = (self._belt_offset_m, self._belt_gears) != self._published_belt
         if changed:
             self._publish_state()
 

@@ -91,6 +91,7 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
             conveyor_status: gateway::domain::ConveyorStatus::Halted,
             feeder_remaining: 42,
             belt_offset_m: 0.75,
+            belt_gears: vec![],
         }),
     };
     let event_cell_state = event.cell_state.clone();

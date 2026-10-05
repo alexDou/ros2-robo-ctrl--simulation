@@ -53,6 +53,11 @@
       "value": [-0.51, 0.51],
       "description": "PickZone Y extent [min, max] in meters: the belt stretch the arm can reach at pick and approach heights"
     },
+    "BELT_SPEED_M_S": {
+      "type": "number",
+      "value": 0.15,
+      "description": "Belt surface speed in m/s while running (single preset; ramps live in the drive); the UI extrapolates belt travel at this rate"
+    },
     "BELT_CAPACITY": {
       "type": "integer",
       "value": 10,
@@ -397,7 +402,8 @@
       "required": [
         "conveyor_status",
         "feeder_remaining",
-        "belt_offset_m"
+        "belt_offset_m",
+        "belt_gears"
       ],
       "properties": {
         "conveyor_status": {
@@ -414,6 +420,24 @@
         "belt_offset_m": {
           "type": "number",
           "description": "Belt travel in meters since the cell controller started counting; the UI extrapolates between updates"
+        },
+        "belt_gears": {
+          "type": "array",
+          "description": "Gearwheels lying on the belt, from belt tracking (placement records plus encoder travel); positions are as of the last report and the UI extrapolates",
+          "items": {
+            "type": "object",
+            "title": "BeltGear",
+            "description": "One Gearwheel on the belt in the REP-103 robot base frame",
+            "required": ["id", "x", "y", "color", "intact"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1, "description": "Tracking identifier, unique per placement" },
+              "x": { "type": "number", "description": "Cartesian X in meters" },
+              "y": { "type": "number", "description": "Cartesian Y in meters" },
+              "color": { "type": "string", "enum": ["WHITE", "GREEN", "BLUE"], "description": "Mocked classification colour" },
+              "intact": { "type": "boolean", "description": "Mocked classification: false is defective" }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
