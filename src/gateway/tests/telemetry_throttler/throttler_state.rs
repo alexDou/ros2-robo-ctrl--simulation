@@ -89,6 +89,7 @@ async fn test_telemetry_throttler_preserves_workcell_snapshot_verbatim() {
         phase: Some("GRASPING".to_string()),
         cell_state: Some(gateway::domain::CellState {
             conveyor_status: gateway::domain::ConveyorStatus::Halted,
+            feeder_remaining: 42,
             belt_offset_m: 0.75,
         }),
     };

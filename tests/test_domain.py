@@ -783,10 +783,13 @@ def test_cell_state_round_trips_inside_telemetry():
         joint_positions=[0.0] * 6,
         palm_state=PalmState(is_grasped=False),
         workcell_state=WorkcellState(spawned=[], in_progress=[], processed=[]),
-        cell_state=CellState(conveyor_status=ConveyorStatus.FEEDING, belt_offset_m=0.25),
+        cell_state=CellState(
+            conveyor_status=ConveyorStatus.FEEDING, feeder_remaining=100, belt_offset_m=0.25
+        ),
     )
     restored = RobotTelemetryEvent.model_validate_json(event.model_dump_json(exclude_none=True))
     assert restored.cell_state.conveyor_status == ConveyorStatus.FEEDING
+    assert restored.cell_state.feeder_remaining == 100
     assert restored.cell_state.belt_offset_m == 0.25
 
 
@@ -800,8 +803,12 @@ def test_cell_state_is_optional_and_strict():
     }
     assert RobotTelemetryEvent.model_validate(base).cell_state is None
     with pytest.raises(ValidationError):
-        CellState.model_validate({"conveyor_status": "BOGUS", "belt_offset_m": 0.0})
+        CellState.model_validate(
+            {"conveyor_status": "BOGUS", "feeder_remaining": 0, "belt_offset_m": 0.0}
+        )
     with pytest.raises(ValidationError):
-        CellState.model_validate({"conveyor_status": "EMPTY"})
+        CellState.model_validate({"conveyor_status": "EMPTY", "belt_offset_m": 0.0})
     with pytest.raises(ValidationError):
-        CellState.model_validate({"conveyor_status": "EMPTY", "belt_offset_m": 0.0, "x": 1})
+        CellState.model_validate(
+            {"conveyor_status": "EMPTY", "feeder_remaining": 0, "belt_offset_m": 0.0, "x": 1}
+        )

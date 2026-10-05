@@ -396,6 +396,7 @@
       "description": "Conveyor cell snapshot owned by cell_orchestrator: flow status and belt travel",
       "required": [
         "conveyor_status",
+        "feeder_remaining",
         "belt_offset_m"
       ],
       "properties": {
@@ -404,6 +405,11 @@
           "title": "ConveyorStatus",
           "enum": ["EMPTY", "LOADED", "FEEDING", "HALTED", "STOPPED", "FAULT", "RESETTING"],
           "description": "Cell flow state machine position"
+        },
+        "feeder_remaining": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Gearwheels still in the FlexFeeder deck"
         },
         "belt_offset_m": {
           "type": "number",

@@ -10,7 +10,7 @@ Per Unit 6.5-Bugfix.2.1 (hand-sim-o5es) & Unit 6.5-Bugfix.2.2 (hand-sim-1h63):
 - Streams ActionFeedbackFrame to Zenoh on rt/arm_controller/pick_and_place/_action/feedback.
 - Dynamically reflects gripper/palm state (is_grasped) during GRASPING and RELEASING phases.
 - Bridges SPAWN_OBJECT and CLEAR_WORKSPACE commands to /workcell/spawn_object and /workcell/clear_workspace services.
-- Bridges CELL_PROCESS and CELL_STOP to /cell/process and /cell/stop; forwards /cell/state into telemetry.
+- Bridges CELL_FILL, CELL_PROCESS and CELL_STOP to /cell/fill, /cell/process and /cell/stop; forwards /cell/state into telemetry.
 - Implements non-blocking EMERGENCY_STOP (cancels trajectory & PickAndPlace, sets FAULT) and RESET_FAULT handling.
 - Emits RobotTelemetryEvent and ErrorFrame over Zenoh on robot/{id}/telemetry.
 """
@@ -28,6 +28,7 @@ from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from robot_control_interfaces.action import PickAndPlace
 from robot_control_interfaces.srv import (
+    CellFill,
     CellProcess,
     CellStop,
     ClearWorkspace,
@@ -109,6 +110,7 @@ class EdgeBridgeNode(
             "/workcell/commit_drop",
         )
         self.declare_parameter("cell_state_topic", "cell/state")
+        self.declare_parameter("cell_fill_service_name", "/cell/fill")
         self.declare_parameter("cell_process_service_name", "/cell/process")
         self.declare_parameter("cell_stop_service_name", "/cell/stop")
         self.declare_parameter("switch_service_name", "/controller_manager/switch_controller")
@@ -140,6 +142,7 @@ class EdgeBridgeNode(
         self._commit_drop_service_name = str(self.get_parameter("commit_drop_service_name").value)
 
         self._cell_state_topic = str(self.get_parameter("cell_state_topic").value)
+        self._cell_fill_service_name = str(self.get_parameter("cell_fill_service_name").value)
         self._cell_process_service_name = str(self.get_parameter("cell_process_service_name").value)
         self._cell_stop_service_name = str(self.get_parameter("cell_stop_service_name").value)
 
@@ -221,6 +224,12 @@ class EdgeBridgeNode(
             self._on_workcell_state,
             10,
             callback_group=self._telem_cb_group,
+        )
+
+        self._cell_fill_client = self.create_client(
+            CellFill,
+            self._cell_fill_service_name,
+            callback_group=self._cb_group,
         )
 
         self._cell_process_client = self.create_client(

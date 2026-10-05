@@ -128,6 +128,20 @@ export function createClearWorkspaceCommand(params?: {
   };
 }
 
+export function createCellFillCommand(params?: {
+  senderId?: string;
+  commandId?: string;
+  timestampNs?: bigint | number;
+}): RobotCommand {
+  return {
+    command_id: generateCommandId(params?.commandId),
+    sender_id: params?.senderId ?? 'teleop-ui',
+    timestamp_ns: getTimestampNs(params?.timestampNs),
+    type: CommandType.CELL_FILL,
+    payload: {},
+  };
+}
+
 export function createCellProcessCommand(params?: {
   senderId?: string;
   commandId?: string;

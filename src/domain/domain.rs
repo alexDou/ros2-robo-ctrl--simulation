@@ -59,6 +59,7 @@ pub enum CommandType {
     SpawnObject,
     ClearWorkspace,
     PickAndPlaceTarget,
+    CellFill,
     CellProcess,
     CellStop,
 }
@@ -230,6 +231,12 @@ pub struct SpawnObjectPayload {
     pub object_type: SpawnObjectType,
 }
 
+/// Typed payload for CELL_FILL command loading the FlexFeeder with a Gearwheel deck
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(deny_unknown_fields)]
+pub struct CellFillPayload {
+}
+
 /// Typed payload for CELL_PROCESS command starting or resuming the conveyor cell
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -314,6 +321,7 @@ pub struct WorkcellState {
 #[serde(deny_unknown_fields)]
 pub struct CellState {
     pub conveyor_status: ConveyorStatus,
+    pub feeder_remaining: u64,
     pub belt_offset_m: f64,
 }
 

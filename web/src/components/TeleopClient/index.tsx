@@ -26,7 +26,7 @@ export interface TeleopClientProps {
   rendererFactory?: (canvas: HTMLCanvasElement) => any;
   controlsFactory?: (camera: any, domElement: any) => any;
   jointPositionsRef?: { current: readonly number[] };
-  /** Deterministic deck and belt randomness (tests, E2E); defaults to the clock. */
+  /** Unused since the deck moved to the cell controller; kept so test URLs with ?seed= still load. */
   seed?: number;
   /** Belt simulation speed-up for tests; 1 = real time. */
   timeScale?: number;
@@ -40,7 +40,6 @@ export function TeleopClient({
   rendererFactory,
   controlsFactory,
   jointPositionsRef,
-  seed,
 }: TeleopClientProps) {
   const wsUrl = resolveGatewayWsUrl(robotId, gatewayWsUrl);
   const isDesktop = useIsDesktop();
@@ -52,6 +51,7 @@ export function TeleopClient({
     palmState,
     workcellVersion,
     cellStatus,
+    feederRemaining,
     handleIncomingFrame,
     resetStream,
   } = useTelemetryStream();
@@ -67,6 +67,7 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
+    cellFill,
     cellProcess,
     cellStop,
     clearWorkspace,
@@ -91,13 +92,13 @@ export function TeleopClient({
     (snap?.inProgress?.length ?? 0) > 0 ||
     (snap?.processed?.length ?? 0) > 0;
 
-  const { conveyorStatus, deck, handleFill, handleProcess, handleStop } = useConveyor({
+  const { conveyorStatus, hopperCount, handleFill, handleProcess, handleStop } = useConveyor({
     connected: connectionState === 'CONNECTED',
-    robotState,
     cellStatus,
+    feederRemaining,
+    cellFill,
     cellProcess,
     cellStop,
-    seed,
   });
   const getBeltScroll = useCallback(
     () => extrapolateBeltOffset(bufferRef.current?.cellState ?? null, performance.now()),
@@ -239,7 +240,7 @@ export function TeleopClient({
               telemetryBufferRef={bufferRef}
               jointPositionsRef={jointPositionsRef}
               robotState={effectiveRobotState ?? 'STANDBY'}
-              hopperCount={deck.length}
+              hopperCount={hopperCount}
               getBeltScroll={getBeltScroll}
               rendererFactory={rendererFactory}
               controlsFactory={controlsFactory}
@@ -251,7 +252,7 @@ export function TeleopClient({
             connectionState={connectionState}
             hasActiveGear={hasActiveGear || workcellHasGears}
             conveyorStatus={conveyorStatus}
-            hopperCount={deck.length}
+            hopperCount={hopperCount}
             onExecutePose={executePose}
             onConnect={connect}
             onDisconnect={disconnect}

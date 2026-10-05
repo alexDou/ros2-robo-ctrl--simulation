@@ -160,7 +160,11 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
       return <div>Test</div>;
     }
     render(<TestComponent />);
-    const frame = (cell?: { conveyor_status: string; belt_offset_m: number }) =>
+    const frame = (cell?: {
+      conveyor_status: string;
+      feeder_remaining: number;
+      belt_offset_m: number;
+    }) =>
       ({
         timestamp_ns: (BigInt(Date.now()) * 1_000_000n).toString(),
         robot_state: RobotState.IDLE,
@@ -172,7 +176,9 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
 
     expect(hookResult.cellStatus).toBeNull();
     act(() => {
-      hookResult.handleIncomingFrame(frame({ conveyor_status: 'FEEDING', belt_offset_m: 0.5 }));
+      hookResult.handleIncomingFrame(
+        frame({ conveyor_status: 'FEEDING', feeder_remaining: 100, belt_offset_m: 0.5 }),
+      );
     });
     expect(hookResult.cellStatus).toBe('FEEDING');
     expect(hookResult.bufferRef.current.cellState).toMatchObject({
@@ -181,7 +187,9 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
     });
     const before = renders;
     act(() => {
-      hookResult.handleIncomingFrame(frame({ conveyor_status: 'FEEDING', belt_offset_m: 0.6 }));
+      hookResult.handleIncomingFrame(
+        frame({ conveyor_status: 'FEEDING', feeder_remaining: 100, belt_offset_m: 0.6 }),
+      );
     });
     expect(hookResult.bufferRef.current.cellState?.beltOffsetM).toBe(0.6);
     expect(renders).toBe(before); // offset updates are buffer-only
@@ -190,7 +198,9 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
       hookResult.handleIncomingFrame(frame());
     });
     expect(hookResult.cellStatus).toBe('FEEDING');
+    expect(hookResult.feederRemaining).toBe(100);
     act(() => hookResult.resetStream());
+    expect(hookResult.feederRemaining).toBe(0);
     expect(hookResult.cellStatus).toBeNull();
     expect(hookResult.bufferRef.current.cellState).toBeNull();
   });

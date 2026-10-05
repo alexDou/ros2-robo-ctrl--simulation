@@ -113,6 +113,7 @@ export const CommandType = {
   SPAWN_OBJECT: 'SPAWN_OBJECT',
   CLEAR_WORKSPACE: 'CLEAR_WORKSPACE',
   PICK_AND_PLACE_TARGET: 'PICK_AND_PLACE_TARGET',
+  CELL_FILL: 'CELL_FILL',
   CELL_PROCESS: 'CELL_PROCESS',
   CELL_STOP: 'CELL_STOP',
 } as const;
@@ -129,6 +130,7 @@ export const CommandTypeSchema = z.enum([
   'SPAWN_OBJECT',
   'CLEAR_WORKSPACE',
   'PICK_AND_PLACE_TARGET',
+  'CELL_FILL',
   'CELL_PROCESS',
   'CELL_STOP',
 ], { message: 'Invalid command type' });
@@ -363,6 +365,18 @@ export const spawnObjectPayloadSchema = SpawnObjectPayloadSchema;
 
 export type SpawnObjectPayload = z.infer<typeof rawSpawnObjectPayloadSchema>;
 
+/** Typed payload for CELL_FILL command loading the FlexFeeder with a Gearwheel deck */
+export const rawCellFillPayloadSchema = z.object(
+  {
+  },
+  { message: 'CellFillPayload payload must be an object' }
+).strict();
+
+export const CellFillPayloadSchema = jsonInput.pipe(rawCellFillPayloadSchema);
+export const cellFillPayloadSchema = CellFillPayloadSchema;
+
+export type CellFillPayload = z.infer<typeof rawCellFillPayloadSchema>;
+
 /** Typed payload for CELL_PROCESS command starting or resuming the conveyor cell */
 export const rawCellProcessPayloadSchema = z.object(
   {
@@ -486,6 +500,18 @@ export type WorkcellState = z.infer<typeof rawWorkcellStateSchema>;
 export const rawCellStateSchema = z.object(
   {
     conveyor_status: ConveyorStatusSchema,
+    feeder_remaining: z.union([z.bigint(), z.number(), z.string()], { message: "Missing required field 'feeder_remaining'" }).refine(
+      (val) => {
+        try {
+          if (typeof val === 'number' && !Number.isFinite(val)) return false;
+          const num = typeof val === 'bigint' ? val : BigInt(typeof val === 'number' ? Math.floor(val) : String(val));
+          return num >= BigInt(0);
+        } catch {
+          return false;
+        }
+      },
+      { message: "Field 'feeder_remaining' must be a non-negative integer" }
+    ),
     belt_offset_m: z.number({ message: "Field 'belt_offset_m' must be a number" }).refine(Number.isFinite, { message: "Field 'belt_offset_m' must be a finite number" }),
   },
   { message: 'CellState payload must be an object' }
@@ -617,6 +643,14 @@ export function parseSpawnObjectPayload(input: unknown): SpawnObjectPayload {
 
 export function isSpawnObjectPayload(input: unknown): input is SpawnObjectPayload {
   return spawnObjectPayloadSchema.safeParse(input).success;
+}
+
+export function parseCellFillPayload(input: unknown): CellFillPayload {
+  return unwrapZod<CellFillPayload>(cellFillPayloadSchema.safeParse(input));
+}
+
+export function isCellFillPayload(input: unknown): input is CellFillPayload {
+  return cellFillPayloadSchema.safeParse(input).success;
 }
 
 export function parseCellProcessPayload(input: unknown): CellProcessPayload {

@@ -4,10 +4,17 @@ import math
 from typing import Any
 
 from geometry_msgs.msg import Point
-from robot_control_interfaces.srv import CellProcess, CellStop, ClearWorkspace, SpawnObject
+from robot_control_interfaces.srv import (
+    CellFill,
+    CellProcess,
+    CellStop,
+    ClearWorkspace,
+    SpawnObject,
+)
 
 from domain import (
     CANONICAL_POSES,
+    CellFillPayload,
     CellProcessPayload,
     CellStopPayload,
     ClearWorkspacePayload,
@@ -226,7 +233,7 @@ class EdgeBridgeCommandsMixin:
 
             return self.publish_telemetry(command_id=command.command_id)
 
-        if command.type in (CommandType.CELL_PROCESS, CommandType.CELL_STOP):
+        if command.type in (CommandType.CELL_FILL, CommandType.CELL_PROCESS, CommandType.CELL_STOP):
             return self._handle_cell_command(command)
 
         if command.type == CommandType.PICK_AND_PLACE_TARGET:
@@ -272,17 +279,24 @@ class EdgeBridgeCommandsMixin:
         return None
 
     def _handle_cell_command(self, command: RobotCommand) -> RobotTelemetryEvent | None:
-        """Maps CELL_PROCESS / CELL_STOP onto the cell_orchestrator services."""
-        is_process = command.type == CommandType.CELL_PROCESS
+        """Maps CELL_FILL / CELL_PROCESS / CELL_STOP onto the cell_orchestrator services."""
+        payload_model, client, request_type = {
+            CommandType.CELL_FILL: (CellFillPayload, self._cell_fill_client, CellFill.Request),
+            CommandType.CELL_PROCESS: (
+                CellProcessPayload,
+                self._cell_process_client,
+                CellProcess.Request,
+            ),
+            CommandType.CELL_STOP: (CellStopPayload, self._cell_stop_client, CellStop.Request),
+        }[command.type]
         name = command.type.value
         try:
-            (CellProcessPayload if is_process else CellStopPayload).model_validate(command.payload)
+            payload_model.model_validate(command.payload)
         except Exception as e:
             self.get_logger().error(f"{name} payload invalid: {e}")
             self._publish_error("INVALID_PAYLOAD", f"{name} payload invalid")
             return None
 
-        client = self._cell_process_client if is_process else self._cell_stop_client
         if not client.wait_for_service(timeout_sec=1.0):
             self._publish_error("SERVICE_UNAVAILABLE", f"{name} service not available")
             return None
@@ -302,8 +316,7 @@ class EdgeBridgeCommandsMixin:
                 )
             self.publish_telemetry(command_id=command_id)
 
-        request = CellProcess.Request() if is_process else CellStop.Request()
-        client.call_async(request).add_done_callback(_on_done)
+        client.call_async(request_type()).add_done_callback(_on_done)
         return self.publish_telemetry(command_id=command_id)
 
     def handle_emergency_stop(self, command_id: str | None = None) -> RobotTelemetryEvent:

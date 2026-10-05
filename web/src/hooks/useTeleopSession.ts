@@ -19,6 +19,7 @@ import {
   createResetFaultCommand,
   createSpawnObjectCommand,
   createPickAndPlaceTargetCommand,
+  createCellFillCommand,
   createCellProcessCommand,
   createCellStopCommand,
   createClearWorkspaceCommand,
@@ -296,6 +297,11 @@ export function useTeleopSession({
     [robotState],
   );
 
+  const cellFill = useCallback(() => {
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    wsRef.current.send(serializeCommand(createCellFillCommand({ senderId: 'ui-client' })));
+  }, []);
+
   const cellProcess = useCallback(() => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     wsRef.current.send(serializeCommand(createCellProcessCommand({ senderId: 'ui-client' })));
@@ -366,6 +372,7 @@ export function useTeleopSession({
     executePose,
     togglePalm,
     emergencyStop,
+    cellFill,
     cellProcess,
     cellStop,
     resetFault,

@@ -28,6 +28,26 @@ class BeltState(IntEnum):
     FAULT = 5
 
 
+class FeederCmd(IntEnum):
+    NONE = 0
+    ENABLE = 1
+    DISABLE = 2
+    FILL = 3
+    QUICK_EMPTY = 4
+
+
+class FeederState(IntEnum):
+    EMPTY = 0
+    READY = 1
+    PLACING = 2
+    EMPTYING = 3
+    FAULT = 4
+
+
+# GearClassifier colour codes in the placement ring buffer.
+COLOR_CODES = ("WHITE", "GREEN", "BLUE")
+
+
 class StationState(IntEnum):
     HOME = 0
     LEAVING = 1

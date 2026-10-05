@@ -145,7 +145,7 @@
       },
       "additionalProperties": false
     },
-    "cell_process_payload":{"type":"object","title":"CellProcessPayload","description":"Typed payload for CELL_PROCESS command starting or resuming the conveyor cell","properties":{},"additionalProperties":false},"cell_stop_payload":{"type":"object","title":"CellStopPayload","description":"Typed payload for CELL_STOP command freezing the belt and FlexFeeder","properties":{},"additionalProperties":false},"clear_workspace_payload": {
+    "cell_fill_payload":{"type":"object","title":"CellFillPayload","description":"Typed payload for CELL_FILL command loading the FlexFeeder with a Gearwheel deck","properties":{},"additionalProperties":false},"cell_process_payload":{"type":"object","title":"CellProcessPayload","description":"Typed payload for CELL_PROCESS command starting or resuming the conveyor cell","properties":{},"additionalProperties":false},"cell_stop_payload":{"type":"object","title":"CellStopPayload","description":"Typed payload for CELL_STOP command freezing the belt and FlexFeeder","properties":{},"additionalProperties":false},"clear_workspace_payload": {
       "type": "object",
       "title": "ClearWorkspacePayload",
       "description": "Typed payload for CLEAR_WORKSPACE command",
@@ -221,6 +221,7 @@
         "SPAWN_OBJECT",
         "CLEAR_WORKSPACE",
         "PICK_AND_PLACE_TARGET",
+        "CELL_FILL",
         "CELL_PROCESS",
         "CELL_STOP"
       ],

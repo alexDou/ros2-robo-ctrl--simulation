@@ -85,6 +85,8 @@ export function useTelemetryStream() {
   const [workcellVersion, setWorkcellVersion] = useState(0);
   // Only the status is reactive; the belt offset is read from the buffer every frame.
   const [cellStatus, setCellStatus] = useState<ConveyorStatus | null>(null);
+  // FlexFeeder count: shown on the toolbar and gates Process, so it is reactive too.
+  const [feederRemaining, setFeederRemaining] = useState(0);
   const lastWorkcellSigRef = useRef<string>('');
   const frameTimestampsRef = useRef<number[]>([]);
   const lastStreamingRef = useRef(false);
@@ -117,6 +119,7 @@ export function useTelemetryStream() {
         receivedAtMs: now,
       };
       setCellStatus(data.cell_state.conveyor_status);
+      setFeederRemaining(Number(data.cell_state.feeder_remaining));
     }
     buf.timestampNs = data.timestamp_ns;
     buf.lastPacketTime = now;
@@ -173,6 +176,7 @@ export function useTelemetryStream() {
     setPalmState({ is_grasped: false });
     setWorkcellVersion((v) => v + 1);
     setCellStatus(null);
+    setFeederRemaining(0);
     frameTimestampsRef.current = [];
     bufferRef.current = {
       jointPositions: [...CANONICAL_POSES.HOME],
@@ -196,6 +200,7 @@ export function useTelemetryStream() {
     palmState,
     workcellVersion,
     cellStatus,
+    feederRemaining,
     handleIncomingFrame,
     resetStream,
   };

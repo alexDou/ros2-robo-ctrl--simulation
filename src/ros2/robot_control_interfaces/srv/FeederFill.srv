@@ -1,0 +1,7 @@
+# Request
+# 0 lets the controller pick the deck seed (SIM only)
+uint32 seed
+---
+# Response
+bool success
+string message

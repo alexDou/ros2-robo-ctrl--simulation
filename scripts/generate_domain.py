@@ -544,6 +544,7 @@ def emit_rust(ir: DomainIR) -> str:
                 "EmergencyStopPayload",
                 "TrajectoryExecutePayload",
                 "ClearWorkspacePayload",
+                "CellFillPayload",
                 "CellProcessPayload",
                 "CellStopPayload",
             )

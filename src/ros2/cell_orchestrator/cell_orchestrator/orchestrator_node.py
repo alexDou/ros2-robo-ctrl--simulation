@@ -1,7 +1,8 @@
 """CellOrchestratorNode: owns ConveyorStatus and drives the conveyor device.
 
-Minimal tracer slice (Unit 9.05): Process runs the belt to the PickZone eye, Stop freezes it.
-Fill, SortCycles, exchanges and the flush reset land in later Unit 9 tickets.
+Tracer slice: Fill loads the FlexFeeder (EMPTY -> LOADED), Process enables the feeder and runs
+the belt to the PickZone eye, Stop freezes both. SortCycles, exchanges and the flush reset land
+in later Unit 9 tickets.
 """
 
 import json
@@ -15,14 +16,20 @@ from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from robot_control_interfaces.action import ConveyorRun
-from robot_control_interfaces.srv import CellProcess, CellStop, ConveyorStop
+from robot_control_interfaces.srv import (
+    CellFill,
+    CellProcess,
+    CellStop,
+    ConveyorStop,
+    FeederEnable,
+    FeederFill,
+)
 from std_msgs.msg import String
 
 from domain import CellState, ConveyorStatus
 
-# Fill gating arrives with its own ticket; until then EMPTY may be processed so the tracer runs.
+_FILL_FROM = (ConveyorStatus.EMPTY,)
 _PROCESS_FROM = (
-    ConveyorStatus.EMPTY,
     ConveyorStatus.LOADED,
     ConveyorStatus.STOPPED,
     ConveyorStatus.HALTED,
@@ -40,6 +47,7 @@ class CellOrchestratorNode(Node):
         self._lock = threading.Lock()
         self._status = ConveyorStatus.EMPTY
         self._belt_offset_m = 0.0
+        self._feeder_remaining = 0
         self._published_offset_m: float | None = None
         # Bumped on every Process and Stop so a late result of an old goal is ignored.
         self._run_id = 0
@@ -48,6 +56,16 @@ class CellOrchestratorNode(Node):
         self._state_pub = self.create_publisher(String, "cell/state", _STATE_QOS)
         self._run_client = ActionClient(self, ConveyorRun, "conveyor/run", callback_group=group)
         self._stop_client = self.create_client(ConveyorStop, "conveyor/stop", callback_group=group)
+        self._feeder_fill_client = self.create_client(
+            FeederFill, "feeder/fill", callback_group=group
+        )
+        self._feeder_enable_client = self.create_client(
+            FeederEnable, "feeder/enable", callback_group=group
+        )
+        self.create_subscription(
+            String, "feeder/status", self._on_feeder_status, 10, callback_group=group
+        )
+        self.create_service(CellFill, "cell/fill", self._on_fill, callback_group=group)
         self.create_subscription(
             String, "conveyor/status", self._on_conveyor_status, 10, callback_group=group
         )
@@ -58,7 +76,11 @@ class CellOrchestratorNode(Node):
 
     def _publish_state(self) -> None:
         with self._lock:
-            state = CellState(conveyor_status=self._status, belt_offset_m=self._belt_offset_m)
+            state = CellState(
+                conveyor_status=self._status,
+                feeder_remaining=self._feeder_remaining,
+                belt_offset_m=self._belt_offset_m,
+            )
             self._published_offset_m = self._belt_offset_m
         self._state_pub.publish(String(data=state.model_dump_json()))
 
@@ -76,11 +98,48 @@ class CellOrchestratorNode(Node):
         with self._lock:
             self._belt_offset_m = encoder_mm / 1000.0
 
+    def _on_feeder_status(self, msg: String) -> None:
+        try:
+            remaining = int(json.loads(msg.data)["remaining"])
+        except (ValueError, KeyError, TypeError):
+            self.get_logger().warning("Ignoring malformed feeder/status", throttle_duration_sec=5)
+            return
+        with self._lock:
+            changed = remaining != self._feeder_remaining
+            self._feeder_remaining = remaining
+        if changed:
+            self._publish_state()
+
     def _on_offset_timer(self) -> None:
         with self._lock:
             changed = self._belt_offset_m != self._published_offset_m
         if changed:
             self._publish_state()
+
+    def _on_fill(self, _request, response):
+        if not self._feeder_fill_client.wait_for_service(timeout_sec=1.0):
+            response.message = "FlexFeeder device unavailable"
+            return response
+        with self._lock:
+            if self._status not in _FILL_FROM:
+                response.message = f"Fill refused in {self._status.value}"
+                return response
+        # SIM seeds the deck from the controller's own entropy; tests seed it via the device.
+        result = self._call_blocking(self._feeder_fill_client, FeederFill.Request(seed=0))
+        if result is None or not result.success:
+            response.message = "FlexFeeder refused Fill"
+            return response
+        self._set_status(ConveyorStatus.LOADED)
+        response.success, response.message = True, "Fill started"
+        return response
+
+    @staticmethod
+    def _call_blocking(client: Any, request: Any, timeout_s: float = 5.0) -> Any:
+        """Reentrant callback group + multithreaded executor: waiting here does not block spin."""
+        done = threading.Event()
+        future = client.call_async(request)
+        future.add_done_callback(lambda _: done.set())
+        return future.result() if done.wait(timeout_s) else None
 
     def _on_process(self, _request, response):
         if not self._run_client.wait_for_server(timeout_sec=1.0):
@@ -95,6 +154,8 @@ class CellOrchestratorNode(Node):
             self._run_id += 1
             run_id = self._run_id
         self._publish_state()
+        # Enabling is idempotent and the controller disables the feeder itself at the eye stop.
+        self._feeder_enable_client.call_async(FeederEnable.Request(enable=True))
         goal = ConveyorRun.Goal(mode=ConveyorRun.Goal.RUN_TO_PICKZONE)
         self._run_client.send_goal_async(goal).add_done_callback(
             lambda fut: self._on_goal_response(fut, run_id, previous)
@@ -133,6 +194,7 @@ class CellOrchestratorNode(Node):
             self._status = ConveyorStatus.STOPPED
             self._run_id += 1
         self._publish_state()
+        self._feeder_enable_client.call_async(FeederEnable.Request(enable=False))
         if was_feeding:
             self._stop_client.call_async(ConveyorStop.Request()).add_done_callback(
                 self._on_stop_response

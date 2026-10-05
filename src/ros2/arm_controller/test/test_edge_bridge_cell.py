@@ -1,7 +1,7 @@
-"""EdgeNode maps CELL_PROCESS / CELL_STOP onto the orchestrator and forwards cell/state.
+"""EdgeNode maps CELL_FILL / CELL_PROCESS / CELL_STOP onto the orchestrator and forwards cell/state.
 
-Unit 9.05 (hand-sim-fd5h): real cell_orchestrator + ConveyorNode + in-process virtual_plc, so
-CELL_PROCESS visibly runs the SIM belt end to end below the EdgeNode.
+Unit 9.05/9.07: real cell_orchestrator + ConveyorNode + FlexFeederNode + in-process virtual_plc,
+so CELL_FILL / CELL_PROCESS visibly run the SIM feeder and belt end to end below the EdgeNode.
 """
 
 import socket
@@ -12,6 +12,8 @@ import pytest
 from arm_controller.edge_bridge_node import EdgeBridgeNode
 from cell_devices.belt_sim import BeltParams
 from cell_devices.conveyor_node import ConveyorNode
+from cell_devices.feeder_sim import FeederParams
+from cell_devices.flexfeeder_node import FlexFeederNode
 from cell_devices.virtual_plc import VirtualPlcServer
 from cell_orchestrator.orchestrator_node import CellOrchestratorNode
 from rclpy.executors import MultiThreadedExecutor
@@ -20,6 +22,7 @@ from rclpy.parameter import Parameter
 from domain import CommandType, ConveyorStatus, RobotCommand, RobotState
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
+QUICK_FEEDER = FeederParams(cycle_s_range=(0.05, 0.1), emptying_s=0.0)
 
 
 def _free_port() -> int:
@@ -72,11 +75,18 @@ def _engage(executor, node):
 @pytest.fixture
 def edge(make_switch_server):
     port = _free_port()
-    plc = VirtualPlcServer("127.0.0.1", port, belt=FAST)
+    plc = VirtualPlcServer("127.0.0.1", port, belt=FAST, feeder=QUICK_FEEDER)
     plc.start()
     executor = MultiThreadedExecutor(num_threads=8)
     nodes = [
         ConveyorNode(
+            parameter_overrides=[
+                Parameter("port", value=port),
+                Parameter("counts_per_mm", value=FAST.counts_per_mm),
+                Parameter("poll_hz", value=50.0),
+            ]
+        ),
+        FlexFeederNode(
             parameter_overrides=[
                 Parameter("port", value=port),
                 Parameter("counts_per_mm", value=FAST.counts_per_mm),
@@ -98,6 +108,11 @@ def edge(make_switch_server):
     plc.stop()
 
 
+def _fill(node):
+    node.handle_command(_command(CommandType.CELL_FILL, "cell-fill"))
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.LOADED)
+
+
 def _cell_status(node):
     cell = node.publish_telemetry().cell_state
     return None if cell is None else cell.conveyor_status
@@ -108,21 +123,43 @@ def test_telemetry_carries_initial_cell_state(edge):
     assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.EMPTY)
 
 
+def test_cell_fill_loads_the_feeder_and_telemetry_reports_remaining(edge):
+    node, _ = edge
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.EMPTY)
+
+    node.handle_command(_command(CommandType.CELL_FILL, "cell-fill-1"))
+
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.LOADED)
+    assert _wait_for(lambda: node.publish_telemetry().cell_state.feeder_remaining == 100)
+    assert node.errors == []
+
+
+def test_cell_fill_is_refused_once_loaded(edge):
+    node, _ = edge
+    _fill(node)
+    node.handle_command(_command(CommandType.CELL_FILL, "cell-fill-2"))
+    assert _wait_for(lambda: any(code == "CELL_COMMAND_REFUSED" for code, _ in node.errors))
+
+
 def test_cell_process_runs_sim_belt_and_telemetry_reports_it(edge):
-    node, plc = edge
-    plc.add_belt_item(at_mm=0.0)
+    node, _ = edge
+    _fill(node)
     node.handle_command(_command(CommandType.CELL_PROCESS, "cell-process-1"))
     assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.HALTED)
-    assert node.publish_telemetry().cell_state.belt_offset_m > 0.0
+    cell = node.publish_telemetry().cell_state
+    assert cell.belt_offset_m > 0.0
+    assert 0 < cell.feeder_remaining < 100  # the feeder placed Gearwheels on the way
     assert node.errors == []
 
 
 def test_cell_stop_freezes_the_belt(edge):
     node, _ = edge
+    _fill(node)
     node.handle_command(_command(CommandType.CELL_PROCESS, "cell-process-2"))
     assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.FEEDING)
     node.handle_command(_command(CommandType.CELL_STOP, "cell-stop-1"))
     assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.STOPPED)
+    time.sleep(0.6)  # the drive ramps down and the 5 Hz offset catches up
     frozen = node.publish_telemetry().cell_state.belt_offset_m
     time.sleep(0.5)
     assert node.publish_telemetry().cell_state.belt_offset_m == pytest.approx(frozen, abs=0.05)

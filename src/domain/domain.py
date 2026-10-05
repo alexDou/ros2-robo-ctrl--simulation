@@ -49,6 +49,7 @@ class CommandType(str, Enum):
     SPAWN_OBJECT = "SPAWN_OBJECT"
     CLEAR_WORKSPACE = "CLEAR_WORKSPACE"
     PICK_AND_PLACE_TARGET = "PICK_AND_PLACE_TARGET"
+    CELL_FILL = "CELL_FILL"
     CELL_PROCESS = "CELL_PROCESS"
     CELL_STOP = "CELL_STOP"
 
@@ -199,6 +200,13 @@ class SpawnObjectPayload(BaseModel):
     object_type: SpawnObjectType = Field(..., description="Type of object to spawn")
 
 
+class CellFillPayload(BaseModel):
+    """Typed payload for CELL_FILL command loading the FlexFeeder with a Gearwheel deck"""
+
+    model_config = ConfigDict(extra="forbid")
+
+
+
 class CellProcessPayload(BaseModel):
     """Typed payload for CELL_PROCESS command starting or resuming the conveyor cell"""
 
@@ -284,6 +292,7 @@ class CellState(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     conveyor_status: ConveyorStatus = Field(..., description="Cell flow state machine position")
+    feeder_remaining: int = Field(..., ge=0, description="Gearwheels still in the FlexFeeder deck")
     belt_offset_m: FiniteFloat = Field(..., allow_inf_nan=False, description="Belt travel in meters since the cell controller started counting; the UI extrapolates between updates")
 
 

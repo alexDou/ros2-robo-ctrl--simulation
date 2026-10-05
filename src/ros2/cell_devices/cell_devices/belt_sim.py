@@ -45,6 +45,11 @@ class BeltSim:
         return int(self.travel_mm * self.params.counts_per_mm) % _ENCODER_MOD
 
     @property
+    def feeding(self) -> bool:
+        """True while a run toward the PickZone eye is in progress (the feeder may place)."""
+        return self._moving_cmd == BeltCmd.RUN_TO_PICKZONE
+
+    @property
     def item_positions_mm(self) -> list[float]:
         return [self.travel_mm + offset for offset in self._offsets_mm]
 

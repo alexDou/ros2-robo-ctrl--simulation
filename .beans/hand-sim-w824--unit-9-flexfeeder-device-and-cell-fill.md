@@ -1,13 +1,13 @@
 ---
 # hand-sim-w824
 title: 'Unit 9.07: FlexFeeder device and CELL_FILL'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:39Z
-updated_at: 2026-10-04T13:36:34Z
+updated_at: 2026-10-05T13:35:16Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-42d4
@@ -29,3 +29,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-42d4 (06)
+
+Done: FeederSim in virtual_plc, FlexFeeder device/node, CELL_FILL end to end (schema, orchestrator, EdgeNode, Gateway, web Fill + feeder_remaining). E2E mock gateway does not yet emulate CELL_FILL (known, pending later Unit 9 ticket).
