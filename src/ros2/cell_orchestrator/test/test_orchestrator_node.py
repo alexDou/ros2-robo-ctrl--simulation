@@ -34,6 +34,7 @@ class FakeConveyor:
         self.goals: list[int] = []
         self.stop_calls = 0
         self.release = threading.Event()
+        self.running = 0  # goals currently inside _execute
         self.stop_reason = "STOPPED_AT_EYE"
         self.success = True
         group = ReentrantCallbackGroup()
@@ -50,13 +51,17 @@ class FakeConveyor:
 
     def _execute(self, goal_handle):
         self.goals.append(goal_handle.request.mode)
-        while not self.release.wait(0.01):
-            if goal_handle.is_cancel_requested:
-                goal_handle.canceled()
-                return ConveyorRun.Result(stop_reason="STOPPED")
-        result = ConveyorRun.Result(success=self.success, stop_reason=self.stop_reason)
-        (goal_handle.succeed if self.success else goal_handle.abort)()
-        return result
+        self.running += 1
+        try:
+            while not self.release.wait(0.01):
+                if goal_handle.is_cancel_requested:
+                    goal_handle.canceled()
+                    return ConveyorRun.Result(stop_reason="STOPPED")
+            result = ConveyorRun.Result(success=self.success, stop_reason=self.stop_reason)
+            (goal_handle.succeed if self.success else goal_handle.abort)()
+            return result
+        finally:
+            self.running -= 1
 
     def _stop(self, _req, res):
         self.stop_calls += 1
@@ -123,7 +128,8 @@ def cell():
     executor = MultiThreadedExecutor(num_threads=6)
     for n in (node, fake_node, client):
         executor.add_node(n)
-    threading.Thread(target=executor.spin, daemon=True).start()
+    spinner = threading.Thread(target=executor.spin, daemon=True)
+    spinner.start()
     assert process.wait_for_service(timeout_sec=TIMEOUT)
     assert stop.wait_for_service(timeout_sec=TIMEOUT)
     assert fake.fill.wait_for_service(timeout_sec=TIMEOUT)
@@ -131,7 +137,10 @@ def cell():
     assert _wait(node._feeder_fill_client.service_is_ready)
     yield fake, states, process, stop
     fake.release.set()
+    assert _wait(lambda: fake.running == 0)  # a goal must finish before its node is destroyed
+    time.sleep(0.3)  # the executor still publishes the goal result after _execute returns
     executor.shutdown()
+    spinner.join(timeout=TIMEOUT)  # no callback may run on a destroyed node
     for n in (node, fake_node, client):
         n.destroy_node()
     rclpy.shutdown()
