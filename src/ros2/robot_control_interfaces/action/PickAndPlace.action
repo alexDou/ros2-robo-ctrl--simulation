@@ -2,6 +2,8 @@
 geometry_msgs/Point pick_coords
 geometry_msgs/Point drop_coords
 bool use_custom_drop
+# A Gearwheel already held (D32): skip approach, pick, grasp and lift; place it from where the arm is.
+bool place_only
 string command_id
 ---
 # Result

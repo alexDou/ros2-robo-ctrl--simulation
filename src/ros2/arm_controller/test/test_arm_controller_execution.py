@@ -426,3 +426,70 @@ def test_arm_controller_slow_drop_slot_service_still_resolves():
         mock_workcell.destroy_node()
         node.destroy_node()
         client_node.destroy_node()
+
+
+def test_arm_controller_place_only_goal_skips_the_pick():
+    """D32: a Gearwheel already held is finished onto its Pallet: no approach, pick or grasp."""
+    mock_controller = Node("mock_trajectory_controller_place")
+    received: list = []
+
+    def handle_traj_execute(goal_handle):
+        received.append(goal_handle.request)
+        goal_handle.succeed()
+        res = FollowJointTrajectory.Result()
+        res.error_code = FollowJointTrajectory.Result.SUCCESSFUL
+        return res
+
+    _server = ActionServer(  # noqa: F841 -- kept alive to serve goals; never read
+        mock_controller,
+        FollowJointTrajectory,
+        "/test_controller_place/follow_joint_trajectory",
+        execute_callback=handle_traj_execute,
+    )
+    node = ArmControllerNode(
+        parameter_overrides=[
+            Parameter("pick_and_place_action_name", Parameter.Type.STRING, "/test/pnp_place"),
+            Parameter(
+                "controller_action_name",
+                Parameter.Type.STRING,
+                "/test_controller_place/follow_joint_trajectory",
+            ),
+            Parameter("step_duration", Parameter.Type.DOUBLE, 0.01),
+            Parameter("require_controller", Parameter.Type.BOOL, True),
+        ]
+    )
+    client_node = Node("test_pnp_client_place")
+    executor = MultiThreadedExecutor()
+    for n in (mock_controller, node, client_node):
+        executor.add_node(n)
+    client = ActionClient(client_node, PickAndPlace, "/test/pnp_place")
+    phases: list[str] = []
+    spin_thread = threading.Thread(target=executor.spin, daemon=True)
+    spin_thread.start()
+    try:
+        assert client.wait_for_server(timeout_sec=3.0)
+        goal = PickAndPlace.Goal(use_custom_drop=True, place_only=True, command_id="place-1")
+        goal.pick_coords = Point(x=9.0, y=9.0, z=9.0)  # ignored: out of reach on purpose
+        goal.drop_coords = Point(x=-0.45, y=-0.10, z=0.0)
+
+        send = client.send_goal_async(
+            goal, feedback_callback=lambda m: phases.append(m.feedback.phase)
+        )
+        deadline = time.time() + 3.0
+        while not send.done() and time.time() < deadline:
+            time.sleep(0.01)
+        result_future = send.result().get_result_async()
+        deadline = time.time() + 4.0
+        while not result_future.done() and time.time() < deadline:
+            time.sleep(0.01)
+
+        assert result_future.result().result.success is True
+        assert phases[0] == "TRANSFERRING"
+        assert {"APPROACHING", "PICKING", "GRASPING", "LIFTING"}.isdisjoint(phases)
+        assert "RELEASING" in phases and phases[-1] == "COMPLETED"
+        assert len(received[0].trajectory.points) == 6
+    finally:
+        executor.shutdown()
+        spin_thread.join(timeout=1.0)
+        for n in (mock_controller, node, client_node):
+            n.destroy_node()

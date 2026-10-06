@@ -1,7 +1,8 @@
 """Flush reset (RESETTING): a physical flush, the same in SIM and LIVE.
 
 A step machine the Cell event loop advances on every event:
-DRAIN    the in-flight SortCycle and exchanges complete, the belt run is cancelled
+DRAIN    the in-flight SortCycle and exchanges complete, the belt run is cancelled, and a
+         Gearwheel left in the DexterousPalm (EmergencyStop) is finished onto its Pallet (D32)
 FLUSH    freeze released (after FAULT), FlexFeeder quick-empties, belt FLUSH into the bin
 EXCHANGE every Pallet with Gearwheels and the ScrapBin if it holds any leave together
 then WorkcellNode clears and the cell is EMPTY. The first failure faults the cell.
@@ -38,7 +39,10 @@ class FlushReset:
         """Called on every event the reset may be waiting for."""
         cell = self._cell
         if self._step is _Step.DRAIN and not cell.busy():
-            self._flush()
+            if cell.held is not None:
+                cell.place_held()  # back here through the cycle's result
+            else:
+                self._flush()
         elif self._step is _Step.EXCHANGE and not cell.exchanging:
             self._clear()
 

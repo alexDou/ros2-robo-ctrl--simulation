@@ -276,3 +276,21 @@ def test_clear_workspace_on_connect_runs_the_flush_reset(edge):
 
     assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.EMPTY, timeout=20.0)
     assert node._cell_state.feeder_remaining == 0
+
+
+def test_clear_workspace_during_engage_homing_resets_once_homing_is_done(edge):
+    node, _ = edge
+    _fill(node)
+    with node._lock:  # reconnect: ENGAGE homing is moving the arm
+        node._robot_state = RobotState.EXECUTING
+        node._homing_done_event.clear()
+
+    node.handle_command(_command(CommandType.CLEAR_WORKSPACE, "clear-homing"))
+
+    time.sleep(0.5)
+    assert _cell_status(node) == ConveyorStatus.LOADED  # the flush waits for the arm
+    assert node.errors == []  # deferred, never refused as ROBOT_BUSY
+    with node._lock:
+        node._robot_state = RobotState.IDLE
+    node._homing_done_event.set()
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.EMPTY, timeout=20.0)

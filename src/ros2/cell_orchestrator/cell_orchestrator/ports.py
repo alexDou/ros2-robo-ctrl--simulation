@@ -211,9 +211,14 @@ class CellPorts:
         return self._ok(self._clear, ClearWorkspace.Request())
 
     # Arm
-    def pick_and_place(self, pick: Pick, drop: Point, on_phase: Callable[[str], None]) -> Any:
-        """Sends one PickAndPlace goal; returns its result future, or None if it was refused."""
-        goal_msg = PickAndPlace.Goal(use_custom_drop=True)
+    def pick_and_place(
+        self, pick: Pick, drop: Point, on_phase: Callable[[str], None], place_only: bool = False
+    ) -> Any:
+        """Sends one PickAndPlace goal; returns its result future, or None if it was refused.
+
+        place_only (D32): the Gearwheel is already held; the arm only carries it to `drop`.
+        """
+        goal_msg = PickAndPlace.Goal(use_custom_drop=True, place_only=place_only)
         goal_msg.pick_coords = Point(x=pick.x, y=pick.y, z=0.0)
         goal_msg.drop_coords = drop
         goal = self._arm_goal = _Goal()

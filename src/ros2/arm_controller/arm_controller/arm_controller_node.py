@@ -38,8 +38,21 @@ from arm_controller.kinematics import (
     PickAndPlaceTrajectoryGenerator,
     WaypointStep,
 )
+from arm_controller.kinematics.phases import ActionPhase
 
 MAX_JOINT_VELOCITY_RAD_S: float = 2.0
+
+
+# Phases a place_only goal skips: the Gearwheel is already in the DexterousPalm.
+_PICK_PHASES = frozenset(
+    p.value
+    for p in (
+        ActionPhase.APPROACHING,
+        ActionPhase.PICKING,
+        ActionPhase.GRASPING,
+        ActionPhase.LIFTING,
+    )
+)
 
 
 def seconds_to_duration(seconds: float) -> Duration:
@@ -267,6 +280,11 @@ class ArmControllerNode(Node):
 
         try:
             pick_coords = (req.pick_coords.x, req.pick_coords.y, req.pick_coords.z)
+            if req.place_only and not req.use_custom_drop:
+                goal_handle.abort()
+                result.success = False
+                result.message = "place_only needs a custom drop"
+                return result
 
             # Determine drop coordinates
             if req.use_custom_drop:
@@ -339,6 +357,9 @@ class ArmControllerNode(Node):
                 f"Executing PickAndPlace: pick={pick_coords}, drop={drop_coords}, cmd='{req.command_id}'"
             )
 
+            if req.place_only:
+                pick_coords = drop_coords  # no pick: the solver only needs a reachable stand-in
+
             # Validate reachability
             try:
                 self.solver.check_reachability(*pick_coords)
@@ -365,6 +386,8 @@ class ArmControllerNode(Node):
                     drop_coords=drop_coords,
                     current_joints=q_init,
                 )
+                if req.place_only:
+                    waypoints = [w for w in waypoints if w.phase not in _PICK_PHASES]
             except Exception as err:
                 self.get_logger().error(f"Kinematics trajectory computation failed: {err}")
                 goal_handle.abort()

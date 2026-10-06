@@ -16,7 +16,7 @@ from cell_orchestrator.cell_model import BIN, CellModel, Pick
 from cell_orchestrator.event_loop import EventLoop
 from cell_orchestrator.flush_reset import FlushReset
 from cell_orchestrator.ports import CellPorts
-from cell_orchestrator.sort_cycle import CycleOutcome, run_sort_cycle
+from cell_orchestrator.sort_cycle import CycleOutcome, run_place, run_sort_cycle
 from domain import BIN_EXCHANGE_THRESHOLD, BeltGear, CellState, ConveyorStatus, ExchangeState
 
 _FILL_FROM = (ConveyorStatus.EMPTY,)
@@ -42,6 +42,8 @@ class Cell:
         self._sorting: threading.Thread | None = None  # the SortCycle in flight
         self.exchanging: set[str] = set()
         self._awaiting_pallet: str | None = None  # the SortCycle's PalletExchange
+        self.held: Pick | None = None  # in the DexterousPalm after a cut-short cycle (D32)
+        self._placing = False  # the cycle in flight is the reset's place of `held`
         self._feed_waits_for_bin = False
         self._reset: FlushReset | None = None
         self._published_belt: tuple[float, list[BeltGear]] | None = None
@@ -218,11 +220,31 @@ class Cell:
         self._sorting = threading.Thread(target=work, daemon=True)
         self._sorting.start()
 
+    def place_held(self) -> None:
+        """Flush reset: finish the held Gearwheel onto its colour's Pallet, then HOME."""
+        pick = self.held
+        if pick is None or self._closed or self._sorting is not None:
+            return
+
+        def work() -> None:
+            self.post(self._on_cycle_done, pick, run_place(self.ports, pick))
+
+        self._placing = True
+        self._sorting = threading.Thread(target=work, daemon=True)
+        self._sorting.start()
+
     def _on_cycle_done(self, pick: Pick, outcome: CycleOutcome) -> None:
         self._sorting = None
+        placing, self._placing = self._placing, False
+        self.held = pick if outcome.held else None
         if not outcome.ok:
             self.model.pending.clear()
-            self.fault("arm", "SORT_CYCLE_FAILED")
+            if placing:
+                self.fault("arm", "PLACE_FAILED")
+            elif self._reset is not None:  # the cycle the EmergencyStop cut short
+                self._reset.advance()
+            else:
+                self.fault("arm", "SORT_CYCLE_FAILED")
             return
         if pick in self.model.pending:
             self.model.pending.remove(pick)

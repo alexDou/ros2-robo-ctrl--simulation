@@ -125,6 +125,7 @@ class FakeArm:
         self.running = 0
         self.max_running = 0
         self.cancelled = 0
+        self.hold_at_grasp = threading.Event()  # set -> wait in the DexterousPalm before RELEASING
         self.action = ActionServer(
             node,
             PickAndPlace,
@@ -141,7 +142,15 @@ class FakeArm:
             req = goal_handle.request
             self.goals.append(req)
             self.log.append("arm")
-            for phase in ("GRASPING", "RELEASING"):
+            for phase in ("RELEASING",) if req.place_only else ("GRASPING", "RELEASING"):
+                if phase == "RELEASING" and self.hold_at_grasp.is_set():
+                    while not self.release.wait(0.01):
+                        if goal_handle.is_cancel_requested:  # frozen mid-air, Gearwheel held
+                            self.cancelled += 1
+                            self.log.append("arm_stopped")
+                            goal_handle.canceled()
+                            return PickAndPlace.Result(success=False)
+                    self.release.clear()
                 goal_handle.publish_feedback(PickAndPlace.Feedback(phase=phase))
                 time.sleep(0.05)
             while self.hold.is_set() and not self.release.wait(0.01):
@@ -1261,3 +1270,64 @@ def test_process_after_stop_at_the_end_of_the_deck_runs_the_final_flush(cell):
 
     assert _wait(lambda: len(fake.goals) == 2)
     assert fake.goals[-1] == ConveyorRun.Goal.FLUSH
+
+
+# D32: a Gearwheel left in the DexterousPalm by an EmergencyStop is finished onto its Pallet.
+
+
+def _estop_holding(fake, states, process):
+    """EmergencyStop while the arm carries the lead (GREEN) Gearwheel, then Reset."""
+    fake.arm.hold.clear()
+    fake.arm.hold_at_grasp.set()
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, MIXED_BATCH)
+    assert _wait(lambda: len(states[-1].belt_gears) == len(MIXED_BATCH))
+    fake.release.set()
+    assert _wait(lambda: "mark" in fake.log)  # grasped, not yet released
+    assert _call(fake.estop, CellStop.Request()).success
+    assert _wait(lambda: fake.arm.cancelled == 1)
+    fake.arm.hold_at_grasp.clear()
+    assert _call(fake.reset, CellReset.Request()).success
+
+
+def test_reset_finishes_the_held_gearwheel_onto_its_pallet_before_the_flush(cell):
+    fake, states, process, _ = cell
+
+    _estop_holding(fake, states, process)
+    _reset_released(fake, states)
+
+    place = fake.arm.goals[-1]
+    assert (len(fake.arm.goals), place.place_only, place.drop_coords.y) == (2, True, -0.1)
+    assert fake.log.index("commit") < fake.log.index("belt:FLUSH")
+    assert fake.workcell.resets == ["GREEN"]  # its Pallet now holds it, so it is exchanged
+    assert fake.faults == []
+
+
+def test_a_failed_place_of_the_held_gearwheel_faults_the_reset(cell):
+    fake, states, process, _ = cell
+    _estop_holding(fake, states, process)
+    fake.arm.success = False
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    assert _wait(lambda: {"device": "arm", "code": "PLACE_FAILED"} in fake.faults)
+    assert ConveyorRun.Goal.FLUSH not in fake.goals
+
+
+def test_an_arm_stopped_after_its_drop_holds_nothing_to_place(cell):
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, MIXED_BATCH)
+    assert _wait(lambda: len(states[-1].belt_gears) == len(MIXED_BATCH))
+    fake.release.set()
+    assert _wait(lambda: len(fake.arm.goals) == 1)
+    assert _call(fake.estop, CellStop.Request()).success
+    assert _wait(lambda: fake.arm.cancelled == 1)
+
+    assert _call(fake.reset, CellReset.Request()).success
+    _reset_released(fake, states)
+
+    assert len(fake.arm.goals) == 1

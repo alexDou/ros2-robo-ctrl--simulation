@@ -1,6 +1,7 @@
 """Command ingress: payload validation + per-type dispatch."""
 
 import math
+import threading
 from typing import Any
 
 from geometry_msgs.msg import Point
@@ -27,6 +28,8 @@ from domain import (
     SpawnObjectPayload,
     TrajectoryExecutePayload,
 )
+
+_HOMING_WAIT_S = 30.0  # bounded: ENGAGE homing itself times out well before this
 
 
 class EdgeBridgeCommandsMixin:
@@ -191,7 +194,9 @@ class EdgeBridgeCommandsMixin:
 
         if command.type == CommandType.CLEAR_WORKSPACE:
             with self._lock:
-                if self._robot_state == RobotState.EXECUTING:
+                # ENGAGE homing on reconnect is no reason to refuse: the reset waits for it.
+                homing = not self._homing_done_event.is_set()
+                if self._robot_state == RobotState.EXECUTING and not homing:
                     self._publish_error(
                         "ROBOT_BUSY",
                         f"Robot is currently {self._robot_state.value}; cannot clear workspace",
@@ -367,9 +372,26 @@ class EdgeBridgeCommandsMixin:
         return self.publish_telemetry(command_id=command_id)
 
     def _request_cell_reset(self) -> bool:
-        """Fire and forget: the cell reports RESETTING and EMPTY through cell/state."""
+        """Fire and forget: the cell reports RESETTING and EMPTY through cell/state.
+
+        The flush may move the arm (a held Gearwheel goes to its Pallet), so it starts only once
+        ENGAGE homing has finished; the two motions never compete for the arm.
+        """
         client = self._cell_reset_client
         if client is None or not client.service_is_ready():
             return False
-        client.call_async(CellReset.Request())
+
+        def after_homing() -> None:
+            if not self._homing_done_event.wait(timeout=_HOMING_WAIT_S):
+                self.get_logger().error("Homing never finished; cell reset not sent")
+                self._publish_error("RESET_BLOCKED", "Arm homing did not finish; reset not sent")
+                return
+            client.call_async(CellReset.Request())
+
+        if self._homing_done_event.is_set():
+            after_homing()
+        else:
+            threading.Thread(
+                target=after_homing, name="cell_reset_after_homing", daemon=True
+            ).start()
         return True
