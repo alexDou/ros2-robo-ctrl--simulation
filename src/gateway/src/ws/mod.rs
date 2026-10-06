@@ -210,6 +210,19 @@ pub async fn teleop_ws(
                                         if let Err(err) = fabric_for_task.publish_command(&robot_id_for_task, &command).await {
                                             error!("Failed to forward command to DataFabric: {err}");
                                         }
+
+                                        // D31: an EmergencyStop ends the session once forwarded; recovery is a
+                                        // fresh connect, whose CLEAR_WORKSPACE runs the flush reset.
+                                        if command.r#type == crate::domain::CommandType::EmergencyStop {
+                                            info!("EMERGENCY_STOP forwarded; closing the session for robot {robot_id_for_task}");
+                                            let _ = session
+                                                .close(Some(actix_ws::CloseReason {
+                                                    code: actix_ws::CloseCode::Normal,
+                                                    description: Some("EMERGENCY_STOP".to_owned()),
+                                                }))
+                                                .await;
+                                            break;
+                                        }
                                     }
                                 }
                                 Err(err) => {

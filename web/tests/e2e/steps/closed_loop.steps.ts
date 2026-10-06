@@ -113,16 +113,12 @@ Then('the Reset Fault button should be disabled', async function (this: CustomWo
   await this.teleopPage!.expectResetFaultButtonDisabled();
 });
 
-Given('the robot is in {string} state', async function (this: CustomWorld, expectedState: string) {
+Given('a device fault froze the cell', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectConnectionStatus(/CONNECTED/);
-  const badgeText = await this.teleopPage!.connectionBadge.innerText();
-  if (!badgeText.includes(expectedState)) {
-    if (expectedState === 'FAULT') {
-      await this.teleopPage!.dispatchEstop('E2E legacy scenario');
-      await this.teleopPage!.expectConnectionStatus(/FAULT/);
-    }
-  }
+  // EmergencyStop ends the session (D31); a device fault is what Reset Fault recovers (D20).
+  this.harness.injectDeviceFault('conveyor', 'FAULT');
+  await expect(this.page!.getByTestId('reset-fault-button')).toBeEnabled();
 });
 
 When('the operator clicks the "Reset Fault" button', async function (this: CustomWorld) {
@@ -239,6 +235,17 @@ Then('every tower counter should read {string}', async function (this: CustomWor
 Then('some gears should have been sorted', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
   await this.teleopPage!.expectSomeGearsSorted();
+});
+
+Then('the session should end with an EmergencyStop notice', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.expectConnectionStatus(/DISCONNECTED/);
+  await expect(this.page!.getByText(/Session ended by EmergencyStop/)).toBeVisible();
+});
+
+When('the operator connects again', async function (this: CustomWorld) {
+  expect(this.teleopPage).toBeDefined();
+  await this.teleopPage!.clickConnect();
 });
 
 When('the operator reloads the page and reconnects', async function (this: CustomWorld) {

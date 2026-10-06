@@ -10,7 +10,7 @@
 //! `redundant_pub_crate`'s "just use `pub`" suggestion for the same items.
 #![allow(clippy::redundant_pub_crate)]
 
-use gateway::domain::RobotCommand;
+use gateway::domain::{CommandType, RobotCommand};
 use std::time::Duration;
 use tokio::sync::broadcast;
 
@@ -24,6 +24,22 @@ pub(crate) async fn recv_client_command(
             .expect("timed out waiting for command")
             .expect("cmd rx");
         if cmd.sender_id != "gateway" {
+            return cmd;
+        }
+    }
+}
+
+/// Receives the next gateway handshake frame of `kind`, skipping everything else.
+pub(crate) async fn recv_gateway_command(
+    rx: &mut broadcast::Receiver<RobotCommand>,
+    kind: CommandType,
+) -> RobotCommand {
+    loop {
+        let cmd = tokio::time::timeout(Duration::from_millis(2000), rx.recv())
+            .await
+            .expect("timed out waiting for command")
+            .expect("cmd rx");
+        if cmd.sender_id == "gateway" && cmd.r#type == kind {
             return cmd;
         }
     }

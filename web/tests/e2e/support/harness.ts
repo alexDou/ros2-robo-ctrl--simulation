@@ -109,6 +109,10 @@ export class ServiceHarness {
     this.mockGateway?.setMotionSpeed(factor);
   }
 
+  public injectDeviceFault(device: string, code: string): void {
+    this.mockGateway?.injectDeviceFault(device, code);
+  }
+
   public setDeckSeed(seed: number): void {
     this.mockGateway?.setDeckSeed(seed);
   }

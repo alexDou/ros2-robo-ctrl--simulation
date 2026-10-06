@@ -124,6 +124,7 @@ class FakeArm:
         self.success = True
         self.running = 0
         self.max_running = 0
+        self.cancelled = 0
         self.action = ActionServer(
             node,
             PickAndPlace,
@@ -144,7 +145,11 @@ class FakeArm:
                 goal_handle.publish_feedback(PickAndPlace.Feedback(phase=phase))
                 time.sleep(0.05)
             while self.hold.is_set() and not self.release.wait(0.01):
-                pass
+                if goal_handle.is_cancel_requested:  # safe stop in place, nothing dropped
+                    self.cancelled += 1
+                    self.log.append("arm_stopped")
+                    goal_handle.canceled()
+                    return PickAndPlace.Result(success=False)
             self.release.clear()
             self.log.append("home")
             (goal_handle.succeed if self.success else goal_handle.abort)()
@@ -778,6 +783,10 @@ def test_emergency_stop_freezes_the_devices_and_faults_the_cell(cell, phase):
     assert _call(fake.estop, CellStop.Request()).success
     assert fake.freezes == [True]
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    if phase == "sorting":  # D31: the arm stops where it is, it does not finish its cycle
+        assert _wait(lambda: fake.arm.cancelled == 1)
+        assert "home" not in fake.log
+        assert fake.faults == []  # the cancelled cycle is no new fault
 
     fake.arm.release.set()  # the arm finishing late must not revive the cell
     time.sleep(0.3)

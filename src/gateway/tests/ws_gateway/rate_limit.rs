@@ -112,30 +112,8 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
         "sustained flood must be rejected, rejected {rejected}"
     );
 
-    // 3. EMERGENCY_STOP straight after the flood -> Must bypass rate limiting unconditionally!
-    let estop_cmd = RobotCommand {
-        command_id: "cmd-estop-1".to_string(),
-        sender_id: "test-client".to_string(),
-        timestamp_ns: 1_700_000_000_000_000_000,
-        r#type: CommandType::EmergencyStop,
-        payload: serde_json::json!({"reason": "Safety trigger"}),
-    };
-    ws_stream
-        .send(Message::Text(
-            serde_json::to_string(&estop_cmd).expect("serialize estop"),
-        ))
-        .await
-        .expect("send estop");
-
-    let rx_estop = tokio::time::timeout(Duration::from_millis(2000), cmd_rx.recv())
-        .await
-        .expect("timed out waiting for estop cmd")
-        .expect("cmd rx");
-    assert_eq!(rx_estop.command_id, "cmd-estop-1");
-    assert_eq!(rx_estop.r#type, CommandType::EmergencyStop);
-
-    // 4. Send malformed payload for PalmActuate -> Should return SCHEMA_VALIDATION_ERROR
-    tokio::time::sleep(Duration::from_millis(120)).await;
+    // 3. Send malformed payload for PalmActuate -> Should return SCHEMA_VALIDATION_ERROR
+    tokio::time::sleep(Duration::from_millis(600)).await; // let the bucket refill
     let malformed_palm_cmd = RobotCommand {
         command_id: "cmd-bad-palm".to_string(),
         sender_id: "test-client".to_string(),
@@ -164,6 +142,37 @@ async fn test_ws_command_rate_limiting_and_emergency_bypass() {
         }
         other => panic!("expected text message with SCHEMA_VALIDATION_ERROR, got {other:?}"),
     }
+
+    // 4. EMERGENCY_STOP straight after a flood -> Must bypass rate limiting unconditionally!
+    for i in 0..flood {
+        ws_stream
+            .send(Message::Text(
+                serde_json::to_string(&ping(format!("cmd-reflood-{i}"))).expect("serialize ping"),
+            ))
+            .await
+            .expect("send reflood ping");
+    }
+    let estop_cmd = RobotCommand {
+        command_id: "cmd-estop-1".to_string(),
+        sender_id: "test-client".to_string(),
+        timestamp_ns: 1_700_000_000_000_000_000,
+        r#type: CommandType::EmergencyStop,
+        payload: serde_json::json!({"reason": "Safety trigger"}),
+    };
+    ws_stream
+        .send(Message::Text(
+            serde_json::to_string(&estop_cmd).expect("serialize estop"),
+        ))
+        .await
+        .expect("send estop");
+
+    let rx_estop = loop {
+        let cmd = super::support::recv_client_command(&mut cmd_rx).await;
+        if cmd.command_id == "cmd-estop-1" {
+            break cmd;
+        }
+    };
+    assert_eq!(rx_estop.r#type, CommandType::EmergencyStop);
 
     drop(ws_stream);
 }

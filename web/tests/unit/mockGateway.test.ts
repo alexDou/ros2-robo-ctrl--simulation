@@ -178,7 +178,7 @@ describe('MockGateway', () => {
     ws.close();
   });
 
-  it('handles emergency stop immediately halting motion into FAULT state', async () => {
+  it('EMERGENCY_STOP faults the arm and ends the session; reconnecting brings it back IDLE (D31)', async () => {
     gateway.setDynamicMotionEnabled(false);
     const ws = new WebSocket(wsUrl);
     await new Promise<void>((resolve, reject) => {
@@ -198,6 +198,9 @@ describe('MockGateway', () => {
 
     await new Promise((r) => setTimeout(r, 100));
 
+    const closing = new Promise<{ code: number; reason: string }>((resolve) =>
+      ws.on('close', (code, reason) => resolve({ code, reason: reason.toString() })),
+    );
     ws.send(
       JSON.stringify({
         command_id: 'estop-1',
@@ -211,21 +214,16 @@ describe('MockGateway', () => {
     await new Promise((r) => setTimeout(r, 100));
     expect(gateway.getRobotState()).toBe('FAULT');
 
-    // Reset Fault
-    ws.send(
-      JSON.stringify({
-        command_id: 'reset-1',
-        sender_id: 'ui-test',
-        timestamp_ns: Date.now() * 1_000_000,
-        type: 'RESET_FAULT',
-        payload: {},
-      }),
-    );
+    const closed = await closing;
+    expect(closed.reason).toBe('EMERGENCY_STOP');
 
-    await new Promise((r) => setTimeout(r, 100));
+    const again = new WebSocket(wsUrl);
+    await new Promise<void>((resolve, reject) => {
+      again.on('open', resolve);
+      again.on('error', reject);
+    });
     expect(gateway.getRobotState()).toBe('IDLE');
-
-    ws.close();
+    again.close();
   });
 
   it('handles palm actuation with delay and updates palm state', async () => {

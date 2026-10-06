@@ -115,3 +115,29 @@ describe('Unit 9.22: RESETTING disables every button (hand-sim-0ceq)', () => {
     expect((screen.getByTestId('fill-button') as HTMLButtonElement).disabled).toBe(false);
   });
 });
+
+describe('Reset Fault after a device fault (D20)', () => {
+  it('a cell FAULT with the arm IDLE enables Reset Fault and sends it', () => {
+    const onResetFault = vi.fn();
+    render(
+      <OperatorToolbar
+        robotState="IDLE"
+        connectionState="CONNECTED"
+        hasActiveGear={false}
+        conveyorStatus="FAULT"
+        onExecutePose={vi.fn()}
+        onConnect={vi.fn()}
+        onDisconnect={vi.fn()}
+        onResetFault={onResetFault}
+        onClearWorkspace={vi.fn()}
+        onFill={vi.fn()}
+        onProcess={vi.fn()}
+        onStop={vi.fn()}
+      />,
+    );
+    const reset = screen.getByTestId('reset-fault-button') as HTMLButtonElement;
+    expect(reset.disabled).toBe(false);
+    fireEvent.click(reset);
+    expect(onResetFault).toHaveBeenCalledOnce();
+  });
+});

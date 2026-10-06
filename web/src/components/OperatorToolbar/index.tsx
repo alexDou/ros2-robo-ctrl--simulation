@@ -36,7 +36,8 @@ export function OperatorToolbar({
   disabled = false,
 }: OperatorToolbarProps) {
   const isIdle = robotState === 'IDLE';
-  const isFault = robotState === 'FAULT';
+  // A device fault (D20) faults the cell without faulting the arm; both recover by RESET_FAULT.
+  const isFault = robotState === 'FAULT' || conveyorStatus === 'FAULT';
 
   // Action buttons disabled unless robot is IDLE and not externally disabled
   const cellBusy = conveyorStatus === 'RESETTING' || conveyorStatus === 'FAULT';

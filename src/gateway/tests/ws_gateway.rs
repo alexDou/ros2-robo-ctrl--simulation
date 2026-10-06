@@ -1,6 +1,8 @@
 //! WebSocket gateway integration tests, one module per concern.
 //! Verbatim split of the former `ws_gateway_test.rs`; no logic changed.
 
+#[path = "ws_gateway/estop_close.rs"]
+mod estop_close;
 #[path = "ws_gateway/handshake.rs"]
 mod handshake;
 #[path = "ws_gateway/handshake_retry.rs"]

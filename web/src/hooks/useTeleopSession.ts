@@ -23,6 +23,9 @@ import {
   isActionFeedbackFrame,
 } from '@domain/parsers';
 
+/** Close reason the Gateway sends when an EmergencyStop ends the session (D31). */
+const EMERGENCY_STOP_CLOSE_REASON = 'EMERGENCY_STOP';
+
 export type ConnectionState = 'CONNECTING' | 'CONNECTED' | 'DISCONNECTED' | 'CONFLICT';
 
 export interface TelemetryLogEntry {
@@ -98,6 +101,17 @@ export function useTeleopSession({
     prevRobotStateRef.current = current;
   }, [robotState]);
 
+  const flashErrorBanner = useCallback((errorCode: string, message: string) => {
+    if (errorBannerTimerRef.current) {
+      clearTimeout(errorBannerTimerRef.current);
+    }
+    setErrorBanner({ errorCode, message });
+    errorBannerTimerRef.current = setTimeout(() => {
+      setErrorBanner(null);
+      errorBannerTimerRef.current = null;
+    }, 2000);
+  }, []);
+
   const connect = useCallback(() => {
     isCleaningUp.current = false;
     lastLoggedStateRef.current = null;
@@ -151,14 +165,7 @@ export function useTeleopSession({
           });
         } else if (isErrorFrame(parsed)) {
           setActionProgress(null);
-          if (errorBannerTimerRef.current) {
-            clearTimeout(errorBannerTimerRef.current);
-          }
-          setErrorBanner({ errorCode: parsed.error_code, message: parsed.message });
-          errorBannerTimerRef.current = setTimeout(() => {
-            setErrorBanner(null);
-            errorBannerTimerRef.current = null;
-          }, 2000);
+          flashErrorBanner(parsed.error_code, parsed.message);
 
           const entry: LogEntry = {
             id: `log-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -197,9 +204,16 @@ export function useTeleopSession({
         setConflictReason('Active session already exists for robot');
       } else {
         setConnectionState((curr) => (curr === 'CONFLICT' ? 'CONFLICT' : 'DISCONNECTED'));
+        if (event.reason === EMERGENCY_STOP_CLOSE_REASON) {
+          // D31: the Gateway ends the session; Connect again runs the flush reset.
+          flashErrorBanner(
+            'EMERGENCY_STOP',
+            'Session ended by EmergencyStop. Connect to reset the cell.',
+          );
+        }
       }
     };
-  }, [wsUrl, handleIncomingFrame, resetStream]);
+  }, [wsUrl, handleIncomingFrame, resetStream, flashErrorBanner]);
 
   useEffect(() => {
     return () => {

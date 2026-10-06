@@ -17,22 +17,22 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the telemetry latency should remain below 50 ms
 
   @safety @emergency-stop
-  Scenario: Triggering Emergency Stop during active motion immediately halts movement and locks toolbar controls
+  Scenario: Triggering Emergency Stop during active motion halts movement where it is and ends the session
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
     When the operator clicks the "Home" pose button
     And the robot begins executing trajectory motion
     When the operator dispatches an EMERGENCY_STOP command
-    Then the connection status should indicate "CONNECTED / FAULT"
+    Then the session should end with an EmergencyStop notice
     And the robot motion should halt immediately within 50 ms
-    And all action buttons should be disabled
-    And the Reset Fault button should be enabled
+    When the operator connects again
+    Then the connection status should indicate "CONNECTED / IDLE"
 
   @safety @fault-recovery
-  Scenario: Reset Fault flushes the cell and restores IDLE readiness
+  Scenario: Reset Fault after a device fault flushes the cell and restores IDLE readiness
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
-    Given the robot is in "FAULT" state
+    Given a device fault froze the cell
     When the operator clicks the "Reset Fault" button
     Then the connection status should indicate "CONNECTED / IDLE"
     And all action buttons should be enabled
@@ -92,7 +92,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And every tower counter should read "0/10"
 
   @conveyor @unit-8.3b
-  Scenario: EmergencyStop mid-run then Reset Fault empties the hopper, belt, towers and bin
+  Scenario: EmergencyStop mid-run ends the session, and reconnecting empties the hopper, belt, towers and bin
     Given the mock arm runs 10 times faster
     And the deck seed is 7
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
@@ -102,8 +102,8 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the operator clicks the "Process" button
     Then some gears should have been sorted
     When the operator dispatches an EMERGENCY_STOP command
-    Then the connection status should indicate "CONNECTED / FAULT"
-    When the operator clicks the "Reset Fault" button
+    Then the session should end with an EmergencyStop notice
+    When the operator connects again
     Then the connection status should indicate "CONNECTED / IDLE"
     And the hopper, belt, towers and bin should all be empty
 

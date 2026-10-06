@@ -99,3 +99,35 @@ describe('TeleopClient Component', () => {
     expect(screen.getByTestId('connection-badge').textContent).toMatch(/CONNECTED/i);
   });
 });
+
+describe('EmergencyStop ends the session (D31)', () => {
+  let originalWebSocket: typeof WebSocket;
+
+  beforeEach(() => {
+    MockWebSocket.instances = [];
+    originalWebSocket = globalThis.WebSocket;
+    // @ts-expect-error Mocking WebSocket
+    globalThis.WebSocket = MockWebSocket;
+  });
+
+  afterEach(() => {
+    globalThis.WebSocket = originalWebSocket;
+  });
+
+  it('returns to Connect when the Gateway closes after EMERGENCY_STOP, and reconnecting resets the cell', () => {
+    render(
+      <TeleopClient robotId="robot-0" gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0" />,
+    );
+    fireEvent.click(screen.getByTestId('connect-button'));
+    act(() => MockWebSocket.instances[0].simulateOpen());
+
+    act(() => MockWebSocket.instances[0].close(1000, 'EMERGENCY_STOP'));
+
+    expect(screen.getByTestId('connection-badge').textContent).toBe('DISCONNECTED');
+    expect(screen.getByText(/Session ended by EmergencyStop/)).toBeDefined();
+    fireEvent.click(screen.getByTestId('connect-button'));
+    act(() => MockWebSocket.instances[1].simulateOpen());
+    const sent = MockWebSocket.instances[1].sentMessages.map((m) => JSON.parse(m).type);
+    expect(sent[0]).toBe('CLEAR_WORKSPACE');
+  });
+});

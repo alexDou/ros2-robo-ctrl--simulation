@@ -105,10 +105,12 @@ class CellOrchestratorNode(Node):
         return self._respond(response, self.cell.ask(self.cell.reset))
 
     def _on_emergency_stop(self, _request, response):
-        """Software EmergencyStop: FREEZE first, never queued behind other events."""
+        """Software EmergencyStop (D31): FREEZE the devices and stop the arm where it is, first,
+        never queued behind other events."""
         self.ports.freeze(
             lambda: self.get_logger().error("Device freeze failed; hardware E-stop chain must act")
         )
+        self.ports.cancel_arm()  # arm_controller safe-stops in place
         return self._respond(response, self.cell.ask(self.cell.emergency_stop))
 
 

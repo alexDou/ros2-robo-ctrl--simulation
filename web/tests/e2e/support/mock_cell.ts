@@ -103,6 +103,12 @@ export class MockCell {
     this.finishing = false;
   }
 
+  /** EmergencyStop (D31): everything stays where it is; only a flush reset clears it. */
+  public emergencyStop(): void {
+    this.status = 'FAULT';
+    this.finishing = false;
+  }
+
   public fill(): void {
     if (this.status !== 'EMPTY') return;
     this.rand = seededRandom(this.seed);

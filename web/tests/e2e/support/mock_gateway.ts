@@ -268,6 +268,20 @@ export class MockGateway {
     };
   }
 
+  /** A device fault (D20): the cell freezes into FAULT and an ERROR frame names the device. */
+  public injectDeviceFault(device: string, code: string): void {
+    this.cell.emergencyStop();
+    this.broadcastRaw(
+      JSON.stringify({
+        type: 'ERROR',
+        error_code: 'DEVICE_FAULT',
+        message: `${device}: ${code}`,
+        timestamp_ns: Date.now() * 1_000_000,
+      }),
+    );
+    this.sendTelemetryToAll();
+  }
+
   public getRobotState(): RobotState {
     return this.robotState;
   }
@@ -389,6 +403,8 @@ export class MockGateway {
 
     this.wss.handleUpgrade(req, socket, head, (ws) => {
       this.activeSessions.set(robotId, ws);
+      // STANDBY on the last disconnect, ENGAGE now: the arm comes back IDLE (it parked in FAULT).
+      if (this.robotState === 'FAULT') this.robotState = 'IDLE';
 
       ws.on('close', () => {
         if (this.activeSessions.get(robotId) === ws) {
@@ -478,9 +494,11 @@ export class MockGateway {
           clearTimeout(this.palmTimeout);
           this.palmTimeout = null;
         }
-        this.cell.reset();
+        this.cell.emergencyStop();
         this.robotState = 'FAULT';
         this.sendTelemetryToAll(cmd.command_id);
+        // D31: like the real Gateway, the session ends; reconnecting runs the flush reset.
+        ws.close(1000, 'EMERGENCY_STOP');
         break;
       }
 
