@@ -30,7 +30,8 @@ Per ADR 0004 & Unit Refactoring-A (hand-sim-bjcw):
 - Launches workcell_node and arm_controller_node.
 - Unit 9: virtual_plc (SIM cell controller, Modbus TCP) starts only when use_fake_hardware
   and use_virtual_plc are both true; controller_host/controller_port address the controller
-  (virtual_plc binds there in SIM, device nodes connect there).
+  (virtual_plc binds there in SIM, device nodes connect there). The cell graph always starts:
+  conveyor, flexfeeder, four stations (white, green, blue, scrap) and cell_orchestrator.
 """
 
 import os
@@ -187,6 +188,42 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
                 parameters=[{"host": controller_host, "port": controller_port}],
             )
         )
+
+    # 5b. Cell devices (Unit 9): each talks Modbus TCP to the cell controller, the virtual_plc in
+    # SIM or the real one at controller_host:controller_port; the orchestrator owns the flow.
+    controller = {"host": controller_host, "port": controller_port}
+    entities += [
+        Node(
+            package="cell_devices",
+            executable="conveyor_node",
+            name="conveyor",
+            output="both",
+            parameters=[controller],
+        ),
+        Node(
+            package="cell_devices",
+            executable="flexfeeder_node",
+            name="flexfeeder",
+            output="both",
+            parameters=[controller],
+        ),
+        *(
+            Node(
+                package="cell_devices",
+                executable="station_node",
+                name=f"station_{station}",
+                output="both",
+                parameters=[{**controller, "station": station}],
+            )
+            for station in ("white", "green", "blue", "scrap")
+        ),
+        Node(
+            package="cell_orchestrator",
+            executable="cell_orchestrator",
+            name="cell_orchestrator",
+            output="both",
+        ),
+    ]
 
     # 6. Standalone Workcell Node
     workcell_node = Node(
