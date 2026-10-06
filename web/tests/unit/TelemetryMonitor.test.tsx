@@ -2,7 +2,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, act } from '@testing-library/preact';
 import { TelemetryMonitor } from '@components/TelemetryMonitor';
 import { useTelemetryStream, type TelemetryBuffer } from '@/hooks/useTelemetryStream';
-import { CANONICAL_UR5E_JOINTS, RobotState, type RobotTelemetryEvent } from '@contracts';
+import {
+  CANONICAL_UR5E_JOINTS,
+  RobotState,
+  type GearEntry,
+  type RobotTelemetryEvent,
+} from '@contracts';
 
 const GEAR = { id: 'belt-1', x: 0.4, y: 0.5, color: 'GREEN', intact: true };
 
@@ -44,7 +49,7 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
         timestampNs: 0n.toString(),
         robotState: RobotState.IDLE,
         cellState: null,
-        workcellState: { spawned: [], inProgress: [], processed: [], activeId: null },
+        workcellState: { spawned: [], inProgress: [], processed: [], scrapped: [], activeId: null },
         frequencyHz: 0,
         latencyMs: 0,
         lastPacketTime: 0,
@@ -77,7 +82,7 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
         timestampNs: 0n.toString(),
         robotState: RobotState.IDLE,
         cellState: null,
-        workcellState: { spawned: [], inProgress: [], processed: [], activeId: null },
+        workcellState: { spawned: [], inProgress: [], processed: [], scrapped: [], activeId: null },
         frequencyHz: 30,
         latencyMs: 12,
         lastPacketTime: performance.now(),
@@ -151,6 +156,27 @@ describe('TelemetryMonitor & useTelemetryStream', () => {
     expect(hookResult.robotState).toBe(RobotState.IDLE);
     expect(hookResult.bufferRef.current.jointPositions).toEqual([0.1, 0.2, 0.3, 0.4, 0.5, 0.6]);
     expect(hookResult.bufferRef.current.latencyMs).toBeLessThanOrEqual(50);
+  });
+
+  it('keeps Scrapped Gearwheels, so the ScrapBin mesh can turn red (D25)', () => {
+    let hookResult!: ReturnType<typeof useTelemetryStream>;
+    function TestComponent() {
+      hookResult = useTelemetryStream();
+      return <div>Test</div>;
+    }
+    render(<TestComponent />);
+    const scrap: GearEntry = { id: 's1', x: 0.4, y: -0.75, z: 0, color: 'BLUE', intact: false };
+
+    act(() => {
+      hookResult.handleIncomingFrame({
+        timestamp_ns: (BigInt(Date.now()) * 1_000_000n).toString(),
+        robot_state: RobotState.IDLE,
+        joint_positions: [0, 0, 0, 0, 0, 0],
+        workcell_state: { spawned: [], in_progress: [], processed: [], scrapped: [scrap] },
+      });
+    });
+
+    expect(hookResult.bufferRef.current.workcellState.scrapped).toEqual([scrap]);
   });
 
   it('keeps the latest cell_state in the buffer and re-renders only when the status changes', () => {

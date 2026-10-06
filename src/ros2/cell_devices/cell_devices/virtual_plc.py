@@ -68,8 +68,10 @@ class VirtualPlcServer:
         belt: BeltParams | None = None,
         feeder: FeederParams | None = None,
         stations: dict[str, StationParams] | None = None,
+        time_scale: float = 1.0,
     ) -> None:
         self._lock = threading.Lock()
+        self._time_scale = time_scale  # SIM only: simulated seconds per wall second (tests)
         self._belt = BeltSim(belt)
         self._feeder = FeederSim(
             feeder or FeederParams(counts_per_mm=self._belt.params.counts_per_mm)
@@ -161,6 +163,14 @@ class VirtualPlcServer:
             self._estop_chain_ok = ok
 
     def tick(self, dt: float = _TICK_S) -> None:
+        """Advance by `dt`, in scans of at most _TICK_S: a stalled loop (or a sped-up test) must
+        not let an item jump past an eye between two scans, as a real controller never would."""
+        while dt > _TICK_S:
+            self._scan(_TICK_S)
+            dt -= _TICK_S
+        self._scan(dt)
+
+    def _scan(self, dt: float) -> None:
         with self._lock:
             for seq_name, ack_name in _ECHO_PAIRS:
                 (seq,) = self._context.getValues(_FC_HOLDING, HOLDING[seq_name], 1)
@@ -253,6 +263,11 @@ class VirtualPlcServer:
             and self._prev_belt_state != BeltState.STOPPED_AT_EYE
         ):
             self._feeder.disable()
+        if self._belt.feeding and self._feeder.state == FeederState.EMPTY:
+            # Nothing can arrive any more: the run ends like FINISH_RUN (on to the eye with what
+            # is upstream, or at once), so a run sent on a stale "remaining" never runs forever.
+            (scrap_state,) = self._context.getValues(_FC_INPUT, INPUT["station_scrap_state"], 1)
+            self._belt.command(BeltCmd.FINISH_RUN, scrap_state == StationState.HOME)
         self._prev_belt_state = self._belt.state
 
         self._context.setValues(_FC_INPUT, INPUT["feeder_state"], [int(self._feeder.state)])
@@ -300,6 +315,6 @@ class VirtualPlcServer:
         last = time.monotonic()
         while True:
             now = time.monotonic()
-            self.tick(now - last)
+            self.tick((now - last) * self._time_scale)
             last = now
             await asyncio.sleep(_TICK_S)

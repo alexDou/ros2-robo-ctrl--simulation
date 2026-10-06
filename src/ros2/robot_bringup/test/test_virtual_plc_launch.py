@@ -30,6 +30,9 @@ def _virtual_plc_nodes(module, **overrides):
         "use_virtual_plc": "true",
         "controller_host": "127.0.0.1",
         "controller_port": "5020",
+        "sim_time_scale": "1.0",
+        "arm_step_duration": "0.5",
+        "device_poll_hz": "5.0",
     }
     config.update(overrides)
     context = LaunchContext()
@@ -74,6 +77,9 @@ def _cell_nodes(module, **overrides):
         "use_virtual_plc": "true",
         "controller_host": "10.0.0.7",
         "controller_port": "502",
+        "sim_time_scale": "1.0",
+        "arm_step_duration": "0.5",
+        "device_poll_hz": "5.0",
     }
     config.update(overrides)
     context = LaunchContext()

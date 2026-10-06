@@ -52,6 +52,7 @@ class FakeConveyor:
         self.stop_reason = "STOPPED_AT_EYE"
         self.success = True
         self.exit_count_delta = 0  # what the exit eye reports for the next goal
+        self.encoder_mm = 0.0  # a run ends where the belt was last published, unless set
         group = ReentrantCallbackGroup()
         self.action = ActionServer(
             node,
@@ -86,7 +87,10 @@ class FakeConveyor:
             if mode == ConveyorRun.Goal.FLUSH and reason == "STOPPED_AT_EYE":
                 reason = "FLUSH_DONE"
             result = ConveyorRun.Result(
-                success=self.success, stop_reason=reason, exit_count_delta=self.exit_count_delta
+                success=self.success,
+                stop_reason=reason,
+                exit_count_delta=self.exit_count_delta,
+                encoder_mm=self.encoder_mm,
             )
             self.exit_count_delta = 0
             (goal_handle.succeed if self.success else goal_handle.abort)()
@@ -125,6 +129,7 @@ class FakeConveyor:
         self, mm: float, gears: list[dict] | None = None, belt_fault: int = 0, **interlocks: bool
     ) -> None:
         ok = {"bin_home": True, "feeder_ok": True, "drives_ok": True, "estop_chain_ok": True}
+        self.encoder_mm = mm
         status = {
             "state": "FAULT" if belt_fault else "RUNNING",
             "encoder_mm": mm,
@@ -1451,3 +1456,31 @@ def test_reset_after_an_estop_during_an_exchange_releases_it_and_ends_empty(cell
     _reset_released(fake, states)  # deadlocked before: the reset waited for a frozen exchange
 
     assert fake.workcell.resets[0] == "GREEN"
+
+
+def test_the_batch_is_registered_where_the_belt_stopped_not_where_status_last_saw_it(cell):
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, [_belt_gear("belt-1", 0.1), _belt_gear("belt-2", 0.6)])
+    assert _wait(lambda: len(states[-1].belt_gears) == 2)
+
+    fake.encoder_mm = 620.0  # the belt ran 120 mm more before the eye stopped it
+    fake.release.set()
+
+    assert _wait(lambda: len(fake.workcell.registered) == 2)
+    assert [(r[0], round(r[2], 3)) for r in fake.workcell.registered] == [
+        ("belt-1", -0.02),
+        ("belt-2", 0.48),  # carried into the PickZone by the last 120 mm
+    ]
+
+
+def test_the_lead_gearwheel_braked_past_the_eye_is_still_part_of_the_batch(cell):
+    fake, states, process, _ = cell
+    # The drive ramps down after the eye trips, so the lead stops a little past the zone edge.
+    gears = [_belt_gear("belt-1", -0.54), _belt_gear("belt-2", -0.3)]
+
+    _run_to_eye(fake, states, process, gears)
+
+    assert [r[0] for r in fake.workcell.registered] == ["belt-1", "belt-2"]

@@ -105,6 +105,8 @@ export class MockGateway {
   private spawned: GearEntry[] = [];
   private inProgress: GearEntry[] = [];
   private processed: GearEntry[] = [];
+  /** Defectives the exit eye counted into the ScrapBin (WorkcellState.scrapped). */
+  private scrapped: GearEntry[] = [];
   private activeId: string | null = null;
   private inferenceMetrics: {
     latency_ms: number;
@@ -208,6 +210,7 @@ export class MockGateway {
     this.spawned = [];
     this.inProgress = [];
     this.processed = [];
+    this.scrapped = [];
     this.activeId = null;
     this.inferenceMetrics = null;
     this.autoExecutePickAndPlace = true;
@@ -221,6 +224,9 @@ export class MockGateway {
 
   public seedProcessed(entries: GearEntry[]): void {
     this.processed = [...entries];
+    for (const color of ['WHITE', 'GREEN', 'BLUE'] as const) {
+      this.cell.seedPalletCount(color, entries.filter((e) => e.intact && e.color === color).length);
+    }
     this.sendTelemetryToAll('seed-processed');
   }
 
@@ -508,6 +514,7 @@ export class MockGateway {
         this.spawned = [];
         this.inProgress = [];
         this.processed = [];
+        this.scrapped = [];
         this.activeId = null;
         this.inferenceMetrics = null;
         this.cell.reset();
@@ -620,6 +627,7 @@ export class MockGateway {
         this.spawned = [];
         this.inProgress = [];
         this.processed = [];
+        this.scrapped = [];
         this.activeId = null;
         this.inferenceMetrics = null;
         this.cell.reset();
@@ -655,6 +663,28 @@ export class MockGateway {
         try {
           ws.send(msg);
         } catch {}
+      }
+    }
+  }
+
+  /** WorkcellNode's view of the cell: Scrapped at the exit eye, a station emptied by its exchange. */
+  private applyCellEvents(): void {
+    for (const event of this.cell.drainEvents()) {
+      if (event.kind === 'scrapped') {
+        const g = event.gear;
+        this.scrapped.push({
+          id: g.id,
+          x: SCRAP_BIN[0],
+          y: SCRAP_BIN[1],
+          z: SCRAP_BIN[2],
+          color: g.color,
+          intact: false,
+        });
+      } else if (event.station === 'SCRAP') {
+        this.scrapped = [];
+      } else {
+        const color = event.station;
+        this.processed = this.processed.filter((e) => !(e.intact && e.color === color));
       }
     }
   }
@@ -744,17 +774,8 @@ export class MockGateway {
         origin_y: entry.origin_y ?? y,
         origin_z: entry.origin_z ?? z,
       });
-      if (cls.intact) {
-        // Tower full: this commit empties it (siblings untouched).
-        const inTower = (e: GearEntry): boolean =>
-          e.intact &&
-          e.color === cls.color &&
-          Math.abs(e.x - base[0]) < 1e-6 &&
-          Math.abs(e.y - base[1]) < 1e-6;
-        if (this.processed.filter(inTower).length >= PALLET_CAPACITY) {
-          this.processed = this.processed.filter((e) => !inTower(e));
-        }
-      }
+      // A full Pallet stays until its PalletExchange returns it empty (no auto-empty, D6).
+      if (cls.intact) this.cell.commitDrop(cls.color);
       this.spawned = this.spawned.filter((g) => g.id !== id);
       this.activeId = null;
       this.inferenceMetrics = null;
@@ -845,6 +866,7 @@ export class MockGateway {
     const dt = (now - this.lastTickMs) / 1000;
     this.lastTickMs = now;
     this.cell.step(dt * this.cellSpeed);
+    this.applyCellEvents();
     if (this.cell.getStatus() !== 'HALTED') return;
     if (this.robotState !== 'IDLE' || this.pnpExecuting) return;
     const gear = this.cell.takeNext();
@@ -852,12 +874,9 @@ export class MockGateway {
       this.cell.batchSorted();
       return;
     }
+    if (!gear.intact) return; // Rejected: it stays on the belt until the exit eye counts it
     this.spawnCounter += 1;
     const id = `gear-cell-${this.spawnCounter}`;
-    if (!gear.intact) {
-      this.bookScrap(id, gear.color);
-      return;
-    }
     const cls = { color: gear.color, intact: gear.intact };
     this.spawned = [{ id, x: gear.x, y: gear.y, z: 0, color: gear.color, intact: true }];
     this.inProgress = [];
@@ -939,6 +958,7 @@ export class MockGateway {
         spawned: [...this.spawned],
         in_progress: [...this.inProgress],
         processed: [...this.processed],
+        scrapped: [...this.scrapped],
         active_id: this.activeId,
       },
       phase: this.currentPhase,

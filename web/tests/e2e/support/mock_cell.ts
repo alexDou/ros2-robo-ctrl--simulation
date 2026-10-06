@@ -3,12 +3,28 @@ import {
   BELT_SPEED_M_S,
   BELT_X_RANGE,
   BELT_Y_RANGE,
+  BIN_EXCHANGE_THRESHOLD,
+  PALLET_CAPACITY,
   PICK_ZONE_Y_RANGE,
   type BeltGear,
   type CellState,
   type ConveyorStatus,
+  type ExchangeState,
   type GearColor,
+  type StationName,
 } from '../../../domain/contracts';
+
+const STATIONS: readonly StationName[] = ['WHITE', 'GREEN', 'BLUE', 'SCRAP'];
+/** Nominal exchange legs in seconds of cell time (D29: PalletExchange ~6 s, BinExchange ~8 s). */
+const EXCHANGE_LEGS: Record<'PALLET' | 'BIN', { leave: number; away: number; back: number }> = {
+  PALLET: { leave: 2, away: 2, back: 2 },
+  BIN: { leave: 3, away: 2, back: 3 },
+};
+
+/** What the owner books in WorkcellNode terms: a Rejected that fell into the bin, a station emptied. */
+export type CellEvent =
+  | { kind: 'scrapped'; gear: BeltGear }
+  | { kind: 'emptied'; station: StationName };
 
 const DECK_SIZE = 100;
 const DEFECTIVE_COUNT = 10;
@@ -78,6 +94,12 @@ export class MockCell {
   private halted = false;
   /** Stopped while the belt still runs on to the edge (D30). */
   private finishing = false;
+  private counts: Record<StationName, number> = { WHITE: 0, GREEN: 0, BLUE: 0, SCRAP: 0 };
+  /** Running exchanges, by cell time elapsed in them. */
+  private exchanges = new Map<StationName, number>();
+  /** The SortCycle's PalletExchange: no next cycle, no next run until it is HOME (D8). */
+  private awaitingPallet: StationName | null = null;
+  private events: CellEvent[] = [];
   private idCounter = 0;
 
   /** Seed for the next Fill's deck and Batch sizes. */
@@ -101,6 +123,29 @@ export class MockCell {
     this.offsetM = 0;
     this.halted = false;
     this.finishing = false;
+    this.counts = { WHITE: 0, GREEN: 0, BLUE: 0, SCRAP: 0 };
+    this.exchanges.clear();
+    this.awaitingPallet = null;
+    this.events = [];
+  }
+
+  /** The arm committed an intact drop: the 10th on a Pallet starts its PalletExchange. */
+  public commitDrop(color: GearColor): void {
+    this.counts[color] += 1;
+    if (this.counts[color] >= PALLET_CAPACITY) {
+      this.awaitingPallet = color;
+      this.exchanges.set(color, 0);
+    }
+  }
+
+  /** Test seam: the Pallet already holds `count` Gearwheels. */
+  public seedPalletCount(color: GearColor, count: number): void {
+    this.counts[color] = count;
+  }
+
+  /** Events since the last call, oldest first. */
+  public drainEvents(): CellEvent[] {
+    return this.events.splice(0);
   }
 
   /** EmergencyStop (D31): everything stays where it is; only a flush reset clears it. */
@@ -136,7 +181,7 @@ export class MockCell {
 
   /** The next unsorted Batch gear (lead first), or undefined once the Batch is sorted. */
   public takeNext(): BeltGear | undefined {
-    if (this.status !== 'HALTED') return undefined;
+    if (this.status !== 'HALTED' || this.awaitingPallet) return undefined;
     const gear = this.unsorted.shift();
     if (gear && !gear.intact) this.carried.push(gear);
     return gear;
@@ -144,7 +189,8 @@ export class MockCell {
 
   /** Called when a halted Batch is fully sorted: feed the next one, or finish the run. */
   public batchSorted(): void {
-    if (this.status !== 'HALTED' || this.unsorted.length > 0) return;
+    if (this.status !== 'HALTED' || this.unsorted.length > 0 || this.awaitingPallet) return;
+    if (this.exchanges.has('SCRAP')) return; // the belt never moves while the bin is away (D10)
     if (this.hopper.length > 0 || this.carried.length > 0) {
       this.startRun();
     } else {
@@ -154,6 +200,7 @@ export class MockCell {
 
   /** Advance the belt by `dtSeconds` of run time. */
   public step(dtSeconds: number): void {
+    if (this.status !== 'FAULT') this.stepExchanges(dtSeconds);
     const moving = this.status === 'FEEDING' || (this.status === 'STOPPED' && this.finishing);
     if (!moving || dtSeconds <= 0) return;
     let dist = BELT_SPEED_M_S * dtSeconds;
@@ -167,6 +214,10 @@ export class MockCell {
     this.offsetM += dist;
     for (const g of this.carried) g.y -= dist;
     for (const g of this.unsorted) g.y -= dist;
+    for (const g of this.carried.filter((c) => c.y < BELT_Y_RANGE[0])) {
+      this.counts.SCRAP += 1; // the exit eye counted it: Rejected becomes Scrapped (D9)
+      this.events.push({ kind: 'scrapped', gear: { ...g } });
+    }
     this.carried = this.carried.filter((g) => g.y >= BELT_Y_RANGE[0]);
     if (this.batchSize === 0 && this.carried.length === 0) this.halt(); // flush complete
     if (this.spawned > 0) this.nextGap -= dist;
@@ -181,11 +232,41 @@ export class MockCell {
       feeder_remaining: this.hopper.length,
       belt_offset_m: this.offsetM,
       belt_gears: [...this.carried, ...this.unsorted].map((g) => ({ ...g })),
+      stations: STATIONS.map((name) => ({
+        name,
+        exchange_state: this.exchangeState(name),
+        count: this.counts[name],
+      })),
     };
+  }
+
+  private exchangeState(name: StationName): ExchangeState {
+    const t = this.exchanges.get(name);
+    if (t === undefined) return 'HOME';
+    const legs = EXCHANGE_LEGS[name === 'SCRAP' ? 'BIN' : 'PALLET'];
+    if (t < legs.leave) return 'LEAVING';
+    return t < legs.leave + legs.away ? 'AWAY' : 'RETURNING';
+  }
+
+  private stepExchanges(dt: number): void {
+    for (const [name, t] of this.exchanges) {
+      const legs = EXCHANGE_LEGS[name === 'SCRAP' ? 'BIN' : 'PALLET'];
+      if (t + dt < legs.leave + legs.away + legs.back) {
+        this.exchanges.set(name, t + dt);
+        continue;
+      }
+      this.exchanges.delete(name); // HOME: ResetStation empties it
+      this.counts[name] = 0;
+      this.events.push({ kind: 'emptied', station: name });
+      if (this.awaitingPallet === name) this.awaitingPallet = null;
+    }
   }
 
   private halt(): void {
     this.halted = true;
+    if (this.counts.SCRAP >= BIN_EXCHANGE_THRESHOLD && !this.exchanges.has('SCRAP')) {
+      this.exchanges.set('SCRAP', 0); // at the belt stop, overlapping the sorting (D10)
+    }
     if (this.finishing) {
       this.finishing = false; // the stopped run reached its end: stay STOPPED, or EMPTY after a flush
       const flushed =

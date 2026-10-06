@@ -11,7 +11,9 @@ class VirtualPlcNode(Node):
         super().__init__("virtual_plc")
         host = self.declare_parameter("host", "127.0.0.1").value
         port = self.declare_parameter("port", 5020).value
-        self._plc = VirtualPlcServer(host, port)
+        # Simulated seconds per wall second; >1 only for tests that run whole decks.
+        time_scale = float(self.declare_parameter("time_scale", 1.0).value)
+        self._plc = VirtualPlcServer(host, port, time_scale=time_scale)
         self._plc.start()
         self.get_logger().info(f"virtual_plc serving Modbus TCP on {host}:{port}")
 

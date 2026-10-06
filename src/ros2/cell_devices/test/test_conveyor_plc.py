@@ -7,7 +7,7 @@ import pytest
 from cell_devices.belt_sim import BeltParams
 from cell_devices.modbus_adapter import ModbusFieldIo
 from cell_devices.register_map import HOLDING, INPUT, BeltCmd, BeltState, StationState
-from cell_devices.virtual_plc import VirtualPlcServer
+from cell_devices.virtual_plc import _FC_HOLDING, _FC_INPUT, VirtualPlcServer
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
 
@@ -104,3 +104,31 @@ def test_same_sequence_is_not_executed_twice(plc_and_io):
     time.sleep(0.2)  # controller keeps ticking with the old command word still latched
 
     assert _belt_state(io) == BeltState.STOPPED_AT_EYE
+
+
+def test_one_late_tick_never_carries_an_item_past_the_eye():
+    """The tick loop may stall (or a test speeds time up): the controller still scans finely."""
+    plc = VirtualPlcServer("127.0.0.1", 0)  # never started: driven by tick() alone
+    plc.add_belt_item(at_mm=0.0)
+    plc._context.setValues(_FC_HOLDING, HOLDING["belt_cmd"], [int(BeltCmd.RUN_TO_PICKZONE), 1])
+
+    plc.tick(30.0)  # 4.5 m of travel at speed in one call: far past the eye and the belt end
+
+    assert (
+        BeltState(plc._context.getValues(_FC_INPUT, INPUT["belt_state"], 1)[0])
+        == BeltState.STOPPED_AT_EYE
+    )
+    assert plc._context.getValues(_FC_INPUT, INPUT["exit_count"], 1)[0] == 0
+
+
+def test_a_feed_run_with_an_empty_feeder_ends_at_the_eye_by_itself():
+    """Nothing can arrive any more: the run brings what is upstream and stops, never runs on."""
+    plc = VirtualPlcServer("127.0.0.1", 0)  # never started: driven by tick() alone; feeder EMPTY
+    plc._context.setValues(_FC_HOLDING, HOLDING["belt_cmd"], [int(BeltCmd.RUN_TO_PICKZONE), 1])
+
+    plc.tick(5.0)
+
+    assert (
+        BeltState(plc._context.getValues(_FC_INPUT, INPUT["belt_state"], 1)[0])
+        == BeltState.STOPPED_AT_EYE
+    )

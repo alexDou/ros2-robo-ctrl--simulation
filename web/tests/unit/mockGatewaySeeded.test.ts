@@ -175,7 +175,8 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       ws.close();
     }
   });
-  it('10th commit empties that tower only, sibling untouched', async () => {
+  it('the 10th drop leaves its Pallet full until the PalletExchange returns it empty (D6)', async () => {
+    gateway.setMotionSpeed(10); // the ~6 s exchange takes ~0.6 s
     const tower = Array.from({ length: 9 }, (_, k) => ({
       id: `white-${k}`,
       x: WHITE_TOWER[0],
@@ -206,10 +207,10 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
       await waitFor(
         () =>
           gateway.getRobotState() === 'IDLE' &&
-          gateway.getWorkcellSnapshot().processed.length === 1,
-      );
-      const snap = gateway.getWorkcellSnapshot();
-      expect(snap.processed.map((e) => e.id)).toEqual(['green-0']);
+          gateway.getWorkcellSnapshot().processed.length === 11,
+      ); // FULL: no auto-empty
+      await waitFor(() => gateway.getWorkcellSnapshot().processed.length === 1);
+      expect(gateway.getWorkcellSnapshot().processed.map((e) => e.id)).toEqual(['green-0']);
     } finally {
       ws.close();
     }

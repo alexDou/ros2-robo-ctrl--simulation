@@ -194,6 +194,7 @@ class Cell:
         reason = result.stop_reason if result is not None else "REJECTED"
         ok = result is not None and result.success
         if ok and mode == _RUN and reason == "STOPPED_AT_EYE":
+            self._settle_belt(result.encoder_mm / 1000.0)
             self._at_eye_stop()
         elif ok and reason == "FLUSH_DONE":
             self.model.forget_belt()
@@ -205,6 +206,19 @@ class Cell:
                 else reason
             )
             self.fault("conveyor", code or "RUN_FAILED")
+
+    def _settle_belt(self, offset_m: float) -> None:
+        """The last belt status may predate the stop: move its Gearwheels to where the run ended.
+
+        Status and result travel on different channels, so either may arrive first; the encoder
+        in the result is the truth, and the belt carries every Gearwheel rigidly (+Y -> -Y).
+        """
+        shift = offset_m - self.model.belt_offset_m
+        if shift:
+            self.model.belt_gears = [
+                g.model_copy(update={"y": g.y - shift}) for g in self.model.belt_gears
+            ]
+            self.model.belt_offset_m = offset_m
 
     def _at_eye_stop(self) -> None:
         """Register the Batch lead first, start the BinExchange if due, then sort."""

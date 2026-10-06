@@ -7,6 +7,9 @@ declare global {
     /** Largest belt snapshot seen while recording (the full Batch, before sorting empties the belt). */
     __batchMax?: BeltGearPosition[];
     __batchRecorder?: ReturnType<typeof setInterval>;
+    /** Every distinct display panel reading while recording, oldest first. */
+    __panelHistory?: string[][];
+    __panelRecorder?: ReturnType<typeof setInterval>;
   }
 }
 
@@ -442,6 +445,28 @@ export class TeleopPage {
         if (snap.length >= (window.__batchMax?.length ?? 0)) window.__batchMax = snap;
       }, 20);
     });
+  }
+
+  /** Records each distinct display panel reading (the panel shows cell_state counts, D34). */
+  async startRecordingPanel(): Promise<void> {
+    await this.page.evaluate(() => {
+      clearInterval(window.__panelRecorder);
+      window.__panelHistory = [];
+      window.__panelRecorder = setInterval(() => {
+        const text = window.__robot_visualizer?.getDisplayPanelText() ?? [];
+        const history = window.__panelHistory!;
+        const last = history[history.length - 1];
+        if (text.length && (!last || last.join('|') !== text.join('|'))) history.push(text);
+      }, 10);
+    });
+  }
+
+  async panelHistory(): Promise<string[][]> {
+    return this.page.evaluate(() => window.__panelHistory ?? []);
+  }
+
+  async panelText(): Promise<string[]> {
+    return this.page.evaluate(() => window.__robot_visualizer!.getDisplayPanelText());
   }
 
   async expectRunFinished(): Promise<void> {

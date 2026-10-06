@@ -85,6 +85,8 @@ Rules: every command word has a matching sequence register, and the controller e
 **Controller-local logic** (real controller and `virtual_plc` alike):
 - Belt stops at the PickZone eye in RUN_TO_PICKZONE, ramped by the drive.
 - FINISH_RUN (Stop, D30): placing stops at once; a feed run carries what is upstream of the eye on to it, or ends at once (STOPPED_AT_EYE) when nothing is; a flush runs out.
+- A feed run whose FlexFeeder is EMPTY ends the same way: nothing more can arrive, so it never runs on (a run may be sent on a stale `remaining`).
+- The controller scans every few ms: an item never passes an eye between two scans. The Batch at an eye stop includes the lead that braked a little past the PickZone edge.
 - FlexFeeder placement is allowed only while the belt runs, and only once ≥ 130 mm of encoder travel has passed since the last placement. The feeder is disabled at the eye stop.
 - The exit eye increments `exit_count`.
 - The belt refuses RUN and FLUSH while SCRAP is not HOME (`HELD_BIN_AWAY`).

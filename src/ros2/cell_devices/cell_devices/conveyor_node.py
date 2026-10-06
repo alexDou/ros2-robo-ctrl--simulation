@@ -256,6 +256,7 @@ class ConveyorNode(Node):
 
         result.stop_reason = status.stop_reason
         result.exit_count_delta = status.exit_count_total - total_before
+        result.encoder_mm = float(status.encoder_mm)
         result.success = status.state in _SUCCESS_STATES
         if cancelled:
             goal_handle.canceled()

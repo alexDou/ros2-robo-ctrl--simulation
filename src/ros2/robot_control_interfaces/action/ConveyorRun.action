@@ -7,6 +7,8 @@ uint8 mode
 bool success
 string stop_reason
 uint32 exit_count_delta
+# Belt travel where the run ended: Gearwheel positions seen earlier are shifted to it.
+float64 encoder_mm
 ---
 # Feedback
 string belt_state

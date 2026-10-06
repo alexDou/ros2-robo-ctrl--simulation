@@ -14,6 +14,8 @@ export interface WorkcellSnapshot {
   spawned: GearEntry[];
   inProgress: GearEntry[];
   processed: GearEntry[];
+  /** Rejected Gearwheels the exit eye counted into the ScrapBin (Unit 9). */
+  scrapped: GearEntry[];
   activeId: string | null;
 }
 
@@ -46,6 +48,7 @@ const EMPTY_WORKCELL: WorkcellSnapshot = {
   spawned: [],
   inProgress: [],
   processed: [],
+  scrapped: [],
   activeId: null,
 };
 
@@ -55,6 +58,7 @@ function toSnapshot(ws: unknown): WorkcellSnapshot {
     spawned?: unknown;
     in_progress?: unknown;
     processed?: unknown;
+    scrapped?: unknown;
     active_id?: unknown;
   };
   const list = (v: unknown): GearEntry[] => (Array.isArray(v) ? (v as GearEntry[]) : []);
@@ -62,6 +66,7 @@ function toSnapshot(ws: unknown): WorkcellSnapshot {
     spawned: list(w.spawned),
     inProgress: list(w.in_progress),
     processed: list(w.processed),
+    scrapped: list(w.scrapped),
     activeId: typeof w.active_id === 'string' ? w.active_id : null,
   };
 }

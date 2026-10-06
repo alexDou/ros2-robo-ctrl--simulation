@@ -51,10 +51,14 @@ class CellModel:
         return [g for g in self.belt_gears if g.id not in self.picked]
 
     def batch_at_eye(self) -> list[BeltGear]:
-        """New Gearwheels inside the PickZone, lead (most downstream) first."""
-        lo, hi = PICK_ZONE_Y_RANGE
+        """New Gearwheels from the PickZone's upstream edge down, lead (most downstream) first.
+
+        No lower bound: the drive ramps down after the eye trips, so the lead stops a little
+        past the zone's downstream edge and still belongs to this Batch.
+        """
+        hi = PICK_ZONE_Y_RANGE[1]
         return sorted(
-            (g for g in self.belt_gears if lo <= g.y <= hi and g.id not in self.registered),
+            (g for g in self.belt_gears if g.y <= hi and g.id not in self.registered),
             key=lambda g: g.y,
         )
 

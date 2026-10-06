@@ -72,6 +72,9 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
     )
     controller_host = LaunchConfiguration("controller_host").perform(context)
     controller_port = int(LaunchConfiguration("controller_port").perform(context))
+    sim_time_scale = float(LaunchConfiguration("sim_time_scale").perform(context))
+    arm_step_duration = float(LaunchConfiguration("arm_step_duration").perform(context))
+    device_poll_hz = float(LaunchConfiguration("device_poll_hz").perform(context))
 
     if not use_fake_hardware and controllers_file.endswith("ur_controllers.yaml"):
         # Default sim config is 5 Hz; physical UR needs 500 Hz RTDE loop.
@@ -185,13 +188,15 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
                 executable="virtual_plc",
                 name="virtual_plc",
                 output="both",
-                parameters=[{"host": controller_host, "port": controller_port}],
+                parameters=[
+                    {"host": controller_host, "port": controller_port, "time_scale": sim_time_scale}
+                ],
             )
         )
 
     # 5b. Cell devices (Unit 9): each talks Modbus TCP to the cell controller, the virtual_plc in
     # SIM or the real one at controller_host:controller_port; the orchestrator owns the flow.
-    controller = {"host": controller_host, "port": controller_port}
+    controller = {"host": controller_host, "port": controller_port, "poll_hz": device_poll_hz}
     entities += [
         Node(
             package="cell_devices",
@@ -240,6 +245,7 @@ def launch_setup(context: LaunchContext, *args, **kwargs) -> list[LaunchDescript
         executable="arm_controller_node",
         name="arm_controller_node",
         output="both",
+        parameters=[{"step_duration": arm_step_duration}],
     )
     entities.append(arm_controller_node)
 
@@ -303,6 +309,21 @@ def generate_launch_description() -> LaunchDescription:
             "controller_port",
             default_value="5020",
             description="Cell controller Modbus TCP port",
+        ),
+        DeclareLaunchArgument(
+            "sim_time_scale",
+            default_value="1.0",
+            description="SIM only: virtual_plc simulated seconds per wall second (tests run decks fast)",
+        ),
+        DeclareLaunchArgument(
+            "device_poll_hz",
+            default_value="5.0",
+            description="Cell device nodes poll the controller at this rate (pipeline-rates: 5 Hz)",
+        ),
+        DeclareLaunchArgument(
+            "arm_step_duration",
+            default_value="0.5",
+            description="arm_controller seconds per PickAndPlace waypoint",
         ),
         DeclareLaunchArgument(
             "controllers_file",
