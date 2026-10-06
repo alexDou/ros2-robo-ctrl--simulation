@@ -1,13 +1,13 @@
 ---
 # hand-sim-0ceq
 title: 'Unit 9.22: reset on connect and RESETTING in TeleopClient'
-status: in-progress
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:40Z
-updated_at: 2026-10-06T09:08:33Z
+updated_at: 2026-10-06T09:11:43Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-4f07
@@ -32,3 +32,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 - hand-sim-4f07 (13)
 - hand-sim-hvy5 (18)
 - hand-sim-145j (21)
+
+CLEAR_WORKSPACE on every connect was already sent and tested. Added: pose and Clear buttons disabled in RESETTING/FAULT; removed the web auto-CLEAR_WORKSPACE on entering FAULT, which would now trigger cell/reset and release the freeze (recovery is RESET_FAULT only).
