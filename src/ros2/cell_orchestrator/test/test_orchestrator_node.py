@@ -238,7 +238,7 @@ class FakeWorkcell:
         self.reset_ok = True
         self.clears = 0
         self._last_color = ""
-        self.state_pub = node.create_publisher(String, "workcell/state", 10)
+        self.pallets: dict[str, int] = {}
         group = ReentrantCallbackGroup()
         node.create_service(
             RegisterGear, "workcell/register_gear", self._register, callback_group=group
@@ -258,28 +258,18 @@ class FakeWorkcell:
             ClearWorkspace, "workcell/clear_workspace", self._clear, callback_group=group
         )
 
-    def publish_pallets(self, counts: dict[str, int], scrapped: int = 0) -> None:
-        """WorkcellNode's snapshot as far as the orchestrator reads it: intact Gearwheels dropped."""
-        processed = [
-            {"id": f"{c}-{i}", "x": -0.45, "y": 0.0, "z": 0.0, "color": c, "intact": True}
-            for c, n in counts.items()
-            for i in range(n)
-        ]
-        bin_gears = [
-            {"id": f"scrap-{i}", "color": "WHITE", "intact": False} for i in range(scrapped)
-        ]
-        state = {"processed": processed, "scrapped": bin_gears}
-        self.state_pub.publish(String(data=json.dumps(state)))
-
     def _clear(self, _req, res):
         self.log.append("clear")
         self.clears += 1
+        self.pallets.clear()
         res.success = True
         return res
 
     def _reset(self, req, res):
         self.log.append(f"reset:{req.station}")
         self.resets.append(req.station)
+        if self.reset_ok:
+            self.pallets.pop(req.station, None)
         res.success = self.reset_ok
         return res
 
@@ -294,6 +284,7 @@ class FakeWorkcell:
         self.log.append("scrap")
         self.scrap_counts.append(req.count)
         res.success = self.scrap_ok
+        res.scrapped = req.count
         return res
 
     def _mark(self, _req, res):
@@ -306,6 +297,9 @@ class FakeWorkcell:
         res.success = True
         if self._last_color in self.full_colors:
             res.slot_index, res.overflow_occurred = PALLET_CAPACITY - 1, True
+        else:
+            res.slot_index = self.pallets.get(self._last_color, 0)
+        self.pallets[self._last_color] = res.slot_index + 1
         return res
 
     def _register(self, req, res):
@@ -358,12 +352,9 @@ def cell():
     assert fake.estop.wait_for_service(timeout_sec=TIMEOUT)
     assert fake.reset.wait_for_service(timeout_sec=TIMEOUT)
     assert fake.fill.wait_for_service(timeout_sec=TIMEOUT)
-    assert _wait(node._run_client.server_is_ready)  # discovery of the fake device
-    assert _wait(node._feeder_fill_client.service_is_ready)
-    assert _wait(node._arm_client.server_is_ready)
+    assert _wait(node.ports.ready)  # discovery of the fake devices
     yield fake, states, process, stop
-    with node._lock:
-        node._run_id += 1  # no further run or SortCycle may start
+    assert node.cell.ask(node.cell.halt)[0]  # no further run or SortCycle may start
     fake.arm.hold.clear()
     fake.stations.hold.clear()
     fake.release.set()
@@ -451,6 +442,7 @@ def test_process_resumes_from_stopped(cell):
     assert _wait(lambda: len(fake.goals) == 1)
     assert _call(stop, CellStop.Request()).success
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.STOPPED)
+    assert _wait(lambda: fake.running == 0)  # the stopped run has ended
     fake.release.clear()
     fake.stop_reason, fake.success = "STOPPED_AT_EYE", True
     assert _call(process, CellProcess.Request()).success
@@ -904,22 +896,19 @@ def test_stop_lets_the_pallet_exchange_finish_but_starts_no_new_sortcycle(cell):
     assert states[-1].conveyor_status == ConveyorStatus.STOPPED
 
 
-def test_station_counts_follow_workcell_state(cell):
+def test_station_counts_follow_the_device_results(cell):
     fake, states, process, _ = cell
     assert _wait(lambda: states)
     assert [st.name.value for st in states[-1].stations] == ["WHITE", "GREEN", "BLUE", "SCRAP"]
 
-    fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 10, "BLUE": 0}, scrapped=7)
+    _scrapped_batch(fake, states, process, 7)
 
-    assert _wait(lambda: [st.count for st in states[-1].stations] == [3, 10, 0, 7])
-    fake.workcell.publish_pallets({"WHITE": 3, "GREEN": 0, "BLUE": 0})
-    assert _wait(lambda: _station(states, "GREEN").count == 0)
+    assert _wait(lambda: [st.count for st in states[-1].stations] == [1, 1, 1, 7])
 
 
 def _scrapped_batch(fake, states, process, scrapped, gears=MIXED_BATCH):
-    """The bin holds `scrapped` Gearwheels when the belt stops at the eye and sorting begins."""
-    fake.workcell.publish_pallets({}, scrapped=scrapped)
-    time.sleep(0.3)  # workcell/state reaches the orchestrator before the eye stop
+    """The exit eye counts `scrapped` Gearwheels on the run that stops at the eye."""
+    fake.exit_count_delta = scrapped
     _sorted_batch(fake, states, process, gears)
 
 
@@ -1060,10 +1049,23 @@ def test_reset_disables_every_button_until_empty(cell):
     _reset_released(fake, states)
 
 
+GREEN_BATCH = [
+    _belt_gear("belt-1", -0.4),
+    _belt_gear("belt-2", -0.3, intact=False, color="WHITE"),
+    _belt_gear("belt-3", -0.2),
+]
+
+
+def _loaded_stations(fake, states, process, gears=GREEN_BATCH, scrapped=5):
+    """Sorts one Batch with `scrapped` Gearwheels counted into the bin; the next run waits."""
+    _scrapped_batch(fake, states, process, scrapped, gears)
+    assert _wait(lambda: len(fake.goals) == 2)
+
+
 def test_reset_exchanges_only_the_non_empty_pallets_and_the_bin(cell):
-    fake, states, _, _ = cell
-    fake.workcell.publish_pallets({"GREEN": 3}, scrapped=5)
-    assert _wait(lambda: states and states[-1].stations[1].count == 3)
+    fake, states, process, _ = cell
+    _loaded_stations(fake, states, process)
+    assert [st.count for st in states[-1].stations] == [0, 2, 0, 5]
 
     assert _call(fake.reset, CellReset.Request()).success
     _reset_released(fake, states)
@@ -1093,11 +1095,10 @@ def test_reset_waits_for_the_held_gearwheel_to_be_dropped_then_exchanges_its_pal
 
     fake.arm.release.set()  # the cycle finishes: the Gearwheel lands on its Pallet
     assert _wait(lambda: fake.log.count("home") == 1)
-    fake.workcell.publish_pallets({"BLUE": 1})
     _reset_released(fake, states)
 
     assert len(fake.arm.goals) == 1  # the rest of the Batch is dropped, not sorted
-    assert fake.workcell.resets == ["BLUE"]
+    assert fake.workcell.resets == ["GREEN"]  # the lead Gearwheel's Pallet
     assert fake.log.index("home") < fake.log.index("belt:FLUSH")
 
 
@@ -1114,9 +1115,10 @@ def test_a_failed_flush_faults_the_cell(cell):
 
 
 def test_a_failed_station_exchange_during_reset_faults_the_cell(cell):
-    fake, states, _, _ = cell
-    fake.workcell.publish_pallets({"WHITE": 2})
-    assert _wait(lambda: states and states[-1].stations[0].count == 2)
+    fake, states, process, _ = cell
+    _loaded_stations(
+        fake, states, process, gears=[_belt_gear("belt-1", -0.4, color="WHITE")], scrapped=0
+    )
     fake.stations.success = False
 
     assert _call(fake.reset, CellReset.Request()).success
@@ -1125,3 +1127,84 @@ def test_a_failed_station_exchange_during_reset_faults_the_cell(cell):
 
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
     assert _wait(lambda: {"device": "station_white", "code": "EXCHANGE_FAULT_1"} in fake.faults)
+
+
+# Review follow-up (D33): no device result may be lost or applied to the wrong run.
+
+
+def test_a_pallet_exchange_failing_after_stop_still_faults_the_cell(cell):
+    fake, states, process, stop = cell
+    fake.workcell.full_colors = {"GREEN"}
+    fake.stations.hold.set()
+    fake.stations.success = False
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+    assert _wait(lambda: "exchange:GREEN" in fake.log)
+    assert _call(stop, CellStop.Request()).success
+
+    fake.stations.release.set()
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    assert _wait(lambda: fake.faults == [{"device": "station_green", "code": "EXCHANGE_FAULT_1"}])
+    assert fake.freezes == [True]
+
+
+def test_a_bin_exchange_failing_during_reset_still_faults_the_cell(cell):
+    fake, states, process, _ = cell
+    fake.stations.hold.set()
+    fake.stations.success = False
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
+    assert _wait(lambda: "exchange:SCRAP" in fake.log)
+    assert _call(fake.reset, CellReset.Request()).success
+
+    fake.stations.release.set()
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    assert _wait(lambda: {"device": "station_scrap", "code": "EXCHANGE_FAULT_1"} in fake.faults)
+    assert ConveyorRun.Goal.FLUSH not in fake.goals
+
+
+def test_the_flush_exit_count_decides_the_bin_exchange(cell):
+    fake, states, _, _ = cell
+    assert _call(fake.reset, CellReset.Request()).success
+    assert _wait(lambda: ConveyorRun.Goal.FLUSH in fake.goals)
+    fake.exit_count_delta = 4  # the bin was empty; the flush itself fills it
+
+    fake.release.set()
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.EMPTY)
+    assert fake.workcell.resets == ["SCRAP"]
+    assert fake.log.index("exchange_done:SCRAP") < fake.log.index("clear")
+
+
+def test_process_after_stop_waits_for_the_bin_instead_of_faulting(cell):
+    fake, states, process, stop = cell
+    fake.stations.hold.set()
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
+    assert _wait(lambda: fake.log.count("home") == 3)  # Batch sorted, the bin still away
+    assert _call(stop, CellStop.Request()).success
+
+    assert _call(process, CellProcess.Request()).success
+    time.sleep(0.3)
+    assert len(fake.goals) == 1  # no belt run while the bin is away
+    assert states[-1].conveyor_status == ConveyorStatus.FEEDING
+
+    fake.stations.release.set()
+    assert _wait(lambda: len(fake.goals) == 2)
+    assert fake.faults == []
+
+
+def test_process_after_stopping_the_final_flush_flushes_again(cell):
+    fake, states, process, stop = cell
+    _sorted_batch(fake, states, process, MIXED_BATCH, remaining=0)
+    assert _wait(lambda: fake.goals == [ConveyorRun.Goal.RUN_TO_PICKZONE, ConveyorRun.Goal.FLUSH])
+    assert _call(stop, CellStop.Request()).success
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.STOPPED)
+    assert _wait(lambda: fake.running == 0)  # the stopped run has ended
+    fake.release.clear()
+    fake.stop_reason, fake.success = "STOPPED_AT_EYE", True
+
+    assert _call(process, CellProcess.Request()).success
+
+    assert _wait(lambda: fake.goals[-1] == ConveyorRun.Goal.FLUSH and len(fake.goals) == 3)
+    fake.release.set()
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.EMPTY)
