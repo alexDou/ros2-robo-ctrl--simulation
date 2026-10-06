@@ -10,7 +10,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from robot_control_interfaces.action import ConveyorRun
-from robot_control_interfaces.srv import ConveyorStop
+from robot_control_interfaces.srv import ConveyorFreeze, ConveyorStop
 from std_msgs.msg import String
 
 from cell_devices.belt_sim import BeltParams
@@ -50,6 +50,9 @@ class ConveyorNode(Node):
         )
         self.create_timer(self._poll_period_s, self._poll, callback_group=group)
         self.create_service(ConveyorStop, "conveyor/stop", self._handle_stop, callback_group=group)
+        self.create_service(
+            ConveyorFreeze, "conveyor/freeze", self._handle_freeze, callback_group=group
+        )
         self._action = ActionServer(
             self,
             ConveyorRun,
@@ -135,6 +138,24 @@ class ConveyorNode(Node):
                 response.success, response.message = False, str(err)
                 return response
         response.success, response.message = True, "STOP sent"
+        return response
+
+    def _handle_freeze(self, request, response):
+        """The controller freezes every device, not just the belt; this node owns the link."""
+        with self._lock:
+            device = self._connected_device_locked()
+            try:
+                if device is None:
+                    raise FieldIoError("cell controller unreachable")
+                if request.freeze:
+                    device.freeze()
+                else:
+                    device.release_freeze()
+            except FieldIoError as err:
+                self._drop_connection_locked()
+                response.success, response.message = False, str(err)
+                return response
+        response.success, response.message = True, "FREEZE sent" if request.freeze else "RELEASED"
         return response
 
     def _on_goal(self, goal_request) -> GoalResponse:

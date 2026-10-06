@@ -342,6 +342,10 @@ class EdgeBridgeCommandsMixin:
             except Exception as e:
                 self.get_logger().warning(f"Failed to cancel active PickAndPlace: {e}")
 
+        # Fire and forget: the devices freeze and the cell goes FAULT without blocking the stop.
+        if self._cell_estop_client is not None:
+            self._cell_estop_client.call_async(CellStop.Request())
+
         return self.publish_telemetry(command_id=command_id)
 
     def handle_reset_fault(self, command_id: str | None = None) -> RobotTelemetryEvent:

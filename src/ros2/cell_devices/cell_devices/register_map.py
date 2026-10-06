@@ -19,6 +19,13 @@ class BeltCmd(IntEnum):
     STOP = 3
 
 
+class CellCmd(IntEnum):
+    NONE = 0
+    FREEZE = 1
+    RELEASE_FREEZE = 2
+    FAULT_ACK = 3
+
+
 class BeltState(IntEnum):
     IDLE = 0
     RUNNING = 1

@@ -1,0 +1,6 @@
+# Request
+bool freeze
+---
+# Response
+bool success
+string message

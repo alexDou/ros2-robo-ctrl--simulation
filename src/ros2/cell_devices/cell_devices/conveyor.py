@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 
 from cell_devices.field_io import FieldIoPort
-from cell_devices.register_map import HOLDING, INPUT, BeltCmd, BeltState
+from cell_devices.register_map import HOLDING, INPUT, BeltCmd, BeltState, CellCmd
 
 _SEQ_MOD = 2**16
 _COUNTER_MOD = 2**16
@@ -42,6 +42,7 @@ class ConveyorDevice:
         self._seq = io.read_holding(HOLDING["belt_seq"], 1)[0]
         self._last_exit_raw = io.read_input(INPUT["exit_count"], 1)[0]
         self._exit_total = 0
+        self._cell_seq = io.read_holding(HOLDING["cell_seq"], 1)[0]
 
     def run_to_pickzone(self) -> None:
         self._send(BeltCmd.RUN_TO_PICKZONE)
@@ -51,6 +52,13 @@ class ConveyorDevice:
 
     def stop(self) -> None:
         self._send(BeltCmd.STOP)
+
+    def freeze(self) -> None:
+        """Cell-wide FREEZE (EmergencyStop): every drive and valve motion stops at once."""
+        self._send_cell(CellCmd.FREEZE)
+
+    def release_freeze(self) -> None:
+        self._send_cell(CellCmd.RELEASE_FREEZE)
 
     def poll(self) -> ConveyorStatus:
         first = INPUT["belt_state"]
@@ -71,3 +79,7 @@ class ConveyorDevice:
     def _send(self, cmd: BeltCmd) -> None:
         self._seq = self._seq % (_SEQ_MOD - 1) + 1  # 1..65535, never 0
         self._io.write_holding(HOLDING["belt_cmd"], [int(cmd), self._seq])
+
+    def _send_cell(self, cmd: CellCmd) -> None:
+        self._cell_seq = self._cell_seq % (_SEQ_MOD - 1) + 1
+        self._io.write_holding(HOLDING["cell_cmd"], [int(cmd), self._cell_seq])

@@ -18,6 +18,7 @@ from robot_control_interfaces.srv import (
     CellProcess,
     CellStop,
     CommitDrop,
+    ConveyorFreeze,
     ConveyorStop,
     FeederEnable,
     FeederFill,
@@ -56,6 +57,8 @@ class FakeConveyor:
             callback_group=group,
         )
         node.create_service(ConveyorStop, "conveyor/stop", self._stop, callback_group=group)
+        self.freezes: list[bool] = []
+        node.create_service(ConveyorFreeze, "conveyor/freeze", self._freeze, callback_group=group)
         self.status_pub = node.create_publisher(String, "conveyor/status", 10)
 
     def _execute(self, goal_handle):
@@ -80,6 +83,11 @@ class FakeConveyor:
             return result
         finally:
             self.running -= 1
+
+    def _freeze(self, req, res):
+        self.freezes.append(req.freeze)
+        res.success = True
+        return res
 
     def _stop(self, _req, res):
         self.stop_calls += 1
@@ -311,6 +319,7 @@ def cell():
     )
     process = client.create_client(CellProcess, "cell/process")
     stop = client.create_client(CellStop, "cell/stop")
+    fake.estop = client.create_client(CellStop, "cell/emergency_stop")
     executor = MultiThreadedExecutor(num_threads=6)
     for n in (node, fake_node, client):
         executor.add_node(n)
@@ -318,6 +327,7 @@ def cell():
     spinner.start()
     assert process.wait_for_service(timeout_sec=TIMEOUT)
     assert stop.wait_for_service(timeout_sec=TIMEOUT)
+    assert fake.estop.wait_for_service(timeout_sec=TIMEOUT)
     assert fake.fill.wait_for_service(timeout_sec=TIMEOUT)
     assert _wait(node._run_client.server_is_ready)  # discovery of the fake device
     assert _wait(node._feeder_fill_client.service_is_ready)
@@ -695,6 +705,35 @@ def test_stop_lets_the_in_flight_sortcycle_finish_and_process_resumes_sorting(ce
     assert _wait(lambda: len(fake.arm.goals) == 2)  # resumes the Batch, not a belt run
     assert fake.goals == [ConveyorRun.Goal.RUN_TO_PICKZONE]
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.HALTED)
+
+
+@pytest.mark.parametrize("phase", ["feeding", "sorting"])
+def test_emergency_stop_freezes_the_devices_and_faults_the_cell(cell, phase):
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    if phase == "sorting":
+        fake.publish_encoder(500.0, MIXED_BATCH)
+        assert _wait(lambda: len(states[-1].belt_gears) == len(MIXED_BATCH))
+        fake.release.set()
+        assert _wait(lambda: len(fake.arm.goals) == 1)
+
+    assert _call(fake.estop, CellStop.Request()).success
+    assert fake.freezes == [True]
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+
+    fake.arm.release.set()  # the arm finishing late must not revive the cell
+    time.sleep(0.3)
+    assert states[-1].conveyor_status == ConveyorStatus.FAULT
+    assert len(fake.arm.goals) <= 1  # no new SortCycle
+
+
+def test_emergency_stop_works_in_any_state(cell):
+    fake, states, _, _ = cell
+    assert _call(fake.estop, CellStop.Request()).success
+    assert fake.freezes == [True]
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
 
 
 def test_failed_pickandplace_faults_the_cell(cell):

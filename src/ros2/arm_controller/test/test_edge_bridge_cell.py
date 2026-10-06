@@ -218,3 +218,19 @@ def test_cell_command_without_orchestrator_reports_service_unavailable(make_swit
         executor.shutdown()
         node.close()
         node.destroy_node()
+
+
+def test_emergency_stop_freezes_the_belt_and_faults_the_cell(edge):
+    node, plc = edge
+    _fill(node)
+    node.handle_command(_command(CommandType.CELL_PROCESS, "cell-process-3"))
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.FEEDING)
+
+    node.handle_command(_command(CommandType.EMERGENCY_STOP, "estop-1"))
+
+    assert node.robot_state == RobotState.FAULT
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.FAULT)
+    time.sleep(0.3)  # the controller executes FREEZE on its next tick
+    frozen = plc.encoder_counts
+    time.sleep(0.4)
+    assert plc.encoder_counts == frozen

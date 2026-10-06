@@ -1,13 +1,13 @@
 ---
 # hand-sim-m1za
 title: 'Unit 9.19: Stop and EmergencyStop across all devices'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:40Z
-updated_at: 2026-10-04T13:36:35Z
+updated_at: 2026-10-06T08:27:23Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-2hi0
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-2hi0 (17)
+
+Done: virtual_plc FREEZE/RELEASE_FREEZE (cell_cmd), conveyor/freeze service, cell/emergency_stop in orchestrator (cell FAULT), EdgeNode EmergencyStop calls it. Stop semantics already covered. RELEASE_FREEZE is wired by the flush-reset ticket.

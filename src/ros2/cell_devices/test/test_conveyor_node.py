@@ -15,7 +15,7 @@ from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
 from robot_control_interfaces.action import ConveyorRun
-from robot_control_interfaces.srv import ConveyorStop
+from robot_control_interfaces.srv import ConveyorFreeze, ConveyorStop
 from std_msgs.msg import String
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
@@ -151,3 +151,26 @@ def test_status_carries_gears_tracked_from_placement_records(cell):
     assert (gear["color"], gear["intact"]) == ("BLUE", False)
     assert gear["x"] == pytest.approx(0.4 + 0.01)
     assert gear["y"] == pytest.approx(0.85, abs=0.01)
+
+
+def test_freeze_service_halts_the_belt_until_released(cell):
+    plc, _, _ = cell
+    plc.add_belt_item(at_mm=0.0)
+    caller = rclpy.create_node("conveyor_freeze_caller")
+    client = caller.create_client(ConveyorFreeze, "conveyor/freeze")
+    assert client.wait_for_service(timeout_sec=TIMEOUT)
+
+    def call(freeze):
+        future = client.call_async(ConveyorFreeze.Request(freeze=freeze))
+        rclpy.spin_until_future_complete(caller, future, timeout_sec=TIMEOUT)
+        return future.result()
+
+    try:
+        assert call(True).success
+        time.sleep(0.2)  # the controller executes it on its next tick
+        frozen_at = plc.encoder_counts
+        time.sleep(0.2)
+        assert plc.encoder_counts == frozen_at
+        assert call(False).success
+    finally:
+        caller.destroy_node()

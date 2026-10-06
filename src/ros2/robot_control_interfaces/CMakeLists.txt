@@ -16,6 +16,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ConveyorRun.action"
   "action/StationExchange.action"
   "srv/ConveyorStop.srv"
+  "srv/ConveyorFreeze.srv"
   "srv/CellFill.srv"
   "srv/CellProcess.srv"
   "srv/FeederFill.srv"

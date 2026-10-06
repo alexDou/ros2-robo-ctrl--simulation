@@ -73,6 +73,10 @@ class BeltSim:
             self._moving_cmd = BeltCmd.NONE
             self._settle(BeltState.IDLE)
 
+    def halt(self) -> None:
+        """FREEZE: the drive stops dead (no ramp); the run command is kept so RELEASE resumes it."""
+        self.velocity_mm_s = 0.0
+
     def step(self, dt: float, scrap_home: bool) -> None:
         target = self.params.speed_mm_s if self._moving_cmd != BeltCmd.NONE else 0.0
         delta = self.params.accel_mm_s2 * dt

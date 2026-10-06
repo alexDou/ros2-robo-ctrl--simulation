@@ -277,7 +277,12 @@ class EdgeBridgeTelemetryMixin:
                 self.destroy_subscription(self._workcell_state_sub)
             self._workcell_state_sub = None
 
-        for attr in ("_cell_fill_client", "_cell_process_client", "_cell_stop_client"):
+        for attr in (
+            "_cell_fill_client",
+            "_cell_process_client",
+            "_cell_stop_client",
+            "_cell_estop_client",
+        ):
             client = getattr(self, attr)
             if client is not None:
                 with contextlib.suppress(Exception):

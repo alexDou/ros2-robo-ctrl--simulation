@@ -26,6 +26,7 @@ from cell_devices.register_map import (
     STATIONS,
     BeltCmd,
     BeltState,
+    CellCmd,
     FeederCmd,
     StationState,
 )
@@ -77,6 +78,8 @@ class VirtualPlcServer:
         self._last_belt_seq = 0
         self._last_feeder_seq = 0
         self._prev_belt_state = BeltState.IDLE
+        self._last_cell_seq = 0
+        self._frozen = False
         size = RING_BASE + RING_ENTRIES * RING_WORDS
         self._context = ModbusSlaveContext(
             hr=ModbusSequentialDataBlock(0, [0] * size),
@@ -139,9 +142,23 @@ class VirtualPlcServer:
             for seq_name, ack_name in _ECHO_PAIRS:
                 (seq,) = self._context.getValues(_FC_HOLDING, HOLDING[seq_name], 1)
                 self._context.setValues(_FC_INPUT, INPUT[ack_name], [seq])
+            self._tick_cell()
+            # FREEZE halts every motion: the sims see no time pass until it is released.
+            dt = 0.0 if self._frozen else dt
             self._tick_stations(dt)
             self._tick_belt(dt)
             self._tick_feeder(dt)
+
+    def _tick_cell(self) -> None:
+        cmd, seq = self._context.getValues(_FC_HOLDING, HOLDING["cell_cmd"], 2)
+        if seq == self._last_cell_seq:
+            return
+        self._last_cell_seq = seq
+        if cmd == CellCmd.FREEZE:
+            self._frozen = True
+            self._belt.halt()
+        elif cmd == CellCmd.RELEASE_FREEZE:
+            self._frozen = False
 
     def _tick_stations(self, dt: float) -> None:
         for name, station in self._stations.items():

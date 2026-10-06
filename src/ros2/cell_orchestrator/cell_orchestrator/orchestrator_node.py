@@ -30,6 +30,7 @@ from robot_control_interfaces.srv import (
     CellProcess,
     CellStop,
     CommitDrop,
+    ConveyorFreeze,
     ConveyorStop,
     FeederEnable,
     FeederFill,
@@ -107,6 +108,9 @@ class CellOrchestratorNode(Node):
         self._state_pub = self.create_publisher(String, "cell/state", _STATE_QOS)
         self._run_client = ActionClient(self, ConveyorRun, "conveyor/run", callback_group=group)
         self._stop_client = self.create_client(ConveyorStop, "conveyor/stop", callback_group=group)
+        self._freeze_client = self.create_client(
+            ConveyorFreeze, "conveyor/freeze", callback_group=group
+        )
         self._feeder_fill_client = self.create_client(
             FeederFill, "feeder/fill", callback_group=group
         )
@@ -152,6 +156,9 @@ class CellOrchestratorNode(Node):
         )
         self.create_service(CellProcess, "cell/process", self._on_process, callback_group=group)
         self.create_service(CellStop, "cell/stop", self._on_stop, callback_group=group)
+        self.create_service(
+            CellStop, "cell/emergency_stop", self._on_emergency_stop, callback_group=group
+        )
         self.create_timer(1.0 / _OFFSET_PUBLISH_HZ, self._on_offset_timer, callback_group=group)
         self._publish_state()
 
@@ -591,6 +598,24 @@ class CellOrchestratorNode(Node):
             )
         response.success, response.message = True, "Stop accepted"
         return response
+
+    def _on_emergency_stop(self, _request, response):
+        """Software EmergencyStop: FREEZE every device at once, cell FAULT in any state."""
+        with self._lock:
+            self._status = ConveyorStatus.FAULT
+            self._run_id += 1  # no further run or SortCycle starts, late results are ignored
+        # Freeze first: the status publish must never delay the devices.
+        self._freeze_client.call_async(ConveyorFreeze.Request(freeze=True)).add_done_callback(
+            self._on_freeze_response
+        )
+        self._publish_state()
+        response.success, response.message = True, "EmergencyStop accepted"
+        return response
+
+    def _on_freeze_response(self, future: Any) -> None:
+        result = future.result()
+        if result is None or not result.success:
+            self.get_logger().error("Device freeze failed; hardware E-stop chain must act")
 
     def _on_stop_response(self, future: Any) -> None:
         result = future.result()
