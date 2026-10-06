@@ -3,7 +3,17 @@
 from dataclasses import dataclass
 
 from cell_devices.field_io import FieldIoPort
-from cell_devices.register_map import HOLDING, INPUT, BeltCmd, BeltState, CellCmd
+from cell_devices.register_map import (
+    HOLDING,
+    INPUT,
+    STATIONS,
+    BeltCmd,
+    BeltState,
+    CellCmd,
+    FeederState,
+    Interlock,
+    StationState,
+)
 
 _SEQ_MOD = 2**16
 _COUNTER_MOD = 2**16
@@ -23,6 +33,8 @@ class ConveyorStatus:
     encoder_mm: float
     exit_count_total: int  # unwrapped, since this device was created
     acked: bool  # the controller has executed the latest intent
+    belt_fault: int = 0  # drive fault code while FAULT
+    interlocks: Interlock = Interlock(0)  # the cell-wide word; this node owns the cell block
 
     @property
     def settled(self) -> bool:
@@ -63,10 +75,28 @@ class ConveyorDevice:
     def release_freeze(self) -> None:
         self._send_cell(CellCmd.RELEASE_FREEZE)
 
+    def fault_ack(self) -> None:
+        """Clears latched device faults; a faulted station drives back HOME by itself."""
+        self._send_cell(CellCmd.FAULT_ACK)
+
+    def recovered(self) -> bool:
+        """After FAULT_ACK: acked, no device in FAULT and every station HOME."""
+        if self._io.read_input(INPUT["cell_ack_seq"], 1)[0] != self._cell_seq:
+            return False
+        first, last = INPUT["belt_state"], INPUT["interlocks"]
+        words = self._io.read_input(first, last - first + 1)
+        reg = {name: words[addr - first] for name, addr in INPUT.items() if first <= addr <= last}
+        return (
+            reg["belt_state"] != BeltState.FAULT
+            and reg["feeder_state"] != FeederState.FAULT
+            and all(reg[f"station_{s}_state"] == StationState.HOME for s in STATIONS)
+        )
+
     def poll(self) -> ConveyorStatus:
         first = INPUT["belt_state"]
-        last = INPUT["exit_count"]
+        last = INPUT["belt_fault"]
         words = self._io.read_input(first, last - first + 1)
+        (interlocks,) = self._io.read_input(INPUT["interlocks"], 1)
         reg = {name: words[addr - first] for name, addr in INPUT.items() if first <= addr <= last}
 
         self._exit_total += (reg["exit_count"] - self._last_exit_raw) % _COUNTER_MOD
@@ -77,6 +107,8 @@ class ConveyorDevice:
             encoder_mm=counts / self._counts_per_mm,
             exit_count_total=self._exit_total,
             acked=reg["belt_ack_seq"] == self._seq,
+            belt_fault=reg["belt_fault"],
+            interlocks=Interlock(interlocks),
         )
 
     def _send(self, cmd: BeltCmd) -> None:

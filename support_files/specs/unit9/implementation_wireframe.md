@@ -91,6 +91,9 @@ Rules: every command word has a matching sequence register, and the controller e
 - The Pallet stop gate is held at the PalletStation unless EXCHANGE.
 - An end sensor not reached within its timeout → station FAULT.
 - FREEZE stops every drive and valve motion immediately.
+- FAULT_ACK clears latched drive, FlexFeeder and station faults; a faulted station drives back HOME (reference run). The flush reset after a FAULT releases the freeze and acknowledges before anything else moves.
+- `interlocks`: a bit that drops is a device fault for the orchestrator (drives_ok → conveyor, estop_chain_ok → safety); the FlexFeeder reports its own FAULT with a code.
+- The Pallet stop gate is implicit in the station machine: a Pallet leaves its PalletStation only on EXCHANGE.
 
 ---
 

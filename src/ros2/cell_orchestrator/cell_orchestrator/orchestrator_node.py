@@ -70,18 +70,22 @@ class CellOrchestratorNode(Node):
             raw = json.loads(msg.data)
             offset_m = float(raw["encoder_mm"]) / 1000.0
             gears = [BeltGear(**g) for g in raw.get("gears", [])]
+            interlocks = {str(k): bool(v) for k, v in raw.get("interlocks", {}).items()}
+            belt_fault = int(raw.get("belt_fault", 0))
         except (ValueError, KeyError, TypeError):
             self.get_logger().warning("Ignoring malformed conveyor/status", throttle_duration_sec=5)
             return
-        self.cell.post(self.cell.on_belt_status, offset_m, gears)
+        self.cell.post(self.cell.on_belt_status, offset_m, gears, interlocks, belt_fault)
 
     def _on_feeder_status(self, msg: String) -> None:
         try:
-            remaining = int(json.loads(msg.data)["remaining"])
+            raw = json.loads(msg.data)
+            remaining = int(raw["remaining"])
+            state, fault = str(raw.get("state", "")), int(raw.get("fault", 0))
         except (ValueError, KeyError, TypeError):
             self.get_logger().warning("Ignoring malformed feeder/status", throttle_duration_sec=5)
             return
-        self.cell.post(self.cell.on_feeder_remaining, remaining)
+        self.cell.post(self.cell.on_feeder_status, remaining, state, fault)
 
     @staticmethod
     def _respond(response, outcome: tuple[bool, str]):

@@ -14,6 +14,7 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.qos import DurabilityPolicy, QoSProfile, ReliabilityPolicy
 from robot_control_interfaces.action import ConveyorRun, PickAndPlace, StationExchange
 from robot_control_interfaces.srv import (
+    CellFaultAck,
     CellFill,
     CellProcess,
     CellReset,
@@ -65,6 +66,9 @@ class FakeConveyor:
         node.create_service(ConveyorFinish, "conveyor/finish", self._finish, callback_group=group)
         self.freezes: list[bool] = []
         node.create_service(ConveyorFreeze, "conveyor/freeze", self._freeze, callback_group=group)
+        self.fault_acks = 0
+        self.fault_ack_ok = True
+        node.create_service(CellFaultAck, "cell/fault_ack", self._fault_ack, callback_group=group)
         self.status_pub = node.create_publisher(String, "conveyor/status", 10)
 
     def _execute(self, goal_handle):
@@ -90,6 +94,15 @@ class FakeConveyor:
         finally:
             self.running -= 1
 
+    def frozen(self) -> bool:
+        return bool(self.freezes) and self.freezes[-1]
+
+    def _fault_ack(self, _req, res):
+        self.fault_acks += 1
+        self.log.append("fault_ack")
+        res.success = self.fault_ack_ok
+        return res
+
     def _freeze(self, req, res):
         self.freezes.append(req.freeze)
         res.success = True
@@ -108,8 +121,18 @@ class FakeConveyor:
         res.success = True
         return res
 
-    def publish_encoder(self, mm: float, gears: list[dict] | None = None) -> None:
-        status = {"state": "RUNNING", "encoder_mm": mm, "exit_count_total": 0, "gears": gears or []}
+    def publish_encoder(
+        self, mm: float, gears: list[dict] | None = None, belt_fault: int = 0, **interlocks: bool
+    ) -> None:
+        ok = {"bin_home": True, "feeder_ok": True, "drives_ok": True, "estop_chain_ok": True}
+        status = {
+            "state": "FAULT" if belt_fault else "RUNNING",
+            "encoder_mm": mm,
+            "exit_count_total": 0,
+            "belt_fault": belt_fault,
+            "interlocks": {**ok, **interlocks},
+            "gears": gears or [],
+        }
         self.status_pub.publish(String(data=json.dumps(status)))
 
 
@@ -170,8 +193,9 @@ class FakeArm:
 class FakeStations:
     """Stands in for the three PalletStation and the ScrapBin device nodes: an exchange is held until released."""
 
-    def __init__(self, node, log: list[str]) -> None:
+    def __init__(self, node, log: list[str], frozen=lambda: False) -> None:
         self.log = log
+        self.frozen = frozen  # a FREEZE holds every exchange where it is
         self.hold = threading.Event()  # set -> exchanges wait for `release`
         self.release = threading.Event()
         self.success = True
@@ -196,6 +220,8 @@ class FakeStations:
             while self.hold.is_set() and not self.release.wait(0.01):
                 pass
             self.release.clear()
+            while self.frozen():
+                time.sleep(0.01)
             for state in ("AWAY", "RETURNING"):
                 goal_handle.publish_feedback(StationExchange.Feedback(exchange_state=state))
                 time.sleep(0.02)
@@ -243,8 +269,9 @@ class FakeFeeder:
         res.success = True
         return res
 
-    def publish(self, remaining: int, state: str = "PLACING") -> None:
-        self.status_pub.publish(String(data=json.dumps({"state": state, "remaining": remaining})))
+    def publish(self, remaining: int, state: str = "PLACING", fault: int = 0) -> None:
+        status = {"state": state, "remaining": remaining, "fault": fault}
+        self.status_pub.publish(String(data=json.dumps(status)))
 
 
 class FakeWorkcell:
@@ -347,7 +374,7 @@ def cell():
     client.create_subscription(
         String, "cell/fault", lambda m: fake.faults.append(json.loads(m.data)), 10
     )
-    fake.stations = FakeStations(fake_node, log)
+    fake.stations = FakeStations(fake_node, log, frozen=fake.frozen)
     fake.arm.hold.set()  # a SortCycle stays in flight until a test releases the arm
     fake.fill = client.create_client(CellFill, "cell/fill")
     states: list[CellState] = []
@@ -1331,3 +1358,96 @@ def test_an_arm_stopped_after_its_drop_holds_nothing_to_place(cell):
     _reset_released(fake, states)
 
     assert len(fake.arm.goals) == 1
+
+
+# hand-sim-7kss: device faults reported by status, and recovery through FAULT_ACK.
+
+
+def _faults_from_status(fake, publish, expected):
+    def raised() -> bool:
+        publish()  # a first message can precede subscription matching
+        return expected in fake.faults
+
+    assert _wait(raised)
+
+
+def test_a_drive_fault_in_the_belt_status_faults_the_cell_even_when_idle(cell):
+    fake, states, _, _ = cell
+
+    _faults_from_status(
+        fake,
+        lambda: fake.publish_encoder(0.0, belt_fault=7, drives_ok=False),
+        {"device": "conveyor", "code": "DRIVE_FAULT_7"},
+    )
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    time.sleep(0.2)
+    assert (
+        fake.faults.count({"device": "conveyor", "code": "DRIVE_FAULT_7"}) == 1
+    )  # edge, not level
+    assert fake.freezes == [True]
+
+
+def test_a_feeder_fault_in_its_status_faults_the_cell(cell):
+    fake, states, _, _ = cell
+
+    _faults_from_status(
+        fake,
+        lambda: fake.feeder.publish(40, state="FAULT", fault=3),
+        {"device": "feeder", "code": "FEEDER_FAULT_3"},
+    )
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+
+
+def test_an_open_estop_chain_faults_the_cell(cell):
+    fake, _, _, _ = cell
+
+    _faults_from_status(
+        fake,
+        lambda: fake.publish_encoder(0.0, estop_chain_ok=False),
+        {"device": "safety", "code": "ESTOP_CHAIN_OPEN"},
+    )
+
+
+def test_reset_after_a_fault_acknowledges_it_before_anything_moves(cell):
+    fake, states, _, _ = cell
+    _faults_from_status(
+        fake,
+        lambda: fake.publish_encoder(0.0, belt_fault=7, drives_ok=False),
+        {"device": "conveyor", "code": "DRIVE_FAULT_7"},
+    )
+    fake.publish_encoder(0.0)  # the ack will clear it; the edge must not re-raise meanwhile
+
+    assert _call(fake.reset, CellReset.Request()).success
+    _reset_released(fake, states)
+
+    assert fake.freezes == [True, False]
+    assert fake.log.index("fault_ack") < fake.log.index("belt:FLUSH")
+
+
+def test_a_failed_fault_ack_keeps_the_cell_in_fault(cell):
+    fake, states, _, _ = cell
+    assert _call(fake.estop, CellStop.Request()).success
+    fake.fault_ack_ok = False
+
+    assert _call(fake.reset, CellReset.Request()).success
+
+    assert _wait(lambda: {"device": "cell", "code": "FAULT_ACK_FAILED"} in fake.faults)
+    assert states[-1].conveyor_status == ConveyorStatus.FAULT
+    assert ConveyorRun.Goal.FLUSH not in fake.goals
+
+
+def test_reset_after_an_estop_during_an_exchange_releases_it_and_ends_empty(cell):
+    fake, states, process, _ = cell
+    fake.workcell.full_colors = {"GREEN"}
+    fake.stations.hold.set()
+    _sorted_batch(fake, states, process, MIXED_BATCH)
+    assert _wait(lambda: "exchange:GREEN" in fake.log)
+    assert _call(fake.estop, CellStop.Request()).success
+    fake.stations.release.set()  # the lane would go on, but the FREEZE holds it
+
+    assert _call(fake.reset, CellReset.Request()).success
+    _reset_released(fake, states)  # deadlocked before: the reset waited for a frozen exchange
+
+    assert fake.workcell.resets[0] == "GREEN"

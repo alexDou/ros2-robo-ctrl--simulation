@@ -52,6 +52,17 @@ class StationSim:
             raise ValueError(f"unknown end sensor {end!r}")
         self._dead_sensors.add(end)
 
+    def repair_sensor(self, end: str) -> None:
+        """SIM seam: the end sensor works again (maintenance before FAULT_ACK)."""
+        self._dead_sensors.discard(end)
+
+    def ack_fault(self) -> None:
+        """FAULT_ACK: the latch clears and the station drives back HOME (its reference run)."""
+        if self.state == StationState.FAULT:
+            self.state = StationState.RETURNING
+            self.fault = FAULT_NONE
+            self._elapsed = 0.0
+
     def force(self, state: StationState) -> None:
         """SIM seam: park the station in `state`; it stays there."""
         self.state = state

@@ -47,6 +47,9 @@ class Cell:
         self._feed_waits_for_bin = False
         self._reset: FlushReset | None = None
         self._published_belt: tuple[float, list[BeltGear]] | None = None
+        self._interlocks: dict[str, bool] = {}  # last seen; a bit that drops is a device fault
+        self._belt_fault = 0
+        self._feeder_state = ""
         self._closed = False
         self._loop = EventLoop(logger)
         self.post(self._publish)
@@ -129,10 +132,23 @@ class Cell:
         return True, "Reset started"
 
     # Status updates
-    def on_belt_status(self, offset_m: float, gears: list[BeltGear]) -> None:
+    def on_belt_status(
+        self, offset_m: float, gears: list[BeltGear], interlocks: dict[str, bool], belt_fault: int
+    ) -> None:
         self.model.belt_offset_m, self.model.belt_gears = offset_m, gears
+        self._belt_fault = belt_fault
+        # Edge-triggered: a latched fault raises once, and FAULT_ACK clears it before the next.
+        lost = {k for k, ok in interlocks.items() if not ok and self._interlocks.get(k, True)}
+        self._interlocks = interlocks
+        if "drives_ok" in lost:
+            self.fault("conveyor", f"DRIVE_FAULT_{belt_fault}")
+        if "estop_chain_ok" in lost:
+            self.fault("safety", "ESTOP_CHAIN_OPEN")
 
-    def on_feeder_remaining(self, remaining: int) -> None:
+    def on_feeder_status(self, remaining: int, state: str, fault: int) -> None:
+        if state == "FAULT" and self._feeder_state != "FAULT":
+            self.fault("feeder", f"FEEDER_FAULT_{fault}")
+        self._feeder_state = state
         if remaining != self.model.feeder_remaining:
             self.model.feeder_remaining = remaining
             self._publish()
@@ -183,7 +199,12 @@ class Cell:
             self.model.forget_belt()
             self._set_status(ConveyorStatus.EMPTY)
         else:
-            self.fault("conveyor", reason or "RUN_FAILED")
+            code = (
+                f"DRIVE_FAULT_{self._belt_fault}"
+                if reason == "FAULT" and self._belt_fault
+                else reason
+            )
+            self.fault("conveyor", code or "RUN_FAILED")
 
     def _at_eye_stop(self) -> None:
         """Register the Batch lead first, start the BinExchange if due, then sort."""
@@ -203,6 +224,12 @@ class Cell:
             self._next_cycle()
 
     # SortCycles
+    def belt_running(self) -> bool:
+        return self._belt_mode is not None
+
+    def reset_owner(self) -> FlushReset | None:
+        return self._reset
+
     def busy(self) -> bool:
         return self._sorting is not None or bool(self.exchanging) or self._belt_mode is not None
 

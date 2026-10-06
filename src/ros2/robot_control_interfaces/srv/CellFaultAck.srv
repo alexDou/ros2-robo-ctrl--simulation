@@ -1,0 +1,6 @@
+# FAULT_ACK on the cell controller: latched drive, FlexFeeder and station faults clear, a faulted
+# station drives back HOME. Responds once no device is in FAULT and every station is HOME again
+# (success), or after a timeout (failure: the device still needs maintenance).
+---
+bool success
+string message

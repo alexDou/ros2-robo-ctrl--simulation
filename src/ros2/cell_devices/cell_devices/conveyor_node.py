@@ -9,7 +9,12 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from robot_control_interfaces.action import ConveyorRun
-from robot_control_interfaces.srv import ConveyorFinish, ConveyorFreeze, ConveyorStop
+from robot_control_interfaces.srv import (
+    CellFaultAck,
+    ConveyorFinish,
+    ConveyorFreeze,
+    ConveyorStop,
+)
 from std_msgs.msg import String
 
 from cell_devices.belt_sim import BeltParams
@@ -19,9 +24,11 @@ from cell_devices.device_link import DeviceLink
 from cell_devices.feeder_sim import FeederParams
 from cell_devices.field_io import FieldIoError
 from cell_devices.flexfeeder import PlacementRecord
-from cell_devices.register_map import BeltState
+from cell_devices.register_map import BeltState, Interlock
 
 _SUCCESS_STATES = (BeltState.STOPPED_AT_EYE, BeltState.FLUSH_DONE)
+# A faulted station returns HOME after FAULT_ACK: longest leg (BinExchange return) x timeout factor.
+_RECOVER_TIMEOUT_S = 20.0
 
 
 class ConveyorNode(Node):
@@ -58,6 +65,9 @@ class ConveyorNode(Node):
         )
         self.create_service(
             ConveyorFreeze, "conveyor/freeze", self._handle_freeze, callback_group=group
+        )
+        self.create_service(
+            CellFaultAck, "cell/fault_ack", self._handle_fault_ack, callback_group=group
         )
         self._action = ActionServer(
             self,
@@ -108,6 +118,10 @@ class ConveyorNode(Node):
                         "state": status.state.name,
                         "encoder_mm": status.encoder_mm,
                         "exit_count_total": status.exit_count_total,
+                        "belt_fault": status.belt_fault,
+                        "interlocks": {
+                            flag.name.lower(): bool(status.interlocks & flag) for flag in Interlock
+                        },
                         "gears": gears,
                     }
                 )
@@ -135,6 +149,33 @@ class ConveyorNode(Node):
             if self._goal_active:
                 self._finish_requested = True
         response.success, response.message = True, "FINISH requested"
+        return response
+
+    def _handle_fault_ack(self, _request, response):
+        """FAULT_ACK, then wait until no device is in FAULT and every station is HOME again."""
+        with self._lock:
+            device = self._link.device_locked()
+            try:
+                if device is None:
+                    raise FieldIoError("cell controller unreachable")
+                device.fault_ack()
+            except FieldIoError as err:
+                self._link.drop_locked()
+                response.success, response.message = False, str(err)
+                return response
+        deadline = time.monotonic() + _RECOVER_TIMEOUT_S
+        while time.monotonic() < deadline:
+            with self._lock:
+                try:
+                    if device.recovered():
+                        response.success, response.message = True, "Faults acknowledged"
+                        return response
+                except FieldIoError as err:
+                    self._link.drop_locked()
+                    response.success, response.message = False, str(err)
+                    return response
+            time.sleep(self._poll_period_s)
+        response.success, response.message = False, "Cell did not recover after FAULT_ACK"
         return response
 
     def _handle_freeze(self, request, response):

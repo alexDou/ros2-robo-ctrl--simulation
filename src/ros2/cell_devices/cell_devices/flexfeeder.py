@@ -31,6 +31,7 @@ class FeederStatus:
     state: FeederState
     remaining: int
     acked: bool  # the controller has executed the latest intent
+    fault: int  # module fault code while FAULT
     new_placements: list[PlacementRecord]  # each placement is reported exactly once, in order
 
 
@@ -67,6 +68,7 @@ class FlexFeederDevice:
             state=FeederState(reg["feeder_state"]),
             remaining=reg["remaining"],
             acked=reg["feeder_ack_seq"] == self._seq,
+            fault=reg["feeder_fault"],
             new_placements=self._read_new_placements(reg["placement_count"]),
         )
 

@@ -28,6 +28,8 @@ from cell_devices.register_map import (
     BeltState,
     CellCmd,
     FeederCmd,
+    FeederState,
+    Interlock,
     StationState,
 )
 from cell_devices.station_sim import BIN_EXCHANGE, PALLET_EXCHANGE, StationParams, StationSim
@@ -80,6 +82,7 @@ class VirtualPlcServer:
         self._prev_belt_state = BeltState.IDLE
         self._last_cell_seq = 0
         self._frozen = False
+        self._estop_chain_ok = True
         size = RING_BASE + RING_ENTRIES * RING_WORDS
         self._context = ModbusSlaveContext(
             hr=ModbusSequentialDataBlock(0, [0] * size),
@@ -137,6 +140,26 @@ class VirtualPlcServer:
         with self._lock:
             self._stations[station].break_sensor(end)
 
+    def repair_station_sensor(self, station: str, end: str) -> None:
+        """SIM seam: the end sensor is fixed (before FAULT_ACK homes the station)."""
+        with self._lock:
+            self._stations[station].repair_sensor(end)
+
+    def inject_drive_fault(self, code: int) -> None:
+        """SIM seam: the belt drive trips with fault `code`."""
+        with self._lock:
+            self._belt.drive_fault(code)
+
+    def inject_feeder_fault(self, code: int) -> None:
+        """SIM seam: the FlexFeeder module faults with `code`."""
+        with self._lock:
+            self._feeder.module_fault(code)
+
+    def set_estop_chain(self, ok: bool) -> None:
+        """SIM seam: the hardwired E-stop chain opens (False) or is closed again."""
+        with self._lock:
+            self._estop_chain_ok = ok
+
     def tick(self, dt: float = _TICK_S) -> None:
         with self._lock:
             for seq_name, ack_name in _ECHO_PAIRS:
@@ -148,6 +171,7 @@ class VirtualPlcServer:
             self._tick_stations(dt)
             self._tick_belt(dt)
             self._tick_feeder(dt)
+            self._publish_interlocks()
 
     def _tick_cell(self) -> None:
         cmd, seq = self._context.getValues(_FC_HOLDING, HOLDING["cell_cmd"], 2)
@@ -159,6 +183,25 @@ class VirtualPlcServer:
             self._belt.halt()
         elif cmd == CellCmd.RELEASE_FREEZE:
             self._frozen = False
+        elif cmd == CellCmd.FAULT_ACK:
+            self._belt.ack_fault()
+            self._feeder.ack_fault()
+            for station in self._stations.values():
+                station.ack_fault()
+
+    def _publish_interlocks(self) -> None:
+        bits = Interlock(0)
+        if self._stations["scrap"].state == StationState.HOME:
+            bits |= Interlock.BIN_HOME
+        if self._feeder.state != FeederState.FAULT:
+            bits |= Interlock.FEEDER_OK
+        if self._belt.state != BeltState.FAULT:
+            bits |= Interlock.DRIVES_OK
+        if self._estop_chain_ok:
+            bits |= Interlock.ESTOP_CHAIN_OK
+        self._context.setValues(_FC_INPUT, INPUT["interlocks"], [int(bits)])
+        self._context.setValues(_FC_INPUT, INPUT["belt_fault"], [self._belt.fault])
+        self._context.setValues(_FC_INPUT, INPUT["feeder_fault"], [self._feeder.fault])
 
     def _tick_stations(self, dt: float) -> None:
         for name, station in self._stations.items():

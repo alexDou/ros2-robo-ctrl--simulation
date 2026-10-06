@@ -15,6 +15,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
 from robot_control_interfaces.action import ConveyorRun, PickAndPlace, StationExchange
 from robot_control_interfaces.srv import (
+    CellFaultAck,
     ClearWorkspace,
     CommitDrop,
     ConveyorFinish,
@@ -82,6 +83,7 @@ class CellPorts:
         }
         self._freeze = client(ConveyorFreeze, "conveyor/freeze")
         self._finish = client(ConveyorFinish, "conveyor/finish")
+        self._fault_ack = client(CellFaultAck, "cell/fault_ack")
         self.feeder_fill_client = client(FeederFill, "feeder/fill")
         self._feeder_enable = client(FeederEnable, "feeder/enable")
         self._feeder_empty = client(FeederQuickEmpty, "feeder/quick_empty")
@@ -152,6 +154,15 @@ class CellPorts:
                 on_failed()
 
         self._freeze.call_async(ConveyorFreeze.Request(freeze=True)).add_done_callback(on_response)
+
+    def fault_ack(self, on_done: Callable[[bool], None]) -> None:
+        """FAULT_ACK; on_done(ok) fires once every device has recovered, or it timed out."""
+
+        def on_response(fut: Any) -> None:
+            result = fut.result()
+            on_done(result is not None and result.success)
+
+        self._fault_ack.call_async(CellFaultAck.Request()).add_done_callback(on_response)
 
     def release_freeze(self) -> bool:
         return self._ok(self._freeze, ConveyorFreeze.Request(freeze=False))

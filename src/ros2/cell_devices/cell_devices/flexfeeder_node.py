@@ -69,7 +69,15 @@ class FlexFeederNode(Node):
                 )
             )
         self._status_pub.publish(
-            String(data=json.dumps({"state": status.state.name, "remaining": status.remaining}))
+            String(
+                data=json.dumps(
+                    {
+                        "state": status.state.name,
+                        "remaining": status.remaining,
+                        "fault": status.fault,
+                    }
+                )
+            )
         )
 
     def _send(self, action, response, ok_message: str):

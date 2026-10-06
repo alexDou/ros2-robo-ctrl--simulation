@@ -15,7 +15,7 @@ from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
 from robot_control_interfaces.action import ConveyorRun
-from robot_control_interfaces.srv import ConveyorFinish, ConveyorFreeze, ConveyorStop
+from robot_control_interfaces.srv import CellFaultAck, ConveyorFinish, ConveyorFreeze, ConveyorStop
 from std_msgs.msg import String
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
@@ -190,3 +190,23 @@ def test_finish_ends_a_feed_run_at_the_eye_instead_of_stopping_dead(cell):
     assert done.wait(TIMEOUT)
     result = box["result"].result
     assert (result.success, result.stop_reason) == (True, "STOPPED_AT_EYE")
+
+
+def test_fault_ack_answers_once_the_cell_has_recovered(cell):
+    plc, action, _ = cell
+    ack = action._node.create_client(CellFaultAck, "cell/fault_ack")
+    assert ack.wait_for_service(timeout_sec=TIMEOUT)
+    statuses = []
+    action._node.create_subscription(
+        String, "conveyor/status", lambda m: statuses.append(json.loads(m.data)), 10
+    )
+    plc.inject_drive_fault(9)
+    deadline = time.monotonic() + TIMEOUT
+    while not (statuses and statuses[-1]["state"] == "FAULT") and time.monotonic() < deadline:
+        time.sleep(0.02)
+    assert statuses[-1]["belt_fault"] == 9
+    assert statuses[-1]["interlocks"]["drives_ok"] is False
+
+    response = ack.call(CellFaultAck.Request(), timeout_sec=TIMEOUT)
+
+    assert response.success, response.message

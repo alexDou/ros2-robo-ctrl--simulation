@@ -36,6 +36,7 @@ class BeltSim:
         self.travel_mm = 0.0
         self.exit_count = 0
         self.state = BeltState.IDLE
+        self.fault = 0  # drive fault code, latched until FAULT_ACK
         self._moving_cmd = BeltCmd.NONE
         self._settle_state = BeltState.IDLE
         self._finishing = False  # FINISH_RUN: the run ends at the eye, nothing more is placed
@@ -59,6 +60,8 @@ class BeltSim:
         self._offsets_mm.append(at_mm - self.travel_mm)
 
     def command(self, cmd: BeltCmd, scrap_home: bool) -> None:
+        if self.fault:
+            return  # a faulted drive runs nothing until FAULT_ACK
         if cmd == BeltCmd.FINISH_RUN:
             self._finish_run()
             return
@@ -87,11 +90,26 @@ class BeltSim:
             self._moving_cmd = BeltCmd.NONE
             self._settle(BeltState.STOPPED_AT_EYE)
 
+    def drive_fault(self, code: int) -> None:
+        """The drive trips (STO-like): it stops dead and latches FAULT."""
+        self.fault = code
+        self.velocity_mm_s = 0.0
+        self._moving_cmd = BeltCmd.NONE
+        self._finishing = False
+        self.state = self._settle_state = BeltState.FAULT
+
+    def ack_fault(self) -> None:
+        if self.fault:
+            self.fault = 0
+            self.state = self._settle_state = BeltState.IDLE
+
     def halt(self) -> None:
         """FREEZE: the drive stops dead (no ramp); the run command is kept so RELEASE resumes it."""
         self.velocity_mm_s = 0.0
 
     def step(self, dt: float, scrap_home: bool) -> None:
+        if self.fault:
+            return
         target = self.params.speed_mm_s if self._moving_cmd != BeltCmd.NONE else 0.0
         delta = self.params.accel_mm_s2 * dt
         if self.velocity_mm_s < target:

@@ -1,9 +1,12 @@
 """Flush reset (RESETTING): a physical flush, the same in SIM and LIVE.
 
 A step machine the Cell event loop advances on every event:
-DRAIN    the in-flight SortCycle and exchanges complete, the belt run is cancelled, and a
-         Gearwheel left in the DexterousPalm (EmergencyStop) is finished onto its Pallet (D32)
-FLUSH    freeze released (after FAULT), FlexFeeder quick-empties, belt FLUSH into the bin
+STOP     the belt run is cancelled (a frozen belt must not resume it)
+RECOVER  after FAULT only: freeze released, FAULT_ACK, wait until no device is in FAULT and every
+         station is HOME (a frozen exchange completes, a faulted station drives back HOME)
+DRAIN    the in-flight SortCycle and exchanges complete, and a Gearwheel left in the
+         DexterousPalm (EmergencyStop) is finished onto its Pallet (D32)
+FLUSH    FlexFeeder quick-empties, belt FLUSH into the bin
 EXCHANGE every Pallet with Gearwheels and the ScrapBin if it holds any leave together
 then WorkcellNode clears and the cell is EMPTY. The first failure faults the cell.
 """
@@ -20,6 +23,8 @@ if TYPE_CHECKING:
 
 
 class _Step(Enum):
+    STOP = auto()
+    RECOVER = auto()
     DRAIN = auto()
     FLUSH = auto()
     EXCHANGE = auto()
@@ -29,7 +34,7 @@ class FlushReset:
     def __init__(self, cell: "Cell", was_fault: bool) -> None:
         self._cell = cell
         self._was_fault = was_fault
-        self._step = _Step.DRAIN
+        self._step = _Step.STOP
 
     def start(self) -> None:
         self._cell.ports.cancel_belt()
@@ -38,7 +43,9 @@ class FlushReset:
     def advance(self) -> None:
         """Called on every event the reset may be waiting for."""
         cell = self._cell
-        if self._step is _Step.DRAIN and not cell.busy():
+        if self._step is _Step.STOP and not cell.belt_running():
+            self._recover()
+        elif self._step is _Step.DRAIN and not cell.busy():
             if cell.held is not None:
                 cell.place_held()  # back here through the cycle's result
             else:
@@ -47,7 +54,7 @@ class FlushReset:
             self._clear()
 
     def on_belt_done(self, result: ConveyorRun.Result | None) -> None:
-        """The cancelled run ended (DRAIN) or the flush did (FLUSH)."""
+        """The cancelled run ended (STOP) or the flush did (FLUSH)."""
         if self._step is _Step.FLUSH:
             self._on_flush_done(result)
         else:
@@ -64,12 +71,30 @@ class FlushReset:
                 self._cell.start_exchange(name)
         self.advance()
 
-    def _flush(self) -> None:
+    def _recover(self) -> None:
+        if not self._was_fault:
+            self._step = _Step.DRAIN
+            self.advance()
+            return
         cell = self._cell
-        # Only now: the frozen belt must not resume its old run command.
-        if self._was_fault and not cell.ports.release_freeze():
+        self._step = _Step.RECOVER
+        # Only now: the belt run is cancelled, so the released belt does not resume it.
+        if not cell.ports.release_freeze():
             cell.fault("conveyor", "RELEASE_FAILED")
             return
+        cell.ports.fault_ack(lambda ok: cell.post(self._on_recovered, ok))
+
+    def _on_recovered(self, ok: bool) -> None:
+        if self._cell.reset_owner() is not self:
+            return  # an EmergencyStop or a new fault ended this reset meanwhile
+        if not ok:
+            self._cell.fault("cell", "FAULT_ACK_FAILED")
+            return
+        self._step = _Step.DRAIN
+        self.advance()
+
+    def _flush(self) -> None:
+        cell = self._cell
         if not cell.ports.quick_empty_feeder():
             cell.fault("feeder", "QUICK_EMPTY_FAILED")
             return

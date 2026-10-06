@@ -7,7 +7,7 @@ the controller reports it in input register `map_version` so a mismatched peer i
 detected on connect.
 """
 
-from enum import IntEnum
+from enum import IntEnum, IntFlag
 
 MAP_VERSION = 1
 
@@ -25,6 +25,15 @@ class CellCmd(IntEnum):
     FREEZE = 1
     RELEASE_FREEZE = 2
     FAULT_ACK = 3
+
+
+class Interlock(IntFlag):
+    """`interlocks` input word: a cleared bit is a condition the cell must not run with."""
+
+    BIN_HOME = 1
+    FEEDER_OK = 2
+    DRIVES_OK = 4
+    ESTOP_CHAIN_OK = 8  # LIVE: the hardwired safety chain is closed
 
 
 class BeltState(IntEnum):

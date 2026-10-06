@@ -53,6 +53,7 @@ class FeederSim:
         self.params = params or FeederParams()
         self.state = FeederState.EMPTY
         self.enabled = False
+        self.fault = 0  # module fault code, latched until FAULT_ACK
         self.placement_count = 0
         self._deck: list[tuple[str, bool]] = []
         self._rng = random.Random()
@@ -82,6 +83,17 @@ class FeederSim:
             self.enabled = False
             self._emptying_left_s = self.params.emptying_s
             self.state = FeederState.EMPTYING
+
+    def module_fault(self, code: int) -> None:
+        """The module (vision, picker or plate) reports a fault: it stops placing."""
+        self.fault = code
+        self.enabled = False
+        self.state = FeederState.FAULT
+
+    def ack_fault(self) -> None:
+        if self.fault:
+            self.fault = 0
+            self.state = FeederState.READY if self._deck else FeederState.EMPTY
 
     def disable(self) -> None:
         self.command(FeederCmd.DISABLE, 0)
