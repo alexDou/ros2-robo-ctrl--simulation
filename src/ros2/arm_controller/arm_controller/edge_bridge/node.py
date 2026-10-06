@@ -257,6 +257,10 @@ class EdgeBridgeNode(
             callback_group=self._cb_group,
         )
 
+        self._cell_fault_sub = self.create_subscription(
+            String, "/cell/fault", self._on_cell_fault, 10, callback_group=self._telem_cb_group
+        )
+
         # Transient local: the orchestrator's last state reaches an EdgeNode that starts later.
         self._cell_state_sub = self.create_subscription(
             String,

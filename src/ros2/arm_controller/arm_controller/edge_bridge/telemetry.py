@@ -105,6 +105,16 @@ class EdgeBridgeTelemetryMixin:
         if changed and not standby:
             self.publish_telemetry()
 
+    def _on_cell_fault(self, msg: String) -> None:
+        """A device fault froze the cell: tell the operator which device and code."""
+        try:
+            raw = json.loads(msg.data)
+            device, code = str(raw["device"]), str(raw["code"])
+        except (ValueError, KeyError, TypeError):
+            self.get_logger().warning("Ignoring malformed cell/fault")
+            return
+        self._publish_error("DEVICE_FAULT", f"{device}: {code}")
+
     def _on_telemetry_timer(self) -> RobotTelemetryEvent | None:
         """Steady 10 Hz cached snapshot while engaged; None while STANDBY."""
         with self._lock:
@@ -288,6 +298,11 @@ class EdgeBridgeTelemetryMixin:
                 with contextlib.suppress(Exception):
                     self.destroy_client(client)
                 setattr(self, attr, None)
+
+        if self._cell_fault_sub is not None:
+            with contextlib.suppress(Exception):
+                self.destroy_subscription(self._cell_fault_sub)
+            self._cell_fault_sub = None
 
         if self._cell_state_sub is not None:
             with contextlib.suppress(Exception):

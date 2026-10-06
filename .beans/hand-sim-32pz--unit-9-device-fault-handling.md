@@ -1,13 +1,13 @@
 ---
 # hand-sim-32pz
 title: 'Unit 9.20: device FAULT handling'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:40Z
-updated_at: 2026-10-04T13:36:35Z
+updated_at: 2026-10-06T08:44:54Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-m1za
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-m1za (19)
+
+Done: orchestrator _fault() freezes devices, sets FAULT, publishes cell/fault {device, code}; EdgeNode turns it into a DEVICE_FAULT ERROR frame. Station/belt/arm/workcell faults covered; vitest gating for FAULT/RESETTING. Feeder and drive-fault injection via virtual_plc not added (no such seam yet).

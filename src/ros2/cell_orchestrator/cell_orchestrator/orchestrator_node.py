@@ -102,10 +102,12 @@ class CellOrchestratorNode(Node):
         self._sort_thread: threading.Thread | None = None
         # Bumped on every Process and Stop so a late result of an old goal is ignored.
         self._run_id = 0
+        self._last_exchange_fault = 0
         self._full_color: str | None = None  # set by the commit of a Pallet's 10th Gearwheel
 
         group = ReentrantCallbackGroup()
         self._state_pub = self.create_publisher(String, "cell/state", _STATE_QOS)
+        self._fault_pub = self.create_publisher(String, "cell/fault", 10)
         self._run_client = ActionClient(self, ConveyorRun, "conveyor/run", callback_group=group)
         self._stop_client = self.create_client(ConveyorStop, "conveyor/stop", callback_group=group)
         self._freeze_client = self.create_client(
@@ -324,11 +326,11 @@ class CellOrchestratorNode(Node):
         result = future.result().result
         reason = result.stop_reason
         if result.exit_count_delta and not self._scrap_exited(result.exit_count_delta):
-            self._finish_run(run_id, ConveyorStatus.FAULT)
+            self._fault(run_id, "workcell", "SCRAP_REFUSED")
             return
         if result.success and mode == ConveyorRun.Goal.RUN_TO_PICKZONE:
             if reason != "STOPPED_AT_EYE":
-                self._finish_run(run_id, ConveyorStatus.FAULT)
+                self._fault(run_id, "conveyor", reason or "NO_EYE_STOP")
             elif self._register_batch(run_id):
                 self._finish_run(run_id, ConveyorStatus.HALTED)
                 self._start_bin_exchange(run_id)
@@ -340,7 +342,7 @@ class CellOrchestratorNode(Node):
         elif reason == "STOPPED":
             self._finish_run(run_id, ConveyorStatus.STOPPED)
         else:
-            self._finish_run(run_id, ConveyorStatus.FAULT)
+            self._fault(run_id, "conveyor", reason or "RUN_FAILED")
 
     def _scrap_exited(self, count: int) -> bool:
         """The exit eye counted `count` Gearwheels: the oldest Rejected ones are now Scrapped.
@@ -402,7 +404,7 @@ class CellOrchestratorNode(Node):
                     self.get_logger().error(f"SortCycle for {pick.id} failed; cell FAULT")
                     with self._lock:
                         self._pending.clear()
-                    self._finish_run(run_id, ConveyorStatus.FAULT)
+                    self._fault(run_id, "arm", "SORT_CYCLE_FAILED")
                     return
                 with self._lock:
                     if self._pending and self._pending[0] is pick:
@@ -413,7 +415,9 @@ class CellOrchestratorNode(Node):
                     self.get_logger().error(f"PalletExchange for {pick.color} failed; cell FAULT")
                     with self._lock:
                         self._pending.clear()
-                    self._finish_run(run_id, ConveyorStatus.FAULT)
+                    self._fault(
+                        run_id, f"station_{pick.color.lower()}", self._exchange_fault_code()
+                    )
                     return
             self._advance(run_id)
 
@@ -498,7 +502,7 @@ class CellOrchestratorNode(Node):
                 self.get_logger().error("BinExchange failed; cell FAULT")
                 with self._lock:
                     self._pending.clear()
-                self._finish_run(run_id, ConveyorStatus.FAULT)  # before the belt is released
+                self._fault(run_id, "station_scrap", self._exchange_fault_code())  # before release
         finally:
             self._bin_home.set()
 
@@ -514,7 +518,9 @@ class CellOrchestratorNode(Node):
             self._set_exchange_state(color, ExchangeState(msg.feedback.exchange_state))
 
         def on_result(fut: Any) -> None:
-            outcome["success"] = bool(fut.result().result.success)
+            result = fut.result().result
+            outcome["success"] = bool(result.success)
+            self._last_exchange_fault = int(result.fault)
             done.set()
 
         def on_goal(fut: Any) -> None:
@@ -576,6 +582,26 @@ class CellOrchestratorNode(Node):
             self._pending.clear()
         self._set_status(ConveyorStatus.EMPTY)
 
+    def _exchange_fault_code(self) -> str:
+        return f"EXCHANGE_FAULT_{self._last_exchange_fault}"
+
+    def _fault(self, run_id: int, device: str, code: str) -> None:
+        """Device fault: freeze every device, cell FAULT, and name the device for the ERROR frame."""
+        with self._lock:
+            if run_id != self._run_id:
+                return
+            self._status = ConveyorStatus.FAULT
+            self._run_id += 1
+        self._raise_fault(device, code)
+
+    def _raise_fault(self, device: str, code: str) -> None:
+        self.get_logger().error(f"{device} fault {code}; cell FAULT")
+        self._freeze_client.call_async(ConveyorFreeze.Request(freeze=True)).add_done_callback(
+            self._on_freeze_response
+        )
+        self._fault_pub.publish(String(data=json.dumps({"device": device, "code": code})))
+        self._publish_state()
+
     def _finish_run(self, run_id: int, status: ConveyorStatus) -> None:
         with self._lock:
             if run_id != self._run_id:
@@ -620,8 +646,10 @@ class CellOrchestratorNode(Node):
     def _on_stop_response(self, future: Any) -> None:
         result = future.result()
         if result is None or not result.success:
-            self.get_logger().error("Conveyor stop failed; cell FAULT")
-            self._set_status(ConveyorStatus.FAULT)
+            with self._lock:
+                self._status = ConveyorStatus.FAULT
+                self._run_id += 1
+            self._raise_fault("conveyor", "STOP_FAILED")
 
 
 def main(args=None) -> None:

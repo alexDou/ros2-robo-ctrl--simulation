@@ -75,6 +75,8 @@ describe('Unit 9.11: gating derives from cell_state alone (hand-sim-q2ur)', () =
     ['FEEDING', { fill: false, process: false, stop: true }],
     ['HALTED', { fill: false, process: false, stop: true }],
     ['STOPPED', { fill: false, process: true, stop: false }],
+    ['FAULT', { fill: false, process: false, stop: false }],
+    ['RESETTING', { fill: false, process: false, stop: false }],
   ] as const)('%s enables exactly the expected intents', (status, enabled) => {
     renderToolbar(status);
     const on = (id: string) => !(screen.getByTestId(id) as HTMLButtonElement).disabled;

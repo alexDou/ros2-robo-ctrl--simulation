@@ -303,6 +303,10 @@ def cell():
     fake.feeder = FakeFeeder(fake_node)
     fake.workcell = FakeWorkcell(fake_node, log)
     fake.arm = FakeArm(fake_node, log)
+    fake.faults = []
+    client.create_subscription(
+        String, "cell/fault", lambda m: fake.faults.append(json.loads(m.data)), 10
+    )
     fake.stations = FakeStations(fake_node, log)
     fake.arm.hold.set()  # a SortCycle stays in flight until a test releases the arm
     fake.fill = client.create_client(CellFill, "cell/fill")
@@ -447,6 +451,8 @@ def test_device_fault_sets_fault_status(cell):
     assert _wait(lambda: len(fake.goals) == 1)
     fake.release.set()
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    assert _wait(lambda: fake.faults == [{"device": "conveyor", "code": "FAULT"}])
+    assert fake.freezes == [True]
 
 
 def test_belt_offset_follows_encoder_at_5hz_while_moving(cell):
@@ -840,6 +846,8 @@ def test_a_failed_exchange_faults_the_cell_without_a_reset(cell):
     assert fake.workcell.resets == []
     assert len(fake.arm.goals) == 1
     assert _station(states, "GREEN").exchange_state.value == "FAULT"
+    assert _wait(lambda: fake.faults == [{"device": "station_green", "code": "EXCHANGE_FAULT_1"}])
+    assert fake.freezes == [True]
 
 
 def test_a_failed_reset_faults_the_cell(cell):
@@ -949,6 +957,7 @@ def test_a_failed_bin_exchange_faults_the_cell_without_a_reset(cell):
     _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
 
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    assert _wait(lambda: fake.faults == [{"device": "station_scrap", "code": "EXCHANGE_FAULT_1"}])
     time.sleep(0.2)
     assert fake.workcell.resets == []
     assert len(fake.goals) == 1

@@ -20,6 +20,7 @@ from rclpy.action import ActionServer, CancelResponse
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
 from robot_control_interfaces.action import PickAndPlace
+from std_msgs.msg import String
 from workcell_manager.workcell_node import WorkcellNode
 
 from domain import PICK_ZONE_Y_RANGE, CommandType, ConveyorStatus, RobotCommand, RobotState
@@ -234,3 +235,9 @@ def test_emergency_stop_freezes_the_belt_and_faults_the_cell(edge):
     frozen = plc.encoder_counts
     time.sleep(0.4)
     assert plc.encoder_counts == frozen
+
+
+def test_device_fault_report_becomes_an_error_frame_naming_the_device(edge):
+    node, _ = edge
+    node._on_cell_fault(String(data='{"device": "station_scrap", "code": "EXCHANGE_FAULT_1"}'))
+    assert ("DEVICE_FAULT", "station_scrap: EXCHANGE_FAULT_1") in node.errors
