@@ -17,8 +17,8 @@ from robot_control_interfaces.action import ConveyorRun, PickAndPlace, StationEx
 from robot_control_interfaces.srv import (
     ClearWorkspace,
     CommitDrop,
+    ConveyorFinish,
     ConveyorFreeze,
-    ConveyorStop,
     FeederEnable,
     FeederFill,
     FeederQuickEmpty,
@@ -37,26 +37,30 @@ BeltDone = Callable[[ConveyorRun.Result | None], None]
 
 
 class _Goal:
-    """One in-flight action goal; `cancel` works before and after the server accepts it."""
+    """One in-flight action goal; a request made before the server accepts it runs on accept."""
 
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._handle: Any = None
-        self._cancelled = False
+        self._deferred: list[Callable[[Any], None]] = []
 
     def accepted(self, handle: Any) -> None:
         with self._lock:
             self._handle = handle
-            cancel = self._cancelled
-        if cancel:
-            handle.cancel_goal_async()
+            deferred, self._deferred = self._deferred, []
+        for action in deferred:
+            action(handle)
+
+    def once_accepted(self, action: Callable[[Any], None]) -> None:
+        with self._lock:
+            handle = self._handle
+            if handle is None:
+                self._deferred.append(action)
+                return
+        action(handle)
 
     def cancel(self) -> None:
-        with self._lock:
-            self._cancelled = True
-            handle = self._handle
-        if handle is not None:
-            handle.cancel_goal_async()
+        self.once_accepted(lambda handle: handle.cancel_goal_async())
 
 
 class CellPorts:
@@ -76,8 +80,8 @@ class CellPorts:
             )
             for name in STATIONS
         }
-        self._stop = client(ConveyorStop, "conveyor/stop")
         self._freeze = client(ConveyorFreeze, "conveyor/freeze")
+        self._finish = client(ConveyorFinish, "conveyor/finish")
         self.feeder_fill_client = client(FeederFill, "feeder/fill")
         self._feeder_enable = client(FeederEnable, "feeder/enable")
         self._feeder_empty = client(FeederQuickEmpty, "feeder/quick_empty")
@@ -128,17 +132,16 @@ class CellPorts:
 
         self.run_client.send_goal_async(ConveyorRun.Goal(mode=mode)).add_done_callback(on_goal)
 
+    def finish_belt(self) -> None:
+        """Stop (D30): the run in flight ends at the eye (or runs out, for a flush)."""
+        if self._belt_goal is not None:
+            self._belt_goal.once_accepted(
+                lambda _: self._finish.call_async(ConveyorFinish.Request())
+            )
+
     def cancel_belt(self) -> None:
         if self._belt_goal is not None:
             self._belt_goal.cancel()
-
-    def stop_belt(self, on_failed: Callable[[], None]) -> None:
-        def on_response(fut: Any) -> None:
-            result = fut.result()
-            if result is None or not result.success:
-                on_failed()
-
-        self._stop.call_async(ConveyorStop.Request()).add_done_callback(on_response)
 
     def freeze(self, on_failed: Callable[[], None]) -> None:
         """FREEZE every device at once; never blocks the caller."""

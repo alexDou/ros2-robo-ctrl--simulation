@@ -10,7 +10,7 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from robot_control_interfaces.action import ConveyorRun
-from robot_control_interfaces.srv import ConveyorFreeze, ConveyorStop
+from robot_control_interfaces.srv import ConveyorFinish, ConveyorFreeze, ConveyorStop
 from std_msgs.msg import String
 
 from cell_devices.belt_sim import BeltParams
@@ -40,6 +40,7 @@ class ConveyorNode(Node):
         self._io: ModbusFieldIo | None = None
         self._device: ConveyorDevice | None = None
         self._goal_active = False
+        self._finish_requested = False  # Stop (D30) for the active run
         # Tracking is fed by placement records (a topic, never a call into the feeder node).
         self._tracker = BeltTracker(place_at_mm=FeederParams().place_at_mm)
 
@@ -50,6 +51,9 @@ class ConveyorNode(Node):
         )
         self.create_timer(self._poll_period_s, self._poll, callback_group=group)
         self.create_service(ConveyorStop, "conveyor/stop", self._handle_stop, callback_group=group)
+        self.create_service(
+            ConveyorFinish, "conveyor/finish", self._handle_finish, callback_group=group
+        )
         self.create_service(
             ConveyorFreeze, "conveyor/freeze", self._handle_freeze, callback_group=group
         )
@@ -140,6 +144,14 @@ class ConveyorNode(Node):
         response.success, response.message = True, "STOP sent"
         return response
 
+    def _handle_finish(self, _request, response):
+        """Marks the active run to finish; its loop sends FINISH_RUN after its own RUN command."""
+        with self._lock:
+            if self._goal_active:
+                self._finish_requested = True
+        response.success, response.message = True, "FINISH requested"
+        return response
+
     def _handle_freeze(self, request, response):
         """The controller freezes every device, not just the belt; this node owns the link."""
         with self._lock:
@@ -169,7 +181,9 @@ class ConveyorNode(Node):
         try:
             return self._run_goal(goal_handle)
         finally:
-            self._goal_active = False
+            with self._lock:
+                self._goal_active = False
+                self._finish_requested = False
 
     def _run_goal(self, goal_handle):
         result = ConveyorRun.Result()
@@ -189,7 +203,7 @@ class ConveyorNode(Node):
                 goal_handle.abort()
                 return result
 
-        cancelled = False
+        cancelled = finishing = False
         while True:
             if goal_handle.is_cancel_requested and not cancelled:
                 cancelled = True
@@ -197,6 +211,9 @@ class ConveyorNode(Node):
                     device.stop()
             with self._lock:
                 try:
+                    if self._finish_requested and not finishing and not cancelled:
+                        finishing = True
+                        device.finish_run()
                     status = device.poll()
                 except FieldIoError:
                     self._drop_connection_locked()

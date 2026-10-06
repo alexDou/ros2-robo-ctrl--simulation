@@ -38,6 +38,7 @@ class BeltSim:
         self.state = BeltState.IDLE
         self._moving_cmd = BeltCmd.NONE
         self._settle_state = BeltState.IDLE
+        self._finishing = False  # FINISH_RUN: the run ends at the eye, nothing more is placed
         self._offsets_mm: list[float] = []
 
     @property
@@ -47,7 +48,7 @@ class BeltSim:
     @property
     def feeding(self) -> bool:
         """True while a run toward the PickZone eye is in progress (the feeder may place)."""
-        return self._moving_cmd == BeltCmd.RUN_TO_PICKZONE
+        return self._moving_cmd == BeltCmd.RUN_TO_PICKZONE and not self._finishing
 
     @property
     def item_positions_mm(self) -> list[float]:
@@ -58,6 +59,10 @@ class BeltSim:
         self._offsets_mm.append(at_mm - self.travel_mm)
 
     def command(self, cmd: BeltCmd, scrap_home: bool) -> None:
+        if cmd == BeltCmd.FINISH_RUN:
+            self._finish_run()
+            return
+        self._finishing = False
         if cmd in (BeltCmd.RUN_TO_PICKZONE, BeltCmd.FLUSH):
             if not scrap_home:
                 self._moving_cmd = BeltCmd.NONE
@@ -72,6 +77,15 @@ class BeltSim:
         elif cmd == BeltCmd.STOP:
             self._moving_cmd = BeltCmd.NONE
             self._settle(BeltState.IDLE)
+
+    def _finish_run(self) -> None:
+        """A feed run still brings what is upstream of the eye; a flush runs out on its own."""
+        if self._moving_cmd != BeltCmd.RUN_TO_PICKZONE:
+            return
+        self._finishing = True
+        if not any(pos < self.params.eye_mm for pos in self.item_positions_mm):
+            self._moving_cmd = BeltCmd.NONE
+            self._settle(BeltState.STOPPED_AT_EYE)
 
     def halt(self) -> None:
         """FREEZE: the drive stops dead (no ramp); the run command is kept so RELEASE resumes it."""

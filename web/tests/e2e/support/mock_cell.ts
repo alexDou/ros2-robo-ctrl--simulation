@@ -60,7 +60,8 @@ function buildDeck(rand: () => number): GearSpec[] {
 /**
  * Pure, clock-free stand-in for the cell_orchestrator's flow: Fill loads a deck, Process feeds one
  * Batch at a time until the lead gear reaches the PickZone edge and halts the belt, and the owner
- * sorts the Batch gear by gear through `takeNext`. Stop freezes the run; Process resumes it.
+ * sorts the Batch gear by gear through `takeNext`. Stop (D30) ends the spawning but lets the run
+ * reach the PickZone edge (or a flush run out); Process resumes.
  */
 export class MockCell {
   private status: ConveyorStatus = 'EMPTY';
@@ -75,6 +76,8 @@ export class MockCell {
   private nextGap = 0;
   private offsetM = 0;
   private halted = false;
+  /** Stopped while the belt still runs on to the edge (D30). */
+  private finishing = false;
   private idCounter = 0;
 
   /** Seed for the next Fill's deck and Batch sizes. */
@@ -97,6 +100,7 @@ export class MockCell {
     this.nextGap = 0;
     this.offsetM = 0;
     this.halted = false;
+    this.finishing = false;
   }
 
   public fill(): void {
@@ -111,11 +115,17 @@ export class MockCell {
       this.startRun();
     } else if (this.status === 'STOPPED') {
       this.status = this.halted ? 'HALTED' : 'FEEDING';
+      this.finishing = false;
     }
   }
 
   public stop(): void {
-    if (this.status === 'FEEDING' || this.status === 'HALTED') this.status = 'STOPPED';
+    if (this.status === 'HALTED') this.status = 'STOPPED';
+    if (this.status !== 'FEEDING') return;
+    this.status = 'STOPPED';
+    this.finishing = true;
+    this.batchSize = this.spawned; // the FlexFeeder stops placing
+    if (this.unsorted.length === 0 && this.carried.length === 0) this.halt(); // nothing to bring
   }
 
   /** The next unsorted Batch gear (lead first), or undefined once the Batch is sorted. */
@@ -138,7 +148,8 @@ export class MockCell {
 
   /** Advance the belt by `dtSeconds` of run time. */
   public step(dtSeconds: number): void {
-    if (this.status !== 'FEEDING' || dtSeconds <= 0) return;
+    const moving = this.status === 'FEEDING' || (this.status === 'STOPPED' && this.finishing);
+    if (!moving || dtSeconds <= 0) return;
     let dist = BELT_SPEED_M_S * dtSeconds;
     if (this.unsorted.length > 0) {
       const toEdge = this.unsorted[0].y - PICK_ZONE_Y_RANGE[0];
@@ -169,6 +180,13 @@ export class MockCell {
 
   private halt(): void {
     this.halted = true;
+    if (this.finishing) {
+      this.finishing = false; // the stopped run reached its end: stay STOPPED, or EMPTY after a flush
+      const flushed =
+        this.hopper.length === 0 && this.unsorted.length === 0 && this.carried.length === 0;
+      if (flushed) this.status = 'EMPTY';
+      return;
+    }
     this.status = 'HALTED';
   }
 

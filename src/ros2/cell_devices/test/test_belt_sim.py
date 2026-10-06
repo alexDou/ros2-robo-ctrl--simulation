@@ -120,3 +120,38 @@ def test_stop_ramps_down_to_idle():
     _run_until(belt, lambda: belt.state == BeltState.IDLE)
 
     assert belt.velocity_mm_s == 0.0
+
+
+def test_finish_run_carries_the_upstream_item_on_to_the_eye():
+    belt = BeltSim(FAST)
+    belt.add_item(at_mm=0.0)
+    belt.command(BeltCmd.RUN_TO_PICKZONE, scrap_home=True)
+    belt.step(0.01, scrap_home=True)
+
+    belt.command(BeltCmd.FINISH_RUN, scrap_home=True)
+
+    assert not belt.feeding  # the FlexFeeder may not place any more
+    _run_until(belt, lambda: belt.state == BeltState.STOPPED_AT_EYE)
+
+
+def test_finish_run_with_nothing_upstream_of_the_eye_ends_the_run_at_once():
+    belt = BeltSim(FAST)
+    belt.command(BeltCmd.RUN_TO_PICKZONE, scrap_home=True)
+    belt.step(0.01, scrap_home=True)
+
+    belt.command(BeltCmd.FINISH_RUN, scrap_home=True)
+
+    _run_until(belt, lambda: belt.state == BeltState.STOPPED_AT_EYE)
+    assert belt.velocity_mm_s == 0.0
+
+
+def test_finish_run_lets_a_flush_run_out():
+    belt = BeltSim(FAST)
+    belt.add_item(at_mm=0.0)
+    belt.command(BeltCmd.FLUSH, scrap_home=True)
+    belt.step(0.01, scrap_home=True)
+
+    belt.command(BeltCmd.FINISH_RUN, scrap_home=True)
+
+    _run_until(belt, lambda: belt.state == BeltState.FLUSH_DONE)
+    assert belt.exit_count == 1

@@ -77,7 +77,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the scrap bin should turn red
 
   @conveyor @unit-8.3a
-  Scenario: Stop mid-Batch freezes the belt, then Process resumes and finishes the run
+  Scenario: Stop mid-Batch lets the run end at the PickZone, then Process resumes and finishes the run
     Given the mock arm runs 10 times faster
     And the deck seed is 7
     When the operator opens the teleoperation visualizer for robot "arm-ur5"

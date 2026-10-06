@@ -15,7 +15,7 @@ from rclpy.action import ActionClient
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.parameter import Parameter
 from robot_control_interfaces.action import ConveyorRun
-from robot_control_interfaces.srv import ConveyorFreeze, ConveyorStop
+from robot_control_interfaces.srv import ConveyorFinish, ConveyorFreeze, ConveyorStop
 from std_msgs.msg import String
 
 FAST = BeltParams(speed_mm_s=2000.0, accel_mm_s2=20000.0)
@@ -174,3 +174,19 @@ def test_freeze_service_halts_the_belt_until_released(cell):
         assert call(False).success
     finally:
         caller.destroy_node()
+
+
+def test_finish_ends_a_feed_run_at_the_eye_instead_of_stopping_dead(cell):
+    plc, action, _ = cell
+    finish = action._node.create_client(ConveyorFinish, "conveyor/finish")
+    assert finish.wait_for_service(timeout_sec=TIMEOUT)
+    box, done = _send(action, ConveyorRun.Goal.RUN_TO_PICKZONE)  # empty belt: never reaches an eye
+    deadline = time.monotonic() + TIMEOUT
+    while plc.encoder_counts == 0 and time.monotonic() < deadline:
+        time.sleep(0.02)
+
+    assert finish.call(ConveyorFinish.Request(), timeout_sec=TIMEOUT).success
+
+    assert done.wait(TIMEOUT)
+    result = box["result"].result
+    assert (result.success, result.stop_reason) == (True, "STOPPED_AT_EYE")

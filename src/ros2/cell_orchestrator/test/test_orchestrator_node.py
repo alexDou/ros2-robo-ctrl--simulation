@@ -20,6 +20,7 @@ from robot_control_interfaces.srv import (
     CellStop,
     ClearWorkspace,
     CommitDrop,
+    ConveyorFinish,
     ConveyorFreeze,
     ConveyorStop,
     FeederEnable,
@@ -60,6 +61,8 @@ class FakeConveyor:
             callback_group=group,
         )
         node.create_service(ConveyorStop, "conveyor/stop", self._stop, callback_group=group)
+        self.finishes = 0
+        node.create_service(ConveyorFinish, "conveyor/finish", self._finish, callback_group=group)
         self.freezes: list[bool] = []
         node.create_service(ConveyorFreeze, "conveyor/freeze", self._freeze, callback_group=group)
         self.status_pub = node.create_publisher(String, "conveyor/status", 10)
@@ -89,6 +92,12 @@ class FakeConveyor:
 
     def _freeze(self, req, res):
         self.freezes.append(req.freeze)
+        res.success = True
+        return res
+
+    def _finish(self, _req, res):
+        """Stop (D30): the run goes on until a test releases it at the eye."""
+        self.finishes += 1
         res.success = True
         return res
 
@@ -422,35 +431,59 @@ def test_process_is_refused_while_feeding(cell):
     assert "FEEDING" in second.message
 
 
-def test_stop_while_feeding_freezes_belt_and_ends_stopped(cell):
+def test_stop_while_feeding_lets_the_belt_reach_the_eye_and_sorts_nothing(cell):
     fake, states, process, stop = cell
     _fill(fake, states)
+    fake.arm.hold.clear()
     assert _call(process, CellProcess.Request()).success
     assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, [_belt_gear("belt-1", 0.0)])
+    assert _wait(lambda: states[-1].belt_gears)
+
     assert _call(stop, CellStop.Request()).success
-    assert _wait(lambda: fake.stop_calls == 1)
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.STOPPED)
-    # the aborted ConveyorRun goal must not overwrite STOPPED
+    fake.release.set()  # the run goes on to the eye
+
+    assert _wait(lambda: [r[0] for r in fake.workcell.registered] == ["belt-1"])
     time.sleep(0.3)
+    assert (fake.stop_calls, fake.finishes) == (0, 1)
+    assert fake.arm.goals == []  # registered, not sorted
     assert states[-1].conveyor_status == ConveyorStatus.STOPPED
 
 
-def test_process_resumes_from_stopped(cell):
+def test_process_after_stop_sorts_the_batch_the_run_brought(cell):
+    fake, states, process, stop = cell
+    _fill(fake, states)
+    fake.arm.hold.clear()
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, [_belt_gear("belt-1", 0.0)])
+    assert _wait(lambda: states[-1].belt_gears)
+    assert _call(stop, CellStop.Request()).success
+    fake.release.set()
+    assert _wait(lambda: fake.workcell.registered)
+
+    assert _call(process, CellProcess.Request()).success
+
+    assert _wait(lambda: len(fake.arm.goals) == 1)
+    assert _wait(lambda: len(fake.goals) == 2)  # then the next feed run
+
+
+def test_process_while_the_stopped_run_still_moves_keeps_feeding(cell):
     fake, states, process, stop = cell
     _fill(fake, states)
     assert _call(process, CellProcess.Request()).success
     assert _wait(lambda: len(fake.goals) == 1)
     assert _call(stop, CellStop.Request()).success
-    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.STOPPED)
-    assert _wait(lambda: fake.running == 0)  # the stopped run has ended
-    fake.release.clear()
-    fake.stop_reason, fake.success = "STOPPED_AT_EYE", True
     assert _call(process, CellProcess.Request()).success
-    assert _wait(lambda: len(fake.goals) == 2)
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FEEDING)
     fake.publish_encoder(500.0, [_belt_gear("belt-1", 0.0)])
     assert _wait(lambda: states[-1].belt_gears)
+
     fake.release.set()
+
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.HALTED)
+    assert len(fake.goals) == 1  # the same run, not a second one
 
 
 def test_stop_is_refused_when_nothing_runs(cell):
@@ -1193,18 +1226,29 @@ def test_process_after_stop_waits_for_the_bin_instead_of_faulting(cell):
     assert fake.faults == []
 
 
-def test_process_after_stopping_the_final_flush_flushes_again(cell):
+def test_stop_during_the_final_flush_lets_it_run_out_to_empty(cell):
     fake, states, process, stop = cell
     _sorted_batch(fake, states, process, MIXED_BATCH, remaining=0)
     assert _wait(lambda: fake.goals == [ConveyorRun.Goal.RUN_TO_PICKZONE, ConveyorRun.Goal.FLUSH])
     assert _call(stop, CellStop.Request()).success
     assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.STOPPED)
-    assert _wait(lambda: fake.running == 0)  # the stopped run has ended
-    fake.release.clear()
-    fake.stop_reason, fake.success = "STOPPED_AT_EYE", True
+
+    fake.release.set()
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.EMPTY)
+    assert (fake.stop_calls, fake.finishes) == (0, 0)  # a flush runs out by itself
+
+
+def test_process_after_stop_at_the_end_of_the_deck_runs_the_final_flush(cell):
+    fake, states, process, stop = cell
+    fake.stations.hold.set()  # keeps the bin away, so the cell waits in FEEDING
+    _scrapped_batch(fake, states, process, BIN_EXCHANGE_THRESHOLD)
+    fake.feeder.publish(0)
+    assert _wait(lambda: fake.log.count("home") == 3)
+    assert _call(stop, CellStop.Request()).success
 
     assert _call(process, CellProcess.Request()).success
+    fake.stations.release.set()
 
-    assert _wait(lambda: fake.goals[-1] == ConveyorRun.Goal.FLUSH and len(fake.goals) == 3)
-    fake.release.set()
-    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.EMPTY)
+    assert _wait(lambda: len(fake.goals) == 2)
+    assert fake.goals[-1] == ConveyorRun.Goal.FLUSH

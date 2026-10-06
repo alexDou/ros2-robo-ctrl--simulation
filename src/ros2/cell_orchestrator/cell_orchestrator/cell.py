@@ -99,11 +99,13 @@ class Cell:
     def stop(self) -> tuple[bool, str]:
         if self.model.status not in _STOP_FROM:
             return False, f"Stop refused in {self.model.status.value}"
+        # D30: the FlexFeeder stops placing; a running belt run still reaches the eye (its Batch is
+        # registered, not sorted) or the final flush runs out; SortCycle and exchanges complete.
         self._feed_waits_for_bin = False
         self._set_status(ConveyorStatus.STOPPED)
         self.ports.enable_feeder(False)
-        if self._belt_mode is not None:
-            self.ports.stop_belt(lambda: self.post(self.fault, "conveyor", "STOP_FAILED"))
+        if self._belt_mode == _RUN:
+            self.ports.finish_belt()
         return True, "Stop accepted"
 
     def emergency_stop(self) -> tuple[bool, str]:
@@ -173,10 +175,7 @@ class Cell:
             return
         reason = result.stop_reason if result is not None else "REJECTED"
         ok = result is not None and result.success
-        if reason == "STOPPED" and not ok:
-            if status == ConveyorStatus.FEEDING:  # Process arrived while the stop took effect
-                self._feed()
-        elif ok and mode == _RUN and reason == "STOPPED_AT_EYE":
+        if ok and mode == _RUN and reason == "STOPPED_AT_EYE":
             self._at_eye_stop()
         elif ok and reason == "FLUSH_DONE":
             self.model.forget_belt()

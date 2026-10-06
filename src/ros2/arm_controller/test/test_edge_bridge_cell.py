@@ -189,17 +189,26 @@ def test_cell_process_runs_sim_belt_and_telemetry_reports_it(edge):
     assert node.errors == []
 
 
-def test_cell_stop_freezes_the_belt(edge):
+def test_cell_stop_lets_the_belt_run_on_to_the_eye(edge):
     node, _ = edge
     _fill(node)
     node.handle_command(_command(CommandType.CELL_PROCESS, "cell-process-2"))
     assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.FEEDING)
     node.handle_command(_command(CommandType.CELL_STOP, "cell-stop-1"))
     assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.STOPPED)
-    time.sleep(0.6)  # the drive ramps down and the 5 Hz offset catches up
-    frozen = node.publish_telemetry().cell_state.belt_offset_m
-    time.sleep(0.5)
-    assert node.publish_telemetry().cell_state.belt_offset_m == pytest.approx(frozen, abs=0.05)
+    # D30: the run ends at the eye (with what was upstream of it, or at once if nothing was)
+
+    def at_rest() -> bool:
+        before = node.publish_telemetry().cell_state.belt_offset_m
+        time.sleep(0.5)
+        return node.publish_telemetry().cell_state.belt_offset_m == pytest.approx(before, abs=0.01)
+
+    assert _wait_for(at_rest, timeout=20.0)
+    assert _cell_status(node) == ConveyorStatus.STOPPED
+    lo, hi = PICK_ZONE_Y_RANGE
+    registered = node.workcell.spawned + node.workcell.rejected
+    assert all(lo <= e["y"] <= hi for e in registered)  # a Batch, never sorted
+    assert node.errors == []
 
 
 def test_refused_cell_command_reports_error_frame(edge):

@@ -17,6 +17,7 @@ class BeltCmd(IntEnum):
     RUN_TO_PICKZONE = 1
     FLUSH = 2
     STOP = 3
+    FINISH_RUN = 4  # Stop (D30): no more placing; on to the eye, or done if nothing is upstream
 
 
 class CellCmd(IntEnum):

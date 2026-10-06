@@ -77,13 +77,14 @@ Rules: every command word has a matching sequence register, and the controller e
 
 | Block | Holding registers (ROS → controller) | Input registers (controller → ROS) |
 |---|---|---|
-| Conveyor | `belt_cmd` (0 NONE, 1 RUN_TO_PICKZONE, 2 FLUSH, 3 STOP), `belt_seq` | `belt_state` (IDLE, RUNNING, STOPPED_AT_EYE, FLUSH_DONE, HELD_BIN_AWAY, FAULT), `belt_ack_seq`, `encoder_hi/lo`, `exit_count`, `belt_fault` |
+| Conveyor | `belt_cmd` (0 NONE, 1 RUN_TO_PICKZONE, 2 FLUSH, 3 STOP, 4 FINISH_RUN), `belt_seq` | `belt_state` (IDLE, RUNNING, STOPPED_AT_EYE, FLUSH_DONE, HELD_BIN_AWAY, FAULT), `belt_ack_seq`, `encoder_hi/lo`, `exit_count`, `belt_fault` |
 | FlexFeeder | `feeder_cmd` (0 NONE, 1 ENABLE, 2 DISABLE, 3 FILL, 4 QUICK_EMPTY), `feeder_seq`, `fill_seed` (SIM only) | `feeder_state` (EMPTY, READY, PLACING, EMPTYING, FAULT), `feeder_ack_seq`, `remaining`, `placement_count`, ring buffer of {`seq`, `lateral_x_mm`, `encoder_hi/lo`, `color`, `intact`}, `feeder_fault` |
 | Station k (WHITE, GREEN, BLUE, SCRAP) | `station_cmd` (0 NONE, 1 EXCHANGE), `station_seq` | `station_state` (HOME, LEAVING, AWAY, RETURNING, FAULT), `station_ack_seq`, `station_fault` |
 | Cell | `cell_cmd` (1 FREEZE, 2 RELEASE_FREEZE, 3 FAULT_ACK), `cell_seq` | `cell_ack_seq`, `interlocks` bitfield (bin_home, feeder_ok, drives_ok, estop_chain_ok) |
 
 **Controller-local logic** (real controller and `virtual_plc` alike):
 - Belt stops at the PickZone eye in RUN_TO_PICKZONE, ramped by the drive.
+- FINISH_RUN (Stop, D30): placing stops at once; a feed run carries what is upstream of the eye on to it, or ends at once (STOPPED_AT_EYE) when nothing is; a flush runs out.
 - FlexFeeder placement is allowed only while the belt runs, and only once ≥ 130 mm of encoder travel has passed since the last placement. The feeder is disabled at the eye stop.
 - The exit eye increments `exit_count`.
 - The belt refuses RUN and FLUSH while SCRAP is not HOME (`HELD_BIN_AWAY`).

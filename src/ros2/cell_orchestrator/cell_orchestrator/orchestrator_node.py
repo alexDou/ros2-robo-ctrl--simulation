@@ -3,7 +3,7 @@
 Fill loads the FlexFeeder (EMPTY -> LOADED), Process feeds the belt to the PickZone eye, and at
 every eye stop the Batch is registered and sorted one SortCycle at a time; a FULL Pallet is
 exchanged inside its SortCycle, a full-enough ScrapBin leaves at the belt stop. Stop lets what
-is running finish; EmergencyStop freezes every device at once; Reset (CLEAR_WORKSPACE on
+is running finish (the belt still reaches the eye); EmergencyStop freezes every device at once; Reset (CLEAR_WORKSPACE on
 connect, RESET_FAULT) is a physical flush ending EMPTY. The rules live in `cell`, `sort_cycle`
 and `flush_reset`; this node turns topics and services into Cell events.
 """

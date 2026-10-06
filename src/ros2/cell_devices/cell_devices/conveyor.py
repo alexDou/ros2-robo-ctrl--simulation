@@ -53,6 +53,9 @@ class ConveyorDevice:
     def stop(self) -> None:
         self._send(BeltCmd.STOP)
 
+    def finish_run(self) -> None:
+        self._send(BeltCmd.FINISH_RUN)
+
     def freeze(self) -> None:
         """Cell-wide FREEZE (EmergencyStop): every drive and valve motion stops at once."""
         self._send_cell(CellCmd.FREEZE)

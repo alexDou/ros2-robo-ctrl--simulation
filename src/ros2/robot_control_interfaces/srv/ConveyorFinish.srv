@@ -1,0 +1,6 @@
+# Stop (D30): the running belt run finishes instead of stopping dead. The controller stops the
+# FlexFeeder placing; a feed run still carries what is upstream of the PickZone eye on to it (or
+# ends at once when nothing is), a flush runs out. No-op when no run is active.
+---
+bool success
+string message
