@@ -100,11 +100,12 @@ Rules: every command word has a matching sequence register, and the controller e
 EMPTY ──CELL_FILL──► LOADED ──CELL_PROCESS──► FEEDING ──eye stop──► HALTED ──Batch sorted, arm HOME,──► FEEDING
   ▲                                              ▲                     │      bin HOME, feeder not empty
   │                                              │                     │
-  │                                              └─────CELL_PROCESS────┤◄── STOPPED (CELL_STOP: belt + feeder
-  │                                                                    │    freeze; in-flight SortCycle and
-  │                                                                    │    exchanges complete)
+  │                                              └─────CELL_PROCESS────┤◄── STOPPED (CELL_STOP: feeder stops
+  │                                                                    │    placing; every in-flight operation
+  │                                                                    │    runs to its end, see D30)
   └── final flush done ◄── feeder empty + last Batch sorted ◄──────────┘
-any ──EMERGENCY_STOP / device fault──► FAULT ──RESET_FAULT──► RESETTING
+any ──device fault──► FAULT ──RESET_FAULT──► RESETTING
+any ──EMERGENCY_STOP──► FAULT (everything frozen where it is, arm included; Gateway closes the session) ──reconnect──► RESETTING
 any ──CLEAR_WORKSPACE (sent on every connect)──► RESETTING ──flush done──► EMPTY
 ```
 - At every eye stop:
@@ -128,7 +129,7 @@ next SortCycle starts only after done
 `on belt (unregistered) → Rejected (registered at eye stop, stays on belt) → Scrapped (exit eye counted it on the next run)`. Only Scrapped counts as ScrapBin contents.
 
 ### Flush reset (`RESETTING`)
-1. Cancel the PickAndPlace goal; arm HOME. (Open point for 9.2: a Gearwheel held by the DexterousPalm. Proposal: release it over the ScrapBin first.)
+1. Arm: a SortCycle still in flight completes (Gearwheel on its Pallet, arm HOME). An arm frozen by EmergencyStop resumes from where it stopped: a Gearwheel held by the DexterousPalm is finished onto its colour's Pallet, then the arm goes HOME (D32). Running exchanges complete first (D33).
 2. FlexFeeder QUICK_EMPTY.
 3. Belt FLUSH. Everything goes to the bin, intact Gearwheels included.
 4. EXCHANGE every Pallet with count > 0, and SCRAP if the bin is non-empty.
@@ -222,7 +223,7 @@ Read `.agents/rules/threejs-rep103.md` first.
 | D19 | Poll rate | 5 Hz controller poll; latched counters with sequence numbers; UI extrapolates belt motion. |
 | D20 | Device fault | ConveyorStatus `FAULT`, everything frozen, ERROR frame names the device; RESET_FAULT → flush reset. |
 | D21 | EmergencyStop scope | Also freezes belt, FlexFeeder, lanes and bin slide; LIVE has the hardwired chain independently. |
-| D22 | Stop | Belt + FlexFeeder freeze; in-flight SortCycle (incl. PalletExchange) and BinExchange complete; Process resumes. |
+| D22 | Stop | ~~Belt + FlexFeeder freeze~~ superseded by D30. In-flight SortCycle (incl. PalletExchange) and BinExchange complete; Process resumes. |
 | D23 | Dispatch order | Belt order (lead first), the same as today's feed order. |
 | D24 | Batch size | Comes from the FlexFeeder: continuous placement while the belt runs (≥ 0.13 m spacing, variable cycle time); belt + feeder stop at the eye; Batch = Gearwheels inside the PickZone; upstream ones wait. BeltCapacity = physical limit only. |
 | D25 | Counts display | Display panel at +X beside the belt facing the camera: FlexFeeder remaining, ScrapBin count, Pallet counts n/10. Bin mesh keeps green/red. |
@@ -230,3 +231,13 @@ Read `.agents/rules/threejs-rep103.md` first.
 | D27 | ADR | ADR 0006. |
 | D28 | Staging | 9.0–9.5 as above; finer split later; no beans yet. |
 | D29 | Defaults | `CELL_FILL` / `CELL_PROCESS` / `CELL_STOP`; `PALLET_CAPACITY` 10; `BIN_EXCHANGE_THRESHOLD` 20; PalletExchange ≈ 6 s, BinExchange ≈ 8 s; end of deck = final flush. |
+
+### Review follow-up (2026-10-06, code review of `194b7ad..507f20b`)
+
+| # | Question | Decision |
+|---|---|---|
+| D30 | What Stop finishes | Stop keeps the cell's state, but every operation already running is driven to its end. The FlexFeeder stops placing at once. A RUN_TO_PICKZONE belt run continues to the eye, and the Batch there is registered but not sorted. A final FLUSH runs out (→ EMPTY). The in-flight SortCycle (incl. PalletExchange) and BinExchange complete. Process resumes: it sorts a registered Batch first, waits for the bin HOME, and picks RUN_TO_PICKZONE or FLUSH by the same rule as after a sorted Batch. |
+| D31 | EmergencyStop | Everything stops where it is, immediately: FREEZE on the controller (belt, FlexFeeder, lanes, bin) and the arm's PickAndPlace goal is cancelled, which brings the arm to a safe stop in place. The cell goes FAULT. The Gateway closes the WebSocket session after forwarding EMERGENCY_STOP; the operator reconnects, and the CLEAR_WORKSPACE sent on connect runs the flush reset. RESET_FAULT stays the recovery for a device fault. |
+| D32 | Gearwheel held when the flush starts | It is finished onto its colour's Pallet (counts as a drop), then the arm goes HOME. |
+| D33 | Races | The orchestrator is a single serialized state machine: every device result, operator intent and reset step is an event applied under one owner, so a late result can never be dropped or applied to the wrong run. A device fault is never lost: it always ends in FAULT and a DEVICE_FAULT frame, whatever run it belongs to. Counts the flush depends on come from device results, not from asynchronous snapshots. |
+| D34 | Panel counts | The display panel shows exactly what `cell_state.stations` says (ScrapBin = Scrapped only); no client-side recount. |

@@ -7,10 +7,13 @@ priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:40Z
-updated_at: 2026-10-04T13:36:35Z
+updated_at: 2026-10-06T10:39:12Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-0ceq
+    - hand-sim-miaq
+    - hand-sim-y16q
+    - hand-sim-r83b
 ---
 
 ## What to build
@@ -27,3 +30,9 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-0ceq (22)
+
+## Added 2026-10-06 (review follow-up)
+
+- [ ] PalletExchange scenario shows the Pallet count growing 1 then 2 on the panel before the 10th drop (carries the intent of hand-sim-rr7s / hand-sim-c7kb, whose Flow A ACs were retired with the click-to-pick flow)
+- [ ] EmergencyStop scenario: session ends, Connect again, RESETTING → EMPTY (D31)
+- [ ] Stop scenario follows D30

@@ -54,9 +54,9 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
 19. As an operator, I want the arm to return HOME after a Batch is sorted before the Conveyor restarts, so that the belt runs clear of the arm.
 20. As an operator, I want a final flush run when the FlexFeeder is empty, so that leftover Rejected Gearwheels end up in the ScrapBin.
 21. As an operator, I want Fill re-enabled and Process disabled after the final flush, so that I know the run is over.
-22. As an operator, I want Stop to freeze the Conveyor and FlexFeeder while the current SortCycle and any running exchange complete, so that nothing is stranded halfway.
+22. As an operator, I want Stop to drive every running operation to its end (the FlexFeeder stops placing, the belt runs on to the eye, the current SortCycle and any running exchange complete), so that nothing is stranded halfway (D30).
 23. As an operator, I want Process to resume after Stop from where it paused, so that I don't lose the run.
-24. As an operator, I want EmergencyStop to freeze the arm, the Conveyor, the FlexFeeder, the PalletLanes and the ScrapBin slide, so that the whole cell stops at once.
+24. As an operator, I want EmergencyStop to freeze the arm, the Conveyor, the FlexFeeder, the PalletLanes and the ScrapBin slide where they are, and to end my session, so that the whole cell stops at once and recovery is always a fresh connect with a flush reset (D31).
 25. As an operator, I want a device fault (drive fault, end-sensor timeout) to freeze the cell and name the device in an error, so that I know what failed.
 26. As an operator, I want ConveyorStatus to show FAULT on a device fault, so that the state is unambiguous.
 27. As an operator, I want RESET_FAULT to run the physical flush reset, so that recovery always ends in a known clean state.
@@ -132,8 +132,8 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
 - **Scrapped**: a Rejected Gearwheel becomes Scrapped when the exit eye counts it during the next belt run. Only Scrapped Gearwheels count as ScrapBin contents.
 - **BinExchange**: at a belt stop, if Scrapped ≥ `BIN_EXCHANGE_THRESHOLD` (20), the BinExchange starts and runs while the arm sorts the new Batch. The next belt run waits until the bin is HOME. The bin is physically sized for threshold + BeltCapacity. PalletExchange and BinExchange are independent and may overlap.
 - **Batch end**: arm HOME → (wait for bin HOME) → next feed run. When the FlexFeeder is empty and the last Batch is sorted, a final flush run follows → `EMPTY`, Fill on, Process off.
-- **Stop**: the belt and FlexFeeder freeze. The in-flight SortCycle (including its PalletExchange) and any BinExchange complete. Process resumes.
-- **EmergencyStop** (software): RobotState → FAULT as today, plus a freeze of all devices. ConveyorStatus → FAULT.
+- **Stop**: the FlexFeeder stops placing; the belt run continues to the eye (its Batch is registered, not sorted) or a final flush runs out. The in-flight SortCycle (including its PalletExchange) and any BinExchange complete. Process resumes (D30).
+- **EmergencyStop** (software): RobotState → FAULT as today, the PickAndPlace goal is cancelled (arm safe-stops in place), plus a freeze of all devices. ConveyorStatus → FAULT. The Gateway then closes the session; reconnecting runs the flush reset (D31).
 - **Device fault**: freeze all, ERROR frame naming the device and fault code, ConveyorStatus → FAULT.
 - **Reset**: `CLEAR_WORKSPACE`, sent by TeleopClient on every connect (and therefore on every reload), and `RESET_FAULT` both trigger the flush reset. ConveyorStatus is `RESETTING` throughout:
   1. Abort the SortCycle; the arm goes HOME.
