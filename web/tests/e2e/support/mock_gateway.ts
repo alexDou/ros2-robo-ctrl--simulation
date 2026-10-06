@@ -486,6 +486,12 @@ export class MockGateway {
 
       case 'RESET_FAULT': {
         this.log('[EDGE] Received RESET_FAULT command');
+        // RESETTING flush: like CLEAR_WORKSPACE, the whole cell goes back to empty.
+        this.spawned = [];
+        this.inProgress = [];
+        this.processed = [];
+        this.activeId = null;
+        this.inferenceMetrics = null;
         this.cell.reset();
         this.cancelTrajectory();
         this.robotState = 'IDLE';

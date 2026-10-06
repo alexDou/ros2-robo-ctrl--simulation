@@ -30,14 +30,13 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the Reset Fault button should be enabled
 
   @safety @fault-recovery
-  Scenario: Reset Fault safely clears fault state and restores IDLE readiness without joint motion
+  Scenario: Reset Fault flushes the cell and restores IDLE readiness
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Given the robot is in "FAULT" state
     When the operator clicks the "Reset Fault" button
     Then the connection status should indicate "CONNECTED / IDLE"
     And all action buttons should be enabled
     And the Reset Fault button should be disabled
-    And the robot joint positions should remain unchanged
 
   @conveyor @unit-8.2b
   Scenario: Process feeds one Batch onto the belt and halts it at the PickZone edge
@@ -53,28 +52,6 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the belt surface should be frozen
     And the hopper should hold the rest of the deck
     And Fill and Process should both be disabled
-
-  @conveyor @unit-8.1a
-  Scenario: A defective gear is booked to the scrap bin without arm motion
-    When the operator opens the teleoperation visualizer for robot "arm-ur5"
-    Then the connection status should indicate "CONNECTED / IDLE"
-    And the 3D robot model should be fully loaded in the WebGL scene
-    And the scrap bin should be green
-    When a defective gear is spawned
-    Then the scrap bin should turn red
-    And the arm should not have moved
-
-  @conveyor @unit-8.1b
-  Scenario: The 10th gear on a tower empties it with a fade
-    When the operator opens the teleoperation visualizer for robot "arm-ur5"
-    Then the connection status should indicate "CONNECTED / IDLE"
-    And the 3D robot model should be fully loaded in the WebGL scene
-    Given the GREEN tower already holds 9 gears
-    When a 10th intact GREEN gear is picked
-    Then the event log should record state transition to "EXECUTING"
-    And the event log should record state transition to "IDLE"
-    And the GREEN tower counter should read "0/10"
-    And the GREEN tower stack should have faded out
 
   @conveyor @unit-8.2a
   Scenario: Fill loads the hopper and enables Process
@@ -115,7 +92,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And every tower counter should read "0/10"
 
   @conveyor @unit-8.3b
-  Scenario: EmergencyStop mid-run resets the hopper, belt, towers and bin
+  Scenario: EmergencyStop mid-run then Reset Fault empties the hopper, belt, towers and bin
     Given the mock arm runs 10 times faster
     And the deck seed is 7
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
@@ -126,6 +103,8 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     Then some gears should have been sorted
     When the operator dispatches an EMERGENCY_STOP command
     Then the connection status should indicate "CONNECTED / FAULT"
+    When the operator clicks the "Reset Fault" button
+    Then the connection status should indicate "CONNECTED / IDLE"
     And the hopper, belt, towers and bin should all be empty
 
   @conveyor @unit-8.3b

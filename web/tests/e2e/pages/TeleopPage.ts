@@ -349,42 +349,6 @@ export class TeleopPage {
     );
   }
 
-  async dispatchDefectiveSpawn(): Promise<void> {
-    await this.injectRawFrame(
-      JSON.stringify({
-        command_id: `spawn-defective-${Date.now()}`,
-        sender_id: 'ui-client',
-        timestamp_ns: Date.now() * 1_000_000,
-        type: 'SPAWN_OBJECT',
-        payload: { x: 0.4, y: 0.0, z: 0.0, object_type: 'GEAR', color: 'BLUE', intact: false },
-      }),
-    );
-  }
-
-  async dispatchIntactGreenPick(): Promise<void> {
-    const frame = (type: string, payload: Record<string, unknown>) =>
-      JSON.stringify({
-        command_id: `${type.toLowerCase()}-${Date.now()}`,
-        sender_id: 'ui-client',
-        timestamp_ns: Date.now() * 1_000_000,
-        type,
-        payload,
-      });
-    await this.injectRawFrame(
-      frame('SPAWN_OBJECT', {
-        x: 0.4,
-        y: 0.0,
-        z: 0.0,
-        object_type: 'GEAR',
-        color: 'GREEN',
-        intact: true,
-      }),
-    );
-    await this.injectRawFrame(
-      frame('PICK_AND_PLACE_TARGET', { pick_x: 0.4, pick_y: 0.0, pick_z: 0.0 }),
-    );
-  }
-
   async expectScrapBinFloorHex(hex: number): Promise<void> {
     await expect
       .poll(() =>
@@ -398,10 +362,6 @@ export class TeleopPage {
 
   async expectTowerCounter(color: string, text: string): Promise<void> {
     await expect(this.page.getByTestId(`tower-counter-${color}`)).toHaveText(text);
-  }
-
-  async expectEventLogNotContains(text: string): Promise<void> {
-    await expect(this.eventLog).not.toContainText(text);
   }
 
   async clickFill(): Promise<void> {
@@ -738,21 +698,6 @@ export class TeleopPage {
     return await this.page.evaluate(() => {
       return window.__robot_visualizer ? window.__robot_visualizer.getTowerGearCount() : 0;
     });
-  }
-
-  async expectTowerGearCount(expectedCount: number, timeout = 10000): Promise<void> {
-    await expect
-      .poll(
-        async () => {
-          return await this.getTowerGearCount();
-        },
-        {
-          timeout,
-          intervals: [50, 100, 200],
-          message: `Expected ${expectedCount} gears stacked on SpindleTower`,
-        },
-      )
-      .toBe(expectedCount);
   }
 
   async getTowerTopGearHeight(): Promise<number | null> {
