@@ -95,10 +95,6 @@ export function useTeleopSession({
       // session flag. Cycle end always clears the flag; Clear button state
       // derives from snapshot (see TeleopClient workcellHasGears).
     }
-    if (prev !== 'FAULT' && current === 'FAULT' && wsRef.current?.readyState === WebSocket.OPEN) {
-      // FAULT (incl. EmergencyStop) = full reset (Q17); the backend clear is not IDLE-gated.
-      wsRef.current.send(serializeCommand(createClearWorkspaceCommand({ senderId: 'ui-client' })));
-    }
     prevRobotStateRef.current = current;
   }, [robotState]);
 

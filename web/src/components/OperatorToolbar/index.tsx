@@ -39,9 +39,10 @@ export function OperatorToolbar({
   const isFault = robotState === 'FAULT';
 
   // Action buttons disabled unless robot is IDLE and not externally disabled
-  const actionDisabled = disabled || !isIdle;
+  const cellBusy = conveyorStatus === 'RESETTING' || conveyorStatus === 'FAULT';
+  const actionDisabled = disabled || !isIdle || cellBusy;
   const resetFaultDisabled = disabled || !isFault;
-  const clearWorkspaceDisabled = disabled || !isIdle || !hasActiveGear;
+  const clearWorkspaceDisabled = disabled || !isIdle || cellBusy || !hasActiveGear;
   const fillButtonDisabled = disabled || !canFill(conveyorStatus);
   const processButtonDisabled = disabled || !isIdle || !canProcess(conveyorStatus);
   const stopButtonDisabled = disabled || !canStop(conveyorStatus);

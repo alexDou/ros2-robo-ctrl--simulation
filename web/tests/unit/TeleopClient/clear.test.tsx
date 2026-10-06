@@ -111,7 +111,7 @@ describe('TeleopClient Component', () => {
       ]);
     });
 
-    it('sends CLEAR_WORKSPACE once when robot_state enters FAULT, even though not IDLE', () => {
+    it('does not reset on entering FAULT: the cell stays frozen until RESET_FAULT (Unit 9.22)', () => {
       render(
         <TeleopClient
           robotId="robot-0"
@@ -125,7 +125,7 @@ describe('TeleopClient Component', () => {
       expect(ws.sentMessages.length).toBe(0);
       act(() => ws.simulateMessage(frame(RobotState.FAULT)));
       act(() => ws.simulateMessage(frame(RobotState.FAULT)));
-      expect(ws.sentMessages.map((f) => JSON.parse(f).type)).toEqual([CommandType.CLEAR_WORKSPACE]);
+      expect(ws.sentMessages.length).toBe(0);
     });
   });
 

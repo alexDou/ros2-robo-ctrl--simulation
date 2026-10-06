@@ -1,13 +1,13 @@
 ---
 # hand-sim-0ceq
 title: 'Unit 9.22: reset on connect and RESETTING in TeleopClient'
-status: todo
+status: in-progress
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:40Z
-updated_at: 2026-10-04T13:36:35Z
+updated_at: 2026-10-06T09:08:33Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-4f07

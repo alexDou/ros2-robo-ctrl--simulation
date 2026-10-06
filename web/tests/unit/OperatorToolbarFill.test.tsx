@@ -87,3 +87,31 @@ describe('Unit 9.11: gating derives from cell_state alone (hand-sim-q2ur)', () =
     }).toEqual(enabled);
   });
 });
+
+describe('Unit 9.22: RESETTING disables every button (hand-sim-0ceq)', () => {
+  it.each(['RESETTING', 'FAULT'] as const)('%s disables poses and Clear Workspace', (status) => {
+    render(
+      <OperatorToolbar
+        robotState="IDLE"
+        connectionState="CONNECTED"
+        hasActiveGear={true}
+        conveyorStatus={status}
+        onExecutePose={vi.fn()}
+        onConnect={vi.fn()}
+        onDisconnect={vi.fn()}
+        onResetFault={vi.fn()}
+        onClearWorkspace={vi.fn()}
+        onFill={vi.fn()}
+        onProcess={vi.fn()}
+        onStop={vi.fn()}
+      />,
+    );
+    expect((screen.getByTestId('clear-workspace-button') as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByTestId('pose-home-button') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('EMPTY keeps Fill enabled once the reset is over', () => {
+    renderToolbar('EMPTY');
+    expect((screen.getByTestId('fill-button') as HTMLButtonElement).disabled).toBe(false);
+  });
+});
