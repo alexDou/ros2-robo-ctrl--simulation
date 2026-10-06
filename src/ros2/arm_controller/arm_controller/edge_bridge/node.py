@@ -30,6 +30,7 @@ from robot_control_interfaces.action import PickAndPlace
 from robot_control_interfaces.srv import (
     CellFill,
     CellProcess,
+    CellReset,
     CellStop,
     ClearWorkspace,
     CommitDrop,
@@ -114,6 +115,7 @@ class EdgeBridgeNode(
         self.declare_parameter("cell_process_service_name", "/cell/process")
         self.declare_parameter("cell_stop_service_name", "/cell/stop")
         self.declare_parameter("cell_emergency_stop_service_name", "/cell/emergency_stop")
+        self.declare_parameter("cell_reset_service_name", "/cell/reset")
         self.declare_parameter("switch_service_name", "/controller_manager/switch_controller")
         self.declare_parameter("switch_timeout", 5.0)
         self.declare_parameter("standby_park_timeout", 10.0)
@@ -254,6 +256,12 @@ class EdgeBridgeNode(
         self._cell_estop_client = self.create_client(
             CellStop,
             self._cell_estop_service_name,
+            callback_group=self._cb_group,
+        )
+
+        self._cell_reset_client = self.create_client(
+            CellReset,
+            str(self.get_parameter("cell_reset_service_name").value),
             callback_group=self._cb_group,
         )
 

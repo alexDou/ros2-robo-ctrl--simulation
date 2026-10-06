@@ -292,6 +292,7 @@ class EdgeBridgeTelemetryMixin:
             "_cell_process_client",
             "_cell_stop_client",
             "_cell_estop_client",
+            "_cell_reset_client",
         ):
             client = getattr(self, attr)
             if client is not None:

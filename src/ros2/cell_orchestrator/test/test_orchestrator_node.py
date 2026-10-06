@@ -16,12 +16,15 @@ from robot_control_interfaces.action import ConveyorRun, PickAndPlace, StationEx
 from robot_control_interfaces.srv import (
     CellFill,
     CellProcess,
+    CellReset,
     CellStop,
+    ClearWorkspace,
     CommitDrop,
     ConveyorFreeze,
     ConveyorStop,
     FeederEnable,
     FeederFill,
+    FeederQuickEmpty,
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
@@ -189,10 +192,14 @@ class FakeFeeder:
     def __init__(self, node) -> None:
         self.fills: list[int] = []
         self.enables: list[bool] = []
+        self.quick_empties = 0
         self.fill_ok = True
         group = ReentrantCallbackGroup()
         node.create_service(FeederFill, "feeder/fill", self._fill, callback_group=group)
         node.create_service(FeederEnable, "feeder/enable", self._enable, callback_group=group)
+        node.create_service(
+            FeederQuickEmpty, "feeder/quick_empty", self._quick_empty, callback_group=group
+        )
         self.status_pub = node.create_publisher(String, "feeder/status", 10)
 
     def _fill(self, req, res):
@@ -204,6 +211,12 @@ class FakeFeeder:
 
     def _enable(self, req, res):
         self.enables.append(req.enable)
+        res.success = True
+        return res
+
+    def _quick_empty(self, _req, res):
+        self.quick_empties += 1
+        self.publish(0, "EMPTY")
         res.success = True
         return res
 
@@ -223,6 +236,7 @@ class FakeWorkcell:
         self.full_colors: set[str] = set()  # a commit for these colours fills the Pallet
         self.resets: list[str] = []
         self.reset_ok = True
+        self.clears = 0
         self._last_color = ""
         self.state_pub = node.create_publisher(String, "workcell/state", 10)
         group = ReentrantCallbackGroup()
@@ -240,6 +254,9 @@ class FakeWorkcell:
         node.create_service(
             ResetStation, "workcell/reset_station", self._reset, callback_group=group
         )
+        node.create_service(
+            ClearWorkspace, "workcell/clear_workspace", self._clear, callback_group=group
+        )
 
     def publish_pallets(self, counts: dict[str, int], scrapped: int = 0) -> None:
         """WorkcellNode's snapshot as far as the orchestrator reads it: intact Gearwheels dropped."""
@@ -253,6 +270,12 @@ class FakeWorkcell:
         ]
         state = {"processed": processed, "scrapped": bin_gears}
         self.state_pub.publish(String(data=json.dumps(state)))
+
+    def _clear(self, _req, res):
+        self.log.append("clear")
+        self.clears += 1
+        res.success = True
+        return res
 
     def _reset(self, req, res):
         self.log.append(f"reset:{req.station}")
@@ -324,6 +347,7 @@ def cell():
     process = client.create_client(CellProcess, "cell/process")
     stop = client.create_client(CellStop, "cell/stop")
     fake.estop = client.create_client(CellStop, "cell/emergency_stop")
+    fake.reset = client.create_client(CellReset, "cell/reset")
     executor = MultiThreadedExecutor(num_threads=6)
     for n in (node, fake_node, client):
         executor.add_node(n)
@@ -332,6 +356,7 @@ def cell():
     assert process.wait_for_service(timeout_sec=TIMEOUT)
     assert stop.wait_for_service(timeout_sec=TIMEOUT)
     assert fake.estop.wait_for_service(timeout_sec=TIMEOUT)
+    assert fake.reset.wait_for_service(timeout_sec=TIMEOUT)
     assert fake.fill.wait_for_service(timeout_sec=TIMEOUT)
     assert _wait(node._run_client.server_is_ready)  # discovery of the fake device
     assert _wait(node._feeder_fill_client.service_is_ready)
@@ -961,3 +986,142 @@ def test_a_failed_bin_exchange_faults_the_cell_without_a_reset(cell):
     time.sleep(0.2)
     assert fake.workcell.resets == []
     assert len(fake.goals) == 1
+
+
+def _reset_released(fake, states):
+    """Lets the flush belt run finish once the reset has sent it; returns when the cell is EMPTY."""
+    assert _wait(lambda: ConveyorRun.Goal.FLUSH in fake.goals)
+    fake.release.set()
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.EMPTY)
+
+
+def test_reset_from_mid_run_flushes_and_ends_empty_with_everything_home(cell):
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+
+    assert _call(fake.reset, CellReset.Request()).success
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.RESETTING)
+    _reset_released(fake, states)
+
+    assert fake.goals == [ConveyorRun.Goal.RUN_TO_PICKZONE, ConveyorRun.Goal.FLUSH]
+    assert fake.feeder.quick_empties == 1
+    assert fake.log.index("belt:FLUSH") < fake.log.index("clear")
+    last = states[-1]
+    assert [s.exchange_state.value for s in last.stations] == ["HOME"] * 4
+    assert [s.count for s in last.stations] == [0, 0, 0, 0]
+    assert last.belt_gears == []
+
+
+def test_reset_from_fault_releases_the_freeze_and_ends_empty(cell):
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    assert _call(fake.estop, CellStop.Request()).success
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+
+    assert _call(fake.reset, CellReset.Request()).success
+    _reset_released(fake, states)
+
+    assert fake.freezes == [True, False]
+    assert fake.workcell.clears == 1
+
+
+def test_reset_works_from_empty_on_connect(cell):
+    fake, states, _, _ = cell
+
+    assert _call(fake.reset, CellReset.Request()).success
+    _reset_released(fake, states)
+
+    assert fake.workcell.clears == 1
+
+
+def test_reset_is_refused_while_resetting(cell):
+    fake, states, _, _ = cell
+    assert _call(fake.reset, CellReset.Request()).success
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.RESETTING)
+
+    again = _call(fake.reset, CellReset.Request())
+
+    assert not again.success
+    assert "RESETTING" in again.message
+    _reset_released(fake, states)
+
+
+def test_reset_disables_every_button_until_empty(cell):
+    fake, states, process, _ = cell
+    assert _call(fake.reset, CellReset.Request()).success
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.RESETTING)
+
+    assert not _call(fake.fill, CellFill.Request()).success
+    assert not _call(process, CellProcess.Request()).success
+    _reset_released(fake, states)
+
+
+def test_reset_exchanges_only_the_non_empty_pallets_and_the_bin(cell):
+    fake, states, _, _ = cell
+    fake.workcell.publish_pallets({"GREEN": 3}, scrapped=5)
+    assert _wait(lambda: states and states[-1].stations[1].count == 3)
+
+    assert _call(fake.reset, CellReset.Request()).success
+    _reset_released(fake, states)
+
+    assert sorted(e for e in fake.log if e.startswith("exchange:")) == [
+        "exchange:GREEN",
+        "exchange:SCRAP",
+    ]
+    assert sorted(fake.workcell.resets) == ["GREEN", "SCRAP"]
+    assert fake.log.index("exchange_done:GREEN") < fake.log.index("clear")
+
+
+def test_reset_waits_for_the_held_gearwheel_to_be_dropped_then_exchanges_its_pallet(cell):
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(500.0, MIXED_BATCH)
+    assert _wait(lambda: len(states[-1].belt_gears) == len(MIXED_BATCH))
+    fake.release.set()
+    assert _wait(lambda: len(fake.arm.goals) == 1)  # the arm holds the first Gearwheel
+
+    assert _call(fake.reset, CellReset.Request()).success
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.RESETTING)
+    time.sleep(0.3)
+    assert ConveyorRun.Goal.FLUSH not in fake.goals  # the arm is not HOME yet
+
+    fake.arm.release.set()  # the cycle finishes: the Gearwheel lands on its Pallet
+    assert _wait(lambda: fake.log.count("home") == 1)
+    fake.workcell.publish_pallets({"BLUE": 1})
+    _reset_released(fake, states)
+
+    assert len(fake.arm.goals) == 1  # the rest of the Batch is dropped, not sorted
+    assert fake.workcell.resets == ["BLUE"]
+    assert fake.log.index("home") < fake.log.index("belt:FLUSH")
+
+
+def test_a_failed_flush_faults_the_cell(cell):
+    fake, states, _, _ = cell
+    fake.stop_reason, fake.success = "FAULT", False
+
+    assert _call(fake.reset, CellReset.Request()).success
+    assert _wait(lambda: ConveyorRun.Goal.FLUSH in fake.goals)
+    fake.release.set()
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    assert fake.workcell.clears == 0
+
+
+def test_a_failed_station_exchange_during_reset_faults_the_cell(cell):
+    fake, states, _, _ = cell
+    fake.workcell.publish_pallets({"WHITE": 2})
+    assert _wait(lambda: states and states[-1].stations[0].count == 2)
+    fake.stations.success = False
+
+    assert _call(fake.reset, CellReset.Request()).success
+    assert _wait(lambda: ConveyorRun.Goal.FLUSH in fake.goals)
+    fake.release.set()
+
+    assert _wait(lambda: states[-1].conveyor_status == ConveyorStatus.FAULT)
+    assert _wait(lambda: {"device": "station_white", "code": "EXCHANGE_FAULT_1"} in fake.faults)

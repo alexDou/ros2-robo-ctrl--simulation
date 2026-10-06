@@ -1,13 +1,13 @@
 ---
 # hand-sim-145j
 title: 'Unit 9.21: flush reset (RESETTING) in ROS'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-04T13:30:40Z
-updated_at: 2026-10-04T13:36:35Z
+updated_at: 2026-10-06T09:00:42Z
 parent: hand-sim-rqpy
 blocked_by:
     - hand-sim-32pz
@@ -28,3 +28,5 @@ Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementa
 ## Blocked by
 
 - hand-sim-32pz (20)
+
+Implemented as orchestrator cell/reset (CellReset.srv) + EdgeNode mapping of CLEAR_WORKSPACE/RESET_FAULT. Held-Gearwheel decision: the in-flight SortCycle is awaited (arm ends HOME, Gearwheel lands on its Pallet, Pallet exchanged) rather than cancelled, because the arm has no home-only/release primitive. Not covered: re-homing an arm left mid-air by an EmergencyStop-aborted cycle.

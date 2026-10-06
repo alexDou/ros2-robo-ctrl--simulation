@@ -241,3 +241,29 @@ def test_device_fault_report_becomes_an_error_frame_naming_the_device(edge):
     node, _ = edge
     node._on_cell_fault(String(data='{"device": "station_scrap", "code": "EXCHANGE_FAULT_1"}'))
     assert ("DEVICE_FAULT", "station_scrap: EXCHANGE_FAULT_1") in node.errors
+
+
+def test_reset_fault_runs_the_flush_reset_and_ends_empty(edge):
+    node, plc = edge
+    _fill(node)
+    node.handle_command(_command(CommandType.CELL_PROCESS, "cell-process-r1"))
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.FEEDING)
+    node.handle_command(_command(CommandType.EMERGENCY_STOP, "estop-r1"))
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.FAULT)
+
+    node.handle_command(_command(CommandType.RESET_FAULT, "reset-r1"))
+
+    assert node.robot_state == RobotState.IDLE
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.EMPTY, timeout=20.0)
+    assert node._cell_state.feeder_remaining == 0
+    assert node._cell_state.belt_gears == []
+
+
+def test_clear_workspace_on_connect_runs_the_flush_reset(edge):
+    node, _ = edge
+    _fill(node)
+
+    node.handle_command(_command(CommandType.CLEAR_WORKSPACE, "clear-r1"))
+
+    assert _wait_for(lambda: _cell_status(node) == ConveyorStatus.EMPTY, timeout=20.0)
+    assert node._cell_state.feeder_remaining == 0

@@ -7,6 +7,7 @@ from geometry_msgs.msg import Point
 from robot_control_interfaces.srv import (
     CellFill,
     CellProcess,
+    CellReset,
     CellStop,
     ClearWorkspace,
     SpawnObject,
@@ -204,6 +205,13 @@ class EdgeBridgeCommandsMixin:
                 self._publish_error("INVALID_PAYLOAD", "ClearWorkspace payload invalid")
                 return None
 
+            # With an orchestrator present the clear is its flush reset, which clears WorkcellNode
+            # itself at the end; the direct ClearWorkspace is for a cell without one.
+            if self._request_cell_reset():
+                with self._lock:
+                    self._is_grasped = False
+                return self.publish_telemetry(command_id=command.command_id)
+
             if not self._clear_workspace_client.wait_for_service(timeout_sec=1.0):
                 self._publish_error(
                     "SERVICE_UNAVAILABLE",
@@ -354,5 +362,14 @@ class EdgeBridgeCommandsMixin:
         with self._lock:
             if self._robot_state == RobotState.FAULT:
                 self._robot_state = RobotState.IDLE
+        self._request_cell_reset()
 
         return self.publish_telemetry(command_id=command_id)
+
+    def _request_cell_reset(self) -> bool:
+        """Fire and forget: the cell reports RESETTING and EMPTY through cell/state."""
+        client = self._cell_reset_client
+        if client is None or not client.service_is_ready():
+            return False
+        client.call_async(CellReset.Request())
+        return True

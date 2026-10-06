@@ -8,8 +8,12 @@ there. The 10th drop on a Pallet makes it FULL: PalletExchange runs (the arm is 
 then ResetStation empties that colour, and only then does the next SortCycle start. Then the next
 feed run starts, or the final flush when nothing is left (-> EMPTY).
 At an eye stop with Scrapped >= BIN_EXCHANGE_THRESHOLD the BinExchange starts and overlaps the
-sorting; the next belt run waits until the bin is HOME again. The flush reset lands in a later
-Unit 9 ticket.
+sorting; the next belt run waits until the bin is HOME again.
+Reset (CLEAR_WORKSPACE on connect, RESET_FAULT) is a physical flush in RESETTING: the in-flight
+SortCycle finishes (the arm ends HOME and the Gearwheel it held lands on its Pallet), the rest of
+the Batch is dropped, the belt run is cancelled and the freeze released, the FlexFeeder quick-
+empties, the belt flushes into the bin, every non-empty Pallet and the bin exchange, WorkcellNode
+clears, then EMPTY.
 """
 
 import json
@@ -28,12 +32,15 @@ from robot_control_interfaces.action import ConveyorRun, PickAndPlace, StationEx
 from robot_control_interfaces.srv import (
     CellFill,
     CellProcess,
+    CellReset,
     CellStop,
+    ClearWorkspace,
     CommitDrop,
     ConveyorFreeze,
     ConveyorStop,
     FeederEnable,
     FeederFill,
+    FeederQuickEmpty,
     GetDropSlot,
     MarkGrasped,
     RegisterGear,
@@ -63,6 +70,8 @@ _OFFSET_PUBLISH_HZ = 5.0
 _SORT_POLL_S = 0.02
 _SORT_TIMEOUT_S = 120.0
 _EXCHANGE_TIMEOUT_S = 120.0
+_FLUSH_TIMEOUT_S = 120.0
+_CANCEL_TIMEOUT_S = 10.0
 _BIN = StationName.SCRAP.value  # the ScrapBin: same exchange machine, not a PalletStation
 _PALLET_COLORS = tuple(name.value for name in StationName if name.value != _BIN)
 
@@ -104,6 +113,11 @@ class CellOrchestratorNode(Node):
         self._run_id = 0
         self._last_exchange_fault = 0
         self._full_color: str | None = None  # set by the commit of a Pallet's 10th Gearwheel
+        # The accepted belt run, and set while no belt run is in flight: Reset cancels and awaits it.
+        self._run_handle: Any = None
+        self._belt_idle = threading.Event()
+        self._belt_idle.set()
+        self._reset_thread: threading.Thread | None = None
 
         group = ReentrantCallbackGroup()
         self._state_pub = self.create_publisher(String, "cell/state", _STATE_QOS)
@@ -134,6 +148,12 @@ class CellOrchestratorNode(Node):
         self._commit_client = self.create_client(
             CommitDrop, "workcell/commit_drop", callback_group=group
         )
+        self._feeder_empty_client = self.create_client(
+            FeederQuickEmpty, "feeder/quick_empty", callback_group=group
+        )
+        self._clear_client = self.create_client(
+            ClearWorkspace, "workcell/clear_workspace", callback_group=group
+        )
         self._reset_station_client = self.create_client(
             ResetStation, "workcell/reset_station", callback_group=group
         )
@@ -158,6 +178,7 @@ class CellOrchestratorNode(Node):
         )
         self.create_service(CellProcess, "cell/process", self._on_process, callback_group=group)
         self.create_service(CellStop, "cell/stop", self._on_stop, callback_group=group)
+        self.create_service(CellReset, "cell/reset", self._on_reset, callback_group=group)
         self.create_service(
             CellStop, "cell/emergency_stop", self._on_emergency_stop, callback_group=group
         )
@@ -167,7 +188,7 @@ class CellOrchestratorNode(Node):
     def destroy_node(self) -> None:
         with self._lock:
             self._run_id += 1  # no further run or SortCycle starts
-        for thread in (self._sort_thread, self._bin_thread):
+        for thread in (self._sort_thread, self._bin_thread, self._reset_thread):
             if thread is not None:
                 thread.join(timeout=5.0)
         super().destroy_node()
@@ -309,6 +330,7 @@ class CellOrchestratorNode(Node):
             # Enabling is idempotent and the controller disables the feeder itself at the eye stop.
             self._feeder_enable_client.call_async(FeederEnable.Request(enable=True))
         goal = ConveyorRun.Goal(mode=mode)
+        self._belt_idle.clear()
         self._run_client.send_goal_async(goal).add_done_callback(
             lambda fut: self._on_goal_response(fut, run_id, previous, mode)
         )
@@ -318,11 +340,19 @@ class CellOrchestratorNode(Node):
     ) -> None:
         handle = future.result()
         if not handle.accepted:
+            self._belt_idle.set()
             self._finish_run(run_id, previous)
             return
+        self._run_handle = handle
         handle.get_result_async().add_done_callback(lambda fut: self._on_result(fut, run_id, mode))
 
     def _on_result(self, future: Any, run_id: int, mode: int) -> None:
+        try:
+            self._handle_result(future, run_id, mode)
+        finally:
+            self._belt_idle.set()
+
+    def _handle_result(self, future: Any, run_id: int, mode: int) -> None:
         result = future.result().result
         reason = result.stop_reason
         if result.exit_count_delta and not self._scrap_exited(result.exit_count_delta):
@@ -637,6 +667,136 @@ class CellOrchestratorNode(Node):
         self._publish_state()
         response.success, response.message = True, "EmergencyStop accepted"
         return response
+
+    def _on_reset(self, _request, response):
+        """CLEAR_WORKSPACE (every connect) and RESET_FAULT: a physical flush, from any state."""
+        with self._lock:
+            if self._status == ConveyorStatus.RESETTING:
+                response.message = "Reset refused in RESETTING"
+                return response
+            was_fault = self._status == ConveyorStatus.FAULT
+            self._status = ConveyorStatus.RESETTING
+            self._run_id += 1  # no further run or SortCycle starts, late results are ignored
+            run_id = self._run_id
+            self._pending.clear()
+        self._publish_state()
+        thread = threading.Thread(target=self._flush_reset, args=(run_id, was_fault), daemon=True)
+        self._reset_thread = thread
+        thread.start()
+        response.success, response.message = True, "Reset started"
+        return response
+
+    def _flush_reset(self, run_id: int, was_fault: bool) -> None:
+        """Runs the reset steps in order; the first failure freezes the cell into FAULT."""
+        steps = (
+            ("arm", "SORT_CYCLE_TIMEOUT", self._await_arm_home),
+            ("station_scrap", "BIN_AWAY_TIMEOUT", self._await_bin_home),
+            ("conveyor", "CANCEL_TIMEOUT", lambda r: self._stop_belt_run(r, was_fault)),
+            ("feeder", "QUICK_EMPTY_FAILED", self._quick_empty_feeder),
+            ("conveyor", "FLUSH_FAILED", self._flush_belt),
+            ("station", "", self._exchange_filled_stations),
+            ("workcell", "CLEAR_FAILED", self._clear_workcell),
+        )
+        for device, code, step in steps:
+            if not step(run_id):
+                if device == "station":
+                    return  # the exchange already raised its own fault
+                self._fault(run_id, device, code)
+                return
+        with self._lock:
+            if run_id != self._run_id:
+                return
+            self._registered.clear()
+            self._picked.clear()
+            self._full_color = None
+            self._pallet_counts = dict.fromkeys(_PALLET_COLORS, 0)
+            self._scrapped_count = 0
+        self._set_status(ConveyorStatus.EMPTY)
+
+    def _current(self, run_id: int) -> bool:
+        with self._lock:
+            return run_id == self._run_id
+
+    def _await(self, done: threading.Event, run_id: int, timeout_s: float) -> bool:
+        """True once `done` is set; False on timeout or when an EmergencyStop superseded the reset."""
+        waited = 0.0
+        while not done.wait(_SORT_POLL_S):
+            waited += _SORT_POLL_S
+            if waited > timeout_s or not self._current(run_id):
+                return False
+        return self._current(run_id)
+
+    def _await_arm_home(self, run_id: int) -> bool:
+        """The in-flight SortCycle ends with the arm HOME and its Gearwheel dropped on a Pallet."""
+        if not self._sort_lock.acquire(timeout=_SORT_TIMEOUT_S):
+            return False
+        self._sort_lock.release()
+        return self._current(run_id)
+
+    def _await_bin_home(self, run_id: int) -> bool:
+        """The belt refuses a flush while the bin is away."""
+        return self._await(self._bin_home, run_id, _EXCHANGE_TIMEOUT_S)
+
+    def _stop_belt_run(self, run_id: int, was_fault: bool) -> bool:
+        handle = self._run_handle
+        if handle is not None and not self._belt_idle.is_set():
+            handle.cancel_goal_async()
+        if not self._await(self._belt_idle, run_id, _CANCEL_TIMEOUT_S):
+            return False
+        if was_fault:  # only now: the frozen belt must not resume its old run command
+            return self._notify(self._freeze_client, ConveyorFreeze.Request(freeze=False))
+        return True
+
+    def _quick_empty_feeder(self, run_id: int) -> bool:
+        return self._notify(self._feeder_empty_client, FeederQuickEmpty.Request())
+
+    def _flush_belt(self, run_id: int) -> bool:
+        """Everything on the belt goes into the bin, intact Gearwheels included."""
+        done = threading.Event()
+        outcome = {"success": False, "scrapped": 0}
+
+        def on_result(fut: Any) -> None:
+            result = fut.result().result
+            outcome["success"] = bool(result.success) and result.stop_reason == "FLUSH_DONE"
+            outcome["scrapped"] = int(result.exit_count_delta)
+            done.set()
+
+        def on_goal(fut: Any) -> None:
+            handle = fut.result()
+            if handle.accepted:
+                handle.get_result_async().add_done_callback(on_result)
+            else:
+                done.set()
+
+        goal = ConveyorRun.Goal(mode=ConveyorRun.Goal.FLUSH)
+        self._run_client.send_goal_async(goal).add_done_callback(on_goal)
+        if not self._await(done, run_id, _FLUSH_TIMEOUT_S) or not outcome["success"]:
+            return False
+        return not outcome["scrapped"] or self._scrap_exited(outcome["scrapped"])
+
+    def _exchange_filled_stations(self, run_id: int) -> bool:
+        """Every Pallet with Gearwheels on it, and the ScrapBin if it holds any, leave together."""
+        with self._lock:
+            filled = [c for c in _PALLET_COLORS if self._pallet_counts[c] > 0]
+            if self._scrapped_count > 0:
+                filled.append(_BIN)
+        failed: list[str] = []
+
+        def exchange(name: str) -> None:
+            if not self._exchange_station(name):
+                failed.append(name)
+
+        workers = [threading.Thread(target=exchange, args=(name,), daemon=True) for name in filled]
+        for worker in workers:
+            worker.start()
+        for worker in workers:
+            worker.join()
+        if failed:
+            self._fault(run_id, f"station_{failed[0].lower()}", self._exchange_fault_code())
+        return not failed and self._current(run_id)
+
+    def _clear_workcell(self, run_id: int) -> bool:
+        return self._notify(self._clear_client, ClearWorkspace.Request())
 
     def _on_freeze_response(self, future: Any) -> None:
         result = future.result()

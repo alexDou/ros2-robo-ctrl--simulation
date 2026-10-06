@@ -22,6 +22,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/FeederFill.srv"
   "srv/FeederEnable.srv"
   "srv/FeederQuickEmpty.srv"
+  "srv/CellReset.srv"
   "srv/CellStop.srv"
   "srv/GetDropSlot.srv"
   "srv/ClearWorkspace.srv"
