@@ -1,7 +1,6 @@
 """ROS2 FlexFeeder device node: fill / enable / quick-empty services, status + placement topics."""
 
 import json
-import threading
 
 import rclpy
 from rclpy.callback_groups import ReentrantCallbackGroup
@@ -11,9 +10,9 @@ from robot_control_interfaces.srv import FeederEnable, FeederFill, FeederQuickEm
 from std_msgs.msg import String
 
 from cell_devices.belt_sim import BeltParams
+from cell_devices.device_link import DeviceLink
 from cell_devices.field_io import FieldIoError
 from cell_devices.flexfeeder import FlexFeederDevice
-from cell_devices.modbus_adapter import ModbusFieldIo
 
 
 class FlexFeederNode(Node):
@@ -26,10 +25,13 @@ class FlexFeederNode(Node):
         ).value
         poll_period_s = 1.0 / self.declare_parameter("poll_hz", 5.0).value
 
-        # ModbusFieldIo is not thread-safe; the poll timer and the services share it.
-        self._lock = threading.Lock()
-        self._io: ModbusFieldIo | None = None
-        self._device: FlexFeederDevice | None = None
+        self._link: DeviceLink[FlexFeederDevice] = DeviceLink(
+            self._host,
+            self._port,
+            lambda io: FlexFeederDevice(io, self._counts_per_mm),
+            self.get_logger(),
+        )
+        self._lock = self._link.lock  # every controller access holds it
 
         group = ReentrantCallbackGroup()
         self._status_pub = self.create_publisher(String, "feeder/status", 10)
@@ -41,32 +43,15 @@ class FlexFeederNode(Node):
             FeederQuickEmpty, "feeder/quick_empty", self._on_quick_empty, callback_group=group
         )
 
-    def _connected_device_locked(self) -> FlexFeederDevice | None:
-        if self._device is None:
-            try:
-                io = ModbusFieldIo(self._host, self._port)
-                io.connect()
-                self._io, self._device = io, FlexFeederDevice(io, self._counts_per_mm)
-            except FieldIoError as err:
-                self.get_logger().warning(
-                    f"cell controller unreachable: {err}", throttle_duration_sec=5.0
-                )
-        return self._device
-
-    def _drop_connection_locked(self) -> None:
-        if self._io is not None:
-            self._io.close()
-        self._io = self._device = None
-
     def _poll(self) -> None:
         with self._lock:
-            device = self._connected_device_locked()
+            device = self._link.device_locked()
             if device is None:
                 return
             try:
                 status = device.poll()
             except FieldIoError:
-                self._drop_connection_locked()
+                self._link.drop_locked()
                 return
         # Each placement is published once; the orchestrator registers them at the eye stop.
         for p in status.new_placements:
@@ -89,13 +74,13 @@ class FlexFeederNode(Node):
 
     def _send(self, action, response, ok_message: str):
         with self._lock:
-            device = self._connected_device_locked()
+            device = self._link.device_locked()
             try:
                 if device is None:
                     raise FieldIoError("cell controller unreachable")
                 action(device)
             except FieldIoError as err:
-                self._drop_connection_locked()
+                self._link.drop_locked()
                 response.success, response.message = False, str(err)
                 return response
         response.success, response.message = True, ok_message

@@ -1,4 +1,4 @@
-import type { GearColor, GearEntry } from '@contracts';
+import type { GearColor, GearEntry, StationStatus } from '@contracts';
 
 export function towerCounts(processed: readonly GearEntry[]): Record<GearColor, number> {
   const counts: Record<GearColor, number> = { WHITE: 0, GREEN: 0, BLUE: 0 };
@@ -8,10 +8,17 @@ export function towerCounts(processed: readonly GearEntry[]): Record<GearColor, 
   return counts;
 }
 
-/** ScrapBin count: Scrapped Gearwheels, plus Flow A defectives booked straight to `processed`. */
-export function binCount(
-  scrapped: readonly GearEntry[] | undefined,
-  processed: readonly GearEntry[] | undefined,
-): number {
-  return (scrapped?.length ?? 0) + (processed ?? []).filter((e) => e.intact === false).length;
+/** Display panel counts: exactly what cell_state.stations says (D34), zero before the first. */
+export function panelCounts(stations: readonly StationStatus[] | undefined): {
+  binCount: number;
+  palletCounts: Record<GearColor, number>;
+} {
+  const palletCounts: Record<GearColor, number> = { WHITE: 0, GREEN: 0, BLUE: 0 };
+  let binCount = 0;
+  for (const st of stations ?? []) {
+    const count = Number(st.count); // the wire type also admits bigint and string
+    if (st.name === 'SCRAP') binCount = count;
+    else palletCounts[st.name] = count;
+  }
+  return { binCount, palletCounts };
 }

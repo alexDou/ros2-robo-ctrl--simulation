@@ -1,6 +1,5 @@
 """ROS2 Station device node: StationExchange action. One node type, one instance per station."""
 
-import threading
 import time
 
 import rclpy
@@ -10,8 +9,8 @@ from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 from robot_control_interfaces.action import StationExchange
 
+from cell_devices.device_link import DeviceLink
 from cell_devices.field_io import FieldIoError
-from cell_devices.modbus_adapter import ModbusFieldIo
 from cell_devices.register_map import STATIONS, StationState
 from cell_devices.station import StationDevice
 
@@ -26,10 +25,10 @@ class StationNode(Node):
         self._port = self.declare_parameter("port", 5020).value
         self._poll_period_s = 1.0 / self.declare_parameter("poll_hz", 5.0).value
 
-        # ModbusFieldIo is not thread-safe; every access goes through the lock.
-        self._lock = threading.Lock()
-        self._io: ModbusFieldIo | None = None
-        self._device: StationDevice | None = None
+        self._link: DeviceLink[StationDevice] = DeviceLink(
+            self._host, self._port, lambda io: StationDevice(io, self._station), self.get_logger()
+        )
+        self._lock = self._link.lock  # every controller access holds it
         self._goal_active = False
 
         self._action = ActionServer(
@@ -42,23 +41,6 @@ class StationNode(Node):
             cancel_callback=lambda _: CancelResponse.REJECT,
             callback_group=ReentrantCallbackGroup(),
         )
-
-    def _connected_device_locked(self) -> StationDevice | None:
-        if self._device is None:
-            try:
-                io = ModbusFieldIo(self._host, self._port)
-                io.connect()
-                self._io, self._device = io, StationDevice(io, self._station)
-            except FieldIoError as err:
-                self.get_logger().warning(
-                    f"cell controller unreachable: {err}", throttle_duration_sec=5.0
-                )
-        return self._device
-
-    def _drop_connection_locked(self) -> None:
-        if self._io is not None:
-            self._io.close()
-        self._io = self._device = None
 
     def _on_goal(self, _goal_request) -> GoalResponse:
         if self._goal_active:
@@ -78,7 +60,7 @@ class StationNode(Node):
 
     def _run_goal(self, goal_handle):
         with self._lock:
-            device = self._connected_device_locked()
+            device = self._link.device_locked()
             try:
                 if device is None:
                     raise FieldIoError("cell controller unreachable")
@@ -87,7 +69,7 @@ class StationNode(Node):
                     return self._fail(goal_handle, status.state.name, status.fault)
                 device.exchange()
             except FieldIoError:
-                self._drop_connection_locked()
+                self._link.drop_locked()
                 return self._fail(goal_handle)
 
         while True:
@@ -95,7 +77,7 @@ class StationNode(Node):
                 try:
                     status = device.poll()
                 except FieldIoError:
-                    self._drop_connection_locked()
+                    self._link.drop_locked()
                     return self._fail(goal_handle)
             goal_handle.publish_feedback(StationExchange.Feedback(exchange_state=status.state.name))
             if status.acked and status.settled:

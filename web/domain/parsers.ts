@@ -128,47 +128,27 @@ export function createClearWorkspaceCommand(params?: {
   };
 }
 
-export function createCellFillCommand(params?: {
-  senderId?: string;
-  commandId?: string;
-  timestampNs?: bigint | number;
-}): RobotCommand {
+type CommandParams = { senderId?: string; commandId?: string; timestampNs?: bigint | number };
+
+/** The CELL_* intents carry no payload (Unit 9.0); only their type differs. */
+function createCellIntentCommand(type: CommandType, params?: CommandParams): RobotCommand {
   return {
     command_id: generateCommandId(params?.commandId),
     sender_id: params?.senderId ?? 'teleop-ui',
     timestamp_ns: getTimestampNs(params?.timestampNs),
-    type: CommandType.CELL_FILL,
+    type,
     payload: {},
   };
 }
 
-export function createCellProcessCommand(params?: {
-  senderId?: string;
-  commandId?: string;
-  timestampNs?: bigint | number;
-}): RobotCommand {
-  return {
-    command_id: generateCommandId(params?.commandId),
-    sender_id: params?.senderId ?? 'teleop-ui',
-    timestamp_ns: getTimestampNs(params?.timestampNs),
-    type: CommandType.CELL_PROCESS,
-    payload: {},
-  };
-}
+export const createCellFillCommand = (params?: CommandParams): RobotCommand =>
+  createCellIntentCommand(CommandType.CELL_FILL, params);
 
-export function createCellStopCommand(params?: {
-  senderId?: string;
-  commandId?: string;
-  timestampNs?: bigint | number;
-}): RobotCommand {
-  return {
-    command_id: generateCommandId(params?.commandId),
-    sender_id: params?.senderId ?? 'teleop-ui',
-    timestamp_ns: getTimestampNs(params?.timestampNs),
-    type: CommandType.CELL_STOP,
-    payload: {},
-  };
-}
+export const createCellProcessCommand = (params?: CommandParams): RobotCommand =>
+  createCellIntentCommand(CommandType.CELL_PROCESS, params);
+
+export const createCellStopCommand = (params?: CommandParams): RobotCommand =>
+  createCellIntentCommand(CommandType.CELL_STOP, params);
 
 export function createPickAndPlaceTargetCommand(
   payload: PickAndPlaceTargetPayload,

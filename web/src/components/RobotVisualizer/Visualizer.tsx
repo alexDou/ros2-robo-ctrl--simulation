@@ -36,7 +36,7 @@ import {
 } from '@/components/RobotVisualizer/scene/stage';
 import { loadRobot } from '@/components/RobotVisualizer/scene/robot';
 import { disposeMaterial } from '@/utils/three/dispose';
-import { binCount, towerCounts } from '@/utils/towerCounts';
+import { panelCounts, towerCounts } from '@/utils/towerCounts';
 import { DECK_SIZE } from '@utils/conveyorGating';
 import {
   createSnapshotStore,
@@ -370,16 +370,10 @@ export function RobotVisualizer({
         ).processed,
       );
       if (displayPanelAssets) {
-        const ws = readSnapshot(
-          telemetryBufferRefProp.current?.current
-            ? { current: telemetryBufferRefProp.current.current }
-            : undefined,
-        );
         const before = displayPanelAssets.getText().join('\n');
         displayPanelAssets.setValues({
           feederRemaining: hopperCountRef.current,
-          binCount: binCount(ws.scrapped, ws.processed),
-          palletCounts: nextCounts,
+          ...panelCounts(telemetryBufferRefProp.current?.current?.cellState?.stations),
         });
         if (displayPanelAssets.getText().join('\n') !== before) needsRender = true;
       }

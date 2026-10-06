@@ -1,7 +1,6 @@
 """ROS2 Conveyor device node: ConveyorRun action, ConveyorStop service, status poll."""
 
 import json
-import threading
 import time
 
 import rclpy
@@ -16,10 +15,10 @@ from std_msgs.msg import String
 from cell_devices.belt_sim import BeltParams
 from cell_devices.belt_tracking import BeltTracker
 from cell_devices.conveyor import ConveyorDevice, ConveyorStatus
+from cell_devices.device_link import DeviceLink
 from cell_devices.feeder_sim import FeederParams
 from cell_devices.field_io import FieldIoError
 from cell_devices.flexfeeder import PlacementRecord
-from cell_devices.modbus_adapter import ModbusFieldIo
 from cell_devices.register_map import BeltState
 
 _SUCCESS_STATES = (BeltState.STOPPED_AT_EYE, BeltState.FLUSH_DONE)
@@ -35,10 +34,13 @@ class ConveyorNode(Node):
         ).value
         self._poll_period_s = 1.0 / self.declare_parameter("poll_hz", 5.0).value
 
-        # ModbusFieldIo is not thread-safe; the poll timer and the action share it.
-        self._lock = threading.Lock()
-        self._io: ModbusFieldIo | None = None
-        self._device: ConveyorDevice | None = None
+        self._link: DeviceLink[ConveyorDevice] = DeviceLink(
+            self._host,
+            self._port,
+            lambda io: ConveyorDevice(io, self._counts_per_mm),
+            self.get_logger(),
+        )
+        self._lock = self._link.lock  # every controller access holds it
         self._goal_active = False
         self._finish_requested = False  # Stop (D30) for the active run
         # Tracking is fed by placement records (a topic, never a call into the feeder node).
@@ -67,23 +69,6 @@ class ConveyorNode(Node):
             callback_group=group,
         )
 
-    def _connected_device_locked(self) -> ConveyorDevice | None:
-        if self._device is None:
-            try:
-                io = ModbusFieldIo(self._host, self._port)
-                io.connect()
-                self._io, self._device = io, ConveyorDevice(io, self._counts_per_mm)
-            except FieldIoError as err:
-                self.get_logger().warning(
-                    f"cell controller unreachable: {err}", throttle_duration_sec=5.0
-                )
-        return self._device
-
-    def _drop_connection_locked(self) -> None:
-        if self._io is not None:
-            self._io.close()
-        self._io = self._device = None
-
     def _on_placement(self, msg: String) -> None:
         try:
             raw = json.loads(msg.data)
@@ -104,13 +89,13 @@ class ConveyorNode(Node):
 
     def _poll(self) -> ConveyorStatus | None:
         with self._lock:
-            device = self._connected_device_locked()
+            device = self._link.device_locked()
             if device is None:
                 return None
             try:
                 status = device.poll()
             except FieldIoError:
-                self._drop_connection_locked()
+                self._link.drop_locked()
                 return None
             gears = [
                 {"id": g.id, "x": g.x, "y": g.y, "color": g.color, "intact": g.intact}
@@ -132,13 +117,13 @@ class ConveyorNode(Node):
 
     def _handle_stop(self, _request, response):
         with self._lock:
-            device = self._connected_device_locked()
+            device = self._link.device_locked()
             try:
                 if device is None:
                     raise FieldIoError("cell controller unreachable")
                 device.stop()
             except FieldIoError as err:
-                self._drop_connection_locked()
+                self._link.drop_locked()
                 response.success, response.message = False, str(err)
                 return response
         response.success, response.message = True, "STOP sent"
@@ -155,7 +140,7 @@ class ConveyorNode(Node):
     def _handle_freeze(self, request, response):
         """The controller freezes every device, not just the belt; this node owns the link."""
         with self._lock:
-            device = self._connected_device_locked()
+            device = self._link.device_locked()
             try:
                 if device is None:
                     raise FieldIoError("cell controller unreachable")
@@ -164,7 +149,7 @@ class ConveyorNode(Node):
                 else:
                     device.release_freeze()
             except FieldIoError as err:
-                self._drop_connection_locked()
+                self._link.drop_locked()
                 response.success, response.message = False, str(err)
                 return response
         response.success, response.message = True, "FREEZE sent" if request.freeze else "RELEASED"
@@ -188,7 +173,7 @@ class ConveyorNode(Node):
     def _run_goal(self, goal_handle):
         result = ConveyorRun.Result()
         with self._lock:
-            device = self._connected_device_locked()
+            device = self._link.device_locked()
             try:
                 if device is None:
                     raise FieldIoError("cell controller unreachable")
@@ -198,7 +183,7 @@ class ConveyorNode(Node):
                 else:
                     device.run_to_pickzone()
             except FieldIoError:
-                self._drop_connection_locked()
+                self._link.drop_locked()
                 result.stop_reason = "FAULT"
                 goal_handle.abort()
                 return result
@@ -216,7 +201,7 @@ class ConveyorNode(Node):
                         device.finish_run()
                     status = device.poll()
                 except FieldIoError:
-                    self._drop_connection_locked()
+                    self._link.drop_locked()
                     result.stop_reason = "FAULT"
                     goal_handle.abort()
                     return result

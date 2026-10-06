@@ -5,7 +5,7 @@ import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
 import { createDisplayPanel, panelLines } from '@components/RobotVisualizer/assets/panel';
 import { DISPLAY_PANEL, SCRAP_BIN } from '@contracts';
-import { binCount } from '@utils/towerCounts';
+import { panelCounts } from '@utils/towerCounts';
 
 const gear = (id: string, color: 'WHITE' | 'GREEN' | 'BLUE', intact = true) => ({
   id,
@@ -37,11 +37,24 @@ describe('Unit 9.13: display panel', () => {
     panel.dispose();
   });
 
-  it('counts the bin as Scrapped plus Flow A defectives, never Rejected', () => {
+  it('takes every count from cell_state.stations as it is (D34)', () => {
+    const station = (name: 'WHITE' | 'GREEN' | 'BLUE' | 'SCRAP', count: number) => ({
+      name,
+      exchange_state: 'HOME' as const,
+      count,
+    });
     expect(
-      binCount([gear('a', 'BLUE', false)], [gear('b', 'WHITE', false), gear('c', 'WHITE')]),
-    ).toBe(2);
-    expect(binCount(undefined, undefined)).toBe(0);
+      panelCounts([
+        station('WHITE', 3),
+        station('GREEN', 0),
+        station('BLUE', 9),
+        station('SCRAP', 21),
+      ]),
+    ).toEqual({ binCount: 21, palletCounts: { WHITE: 3, GREEN: 0, BLUE: 9 } });
+    expect(panelCounts(undefined)).toEqual({
+      binCount: 0,
+      palletCounts: { WHITE: 0, GREEN: 0, BLUE: 0 },
+    });
   });
 });
 
@@ -74,7 +87,7 @@ describe('Unit 9.13: panel values follow the telemetry', () => {
     vi.restoreAllMocks();
   });
 
-  it('shows feeder remaining, bin count and pallet counts from props and WorkcellState', async () => {
+  it('shows feeder remaining from props and the bin and pallet counts from cell_state', async () => {
     const buffer = {
       current: {
         jointPositions: [0, 0, 0, 0, 0, 0],
@@ -86,6 +99,18 @@ describe('Unit 9.13: panel values follow the telemetry', () => {
           scrapped: [gear('s1', 'BLUE', false), gear('s2', 'WHITE', false)],
           rejected: [gear('r1', 'WHITE', false)],
           activeId: null,
+        },
+        cellState: {
+          conveyor_status: 'HALTED',
+          feeder_remaining: 37,
+          belt_offset_m: 0,
+          belt_gears: [],
+          stations: [
+            { name: 'WHITE', exchange_state: 'HOME', count: 0 },
+            { name: 'GREEN', exchange_state: 'HOME', count: 2 },
+            { name: 'BLUE', exchange_state: 'HOME', count: 0 },
+            { name: 'SCRAP', exchange_state: 'HOME', count: 2 },
+          ],
         },
       },
     };
