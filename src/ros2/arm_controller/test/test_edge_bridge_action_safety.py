@@ -287,3 +287,97 @@ def test_edge_bridge_zenoh_action_feedback_streaming(make_switch_server):
         node.destroy_node()
         sub.undeclare()
         session.close()
+
+
+def _run_failed_pnp(make_switch_server, robot_id, action_name, result_message):
+    """Runs one PickAndPlace the mock server aborts; returns recorded ACTION_FAILED messages."""
+    mock_arm = Node(f"mock_arm_{robot_id.replace('-', '_')}")
+
+    def execute(goal_handle):
+        goal_handle.abort()
+        return PickAndPlace.Result(success=False, message=result_message)
+
+    mock_action_server = ActionServer(mock_arm, PickAndPlace, action_name, execute_callback=execute)
+    node = EdgeBridgeNode(
+        parameter_overrides=[
+            Parameter("robot_id", Parameter.Type.STRING, robot_id),
+            Parameter("pick_and_place_action_name", Parameter.Type.STRING, action_name),
+            Parameter("auto_home_on_startup", Parameter.Type.BOOL, False),
+            Parameter("auto_connect_zenoh", Parameter.Type.BOOL, False),
+            Parameter("switch_timeout", Parameter.Type.DOUBLE, 0.1),
+        ]
+    )
+    errors: list[tuple[str, str]] = []
+    node._publish_error = lambda code, msg: errors.append((code, msg))  # type: ignore[method-assign]
+
+    executor = MultiThreadedExecutor()
+    executor.add_node(mock_arm)
+    executor.add_node(node)
+    _fake = make_switch_server(executor)
+    spin_thread = threading.Thread(target=executor.spin, daemon=True)
+    spin_thread.start()
+    try:
+        node.handle_command(
+            RobotCommand(
+                command_id=f"engage-{robot_id}",
+                sender_id="test-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.ENGAGE,
+                payload={},
+            )
+        )
+        node.handle_command(
+            RobotCommand(
+                command_id=f"cmd-{robot_id}",
+                sender_id="test-client",
+                timestamp_ns=time.time_ns(),
+                type=CommandType.PICK_AND_PLACE_TARGET,
+                payload={"pick_x": 0.5, "pick_y": 0.0, "pick_z": 0.0},
+            )
+        )
+        start_t = time.time()
+        while not errors and time.time() - start_t < 3.0:
+            time.sleep(0.02)
+        return list(errors)
+    finally:
+        executor.shutdown()
+        spin_thread.join(timeout=1.0)
+        with contextlib.suppress(Exception):
+            _fake.destroy_node()
+        mock_action_server.destroy()
+        mock_arm.destroy_node()
+        node.close()
+        node.destroy_node()
+
+
+def test_pick_and_place_failure_error_frame_carries_reason(make_switch_server):
+    """ACTION_FAILED forwards PickAndPlace.Result.message instead of fixed text."""
+    errors = _run_failed_pnp(
+        make_switch_server,
+        "test-pnp-reason",
+        "/test_arm/pnp_reason",
+        "Target coordinate out of reach",
+    )
+    assert errors == [("ACTION_FAILED", "PickAndPlace failed: Target coordinate out of reach")]
+
+
+def test_pick_and_place_failure_reason_is_sanitised_and_capped(make_switch_server):
+    """Control characters are stripped and the reason is length-capped."""
+    errors = _run_failed_pnp(
+        make_switch_server,
+        "test-pnp-sanitise",
+        "/test_arm/pnp_sanitise",
+        "bad\x00\n\x1b[31m" + "x" * 500,
+    )
+    assert len(errors) == 1
+    code, message = errors[0]
+    assert code == "ACTION_FAILED"
+    assert message.startswith("PickAndPlace failed: bad")
+    assert all(c.isprintable() for c in message)
+    assert len(message) <= len("PickAndPlace failed: ") + 200
+
+
+def test_pick_and_place_failure_empty_reason_falls_back(make_switch_server):
+    """An empty result message keeps the generic text."""
+    errors = _run_failed_pnp(make_switch_server, "test-pnp-empty", "/test_arm/pnp_empty", "")
+    assert errors == [("ACTION_FAILED", "PickAndPlace failed")]

@@ -10,6 +10,14 @@ from robot_control_interfaces.srv import CommitDrop, MarkGrasped
 
 from domain import PickAndPlaceTargetPayload, RobotState, RobotTelemetryEvent
 
+_MAX_REASON_CHARS = 200
+
+
+def _failure_message(reason: str) -> str:
+    """ErrorFrame text for a failed PickAndPlace: generic prefix plus a sanitised, capped reason."""
+    clean = "".join(c for c in reason if c.isprintable()).strip()[:_MAX_REASON_CHARS]
+    return f"PickAndPlace failed: {clean}" if clean else "PickAndPlace failed"
+
 
 class EdgeBridgeActionsMixin:
     def _call_mark_grasped_async(self) -> None:
@@ -204,7 +212,10 @@ class EdgeBridgeActionsMixin:
                                         f"PickAndPlace failed: {pnp_res.result.message}"
                                     )
                                     self._robot_state = RobotState.FAULT
-                                    self._publish_error("ACTION_FAILED", "PickAndPlace failed")
+                                    self._publish_error(
+                                        "ACTION_FAILED",
+                                        _failure_message(pnp_res.result.message),
+                                    )
                                     should_publish_completion = True
                             except Exception as err:
                                 self.get_logger().error(f"Error reading PickAndPlace result: {err}")
