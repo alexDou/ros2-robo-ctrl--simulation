@@ -92,6 +92,8 @@ export class MockCell {
   private unsorted: BeltGear[] = [];
   private spawned = 0;
   private batchSize = 0;
+  /** A feed run brings the next intact gear to the eye; a flush (nothing left to place) runs out. */
+  private runKind: 'feed' | 'flush' = 'feed';
   private nextGap = 0;
   private offsetM = 0;
   private halted = false;
@@ -122,6 +124,7 @@ export class MockCell {
     this.unsorted = [];
     this.spawned = 0;
     this.batchSize = 0;
+    this.runKind = 'feed';
     this.nextGap = 0;
     this.offsetM = 0;
     this.halted = false;
@@ -176,12 +179,11 @@ export class MockCell {
   public stop(): void {
     if (this.status === 'HALTED') this.status = 'STOPPED';
     if (this.status !== 'FEEDING') return;
-    const flush = this.batchSize === 0;
     this.status = 'STOPPED';
     this.finishing = true;
     this.batchSize = this.spawned; // the FlexFeeder stops placing
     // A feed run with no intact gear to bring ends at once; a flush runs out on its own.
-    if (this.unsorted.length === 0 && (!flush || this.carried.length === 0)) this.halt();
+    if (this.runKind === 'feed' ? this.unsorted.length === 0 : this.beltEmpty()) this.halt();
   }
 
   /** The next unsorted (intact) Batch gear, lead first, or undefined once the Batch is sorted. */
@@ -225,9 +227,7 @@ export class MockCell {
     this.carried = this.carried.filter((g) => g.y >= BELT_Y_RANGE[0]);
     // The Batch quota, or until an intact gear is on its way to the eye (D35).
     const feederMayPlace = this.spawned < this.batchSize || this.unsorted.length === 0;
-    if (this.hopper.length === 0 && this.unsorted.length === 0 && this.carried.length === 0) {
-      this.halt(); // the belt ran out (a flush, or a last run with no intact gear)
-    }
+    if (this.beltEmpty()) this.halt(); // the cell ran out (a flush, or a last run with no intact gear)
     if (this.spawned > 0) this.nextGap -= dist;
     if (
       this.status === 'FEEDING' &&
@@ -282,9 +282,7 @@ export class MockCell {
     }
     if (this.finishing) {
       this.finishing = false; // the stopped run reached its end: stay STOPPED, or EMPTY after a flush
-      const flushed =
-        this.hopper.length === 0 && this.unsorted.length === 0 && this.carried.length === 0;
-      if (flushed) this.status = 'EMPTY';
+      if (this.beltEmpty()) this.status = 'EMPTY';
       return;
     }
     this.status = 'HALTED';
@@ -299,6 +297,12 @@ export class MockCell {
       this.hopper.length,
       MIN_BATCH + Math.floor(this.rand() * (BELT_CAPACITY - MIN_BATCH + 1)),
     );
+    this.runKind = this.batchSize === 0 ? 'flush' : 'feed';
+  }
+
+  /** Nothing left anywhere: the hopper is empty and no gear is on the belt. */
+  private beltEmpty(): boolean {
+    return this.hopper.length === 0 && this.unsorted.length === 0 && this.carried.length === 0;
   }
 
   private spawnGear(): void {

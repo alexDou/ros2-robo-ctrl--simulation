@@ -877,7 +877,7 @@ export class MockGateway {
     }
     this.spawnCounter += 1;
     const id = `gear-cell-${this.spawnCounter}`;
-    const cls = { color: gear.color, intact: gear.intact };
+    const cls = { color: gear.color, intact: true }; // takeNext hands out intact gears only (D35)
     this.spawned = [{ id, x: gear.x, y: gear.y, z: 0, color: gear.color, intact: true }];
     this.inProgress = [];
     this.activeId = id;
