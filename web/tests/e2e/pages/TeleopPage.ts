@@ -340,18 +340,6 @@ export class TeleopPage {
     await this.poseHomeButton.click();
   }
 
-  async dispatchEstop(reason: string): Promise<void> {
-    await this.injectRawFrame(
-      JSON.stringify({
-        command_id: `estop-${Date.now()}`,
-        sender_id: 'ui-client',
-        timestamp_ns: Date.now() * 1_000_000,
-        type: 'EMERGENCY_STOP',
-        payload: { reason },
-      }),
-    );
-  }
-
   async expectScrapBinFloorHex(hex: number): Promise<void> {
     await expect
       .poll(() =>

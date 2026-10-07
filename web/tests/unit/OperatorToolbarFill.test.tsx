@@ -19,6 +19,7 @@ function renderToolbar(
       onConnect={vi.fn()}
       onDisconnect={vi.fn()}
       onResetFault={vi.fn()}
+      onEmergencyStop={vi.fn()}
       onClearWorkspace={vi.fn()}
       onFill={onFill}
       onProcess={onProcess}
@@ -100,6 +101,7 @@ describe('Unit 9.22: RESETTING disables every button (hand-sim-0ceq)', () => {
         onConnect={vi.fn()}
         onDisconnect={vi.fn()}
         onResetFault={vi.fn()}
+        onEmergencyStop={vi.fn()}
         onClearWorkspace={vi.fn()}
         onFill={vi.fn()}
         onProcess={vi.fn()}
@@ -108,6 +110,8 @@ describe('Unit 9.22: RESETTING disables every button (hand-sim-0ceq)', () => {
     );
     expect((screen.getByTestId('clear-workspace-button') as HTMLButtonElement).disabled).toBe(true);
     expect((screen.getByTestId('pose-home-button') as HTMLButtonElement).disabled).toBe(true);
+    // D36: EmergencyStop is never gated by the cell state
+    expect((screen.getByTestId('emergency-stop-button') as HTMLButtonElement).disabled).toBe(false);
   });
 
   it('EMPTY keeps Fill enabled once the reset is over', () => {
@@ -129,6 +133,7 @@ describe('Reset Fault after a device fault (D20)', () => {
         onConnect={vi.fn()}
         onDisconnect={vi.fn()}
         onResetFault={onResetFault}
+        onEmergencyStop={vi.fn()}
         onClearWorkspace={vi.fn()}
         onFill={vi.fn()}
         onProcess={vi.fn()}

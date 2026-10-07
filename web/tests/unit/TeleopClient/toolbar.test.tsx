@@ -109,8 +109,10 @@ describe('TeleopClient Component', () => {
       expect(screen.queryByTestId('palm-toggle-button')).toBeNull();
       expect(screen.queryByTestId('palm-control-cluster')).toBeNull();
       expect(screen.queryByTestId('palm-status')).toBeNull();
-      expect(screen.queryByTestId('emergency-stop-button')).toBeNull();
-      expect(screen.queryByTestId('safety-control-cluster')).toBeNull();
+      // D36: EmergencyStop is always on the toolbar while a session is connected
+      expect((screen.getByTestId('emergency-stop-button') as HTMLButtonElement).disabled).toBe(
+        false,
+      );
       expect(screen.getByTestId('reset-fault-button')).toBeDefined();
       // Toolbar right slot now holds the single Connect/Disconnect toggle
       expect(screen.getByTestId('connection-control-cluster')).toBeDefined();
@@ -217,7 +219,9 @@ describe('TeleopClient Component', () => {
       expect((screen.getByTestId('pose-home-button') as HTMLButtonElement).disabled).toBe(true);
       expect(screen.queryByTestId('palm-toggle-button')).toBeNull();
       expect((screen.getByTestId('reset-fault-button') as HTMLButtonElement).disabled).toBe(true);
-      expect(screen.queryByTestId('emergency-stop-button')).toBeNull();
+      expect((screen.getByTestId('emergency-stop-button') as HTMLButtonElement).disabled).toBe(
+        false,
+      );
 
       // 2. Robot transitions to FAULT
       const telemFault: RobotTelemetryEvent = {
@@ -234,12 +238,53 @@ describe('TeleopClient Component', () => {
       expect((screen.getByTestId('pose-home-button') as HTMLButtonElement).disabled).toBe(true);
       expect(screen.queryByTestId('palm-toggle-button')).toBeNull();
       expect((screen.getByTestId('reset-fault-button') as HTMLButtonElement).disabled).toBe(false);
-      expect(screen.queryByTestId('emergency-stop-button')).toBeNull();
+      expect((screen.getByTestId('emergency-stop-button') as HTMLButtonElement).disabled).toBe(
+        false,
+      );
 
       // Click Reset Fault
       fireEvent.click(screen.getByTestId('reset-fault-button'));
       const sentReset = JSON.parse(ws.sentMessages[ws.sentMessages.length - 1]);
       expect(sentReset.type).toBe(CommandType.RESET_FAULT);
+    });
+
+    it('sends EMERGENCY_STOP from the toolbar button, even mid-motion (D36)', () => {
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      fireEvent.click(screen.getByTestId('connect-button'));
+      const ws = MockWebSocket.instances[0];
+      act(() => {
+        ws.simulateOpen();
+      });
+      act(() => {
+        ws.simulateMessage(
+          JSON.stringify({
+            timestamp_ns: '1700000000000000000',
+            robot_state: RobotState.EXECUTING,
+            joint_positions: [0, 0, 0, 0, 0, 0],
+            workcell_state: { spawned: [], in_progress: [], processed: [] },
+            palm_state: { is_grasped: false },
+          }),
+        );
+      });
+
+      fireEvent.click(screen.getByTestId('emergency-stop-button'));
+      const sent = JSON.parse(ws.sentMessages[ws.sentMessages.length - 1]);
+      expect(sent.type).toBe(CommandType.EMERGENCY_STOP);
+    });
+
+    it('hides the EmergencyStop button while disconnected', () => {
+      render(
+        <TeleopClient
+          robotId="robot-0"
+          gatewayWsUrl="ws://localhost:8080/ws/teleop/robot/robot-0"
+        />,
+      );
+      expect(screen.queryByTestId('emergency-stop-button')).toBeNull();
     });
 
     it('displays transient 2-second error banner on inbound ErrorFrame', () => {

@@ -66,6 +66,7 @@ export function TeleopClient({
     disconnect,
     executePose,
     resetFault,
+    emergencyStop,
     cellFill,
     cellProcess,
     cellStop,
@@ -265,6 +266,7 @@ export function TeleopClient({
             onConnect={connect}
             onDisconnect={disconnect}
             onResetFault={resetFault}
+            onEmergencyStop={emergencyStop}
             onClearWorkspace={handleClearWorkspace}
             onFill={handleFill}
             onProcess={handleProcess}

@@ -11,6 +11,7 @@ export interface OperatorToolbarProps {
   onConnect: () => void;
   onDisconnect: () => void;
   onResetFault: () => void;
+  onEmergencyStop: () => void;
   onClearWorkspace: () => void;
   onFill: () => void;
   onProcess: () => void;
@@ -28,6 +29,7 @@ export function OperatorToolbar({
   onConnect,
   onDisconnect,
   onResetFault,
+  onEmergencyStop,
   onClearWorkspace,
   onFill,
   onProcess,
@@ -211,6 +213,27 @@ export function OperatorToolbar({
           data-testid="connection-control-cluster"
           style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}
         >
+          {/* D36: always live while a session is up, whatever the arm or cell state */}
+          {connectionState === 'CONNECTED' && (
+            <button
+              data-testid="emergency-stop-button"
+              type="button"
+              onClick={onEmergencyStop}
+              style={{
+                backgroundColor: '#b91c1c',
+                color: '#ffffff',
+                padding: '0.4rem 0.8rem',
+                borderRadius: '0.375rem',
+                border: '2px solid #fde047',
+                fontSize: '0.8125rem',
+                fontWeight: 700,
+                letterSpacing: '0.03em',
+                cursor: 'pointer',
+              }}
+            >
+              EMERGENCY STOP
+            </button>
+          )}
           <button
             data-testid="reset-fault-button"
             type="button"

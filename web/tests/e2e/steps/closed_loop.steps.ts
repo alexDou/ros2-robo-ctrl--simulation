@@ -70,9 +70,8 @@ When('the robot begins executing trajectory motion', async function (this: Custo
   });
 });
 
-When('the operator dispatches an EMERGENCY_STOP command', async function (this: CustomWorld) {
-  expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.dispatchEstop('E2E safety scenario');
+When('the operator presses the EMERGENCY STOP button', async function (this: CustomWorld) {
+  await this.page!.getByTestId('emergency-stop-button').click();
 });
 
 Then(

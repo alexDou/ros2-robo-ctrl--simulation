@@ -23,7 +23,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the 3D robot model should be fully loaded in the WebGL scene
     When the operator clicks the "Home" pose button
     And the robot begins executing trajectory motion
-    When the operator dispatches an EMERGENCY_STOP command
+    When the operator presses the EMERGENCY STOP button
     Then the session should end with an EmergencyStop notice
     And the robot motion should halt immediately within 50 ms
     When the operator connects again
@@ -101,7 +101,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     When the operator clicks the "Fill" button
     And the operator clicks the "Process" button
     Then some gears should have been sorted
-    When the operator dispatches an EMERGENCY_STOP command
+    When the operator presses the EMERGENCY STOP button
     Then the session should end with an EmergencyStop notice
     When the operator connects again
     Then the connection status should indicate "CONNECTED / IDLE"
