@@ -115,7 +115,7 @@ any ──EMERGENCY_STOP──► FAULT (everything frozen where it is, arm incl
 any ──CLEAR_WORKSPACE (sent on every connect)──► RESETTING ──flush done──► EMPTY
 ```
 - At every eye stop:
-  1. Register the Batch: intact → pickable, defective → Rejected.
+  1. Register the Batch: intact → pickable (defectives were registered Rejected at placement, D35).
   2. If Scrapped ≥ `BIN_EXCHANGE_THRESHOLD` (20), start the BinExchange.
   3. Run SortCycles in belt order.
 - Button gating: Fill only in `EMPTY`; Process in `LOADED` and `STOPPED`; Stop in `FEEDING` and `HALTED`. Everything is disabled in `RESETTING` and `FAULT`.
@@ -132,7 +132,7 @@ next SortCycle starts only after done
 `HOME → LEAVING → AWAY (Pallet unloaded by the next line / bin tipped) → RETURNING → HOME`; any timeout → `FAULT`. PalletExchange and BinExchange are independent and may overlap.
 
 ### Defective Gearwheel lifecycle
-`on belt (unregistered) → Rejected (registered at eye stop, stays on belt) → Scrapped (exit eye counted it on the next run)`. Only Scrapped counts as ScrapBin contents.
+`placed → Rejected (registered at placement, rides past the PickZone eye) → Scrapped (exit eye counted it, on whichever run carries it off)` (D35). Only Scrapped counts as ScrapBin contents.
 
 ### Flush reset (`RESETTING`)
 1. Arm: a SortCycle still in flight completes (Gearwheel on its Pallet, arm HOME). An arm frozen by EmergencyStop resumes from where it stopped: a Gearwheel held by the DexterousPalm is finished onto its colour's Pallet, then the arm goes HOME (D32). Running exchanges complete first (D33).
@@ -247,3 +247,12 @@ Read `.agents/rules/threejs-rep103.md` first.
 | D32 | Gearwheel held when the flush starts | It is finished onto its colour's Pallet (counts as a drop), then the arm goes HOME. |
 | D33 | Races | The orchestrator is a single serialized state machine: every device result, operator intent and reset step is an event applied under one owner, so a late result can never be dropped or applied to the wrong run. A device fault is never lost: it always ends in FAULT and a DEVICE_FAULT frame, whatever run it belongs to. Counts the flush depends on come from device results, not from asynchronous snapshots. |
 | D34 | Panel counts | The counters overlay shows exactly what `cell_state.stations` says (ScrapBin = Scrapped only); no client-side recount. |
+
+### Improvement round (2026-10-07)
+
+| # | Question | Decision |
+|---|---|---|
+| D35 | Which Gearwheel stops the belt at the PickZone eye | Only an intact one that is still on the belt. The controller knows each item's class from its placement record (encoder tracking, as a real PLC does), so defectives ride past the eye and fall into the ScrapBin on the run that carries them off the end, the first run included. A Gearwheel the arm has taken off the belt is gone from the belt: in SIM `virtual_plc` removes it when the arm grasps it (a SIM-only physics seam; the register map is unchanged, LIVE needs nothing). Defectives are registered Rejected as soon as belt tracking reports their placement, so the exit eye always has a Rejected one to turn Scrapped. Every run therefore carries the next intact Gearwheel the full way to the eye. |
+| D36 | EmergencyStop button | TeleopClient shows an EMERGENCY STOP button whenever a session is connected, enabled in every ConveyorStatus and RobotState (FAULT and RESETTING included). It sends the existing EMERGENCY_STOP (D31); nothing else changes. Supersedes the Unit 6.6.4a removal. |
+| D37 | Arm path to a Pallet | The carried Gearwheel and the tool never pass beside a SpindleTower pin. After the lift the arm rises to a travel height above every pin top plus a Gearwheel and clearance, crosses at that height to above its colour's pin, lowers straight down until the Gearwheel is threaded on the pin tip, releases it there (it slides down the pin to its slot; a tool centred on the Gearwheel can't follow it down a 0.20 m pin, and at low slots the wrist would strike the neighbouring pin), and rises back to the travel height before HOME. Same 10 phases; only the via heights change. A regression test samples every segment, HOME to HOME, against all three pins (wrist links, tool, carried Gearwheel). |
+

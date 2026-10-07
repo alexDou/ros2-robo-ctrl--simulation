@@ -53,7 +53,7 @@ Strict lifecycle precondition in EdgeNode rejecting any inbound motion or actuat
 _Avoid_: Command queue, command buffering, FIFO buffer
 
 **EmergencyStop**:
-High-priority safety command immediately aborting all active joint motion or actuation and transitioning RobotState to FAULT.
+High-priority safety command, sent from the always-visible EmergencyStop button, immediately freezing the arm and every cell device where they are, transitioning RobotState to FAULT and ending the session.
 _Avoid_: Kill switch, halt packet, cancel signal
 
 **CannedTrajectory**:
@@ -81,7 +81,7 @@ The processing of one Gearwheel from dispatch to completion, including any Palle
 _Avoid_: Pick cycle, iteration, PickAndPlaceSequence
 
 **Rejected**:
-A defective Gearwheel registered at a stopped Conveyor: known not to be processed, still lying on the belt.
+A defective Gearwheel, registered as soon as the FlexFeeder places it: known not to be processed, riding the belt toward the ScrapBin. It never stops the Conveyor at the PickZone eye.
 _Avoid_: Scrapped, discarded, binned
 
 **Scrapped**:
@@ -137,7 +137,7 @@ Full system reset issued on every TeleopClient connect: the cell physically flus
 _Avoid_: Reset scene, wipe table, delete objects
 
 **WorkcellState**:
-Authoritative domain state component tracking registered Gearwheels (including Rejected and Scrapped), their color and intactness, and Pallet and ScrapBin inventory. A Gearwheel enters it only when registered at a stopped Conveyor; where a Gearwheel lies on the belt is known from the Conveyor, not from WorkcellState.
+Authoritative domain state component tracking registered Gearwheels (including Rejected and Scrapped), their color and intactness, and Pallet and ScrapBin inventory. An intact Gearwheel enters it when registered at a stopped Conveyor, a defective one when it is placed; where a Gearwheel lies on the belt is known from the Conveyor, not from WorkcellState.
 _Avoid_: Scene graph, world model, spawn manager, entity repo
 
 **AnalyticalInverseKinematics**:

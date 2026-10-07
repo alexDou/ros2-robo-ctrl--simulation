@@ -2,7 +2,7 @@
 
 * **Goal**: Make every moving part of the Flow B cell drivable with real, purchasable devices through new ROS2 nodes, while SIM keeps working as well as Unit 8 does. Branch `feat/conveyor-devices`, cut from `feat/conveyor-flow`.
   - The FlexFeeder places Gearwheels onto the Conveyor.
-  - The Conveyor stops when the lead Gearwheel reaches the PickZone eye.
+  - The Conveyor stops when the lead intact Gearwheel reaches the PickZone eye; defectives ride past it (D35).
   - The arm sorts the Batch in SortCycles: intact Gearwheels go to their colour's Pallet; defectives are Rejected and become Scrapped when they fall off the belt end.
   - A full Pallet (10) leaves −X on its PalletLane and comes back empty.
   - The ScrapBin leaves +X once it holds ≥ 20 Scrapped at a belt stop, dumps, and returns.
@@ -37,13 +37,13 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
 2. As an operator, I want Fill enabled only when the FlexFeeder is empty and nothing is running, so that I cannot overfill or disturb a run.
 3. As an operator, I want Process to start the Conveyor and the FlexFeeder, so that Gearwheels flow toward the arm.
 4. As an operator, I want Process disabled until the FlexFeeder is filled, so that I cannot start an empty run.
-5. As an operator, I want the Conveyor to stop by itself when the lead Gearwheel reaches the PickZone eye, so that the Batch is in reach.
+5. As an operator, I want the Conveyor to stop by itself when the lead intact Gearwheel reaches the PickZone eye, so that the Batch is in reach and every run uses the full belt (D35).
 6. As an operator, I want each Batch to hold a naturally varying number of Gearwheels, so that the cell behaves like a real feeder rather than a scripted count.
 7. As an operator, I want Gearwheels placed upstream of the PickZone at belt stop to wait for the next Batch, so that nothing out of reach is dispatched.
 8. As an operator, I want the arm to sort the Batch one Gearwheel at a time in belt order, so that I can follow each SortCycle.
 9. As an operator, I want intact Gearwheels placed on the Pallet of their colour, so that sorting is visible and correct.
-10. As an operator, I want defective Gearwheels left on the belt as Rejected, with no arm motion, so that the arm only handles good parts.
-11. As an operator, I want Rejected Gearwheels to fall into the ScrapBin on the next belt run, so that disposal is physical and visible.
+10. As an operator, I want defective Gearwheels to be Rejected as soon as they are placed, never stop the belt and get no arm motion, so that the arm only handles good parts (D35).
+11. As an operator, I want Rejected Gearwheels to fall into the ScrapBin whenever a run carries them off the belt end, on the first run as on any later one, so that disposal is physical and visible (D35).
 12. As an operator, I want the ScrapBin count to rise only when a Gearwheel actually falls in, so that the count matches what I see.
 13. As an operator, I want a Pallet to leave −X when it holds 10 Gearwheels and return empty, so that full carriers go on to packing or assembly.
 14. As an operator, I want the arm to go HOME while a Pallet travels, and the next SortCycle to start only when both are done, so that the cycle is clear and safe.
@@ -56,7 +56,7 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
 21. As an operator, I want Fill re-enabled and Process disabled after the final flush, so that I know the run is over.
 22. As an operator, I want Stop to drive every running operation to its end (the FlexFeeder stops placing, the belt runs on to the eye, the current SortCycle and any running exchange complete), so that nothing is stranded halfway (D30).
 23. As an operator, I want Process to resume after Stop from where it paused, so that I don't lose the run.
-24. As an operator, I want EmergencyStop to freeze the arm, the Conveyor, the FlexFeeder, the PalletLanes and the ScrapBin slide where they are, and to end my session, so that the whole cell stops at once and recovery is always a fresh connect with a flush reset (D31).
+24. As an operator, I want EmergencyStop to freeze the arm, the Conveyor, the FlexFeeder, the PalletLanes and the ScrapBin slide where they are, from an EmergencyStop button that is always visible while a session is connected, and to end my session, so that the whole cell stops at once and recovery is always a fresh connect with a flush reset (D31).
 25. As an operator, I want a device fault (drive fault, end-sensor timeout) to freeze the cell and name the device in an error, so that I know what failed.
 26. As an operator, I want ConveyorStatus to show FAULT on a device fault, so that the state is unambiguous.
 27. As an operator, I want RESET_FAULT to run the physical flush reset, so that recovery always ends in a known clean state.
@@ -121,15 +121,15 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
   - drive ramps.
 - **Batch formation**:
   1. On a feed run the FlexFeeder places continuously. A variable cycle time is the source of randomness; BeltCapacity is only a physical limit.
-  2. The belt and the FlexFeeder stop when the lead Gearwheel trips the PickZone eye.
+  2. The belt and the FlexFeeder stop when the lead intact Gearwheel trips the PickZone eye. Defectives pass the eye without stopping it, and so does a Gearwheel the arm has taken off the belt (it is no longer there) (D35).
   3. The Batch is the Gearwheels inside the PickZone at that stop. Any upstream ones join the next Batch.
-- **Registration at belt stop**: the orchestrator registers each Batch Gearwheel with WorkcellNode, using the positions from belt tracking. Intact ones become pickable. Defective ones become **Rejected**: registered, not for processing, still on the belt.
+- **Registration**: a defective Gearwheel is registered as **Rejected** as soon as belt tracking reports its placement: registered, not for processing, riding the belt to the bin (D35). At a belt stop the orchestrator registers each intact Batch Gearwheel with WorkcellNode, using the positions from belt tracking; they become pickable.
 - **SortCycle**: one Gearwheel from dispatch to completion, in belt order (lead first).
   1. PickAndPlace to the Pallet of its colour.
   2. Commit the drop.
   3. If the Pallet reached `PALLET_CAPACITY` (10), it is FULL: the arm goes HOME and the PalletExchange runs at the same time. When both finish, the station is reset to 0.
   4. The next SortCycle starts only after the previous one completes.
-- **Scrapped**: a Rejected Gearwheel becomes Scrapped when the exit eye counts it during the next belt run. Only Scrapped Gearwheels count as ScrapBin contents.
+- **Scrapped**: a Rejected Gearwheel becomes Scrapped when the exit eye counts it, on whichever run carries it off the belt end (D35). Only Scrapped Gearwheels count as ScrapBin contents.
 - **BinExchange**: at a belt stop, if Scrapped ≥ `BIN_EXCHANGE_THRESHOLD` (20), the BinExchange starts and runs while the arm sorts the new Batch. The next belt run waits until the bin is HOME. The bin is physically sized for threshold + BeltCapacity. PalletExchange and BinExchange are independent and may overlap.
 - **Batch end**: arm HOME → (wait for bin HOME) → next feed run. When the FlexFeeder is empty and the last Batch is sorted, a final flush run follows → `EMPTY`, Fill on, Process off.
 - **Stop**: the FlexFeeder stops placing; the belt run continues to the eye (its Batch is registered, not sorted) or a final flush runs out. The in-flight SortCycle (including its PalletExchange) and any BinExchange complete. Process resumes (D30).
