@@ -75,17 +75,20 @@ function buildDeck(rand: () => number): GearSpec[] {
 
 /**
  * Pure, clock-free stand-in for the cell_orchestrator's flow: Fill loads a deck, Process feeds one
- * Batch at a time until the lead gear reaches the PickZone edge and halts the belt, and the owner
- * sorts the Batch gear by gear through `takeNext`. Stop (D30) ends the spawning but lets the run
- * reach the PickZone edge (or a flush run out); Process resumes.
+ * Batch at a time until the lead intact gear reaches the PickZone edge and halts the belt, and the
+ * owner sorts the Batch gear by gear through `takeNext`. Defectives are never in a Batch: they ride
+ * past the eye and fall into the bin on whichever run carries them off the end (D35), so a feed run
+ * keeps placing until it carries an intact gear. Stop (D30) ends the placing but lets the run bring
+ * its intact gear to the PickZone edge (or a flush run out); Process resumes.
  */
 export class MockCell {
   private status: ConveyorStatus = 'EMPTY';
   private seed = 1;
   private rand = seededRandom(1);
   private hopper: GearSpec[] = [];
-  /** Defectives ride the belt past the sort and tip off the exit end on the next run. */
+  /** Defectives, Rejected at placement: they ride past the eye and tip off the exit end (D35). */
   private carried: BeltGear[] = [];
+  /** The Batch: intact gears only. */
   private unsorted: BeltGear[] = [];
   private spawned = 0;
   private batchSize = 0;
@@ -173,18 +176,18 @@ export class MockCell {
   public stop(): void {
     if (this.status === 'HALTED') this.status = 'STOPPED';
     if (this.status !== 'FEEDING') return;
+    const flush = this.batchSize === 0;
     this.status = 'STOPPED';
     this.finishing = true;
     this.batchSize = this.spawned; // the FlexFeeder stops placing
-    if (this.unsorted.length === 0 && this.carried.length === 0) this.halt(); // nothing to bring
+    // A feed run with no intact gear to bring ends at once; a flush runs out on its own.
+    if (this.unsorted.length === 0 && (!flush || this.carried.length === 0)) this.halt();
   }
 
-  /** The next unsorted Batch gear (lead first), or undefined once the Batch is sorted. */
+  /** The next unsorted (intact) Batch gear, lead first, or undefined once the Batch is sorted. */
   public takeNext(): BeltGear | undefined {
     if (this.status !== 'HALTED' || this.awaitingPallet) return undefined;
-    const gear = this.unsorted.shift();
-    if (gear && !gear.intact) this.carried.push(gear);
-    return gear;
+    return this.unsorted.shift();
   }
 
   /** Called when a halted Batch is fully sorted: feed the next one, or finish the run. */
@@ -203,6 +206,7 @@ export class MockCell {
     if (this.status !== 'FAULT') this.stepExchanges(dtSeconds);
     const moving = this.status === 'FEEDING' || (this.status === 'STOPPED' && this.finishing);
     if (!moving || dtSeconds <= 0) return;
+    if (this.exchanges.has('SCRAP')) return; // the belt refuses to run while the bin is away (D10)
     let dist = BELT_SPEED_M_S * dtSeconds;
     if (this.unsorted.length > 0) {
       const toEdge = this.unsorted[0].y - PICK_ZONE_Y_RANGE[0];
@@ -219,9 +223,18 @@ export class MockCell {
       this.events.push({ kind: 'scrapped', gear: { ...g } });
     }
     this.carried = this.carried.filter((g) => g.y >= BELT_Y_RANGE[0]);
-    if (this.batchSize === 0 && this.carried.length === 0) this.halt(); // flush complete
+    // The Batch quota, or until an intact gear is on its way to the eye (D35).
+    const feederMayPlace = this.spawned < this.batchSize || this.unsorted.length === 0;
+    if (this.hopper.length === 0 && this.unsorted.length === 0 && this.carried.length === 0) {
+      this.halt(); // the belt ran out (a flush, or a last run with no intact gear)
+    }
     if (this.spawned > 0) this.nextGap -= dist;
-    if (this.status === 'FEEDING' && this.spawned < this.batchSize && this.nextGap <= 0) {
+    if (
+      this.status === 'FEEDING' &&
+      feederMayPlace &&
+      this.hopper.length > 0 &&
+      this.nextGap <= 0
+    ) {
       this.spawnGear();
     }
   }
@@ -293,7 +306,7 @@ export class MockCell {
     const laneX = this.spawned % 2 === 0 ? LANE_A_X : LANE_B_X;
     const x = laneX + (this.rand() * 2 - 1) * LANE_HALF_WIDTH;
     this.idCounter += 1;
-    this.unsorted.push({
+    (spec.intact ? this.unsorted : this.carried).push({
       id: `belt-${this.idCounter}`,
       color: spec.color,
       intact: spec.intact,

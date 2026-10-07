@@ -1,13 +1,13 @@
 ---
 # hand-sim-s14w
 title: 'Unit 9.32: Mock cell follows D35 (defectives ride past the eye)'
-status: todo
+status: completed
 type: task
 priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-07T16:42:28Z
-updated_at: 2026-10-07T19:38:01Z
+updated_at: 2026-10-07T20:46:10Z
 parent: hand-sim-rqpy
 ---
 
@@ -27,3 +27,9 @@ Make the web E2E mock cell (`web/tests/e2e/support/mock_cell.ts`) follow D35 so 
 
 ## Note 2026-10-07 (session 2)
 Do it after hand-sim-w9st: the 4jbb stash already changes web/tests/e2e/support/mock_gateway.ts (pocket drops), and mock_cell.ts sits beside it. Apply the stash first so the edits don't conflict.
+
+
+## Done 2026-10-07
+- MockCell: defectives are Rejected at placement (never in a Batch), ride past the PickZone edge and fall into the bin on any run, the first included; a feed run places until it carries an intact gear; Stop with no intact gear on the belt ends a feed run at once (like belt_sim._finish_run); the belt never moves while the bin is away (D10, now on every path, not only batchSorted).
+- New web/tests/unit/mockCell.test.ts (4 tests). No E2E scenario needed a count change: 18/18 green.
+- Gate: teleop-client + semgrep lanes GREEN.

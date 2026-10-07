@@ -875,7 +875,6 @@ export class MockGateway {
       this.cell.batchSorted();
       return;
     }
-    if (!gear.intact) return; // Rejected: it stays on the belt until the exit eye counts it
     this.spawnCounter += 1;
     const id = `gear-cell-${this.spawnCounter}`;
     const cls = { color: gear.color, intact: gear.intact };
