@@ -7,7 +7,6 @@ from arm_controller.kinematics.constants import (
     APPROACH_LIFT_OFFSET_M,
     DEFAULT_SPINDLE_TOWER_COORDS,
     HOME_JOINT_POSITIONS,
-    RELEASE_HEIGHT_M,
     TRANSFER_HEIGHT_M,
     UR5E_JOINT_LIMITS,
 )
@@ -55,28 +54,25 @@ class PickAndPlaceTrajectoryGenerator:
         3. grasp: Grasp actuation pause (suction on)       -> GRASPING (30%)
         4. lift: (x_pick, y_pick, z_pick + 0.15m)         -> LIFTING (40%)
         5. tower_approach: (x_drop, y_drop, z_travel)     -> TRANSFERRING (50%)
-        6. tower_drop: (x_drop, y_drop, z_release)        -> DROPPING (60%)
+        6. tower_drop: (x_drop, y_drop, z_drop)           -> DROPPING (60%)
         7. release: Release actuation pause (suction off)  -> RELEASING (70%)
         8. tower_retreat: (x_drop, y_drop, z_travel)      -> RETREATING (80%)
 
-        z_travel keeps the carried Gearwheel above every SpindleTower pin (D37): the transfer
-        climbs to it on the way to the stand (the belt has no pins, and a full-height lift at the
-        far PickZone corner would need a branch switch), crosses at it, and lowers straight down
-        until the Gearwheel is threaded
-        on its pin's tip (z_release). Released there, it slides down the pin to its slot z_drop.
+        z_travel keeps the carried Gearwheel above every nest tray and the Gearwheels seated in
+        it (D37/D38): the transfer crosses at it to above the target pocket and lowers straight
+        down into the pocket (z_drop), where the Gearwheel is released.
         9. home: HOME pose                                 -> HOMING (90%)
         10. complete: HOME pose                            -> COMPLETED (100%)
         """
         x_pick, y_pick, z_pick = pick_coords
         drop = drop_coords if drop_coords is not None else DEFAULT_SPINDLE_TOWER_COORDS
         x_drop, y_drop, z_drop = drop
-        z_release = max(RELEASE_HEIGHT_M, z_drop)
-        z_travel = max(TRANSFER_HEIGHT_M, z_pick + APPROACH_LIFT_OFFSET_M, z_release)
+        z_travel = max(TRANSFER_HEIGHT_M, z_pick + APPROACH_LIFT_OFFSET_M, z_drop)
 
         # Validate reachability before computation
         self.solver.check_reachability(x_pick, y_pick, z_pick)
         self.solver.check_reachability(x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
-        self.solver.check_reachability(x_drop, y_drop, z_release)
+        self.solver.check_reachability(x_drop, y_drop, z_drop)
         self.solver.check_reachability(x_drop, y_drop, z_travel)
 
         q_ref = list(current_joints) if current_joints is not None else list(HOME_JOINT_POSITIONS)
@@ -140,8 +136,8 @@ class PickAndPlaceTrajectoryGenerator:
         q_app_drop = solve((x_drop_dh, y_drop_dh, z_travel), q_lift)
 
         # 6. Tower drop
-        pos_drop = (x_drop, y_drop, z_release)
-        q_drop = solve((x_drop_dh, y_drop_dh, z_release), q_app_drop)
+        pos_drop = (x_drop, y_drop, z_drop)
+        q_drop = solve((x_drop_dh, y_drop_dh, z_drop), q_app_drop)
 
         # 7. Release Actuation (suction off, 200ms pause at drop position)
         q_release = list(q_drop)

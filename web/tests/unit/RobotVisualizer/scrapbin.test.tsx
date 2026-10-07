@@ -156,7 +156,7 @@ describe('Unit 7.3c: ScrapBin fixture + binary icon', () => {
     expect(bin.name).toBe('scrap-bin');
     expect(bin.position.x).toBeCloseTo(0.4, 2);
     expect(bin.position.y).toBeCloseTo(-0.75, 2);
-    expect(visualizer.getSpindleTowerMeshes()).toHaveLength(3);
+    expect(visualizer.getPalletTrayMeshes()).toHaveLength(3);
   });
 
   it('indicator empty with no rejects; intact-only processed stays empty with no digits', async () => {

@@ -4,8 +4,7 @@ import type { URDFRobot } from 'urdf-loader';
 import { isTestEnv } from '@utils/env';
 import * as robotLoader from '@utils/robotLoader';
 import {
-  SPINDLE_TOWER_COORDS,
-  SPINDLE_TOWERS,
+  PALLET_STATIONS,
   SCRAP_BIN_COORDS,
   PALLET_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,
@@ -21,8 +20,7 @@ import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/asse
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
 import type { BeltGearsAssets } from '@/components/RobotVisualizer/assets/beltgears';
 import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
-import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
-import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
+import type { PalletTrayAssets } from '@/components/RobotVisualizer/assets/pallettray';
 import {
   BIN_WIDTH_X,
   type ScrapBinProceduralAssets,
@@ -56,13 +54,7 @@ import { createVisualizerHandle } from '@/components/RobotVisualizer/handle';
 const GEAR_COLORS: readonly GearColor[] = ['WHITE', 'GREEN', 'BLUE'];
 
 export type { WorkcellSnapshotView };
-export {
-  SPINDLE_TOWER_COORDS,
-  SPINDLE_TOWERS,
-  SCRAP_BIN_COORDS,
-  PALLET_CAPACITY,
-  GRASP_RIDE_OFFSET_Z_M,
-};
+export { PALLET_STATIONS, SCRAP_BIN_COORDS, PALLET_CAPACITY, GRASP_RIDE_OFFSET_Z_M };
 
 export function RobotVisualizer({
   urdfUrl = robotLoader.DEFAULT_UR5E_URDF_PATH,
@@ -130,15 +122,12 @@ export function RobotVisualizer({
     let loadedRobot: URDFRobot | null = null;
     let palmAssets: PalmProceduralAssets | null = null;
     let pedestalAssets: PedestalProceduralAssets | null = null;
-    let rearStandAssets: RearStandProceduralAssets | null = null;
     let palletLanesAssets: PalletLanesAssets | null = null;
     let conveyorAssets: ConveyorProceduralAssets | null = null;
     let hopperAssets: HopperProceduralAssets | null = null;
     let beltGearsAssets: BeltGearsAssets | null = null;
     let lastBeltScroll = 0;
-    let spindleTowerAssets: SpindleTowerProceduralAssets | null = null;
-    let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
-      null;
+    let palletTrayAssets: Record<GearColor, PalletTrayAssets | null> | null = null;
     let scrapBinAssets: ScrapBinProceduralAssets | null = null;
     let mountLink: THREE.Object3D | null = null;
     // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
@@ -154,13 +143,12 @@ export function RobotVisualizer({
     const camera = stage.camera;
     const robotGroup = stage.robotGroup;
     pedestalAssets = stage.pedestalAssets;
-    rearStandAssets = stage.rearStandAssets;
     palletLanesAssets = stage.palletLanesAssets;
     const palletMotion = createPalletMotion();
-    const towerHomeX: Record<GearColor, number> = {
-      WHITE: SPINDLE_TOWERS.WHITE.x,
-      GREEN: SPINDLE_TOWERS.GREEN.x,
-      BLUE: SPINDLE_TOWERS.BLUE.x,
+    const trayHomeX: Record<GearColor, number> = {
+      WHITE: PALLET_STATIONS.WHITE.x,
+      GREEN: PALLET_STATIONS.GREEN.x,
+      BLUE: PALLET_STATIONS.BLUE.x,
     };
     const binMotion = createBinMotion();
     let lastBinPose = { offsetM: 0, tipRad: 0 };
@@ -169,8 +157,7 @@ export function RobotVisualizer({
     hopperAssets = stage.hopperAssets;
     beltGearsAssets = stage.beltGearsAssets;
     hopperAssets.setCount(hopperCountRef.current);
-    spindleTowerAssets = stage.spindleTowerAssets;
-    spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
+    palletTrayAssets = stage.palletTrayAssets;
     scrapBinAssets = stage.scrapBinAssets;
 
     // 3. Renderer instantiation
@@ -249,14 +236,12 @@ export function RobotVisualizer({
       getRobot: () => loadedRobot,
       getScene: () => scene,
       getRenderer: () => renderer,
-      getSpindle: () => spindleTowerAssets,
-      getSpindlesByColor: () => ({
-        WHITE: spindleTowerAssetsByColor?.WHITE ?? spindleTowerAssets,
-        GREEN: spindleTowerAssetsByColor?.GREEN ?? null,
-        BLUE: spindleTowerAssetsByColor?.BLUE ?? null,
+      getPalletTrays: () => ({
+        WHITE: palletTrayAssets?.WHITE ?? null,
+        GREEN: palletTrayAssets?.GREEN ?? null,
+        BLUE: palletTrayAssets?.BLUE ?? null,
       }),
       getPedestal: () => pedestalAssets,
-      getRearStand: () => rearStandAssets,
       getPalletLanes: () => palletLanesAssets,
       getConveyor: () => conveyorAssets,
       getHopper: () => hopperAssets,
@@ -299,7 +284,7 @@ export function RobotVisualizer({
       );
       const onPallet = towerCounts(snap.processed);
 
-      // Each Pallet slides along its lane with its exchange state; the stack rides with it.
+      // Each Pallet slides along its lane with its exchange state; its Gearwheels ride with it.
       const offsets = palletMotion.update(
         telemetryBufferRefProp.current?.current?.cellState?.stations,
         performance.now(),
@@ -313,9 +298,9 @@ export function RobotVisualizer({
         },
       };
       for (const color of GEAR_COLORS) {
-        const tower = spindleTowerAssetsByColor?.[color];
-        if (tower && offsets[color] !== lastPalletOffsets[color]) {
-          tower.group.position.x = towerHomeX[color] - offsets[color];
+        const tray = palletTrayAssets?.[color];
+        if (tray && offsets[color] !== lastPalletOffsets[color]) {
+          tray.group.position.x = trayHomeX[color] - offsets[color];
           needsRender = true;
         }
       }
@@ -446,19 +431,16 @@ export function RobotVisualizer({
       }
       store.gears.clear();
 
-      // Dispose SpindleTower fixture assets (all three color towers)
-      if (spindleTowerAssetsByColor) {
-        for (const tower of Object.values(spindleTowerAssetsByColor)) {
-          if (tower) {
-            if (tower.group.parent) {
-              tower.group.parent.remove(tower.group);
-            }
-            tower.dispose();
+      // Dispose the three nest-tray Pallets
+      if (palletTrayAssets) {
+        for (const tray of Object.values(palletTrayAssets)) {
+          if (tray) {
+            tray.group.parent?.remove(tray.group);
+            tray.dispose();
           }
         }
-        spindleTowerAssetsByColor = null;
+        palletTrayAssets = null;
       }
-      spindleTowerAssets = null;
 
       if (scrapBinAssets) {
         if (scrapBinAssets.group.parent) {
@@ -505,14 +487,6 @@ export function RobotVisualizer({
         palletLanesAssets.group.parent?.remove(palletLanesAssets.group);
         palletLanesAssets.dispose();
         palletLanesAssets = null;
-      }
-
-      if (rearStandAssets) {
-        if (rearStandAssets.group.parent) {
-          rearStandAssets.group.parent.remove(rearStandAssets.group);
-        }
-        rearStandAssets.dispose();
-        rearStandAssets = null;
       }
 
       // Dispose robot pedestal table assets

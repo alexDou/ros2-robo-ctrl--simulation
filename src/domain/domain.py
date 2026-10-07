@@ -132,11 +132,11 @@ VALID_GEAR_COLORS: list[str] = [
 
 DEFAULT_ROBOT_ID: str = "arm-ur5"
 
-WHITE_TOWER: list[float] = [-0.45, -0.26, 0.0]
+WHITE_TOWER: list[float] = [-0.415, -0.29, 0.0]
 
-GREEN_TOWER: list[float] = [-0.45, -0.1, 0.0]
+GREEN_TOWER: list[float] = [-0.415, -0.04, 0.0]
 
-BLUE_TOWER: list[float] = [-0.45, 0.06, 0.0]
+BLUE_TOWER: list[float] = [-0.415, 0.21, 0.0]
 
 SCRAP_BIN: list[float] = [0.4, -0.75, -0.05]
 
@@ -151,6 +151,16 @@ BELT_SPEED_M_S: float = 0.15
 BELT_CAPACITY: int = 10
 
 PALLET_CAPACITY: int = 10
+
+PALLET_POCKET_ROWS: int = 5
+
+PALLET_POCKET_COLS: int = 2
+
+PALLET_POCKET_PITCH_M: float = 0.105
+
+PALLET_TRAY_HEIGHT_M: float = 0.03
+
+PALLET_POCKET_DEPTH_M: float = 0.01
 
 STACK_STEP_M: float = 0.02
 

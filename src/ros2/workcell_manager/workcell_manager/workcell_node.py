@@ -1,4 +1,4 @@
-"""Standalone WorkcellNode and SpindleTower inventory tracker per ADR 0004 and Refactor-A.1."""
+"""Standalone WorkcellNode and Pallet inventory tracker per ADR 0004, Refactor-A.1 and D38."""
 
 import json
 import math
@@ -31,6 +31,7 @@ from domain import (
     VALID_GEAR_COLORS,
     WHITE_TOWER,
 )
+from workcell_manager.pallet import pocket_coords
 
 
 class WorkcellNode(Node):
@@ -93,7 +94,7 @@ class WorkcellNode(Node):
         self._heartbeat_timer = self.create_timer(1.0, self._publish_state)
 
         self.get_logger().info(
-            f"WorkcellNode initialized. SpindleTower at ({self._tower_x}, {self._tower_y}, {self._tower_z}), "
+            f"WorkcellNode initialized. WHITE PalletStation at ({self._tower_x}, {self._tower_y}, {self._tower_z}), "
             f"capacity={self._max_capacity}, step={self._height_step}m"
         )
 
@@ -197,11 +198,13 @@ class WorkcellNode(Node):
         msg.data = int(count)
         self._inventory_pub.publish(msg)
 
-    def _slot_for_count(self, count: int) -> tuple[int, float, bool]:
-        """Computes (slot_index, z_k, overflow) for a given processed count."""
+    def _pallet_slot(
+        self, base: tuple[float, float, float], count: int
+    ) -> tuple[int, tuple[float, float, float], bool]:
+        """(slot_index, pocket xyz, overflow) for a Pallet holding `count` Gearwheels (D38)."""
         if count < self._max_capacity:
-            return count, count * self._height_step, False
-        return self._max_capacity - 1, (self._max_capacity - 1) * self._height_step, True
+            return count, pocket_coords(base, count), False
+        return self._max_capacity - 1, pocket_coords(base, self._max_capacity - 1), True
 
     def _destination_for(self, color: str, intact: bool) -> tuple[tuple[float, float, float], bool]:
         """Returns (base_xyz, uncapped) for a classification; defective dominates color."""
@@ -214,14 +217,11 @@ class WorkcellNode(Node):
         return (self._tower_x, self._tower_y, self._tower_z), False
 
     def _tower_fill_locked(self, color: str) -> int:
-        """Counts intact gears of one color resting on its tower."""
-        base = self._destination_for(color, True)[0]
+        """Counts intact gears of one color in its Pallet's pockets."""
         return sum(
             1
             for e in self._processed
-            if e.get("color", DEFAULT_GEAR_COLOR) == color
-            and e.get("intact", True)
-            and (e["x"], e["y"]) == (base[0], base[1])
+            if e.get("color", DEFAULT_GEAR_COLOR) == color and e.get("intact", True)
         )
 
     def _bin_fill_locked(self) -> int:
@@ -302,17 +302,14 @@ class WorkcellNode(Node):
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
                 slot_index, z_k = self._bin_slot_locked()
+                drop = (base[0], base[1], base[2] + z_k)
                 overflow_occurred = False
             else:
-                slot_index, z_k, overflow_occurred = self._slot_for_count(
-                    self._tower_fill_locked(color)
+                slot_index, drop, overflow_occurred = self._pallet_slot(
+                    base, self._tower_fill_locked(color)
                 )
 
-        response.drop_coords = Point(
-            x=float(base[0]),
-            y=float(base[1]),
-            z=float(base[2] + z_k),
-        )
+        response.drop_coords = Point(x=float(drop[0]), y=float(drop[1]), z=float(drop[2]))
         response.slot_index = int(slot_index)
         response.overflow_occurred = bool(overflow_occurred)
         return response
@@ -475,16 +472,11 @@ class WorkcellNode(Node):
             self.get_logger().warning(f"Rejecting reset_station: {response.message}")
             return response
         with self._lock:
-            base = self._destination_for(color, True)[0]
             before = len(self._processed)
             self._processed = [
                 e
                 for e in self._processed
-                if not (
-                    e.get("color", DEFAULT_GEAR_COLOR) == color
-                    and e.get("intact", True)
-                    and (e["x"], e["y"]) == (base[0], base[1])
-                )
+                if not (e.get("color", DEFAULT_GEAR_COLOR) == color and e.get("intact", True))
             ]
             removed = before - len(self._processed)
             new_count = len(self._processed)
@@ -548,15 +540,16 @@ class WorkcellNode(Node):
             base, uncapped = self._destination_for(color, intact)
             if uncapped:
                 slot_index, z_k = self._bin_slot_locked()
+                drop = (base[0], base[1], base[2] + z_k)
                 overflow_occurred = False
             else:
                 fill = self._tower_fill_locked(color)
-                slot_index, z_k, overflow_occurred = self._slot_for_count(fill)
+                slot_index, drop, overflow_occurred = self._pallet_slot(base, fill)
             drop_entry = {
                 "id": gear_id,
-                "x": float(base[0]),
-                "y": float(base[1]),
-                "z": float(base[2] + z_k),
+                "x": float(drop[0]),
+                "y": float(drop[1]),
+                "z": float(drop[2]),
                 "origin_x": entry["origin_x"],
                 "origin_y": entry["origin_y"],
                 "origin_z": entry["origin_z"],

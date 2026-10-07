@@ -20,8 +20,11 @@ import {
   type RobotTelemetryEvent,
   type ErrorFrame,
 } from '../../../domain/contracts';
+import { pocketCoords } from '../../../src/utils/pallet';
 import { PickAndPlaceTrajectoryGenerator, type WaypointStep } from './kinematics';
 import { MockCell } from './mock_cell';
+
+const xyz = ([x, y, z]: readonly [number, number, number]) => ({ x, y, z });
 
 export interface GearClassification {
   color: GearColor;
@@ -246,12 +249,10 @@ export class MockGateway {
   }
 
   public setTowerGearsCount(count: number): void {
-    // Legacy alias: synthesize processed entries at tower coords verbatim.
+    // Legacy alias: synthesize processed entries in the WHITE Pallet's pockets (D38).
     this.processed = Array.from({ length: Math.max(0, count) }, (_, i) => ({
       id: `legacy-tower-${i}`,
-      x: WHITE_TOWER[0],
-      y: WHITE_TOWER[1],
-      z: i * 0.02,
+      ...xyz(pocketCoords(WHITE_TOWER, Math.min(i, PALLET_CAPACITY - 1))),
       color: 'WHITE' as const,
       intact: true as const,
       origin_x: WHITE_TOWER[0],
@@ -716,17 +717,17 @@ export class MockGateway {
       this.processed = this.processed.filter((e) => e.intact);
     }
     const base = this.destinationFor(cls.color, cls.intact);
-    const sameTower = (e: GearEntry): boolean =>
-      e.intact === cls.intact &&
-      e.color === cls.color &&
-      Math.abs(e.x - base[0]) < 1e-6 &&
-      Math.abs(e.y - base[1]) < 1e-6;
-    const towerFill = cls.intact
-      ? this.processed.filter(sameTower).length
-      : this.processed.filter((e) => !e.intact).length;
-    const dropZ =
-      (cls.intact ? Math.min(towerFill, PALLET_CAPACITY - 1) : towerFill) * STACK_STEP_M;
-    const dropCoords: [number, number, number] = [base[0], base[1], dropZ];
+    // An intact Gearwheel goes in the next pocket of its colour's Pallet (D38); a defective one
+    // piles up in the ScrapBin.
+    const dropCoords: [number, number, number] = cls.intact
+      ? pocketCoords(
+          base,
+          Math.min(
+            this.processed.filter((e) => e.intact && e.color === cls.color).length,
+            PALLET_CAPACITY - 1,
+          ),
+        )
+      : [base[0], base[1], this.processed.filter((e) => !e.intact).length * STACK_STEP_M];
 
     let steps: WaypointStep[];
     try {

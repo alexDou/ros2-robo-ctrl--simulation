@@ -6,9 +6,8 @@ import type { SnapshotStore } from '@/components/RobotVisualizer/interaction/sna
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
 import type { BeltGearsAssets } from '@/components/RobotVisualizer/assets/beltgears';
 import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
-import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
-import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
+import type { PalletTrayAssets } from '@/components/RobotVisualizer/assets/pallettray';
 import type { PalletLanesAssets } from '@/components/RobotVisualizer/assets/palletlanes';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 
@@ -18,11 +17,9 @@ export interface HandleDeps {
   getRobot: () => URDFRobot | null;
   getScene: () => THREE.Scene;
   getRenderer: () => THREE.WebGLRenderer;
-  getSpindle: () => SpindleTowerProceduralAssets | null;
-  getSpindlesByColor: () => Record<GearColor, SpindleTowerProceduralAssets | null>;
+  getPalletTrays: () => Record<GearColor, PalletTrayAssets | null>;
   getScrapBin: () => ScrapBinProceduralAssets | null;
   getPedestal: () => PedestalProceduralAssets | null;
-  getRearStand: () => RearStandProceduralAssets | null;
   getPalletLanes: () => PalletLanesAssets | null;
   getConveyor: () => ConveyorProceduralAssets | null;
   getHopper: () => HopperProceduralAssets | null;
@@ -100,13 +97,8 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
         emissiveIntensity: mat.emissiveIntensity,
       };
     },
-    getSpindleTowerMesh: () => deps.getSpindle()?.group ?? null,
-    getSpindleTowerMeshes: () =>
-      Object.values(deps.getSpindlesByColor()).map((s) => s?.group ?? null),
-    getSpindleTowerMeshByColor: (color: GearColor) =>
-      deps.getSpindlesByColor()[color]?.group ?? null,
-    getSpindleBaseFlangeMesh: () => deps.getSpindle()?.flangeMesh ?? null,
-    getSpindlePinMesh: () => deps.getSpindle()?.pinMesh ?? null,
+    getPalletTrayMeshes: () => Object.values(deps.getPalletTrays()).map((t) => t?.group ?? null),
+    getPalletTrayMeshByColor: (color: GearColor) => deps.getPalletTrays()[color]?.group ?? null,
     getScrapBinMesh: () => deps.getScrapBin()?.group ?? null,
     isScrapBinNonEmpty: () => deps.getScrapBin()?.hasItems ?? false,
     getSnapshotGearCount: () => deps.store.gears.size,
@@ -124,8 +116,8 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
         .filter((r) => r.bucket === 'processed')
         .map((r) => r.assets.group),
     getTowerGearCount: () =>
-      // NOTE: whole `processed` bucket (towers + ScrapBin), not one tower.
-      // Per-color n/10 counters must filter by color+intact+coords, not this.
+      // NOTE: whole `processed` bucket (Pallets + ScrapBin), not one Pallet.
+      // Per-color n/10 counters must filter by color+intact, not this.
       [...deps.store.gears.values()].filter((r) => r.bucket === 'processed').length,
     isGearAttached: () => [...deps.store.gears.values()].some((r) => r.bucket === 'in_progress'),
     wasGearEverAttached: () =>
@@ -135,7 +127,6 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
       return rec?.assets.group ?? null;
     },
     getPedestalMesh: () => deps.getPedestal()?.group ?? null,
-    getRearStandMesh: () => deps.getRearStand()?.group ?? null,
     getPalletLaneMesh: (color: GearColor) => deps.getPalletLanes()?.lanes[color] ?? null,
     getConveyorMesh: () => deps.getConveyor()?.group ?? null,
     getBeltGearPositions: () => deps.getBeltGears()?.getPositions() ?? [],

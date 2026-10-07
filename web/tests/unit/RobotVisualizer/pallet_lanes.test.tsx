@@ -5,41 +5,50 @@ import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
 import { createPalletLanes } from '@components/RobotVisualizer/assets/palletlanes';
 import {
+  PALLET_TRAY_LENGTH_X,
+  PALLET_TRAY_WIDTH_Y,
+} from '@components/RobotVisualizer/assets/pallettray';
+import {
   PALLET_LANE_TRAVEL_M,
   PALLET_LEAVE_MS,
-  SPINDLE_TOWERS,
+  PALLET_STATIONS,
 } from '@components/RobotVisualizer/constants';
-import type { ExchangeState } from '@contracts';
+import { GREEN_TOWER, type ExchangeState } from '@contracts';
+import { pocketCoords } from '@utils/pallet';
 
-const stackGear = (id: string, z: number) => ({
-  id,
-  x: SPINDLE_TOWERS.GREEN.x,
-  y: SPINDLE_TOWERS.GREEN.y,
-  z,
-  color: 'GREEN',
-  intact: true,
-});
+const pocketGear = (id: string, k: number) => {
+  const [x, y, z] = pocketCoords(GREEN_TOWER, k);
+  return { id, x, y, z, color: 'GREEN', intact: true };
+};
 
 const gearMeshes = (viz: any) => {
-  const tower = viz.getSpindleTowerMeshByColor('GREEN') as THREE.Group;
+  const tower = viz.getPalletTrayMeshByColor('GREEN') as THREE.Group;
   return tower.parent!.children.filter((c) => c.getObjectByName('gear-body'));
 };
 
 describe('Unit 9.16: PalletLanes asset', () => {
-  it('runs each lane from its PalletStation along -X, inside the 0.16 m pitch', () => {
+  it('runs each lane from its tray at the PalletStation along -X, inside the station pitch', () => {
     const lanes = createPalletLanes();
     for (const color of ['WHITE', 'GREEN', 'BLUE'] as const) {
       const lane = lanes.lanes[color];
       const box = new THREE.Box3().setFromObject(lane);
-      expect(box.max.x).toBeCloseTo(SPINDLE_TOWERS[color].x, 3);
-      expect(box.min.x).toBeCloseTo(SPINDLE_TOWERS[color].x - PALLET_LANE_TRAVEL_M, 3);
-      expect(lane.position.y).toBeCloseTo(SPINDLE_TOWERS[color].y, 5);
+      // From the tray's +X end at home to its -X end once AWAY.
+      expect(box.max.x).toBeCloseTo(PALLET_STATIONS[color].x + PALLET_TRAY_LENGTH_X / 2, 3);
+      expect(box.min.x).toBeCloseTo(
+        PALLET_STATIONS[color].x - PALLET_LANE_TRAVEL_M - PALLET_TRAY_LENGTH_X / 2,
+        3,
+      );
+      expect(lane.position.y).toBeCloseTo(PALLET_STATIONS[color].y, 5);
     }
     const widths = (['WHITE', 'GREEN', 'BLUE'] as const).map((c) => {
       const b = new THREE.Box3().setFromObject(lanes.lanes[c]);
       return b.max.y - b.min.y;
     });
-    expect(Math.max(...widths)).toBeLessThan(0.16);
+    const pitch = PALLET_STATIONS.GREEN.y - PALLET_STATIONS.WHITE.y;
+    expect(PALLET_STATIONS.BLUE.y - PALLET_STATIONS.GREEN.y).toBeCloseTo(pitch, 9);
+    expect(Math.max(...widths)).toBeLessThan(pitch);
+    // Neighbouring trays never overlap either.
+    expect(PALLET_TRAY_WIDTH_Y).toBeLessThan(pitch);
     lanes.dispose();
   });
 });
@@ -84,7 +93,7 @@ describe('Unit 9.16: Pallet follows the station exchange state in the scene', ()
         workcellState: {
           spawned: [],
           inProgress: [],
-          processed: [stackGear('g0', 0), stackGear('g1', 0.02)],
+          processed: [pocketGear('g0', 0), pocketGear('g1', 1)],
           activeId: null,
         },
         cellState: null,
@@ -131,8 +140,8 @@ describe('Unit 9.16: Pallet follows the station exchange state in the scene', ()
     const { viz, report } = await mount();
     report('HOME');
     expect(viz.getPalletLaneMesh('GREEN')).toBeTruthy();
-    expect((viz.getSpindleTowerMeshByColor('GREEN') as THREE.Group).position.x).toBeCloseTo(
-      SPINDLE_TOWERS.GREEN.x,
+    expect((viz.getPalletTrayMeshByColor('GREEN') as THREE.Group).position.x).toBeCloseTo(
+      PALLET_STATIONS.GREEN.x,
       5,
     );
   });
@@ -143,17 +152,19 @@ describe('Unit 9.16: Pallet follows the station exchange state in the scene', ()
     now += PALLET_LEAVE_MS / 2;
     report('LEAVING');
 
-    const green = viz.getSpindleTowerMeshByColor('GREEN') as THREE.Group;
-    const moved = SPINDLE_TOWERS.GREEN.x - green.position.x;
+    const green = viz.getPalletTrayMeshByColor('GREEN') as THREE.Group;
+    const moved = PALLET_STATIONS.GREEN.x - green.position.x;
     expect(moved).toBeGreaterThan(0.1);
     expect(moved).toBeLessThan(PALLET_LANE_TRAVEL_M);
-    expect((viz.getSpindleTowerMeshByColor('WHITE') as THREE.Group).position.x).toBeCloseTo(
-      SPINDLE_TOWERS.WHITE.x,
+    expect((viz.getPalletTrayMeshByColor('WHITE') as THREE.Group).position.x).toBeCloseTo(
+      PALLET_STATIONS.WHITE.x,
       5,
     );
     const stack = gearMeshes(viz);
     expect(stack).toHaveLength(2);
-    for (const g of stack) expect(SPINDLE_TOWERS.GREEN.x - g.position.x).toBeCloseTo(moved, 5);
+    // Pockets 0 and 1 share row 0, so both Gearwheels were seeded at the same x.
+    const seededX = pocketCoords(GREEN_TOWER, 0)[0];
+    for (const g of stack) expect(seededX - g.position.x).toBeCloseTo(moved, 5);
   });
 
   it('is off-scene and unloaded AWAY, then comes back empty and home', async () => {
@@ -162,17 +173,17 @@ describe('Unit 9.16: Pallet follows the station exchange state in the scene', ()
     now += 100;
     report('AWAY');
 
-    const green = viz.getSpindleTowerMeshByColor('GREEN') as THREE.Group;
-    expect(SPINDLE_TOWERS.GREEN.x - green.position.x).toBeCloseTo(PALLET_LANE_TRAVEL_M, 5);
+    const green = viz.getPalletTrayMeshByColor('GREEN') as THREE.Group;
+    expect(PALLET_STATIONS.GREEN.x - green.position.x).toBeCloseTo(PALLET_LANE_TRAVEL_M, 5);
     expect(gearMeshes(viz).every((g) => g.visible === false)).toBe(true);
 
     report('RETURNING');
     now += 10_000;
     report('RETURNING');
-    expect(green.position.x).toBeCloseTo(SPINDLE_TOWERS.GREEN.x, 5);
+    expect(green.position.x).toBeCloseTo(PALLET_STATIONS.GREEN.x, 5);
 
     report('HOME');
-    expect(green.position.x).toBeCloseTo(SPINDLE_TOWERS.GREEN.x, 5);
+    expect(green.position.x).toBeCloseTo(PALLET_STATIONS.GREEN.x, 5);
   });
 
   it('draws the stack again once the reset snapshot has an empty then refilled Pallet', async () => {
@@ -185,7 +196,7 @@ describe('Unit 9.16: Pallet follows the station exchange state in the scene', ()
 
     buffer.current.workcellState.processed = [];
     report('HOME');
-    buffer.current.workcellState.processed = [stackGear('g2', 0)];
+    buffer.current.workcellState.processed = [pocketGear('g2', 0)];
     report('HOME');
     expect(gearMeshes(viz)).toHaveLength(1);
     expect(gearMeshes(viz).every((g) => g.visible)).toBe(true);

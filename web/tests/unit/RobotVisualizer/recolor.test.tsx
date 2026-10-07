@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
 import { GEAR_CLASSIFIED_HEX, GEAR_GREY_HEX } from '@components/RobotVisualizer/assets/gear';
-import { SPINDLE_TOWERS } from '@components/RobotVisualizer/constants';
+import { PALLET_STATIONS } from '@components/RobotVisualizer/constants';
 
 function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[] = []) {
   return {
@@ -177,8 +177,8 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
       telemetryBufferRef.current.workcellState.processed = [
         {
           id: 'g1',
-          x: SPINDLE_TOWERS.BLUE.x,
-          y: SPINDLE_TOWERS.BLUE.y,
+          x: PALLET_STATIONS.BLUE.x,
+          y: PALLET_STATIONS.BLUE.y,
           z: 0.0,
           origin_x: 0.5,
           origin_y: 0.0,
@@ -200,24 +200,24 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
       [
         {
           id: 'w1',
-          x: SPINDLE_TOWERS.WHITE.x,
-          y: SPINDLE_TOWERS.WHITE.y,
+          x: PALLET_STATIONS.WHITE.x,
+          y: PALLET_STATIONS.WHITE.y,
           z: 0.0,
           color: 'WHITE',
           intact: true,
         },
         {
           id: 'g1',
-          x: SPINDLE_TOWERS.GREEN.x,
-          y: SPINDLE_TOWERS.GREEN.y,
+          x: PALLET_STATIONS.GREEN.x,
+          y: PALLET_STATIONS.GREEN.y,
           z: 0.0,
           color: 'GREEN',
           intact: true,
         },
         {
           id: 'b1',
-          x: SPINDLE_TOWERS.BLUE.x,
-          y: SPINDLE_TOWERS.BLUE.y,
+          x: PALLET_STATIONS.BLUE.x,
+          y: PALLET_STATIONS.BLUE.y,
           z: 0.0,
           color: 'BLUE',
           intact: true,
@@ -231,9 +231,9 @@ describe('Unit 7.3b: Web recolor-on-echo', () => {
 
     expect(visualizer.getTowerGearCount()).toBe(3);
     const pos = (id: string) => visualizer.getSnapshotGearPosition(id);
-    expect(pos('w1')!.x).toBeCloseTo(SPINDLE_TOWERS.WHITE.x, 4);
-    expect(pos('g1')!.x).toBeCloseTo(SPINDLE_TOWERS.GREEN.x, 4);
-    expect(pos('b1')!.x).toBeCloseTo(SPINDLE_TOWERS.BLUE.x, 4);
+    expect(pos('w1')!.x).toBeCloseTo(PALLET_STATIONS.WHITE.x, 4);
+    expect(pos('g1')!.x).toBeCloseTo(PALLET_STATIONS.GREEN.x, 4);
+    expect(pos('b1')!.x).toBeCloseTo(PALLET_STATIONS.BLUE.x, 4);
     const gears = visualizer.getTowerGears() as THREE.Group[];
     const hexes = gears.map((gr) => bodyHex(gr)).sort();
     const expected = [

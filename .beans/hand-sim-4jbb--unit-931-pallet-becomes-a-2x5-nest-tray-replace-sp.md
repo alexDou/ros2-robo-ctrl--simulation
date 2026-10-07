@@ -1,13 +1,13 @@
 ---
 # hand-sim-4jbb
 title: 'Unit 9.31: Pallet becomes a 2x5 nest tray (replace SpindleTower rods)'
-status: todo
+status: completed
 type: task
 priority: high
 tags:
     - ready-for-agent
 created_at: 2026-10-07T16:42:28Z
-updated_at: 2026-10-07T16:42:28Z
+updated_at: 2026-10-07T20:22:37Z
 parent: hand-sim-rqpy
 ---
 
@@ -30,3 +30,21 @@ The 0.20 m rods are obstacles the arm has to clear on every transfer. D37 had to
 5. **Web scene** (read `.agents/rules/threejs-rep103.md`): replace `assets/tower.ts` and the RearStand pieces with a tray asset on each lane (`assets/palletlanes.ts`), with gears seated in pockets. Today the visible stack grows on the rod, so the counts→geometry mapping must move to pockets (`utils/towerCounts.ts`, Visualizer). Update the E2E pages and steps that read tower meshes.
 6. **Docs**: update D37's wording where it still says pins, plus the overview user story 9, and ADR 0006 if it mentions rods.
 7. **Verify**: `scripts/verify.sh` must print GREEN. ALSO run the full-flow launch test, which verify.sh does not run: `ROS_DOMAIN_ID=77 python3 -m pytest -q -p no:cacheprovider src/ros2/robot_bringup/test/test_cell_flow_launch.py` (about 8 min; use an isolated domain while a SIM is running).
+
+
+## Progress 2026-10-07 (session 2): stashed WIP, split into child beans
+Stash: 'hand-sim-4jbb WIP: D38 nest-tray Pallet ...' (applied to the working tree in session 3). Apply hand-sim-bciq's stash too, or verify.sh still starves the machine.
+Layout decided, validated by reach scans over every pocket x the real pick band (incl. braked lead y=-0.555):
+- Stations (tray centres; WHITE/GREEN/BLUE_TOWER kept as names): (-0.415,-0.29,0) / (-0.415,-0.04,0) / (-0.415,0.21,0). Pitch 0.25 m.
+- New consts: PALLET_POCKET_ROWS 5, _COLS 2, _PITCH_M 0.105, PALLET_TRAY_HEIGHT_M 0.03, PALLET_POCKET_DEPTH_M 0.01 (half-sunk Gearwheel). Pocket z = tray floor 0.02.
+- Planner: RELEASE_HEIGHT_M and SPINDLE_PIN_HEIGHT_M removed; drop lowers straight to the pocket floor. APPROACH_LIFT_OFFSET_M 0.08, TRANSFER_HEIGHT_M = seated-gear top 0.04 + 0.04 = 0.08.
+- Why so low: joint-space interpolation (travel -> pocket) drifts the TCP off the vertical, roughly in proportion to the drop height. Inside the bore it must stay below 5.5 mm (bore r 0.0515 vs gear r 0.046). Measured max 2.9 mm. A full-depth pocket (drop z 0.01) gave 6.4 mm, so it was rejected. A wider layout (cx -0.41/-0.42, pitch 0.10) left one corner pocket outside the locked IK branch.
+Done and green in the stash: schema + codegen, 3-language const locks; workcell_manager/pallet.py pocket_coords + WorkcellNode pockets (72 workcell tests); kinematics tests incl. new test_transfer_never_strikes_a_tray (mutation-checked) and a d4 shoulder-offset allowance in the pan-swing check (94 + 18 root); arm/devices/orchestrator/domain 353 passed.
+Remaining: see the child beans.
+
+
+Child beans: hand-sim-g9st (web scene) -> hand-sim-w9st (docs, gate, launch test, commit). hand-sim-bciq must land first.
+
+
+## Done 2026-10-07 (session 3)
+Web scene, docs and all gated verify lanes GREEN; launch lane not run (on demand, declined). Follow-up idea recorded as Unit 10 (edge-standing slot rack) in support_files/specs/units.md.

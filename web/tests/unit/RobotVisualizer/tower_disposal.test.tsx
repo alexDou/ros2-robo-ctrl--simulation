@@ -154,7 +154,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       expect(visualizer.getTowerGearCount()).toBe(0);
     });
 
-    it('disposes SpindleTower geometries and materials on unmount', async () => {
+    it("disposes the Pallet trays' geometries and materials on unmount", async () => {
       let unmountFn: () => void;
       let resolveLoaded: () => void;
       const loadedPromise = new Promise<void>((res) => {
@@ -177,22 +177,23 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       });
 
       const visualizer = (window as any).__robot_visualizer;
-      const baseFlange = visualizer.getSpindleBaseFlangeMesh();
-      const pin = visualizer.getSpindlePinMesh();
+      const tray = visualizer.getPalletTrayMeshByColor('BLUE') as THREE.Group;
+      const base = tray.getObjectByName('pallet-tray-base') as THREE.Mesh;
+      const nest = tray.getObjectByName('pallet-tray-nest') as THREE.Mesh;
 
-      const flangeGeomSpy = vi.spyOn(baseFlange.geometry, 'dispose');
-      const flangeMatSpy = vi.spyOn(baseFlange.material as THREE.Material, 'dispose');
-      const pinGeomSpy = vi.spyOn(pin.geometry, 'dispose');
-      const pinMatSpy = vi.spyOn(pin.material as THREE.Material, 'dispose');
+      const baseGeomSpy = vi.spyOn(base.geometry, 'dispose');
+      const baseMatSpy = vi.spyOn(base.material as THREE.Material, 'dispose');
+      const nestGeomSpy = vi.spyOn(nest.geometry, 'dispose');
+      const nestMatSpy = vi.spyOn(nest.material as THREE.Material, 'dispose');
 
       act(() => {
         unmountFn();
       });
 
-      expect(flangeGeomSpy).toHaveBeenCalled();
-      expect(flangeMatSpy).toHaveBeenCalled();
-      expect(pinGeomSpy).toHaveBeenCalled();
-      expect(pinMatSpy).toHaveBeenCalled();
+      expect(baseGeomSpy).toHaveBeenCalled();
+      expect(baseMatSpy).toHaveBeenCalled();
+      expect(nestGeomSpy).toHaveBeenCalled();
+      expect(nestMatSpy).toHaveBeenCalled();
     });
 
     it('Unit 6.7.5: phase/RELEASING without snapshot entries grows no tower; processed echo deposits verbatim', async () => {

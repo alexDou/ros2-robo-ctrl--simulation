@@ -44,6 +44,11 @@ def test_workcell_constants_match_schema_single_source_of_truth():
         DEFAULT_GEAR_COLOR,
         GREEN_TOWER,
         PALLET_CAPACITY,
+        PALLET_POCKET_COLS,
+        PALLET_POCKET_DEPTH_M,
+        PALLET_POCKET_PITCH_M,
+        PALLET_POCKET_ROWS,
+        PALLET_TRAY_HEIGHT_M,
         PICK_ZONE_Y_RANGE,
         SCRAP_BIN,
         STACK_STEP_M,
@@ -55,11 +60,17 @@ def test_workcell_constants_match_schema_single_source_of_truth():
     assert BELT_Y_RANGE == [-0.66, 0.95]
     assert PICK_ZONE_Y_RANGE == [-0.51, 0.51]
     assert BELT_CAPACITY == 10
-    assert WHITE_TOWER == [-0.45, -0.26, 0.0]
-    assert GREEN_TOWER == [-0.45, -0.10, 0.0]
-    assert BLUE_TOWER == [-0.45, 0.06, 0.0]
+    assert WHITE_TOWER == [-0.415, -0.29, 0.0]
+    assert GREEN_TOWER == [-0.415, -0.04, 0.0]
+    assert BLUE_TOWER == [-0.415, 0.21, 0.0]
     assert SCRAP_BIN == [0.4, -0.75, -0.05]
     assert PALLET_CAPACITY == 10
+    # D38: a 2 x 5 nest tray, one Gearwheel per pocket.
+    assert (PALLET_POCKET_ROWS, PALLET_POCKET_COLS) == (5, 2)
+    assert PALLET_POCKET_ROWS * PALLET_POCKET_COLS == PALLET_CAPACITY
+    assert PALLET_POCKET_PITCH_M == 0.105
+    assert PALLET_TRAY_HEIGHT_M == 0.03
+    assert PALLET_POCKET_DEPTH_M == 0.01
     assert STACK_STEP_M == 0.02
     assert BIN_EXCHANGE_THRESHOLD == 20
     assert DEFAULT_GEAR_COLOR == "WHITE"
@@ -748,9 +759,9 @@ def test_unit70_required_color_intact():
     assert event.workcell_state.processed[0].color == GearColor.BLUE
     assert event.workcell_state.processed[0].intact is True
 
-    assert WHITE_TOWER == [-0.45, -0.26, 0.0]
-    assert GREEN_TOWER == [-0.45, -0.10, 0.0]
-    assert BLUE_TOWER == [-0.45, 0.06, 0.0]
+    assert WHITE_TOWER == [-0.415, -0.29, 0.0]
+    assert GREEN_TOWER == [-0.415, -0.04, 0.0]
+    assert BLUE_TOWER == [-0.415, 0.21, 0.0]
     assert SCRAP_BIN == [0.4, -0.75, -0.05]
     assert PALLET_CAPACITY == 10
     assert STACK_STEP_M == 0.02

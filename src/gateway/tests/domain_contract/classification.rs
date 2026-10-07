@@ -5,7 +5,8 @@ fn test_unit70_required_color_intact() {
     use gateway::domain::{
         GearColor, GearEntry, RobotState, RobotTelemetryEvent, SpawnObjectPayload, SpawnObjectType,
         BELT_CAPACITY, BELT_X_RANGE, BELT_Y_RANGE, BLUE_TOWER, GREEN_TOWER, PALLET_CAPACITY,
-        PICK_ZONE_Y_RANGE, SCRAP_BIN, STACK_STEP_M, WHITE_TOWER,
+        PALLET_POCKET_COLS, PALLET_POCKET_DEPTH_M, PALLET_POCKET_PITCH_M, PALLET_POCKET_ROWS,
+        PALLET_TRAY_HEIGHT_M, PICK_ZONE_Y_RANGE, SCRAP_BIN, STACK_STEP_M, WHITE_TOWER,
     };
     let payload = SpawnObjectPayload {
         x: 0.5,
@@ -73,15 +74,19 @@ fn test_unit70_required_color_intact() {
 
     #[allow(clippy::float_cmp)] // comparing codegen literals for exactness, not computed values
     {
-        assert_eq!(WHITE_TOWER, [-0.45, -0.26, 0.0]);
-        assert_eq!(GREEN_TOWER, [-0.45, -0.10, 0.0]);
-        assert_eq!(BLUE_TOWER, [-0.45, 0.06, 0.0]);
+        assert_eq!(WHITE_TOWER, [-0.415, -0.29, 0.0]);
+        assert_eq!(GREEN_TOWER, [-0.415, -0.04, 0.0]);
+        assert_eq!(BLUE_TOWER, [-0.415, 0.21, 0.0]);
         assert_eq!(SCRAP_BIN, [0.4, -0.75, -0.05]);
         assert_eq!(BELT_X_RANGE, [0.25, 0.55]);
         assert_eq!(BELT_Y_RANGE, [-0.66, 0.95]);
         assert_eq!(PICK_ZONE_Y_RANGE, [-0.51, 0.51]);
     }
     assert_eq!(PALLET_CAPACITY, 10);
+    assert_eq!((PALLET_POCKET_ROWS, PALLET_POCKET_COLS), (5, 2));
+    assert!((PALLET_POCKET_PITCH_M - 0.105).abs() < 1e-12);
+    assert!((PALLET_TRAY_HEIGHT_M - 0.03).abs() < 1e-12);
+    assert!((PALLET_POCKET_DEPTH_M - 0.01).abs() < 1e-12);
     assert_eq!(BELT_CAPACITY, 10);
     assert!((STACK_STEP_M - 0.02).abs() < 1e-12);
 }

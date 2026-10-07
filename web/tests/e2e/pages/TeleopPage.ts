@@ -693,17 +693,18 @@ export class TeleopPage {
       .toBe(attached);
   }
 
-  async expectSpindleTowerLoaded(timeout = 10000): Promise<void> {
+  async expectPalletTraysLoaded(timeout = 10000): Promise<void> {
     await expect
       .poll(
         async () => {
           return await this.page.evaluate(() => {
             return Boolean(
-              window.__robot_visualizer && window.__robot_visualizer.getSpindleTowerMesh(),
+              window.__robot_visualizer &&
+              window.__robot_visualizer.getPalletTrayMeshByColor('WHITE'),
             );
           });
         },
-        { timeout, message: 'SpindleTower fixture mesh failed to mount in 3D scene' },
+        { timeout, message: 'Pallet tray fixture mesh failed to mount in 3D scene' },
       )
       .toBe(true);
   }
@@ -739,7 +740,7 @@ export class TeleopPage {
         {
           timeout,
           intervals: [50, 100, 200],
-          message: `Expected top gear on SpindleTower to be at z=${expectedZ}m within ${tolerance}m`,
+          message: `Expected the last Pallet Gearwheel to be at z=${expectedZ}m within ${tolerance}m`,
         },
       )
       .toBeLessThanOrEqual(tolerance);

@@ -9,9 +9,8 @@ from arm_controller.kinematics import (
     DEFAULT_TCP_OFFSET_M,
     GEARWHEEL_HEIGHT_M,
     HOME_JOINT_POSITIONS,
-    RELEASE_HEIGHT_M,
-    SPINDLE_PIN_HEIGHT_M,
     TRANSFER_HEIGHT_M,
+    UR5E_DH_D,
     ActionPhase,
     AnalyticalInverseKinematics,
     JointLimitError,
@@ -20,13 +19,19 @@ from arm_controller.kinematics import (
     UR5eKinematics,
     unwrap_joint_angles_within_limits,
 )
+from workcell_manager.pallet import pocket_coords
 
 from domain import (
     BELT_X_RANGE,
     BLUE_TOWER,
     GREEN_TOWER,
+    PALLET_CAPACITY,
+    PALLET_POCKET_COLS,
+    PALLET_POCKET_DEPTH_M,
+    PALLET_POCKET_PITCH_M,
+    PALLET_POCKET_ROWS,
+    PALLET_TRAY_HEIGHT_M,
     PICK_ZONE_Y_RANGE,
-    STACK_STEP_M,
     WHITE_TOWER,
 )
 
@@ -176,8 +181,8 @@ def test_10_step_waypoint_sequence_and_action_phases():
     urdf_drop_xyz = (-T_dh_drop[0][3], -T_dh_drop[1][3], T_dh_drop[2][3])
     assert abs(urdf_drop_xyz[0] - drop[0]) < 1e-3
     assert abs(urdf_drop_xyz[1] - drop[1]) < 1e-3
-    # D37: released threaded on the pin tip, the Gearwheel slides down to its slot
-    assert abs(urdf_drop_xyz[2] - RELEASE_HEIGHT_M) < 1e-3
+    # D38: lowered straight into the pocket and released there
+    assert abs(urdf_drop_xyz[2] - drop[2]) < 1e-3
     # transfer and retreat cross at the travel height
     for step in (steps[4], steps[7]):
         assert step.cartesian_position[2] == pytest.approx(TRANSFER_HEIGHT_M)
@@ -194,11 +199,7 @@ _URDF_LIMITS = [
     (-_TWO_PI, _TWO_PI),  # wrist_2
     (-_TWO_PI, _TWO_PI),  # wrist_3
 ]
-_TOWERS = {
-    "WHITE": tuple(WHITE_TOWER[:2]),
-    "GREEN": tuple(GREEN_TOWER[:2]),
-    "BLUE": tuple(BLUE_TOWER[:2]),
-}
+_TOWERS = {"WHITE": WHITE_TOWER, "GREEN": GREEN_TOWER, "BLUE": BLUE_TOWER}
 _PICKS = [
     (0.45, -0.15, 0.0),
     (0.42, 0.10, 0.0),
@@ -226,8 +227,7 @@ def test_consecutive_cycles_do_not_wind_up_joints():
     fill = {name: 0 for name in _TOWERS}
     for cycle in range(40):
         name = list(_TOWERS)[cycle % len(_TOWERS)]
-        tx, ty = _TOWERS[name]
-        drop = (tx, ty, (fill[name] % 4) * 0.02)  # slots 0..3: wind-up starts at slot >= 1
+        drop = pocket_coords(_TOWERS[name], fill[name] % PALLET_CAPACITY)
         fill[name] += 1
         pick = _PICKS[cycle % len(_PICKS)]
 
@@ -248,11 +248,17 @@ def test_plan_from_wound_up_seed_recovers_canonical_home():
     seed[3] += _TWO_PI
 
     steps = gen.generate_trajectory(
-        pick_coords=(0.50, 0.0, 0.0), drop_coords=(*BLUE_TOWER[:2], 0.04), current_joints=seed
+        pick_coords=(0.50, 0.0, 0.0), drop_coords=pocket_coords(BLUE_TOWER, 3), current_joints=seed
     )
 
     _assert_within_urdf_limits(steps, "wound seed")
     assert steps[-1].joint_positions == list(HOME_JOINT_POSITIONS)
+
+
+def _shoulder_offset_angle(step) -> float:
+    """Angle between shoulder_pan and the TCP azimuth that the d4 offset forces at this step."""
+    r = math.hypot(step.cartesian_position[0], step.cartesian_position[1])
+    return math.asin(min(1.0, UR5E_DH_D[3] / r))
 
 
 @pytest.mark.parametrize("tower", ["WHITE", "GREEN", "BLUE"])
@@ -262,12 +268,11 @@ def test_pick_to_retreat_keeps_one_arm_configuration(tower, slot):
     sign and shoulder_pan never swings by ~pi (the signature of a shoulder-side flip).
     A slot the locked branch cannot reach must be rejected (OutOfReachError), never flipped."""
     gen = PickAndPlaceTrajectoryGenerator()
-    tx, ty = _TOWERS[tower]
     for pick in _PICKS:
         try:
             steps = gen.generate_trajectory(
                 pick_coords=pick,
-                drop_coords=(tx, ty, slot * STACK_STEP_M),
+                drop_coords=pocket_coords(_TOWERS[tower], slot),
                 current_joints=list(HOME_JOINT_POSITIONS),
             )
         except OutOfReachError:
@@ -279,8 +284,9 @@ def test_pick_to_retreat_keeps_one_arm_configuration(tower, slot):
             assert len(signs) == 1, f"{context}: {CANONICAL_UR5E_JOINTS[joint]} changes branch"
         for prev, curr in zip(ik_steps, ik_steps[1:], strict=False):
             pan_swing = abs(curr.joint_positions[0] - prev.joint_positions[0])
-            # Rear-stand towers need a real sweep across the base; a flip is a swing much larger
-            # than the azimuth change between the two Cartesian waypoints.
+            # PalletStations need a real sweep across the base; a flip is a swing much larger
+            # than the azimuth change between the two Cartesian waypoints. The shoulder offset
+            # (d4) turns the pan away from the TCP azimuth by asin(d4 / r), more near the base.
             azimuth_change = abs(
                 math.remainder(
                     math.atan2(curr.cartesian_position[1], curr.cartesian_position[0])
@@ -288,7 +294,8 @@ def test_pick_to_retreat_keeps_one_arm_configuration(tower, slot):
                     2.0 * math.pi,
                 )
             )
-            assert pan_swing <= azimuth_change + 0.2, (
+            offset_change = abs(_shoulder_offset_angle(curr) - _shoulder_offset_angle(prev))
+            assert pan_swing <= azimuth_change + offset_change + 0.2, (
                 f"{context}: shoulder_pan swings {pan_swing:.3f} rad from '{prev.name}' to "
                 f"'{curr.name}' (shoulder flip)"
             )
@@ -297,14 +304,13 @@ def test_pick_to_retreat_keeps_one_arm_configuration(tower, slot):
 @pytest.mark.parametrize("tower", ["WHITE", "GREEN", "BLUE"])
 @pytest.mark.parametrize("slot", range(10))
 def test_every_rear_stand_tower_drop_solves(tower, slot):
-    """Unit 8.0a: every tower drop, bottom to top slot, is reachable from every pick position."""
+    """Unit 8.0a/D38: every pocket of every Pallet is reachable from every pick position."""
     gen = PickAndPlaceTrajectoryGenerator()
-    tx, ty = _TOWERS[tower]
-    assert tx < 0.0, "towers live on the rear stand behind the arm"
+    assert _TOWERS[tower][0] < 0.0, "PalletStations live behind the arm"
     for pick in _PICKS:
         steps = gen.generate_trajectory(
             pick_coords=pick,
-            drop_coords=(tx, ty, slot * STACK_STEP_M),
+            drop_coords=pocket_coords(_TOWERS[tower], slot),
             current_joints=list(HOME_JOINT_POSITIONS),
         )
         _assert_within_urdf_limits(steps, f"{tower} slot {slot} pick {pick}")
@@ -315,13 +321,12 @@ def test_every_rear_stand_tower_drop_solves(tower, slot):
 @pytest.mark.parametrize("tower", ["WHITE", "GREEN", "BLUE"])
 def test_every_pick_zone_corner_solves_at_pick_and_approach(x, y, tower):
     """Unit 8.0b: each PickZone corner is reachable at pick height and at the approach/lift height
-    (generate_trajectory solves both and raises on failure), for the bottom and top tower slots."""
+    (generate_trajectory solves both and raises on failure), for the first and last pockets."""
     gen = PickAndPlaceTrajectoryGenerator()
-    tx, ty = _TOWERS[tower]
-    for slot in (0, 9):
+    for slot in (0, PALLET_CAPACITY - 1):
         steps = gen.generate_trajectory(
             pick_coords=(x, y, 0.0),
-            drop_coords=(tx, ty, slot * STACK_STEP_M),
+            drop_coords=pocket_coords(_TOWERS[tower], slot),
             current_joints=list(HOME_JOINT_POSITIONS),
         )
         _assert_within_urdf_limits(steps, f"corner ({x}, {y}) -> {tower} slot {slot}")
@@ -354,51 +359,68 @@ def test_unwrap_within_limits_raises_when_no_turn_fits():
         unwrap_joint_angles_within_limits([0.0, 0.0, 0.0, 2.0, 0.0, 0.0], [0.0] * 6, narrow)
 
 
-# --- D37: the arm never strikes a SpindleTower pin ---
+# --- D37/D38: the arm never strikes a Pallet's nest tray ---
 
-_PIN_RADIUS_M = 0.007
 _GEAR_RADIUS_M = 0.046  # teeth included
 _LINK_RADIUS_M = 0.045  # UR5e wrist housings
 _TOOL_RADIUS_M = 0.025  # DexterousPalm, hanging straight down to the TCP
+_TRAY_RIM_M = 0.01  # tray edge beyond the outer pocket pitch
+_POCKET_WEB_M = 0.002  # tray material between two neighbouring pockets
+_POCKET_RADIUS_M = PALLET_POCKET_PITCH_M / 2.0 - _POCKET_WEB_M / 2.0
 _SAMPLES_PER_SEGMENT = 40
-_THREAD_TOLERANCE_M = 0.002  # Gearwheel bore play around the pin
+_TRAY_HALF_X = PALLET_POCKET_ROWS * PALLET_POCKET_PITCH_M / 2.0 + _TRAY_RIM_M
+_TRAY_HALF_Y = PALLET_POCKET_COLS * PALLET_POCKET_PITCH_M / 2.0 + _TRAY_RIM_M
 
 
-def _pins_struck(solver: UR5eKinematics, q: list[float], carrying: bool) -> set[str]:
-    """Pins that the wrist links, the tool or a carried Gearwheel overlap at posture `q`.
+def _trays_struck(
+    solver: UR5eKinematics, q: list[float], carrying: bool, target: tuple[float, float, float]
+) -> set[str]:
+    """Trays that the wrist links, the tool or a carried Gearwheel overlap at posture `q`.
 
-    A carried Gearwheel concentric with a pin is threaded on it, not striking it."""
+    Every other pocket is taken to hold a Gearwheel, half sunk, so a tray is solid up to the
+    seated Gearwheels' tops. Only the target pocket is free: the tool and the carried Gearwheel
+    may go down into it while they fit inside its bore and stay above its floor."""
     # DH base frame -> base_link (REP-103): (x, y) -> (-x, -y)
     points = [(-x, -y, z) for x, y, z in solver.frame_origins(q)]
     wrist, tool = points[2:6], points[5:7]  # wrist_1 .. flange, flange .. TCP
-    volumes = []  # (a, b, radius, bottom drop below the axis)
-    volumes += [
+    tcp = tool[1]
+    volumes = [  # (a, b, radius, bottom drop below the axis)
         (a, b, _LINK_RADIUS_M, _LINK_RADIUS_M) for a, b in zip(wrist, wrist[1:], strict=False)
     ]
     volumes.append((tool[0], tool[1], _TOOL_RADIUS_M, 0.0))
-    tcp = tool[1]
+    if carrying:
+        # The carried Gearwheel's base is at the TCP; the segment runs up its height.
+        volumes.append((tcp, (tcp[0], tcp[1], tcp[2] + GEARWHEEL_HEIGHT_M), _GEAR_RADIUS_M, 0.0))
     struck = set()
-    for name, (px, py) in _TOWERS.items():
-        threaded = math.hypot(tcp[0] - px, tcp[1] - py) < _THREAD_TOLERANCE_M
-        gear = [(tcp, tcp, _GEAR_RADIUS_M, GEARWHEEL_HEIGHT_M)] if carrying and not threaded else []
-        for a, b, radius, below in volumes + gear:
+    for name, (cx, cy, cz) in _TOWERS.items():
+        floor = cz + PALLET_TRAY_HEIGHT_M - PALLET_POCKET_DEPTH_M
+        top = floor + GEARWHEEL_HEIGHT_M  # seated Gearwheels' tops
+        for a, b, radius, below in volumes:
             for k in range(11):
                 x, y, z = (a[i] + (b[i] - a[i]) * k / 10 for i in range(3))
-                if (
-                    z - below < SPINDLE_PIN_HEIGHT_M
-                    and math.hypot(x - px, y - py) < radius + _PIN_RADIUS_M
+                if not (
+                    z - below < top
+                    and abs(x - cx) < _TRAY_HALF_X + radius
+                    and abs(y - cy) < _TRAY_HALF_Y + radius
                 ):
+                    continue
+                in_bore = (
+                    math.hypot(x - target[0], y - target[1]) + radius <= _POCKET_RADIUS_M
+                    and z - below >= floor - 1e-9
+                )
+                if not in_bore:
                     struck.add(name)
     return struck
 
 
 @pytest.mark.parametrize("tower", ["WHITE", "GREEN", "BLUE"])
-@pytest.mark.parametrize("slot", [0, 4, 9])
-def test_transfer_never_strikes_a_pin(tower, slot):
-    """D37: from HOME through every segment back to HOME, no link, tool or carried Gearwheel
-    enters a pin's space, its own pin included (the Gearwheel is released on the pin tip)."""
+@pytest.mark.parametrize("slot", [0, 1, PALLET_CAPACITY - 2, PALLET_CAPACITY - 1])
+def test_transfer_never_strikes_a_tray(tower, slot):
+    """D37/D38: from HOME through every segment back to HOME, no link, tool or carried Gearwheel
+    enters a nest tray, except the tool and the Gearwheel going down into the target pocket's
+    bore (the joint-space lowering must not drift onto the pocket's rim)."""
     gen = PickAndPlaceTrajectoryGenerator()
-    tx, ty = _TOWERS[tower]
+    target = pocket_coords(_TOWERS[tower], slot)
     # Where the FlexFeeder places (belt centre +/- 30 mm) along the PickZone, the lead braked a
     # little past its downstream edge included.
     centre = sum(BELT_X_RANGE) / 2.0
@@ -407,9 +429,7 @@ def test_transfer_never_strikes_a_pin(tower, slot):
     picks = [(x, y, 0.0) for x in xs for y in ys]
     for pick in picks:
         steps = gen.generate_trajectory(
-            pick_coords=pick,
-            drop_coords=(tx, ty, slot * STACK_STEP_M),
-            current_joints=list(HOME_JOINT_POSITIONS),
+            pick_coords=pick, drop_coords=target, current_joints=list(HOME_JOINT_POSITIONS)
         )
         prev = list(HOME_JOINT_POSITIONS)
         for step in steps:
@@ -417,8 +437,8 @@ def test_transfer_never_strikes_a_pin(tower, slot):
             for i in range(_SAMPLES_PER_SEGMENT + 1):
                 f = i / _SAMPLES_PER_SEGMENT
                 q = [a + (b - a) * f for a, b in zip(prev, step.joint_positions, strict=True)]
-                struck = _pins_struck(gen.solver, q, carrying)
+                struck = _trays_struck(gen.solver, q, carrying, target)
                 assert not struck, (
-                    f"{tower} slot {slot} pick {pick}: '{step.name}' strikes {sorted(struck)}"
+                    f"{tower} pocket {slot} pick {pick}: '{step.name}' strikes {sorted(struck)}"
                 )
             prev = step.joint_positions

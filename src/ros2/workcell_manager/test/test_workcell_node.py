@@ -16,15 +16,19 @@ from robot_control_interfaces.srv import (
     SpawnObject,
 )
 from std_msgs.msg import Int32
+from workcell_manager.pallet import pocket_coords
 from workcell_manager.workcell_node import (
     WorkcellNode,
 )
 
 from domain import (
     PALLET_CAPACITY,
-    STACK_STEP_M,
+    PALLET_POCKET_DEPTH_M,
+    PALLET_TRAY_HEIGHT_M,
     WHITE_TOWER,
 )
+
+_FLOOR_Z = PALLET_TRAY_HEIGHT_M - PALLET_POCKET_DEPTH_M  # D38: a pocket's floor
 
 
 @pytest.fixture(autouse=True)
@@ -67,16 +71,18 @@ def test_get_drop_slot_incremental_height():
                 GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
             )
             assert out_res.slot_index == 0
-            assert pytest.approx(out_res.drop_coords.x) == WHITE_TOWER[0]
-            assert pytest.approx(out_res.drop_coords.y) == WHITE_TOWER[1]
-            assert pytest.approx(out_res.drop_coords.z) == 0.0
+            pocket = pocket_coords(WHITE_TOWER, 0)
+            assert pytest.approx(out_res.drop_coords.x) == pocket[0]
+            assert pytest.approx(out_res.drop_coords.y) == pocket[1]
+            assert pytest.approx(out_res.drop_coords.z) == _FLOOR_Z
             assert out_res.overflow_occurred is False
             assert node.inventory == 0
-        # Height grows only via spawn->grasp->commit cycles.
+        # The pocket advances only via spawn->grasp->commit cycles.
         for k in range(PALLET_CAPACITY - 1):
             out = _full_cycle(node)
             assert out.slot_index == k
-            assert pytest.approx(out.drop_coords.z) == k * STACK_STEP_M
+            assert pytest.approx(out.drop_coords.x) == pocket_coords(WHITE_TOWER, k)[0]
+            assert pytest.approx(out.drop_coords.y) == pocket_coords(WHITE_TOWER, k)[1]
             assert node.inventory == k + 1
             assert node.tower_count == k + 1
         # The 10th commit lands on the top slot and the Pallet stays FULL.
@@ -101,21 +107,23 @@ def test_get_drop_slot_custom_tower_elevation():
         out_res = node.handle_get_drop_slot(
             GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
         )
-        assert pytest.approx(out_res.drop_coords.z) == 0.05
+        assert pytest.approx(out_res.drop_coords.z) == 0.05 + _FLOOR_Z
         assert out_res.slot_index == 0
 
         # Pure: second query unchanged until a commit lands.
         out_res2 = node.handle_get_drop_slot(
             GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
         )
-        assert pytest.approx(out_res2.drop_coords.z) == 0.05
+        assert pytest.approx(out_res2.drop_coords.z) == 0.05 + _FLOOR_Z
         assert out_res2.slot_index == 0
 
         _full_cycle(node)
         out_res3 = node.handle_get_drop_slot(
             GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
         )
-        assert pytest.approx(out_res3.drop_coords.z) == 0.05 + STACK_STEP_M
+        # The next pocket, on the same raised tray.
+        assert pytest.approx(out_res3.drop_coords.z) == 0.05 + _FLOOR_Z
+        assert pytest.approx(out_res3.drop_coords.y) == pocket_coords(WHITE_TOWER, 1)[1]
         assert out_res3.slot_index == 1
     finally:
         node.destroy_node()
@@ -131,12 +139,13 @@ def test_tenth_commit_marks_the_pallet_full_and_does_not_empty_it():
 
         out10 = _full_cycle(node, x=0.50, y=0.20)
 
-        # The 10th gear drops on the top slot and the Pallet is FULL until ResetStation.
+        # The 10th gear drops in the last pocket and the Pallet is FULL until ResetStation.
         assert out10.overflow_occurred is True
         assert out10.slot_index == PALLET_CAPACITY - 1
-        assert pytest.approx(out10.drop_coords.x) == WHITE_TOWER[0]
-        assert pytest.approx(out10.drop_coords.y) == WHITE_TOWER[1]
-        assert pytest.approx(out10.drop_coords.z) == (PALLET_CAPACITY - 1) * STACK_STEP_M
+        last = pocket_coords(WHITE_TOWER, PALLET_CAPACITY - 1)
+        assert pytest.approx(out10.drop_coords.x) == last[0]
+        assert pytest.approx(out10.drop_coords.y) == last[1]
+        assert pytest.approx(out10.drop_coords.z) == last[2]
         assert node.inventory == PALLET_CAPACITY
         assert node.tower_count == PALLET_CAPACITY
     finally:
@@ -233,7 +242,7 @@ def test_clear_workspace_resets_inventory():
             GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
         )
         assert out_next.slot_index == 0
-        assert pytest.approx(out_next.drop_coords.z) == 0.0
+        assert pytest.approx(out_next.drop_coords.z) == _FLOOR_Z
         assert out_next.overflow_occurred is False
     finally:
         node.destroy_node()
@@ -279,7 +288,7 @@ def test_workcell_node_ros_services_and_topic_integration():
         # Pure reservation: no inventory publication
         res = _call(drop_slot_client, GetDropSlot.Request(color="", intact=True))
         assert res.slot_index == 0
-        assert pytest.approx(res.drop_coords.z) == 0.0
+        assert pytest.approx(res.drop_coords.z) == _FLOOR_Z
         assert res.overflow_occurred is False
 
         # Full cycle publishes inventory 1

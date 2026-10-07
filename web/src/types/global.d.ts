@@ -32,11 +32,8 @@ export interface RobotVisualizerGlobalHandle {
   getRenderer: () => unknown;
   getRobot: () => unknown;
   getPalmNozzleState: () => VisualizerNozzleState | null;
-  getSpindleTowerMesh: () => unknown;
-  getSpindleTowerMeshes: () => unknown[];
-  getSpindleTowerMeshByColor: (color: GearColor) => unknown;
-  getSpindleBaseFlangeMesh: () => unknown;
-  getSpindlePinMesh: () => unknown;
+  getPalletTrayMeshes: () => unknown[];
+  getPalletTrayMeshByColor: (color: GearColor) => unknown;
   getScrapBinMesh: () => unknown;
   isScrapBinNonEmpty: () => boolean;
   getSnapshotGearCount: () => number;
@@ -53,7 +50,6 @@ export interface RobotVisualizerGlobalHandle {
   wasGearEverAttached: () => boolean;
   getAttachedGearMesh: () => unknown;
   getPedestalMesh: () => unknown;
-  getRearStandMesh: () => unknown;
   getPalletLaneMesh: (color: 'WHITE' | 'GREEN' | 'BLUE') => unknown;
   getConveyorMesh: () => unknown;
   getHopperMesh: () => unknown;

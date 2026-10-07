@@ -7,7 +7,7 @@ priority: normal
 tags:
     - ready-for-agent
 created_at: 2026-10-07T16:42:28Z
-updated_at: 2026-10-07T16:42:28Z
+updated_at: 2026-10-07T19:38:01Z
 parent: hand-sim-rqpy
 ---
 
@@ -23,3 +23,7 @@ Make the web E2E mock cell (`web/tests/e2e/support/mock_cell.ts`) follow D35 so 
 - The E2E boundary: the mock stands in for everything behind TeleopClient (CLAUDE.md). This is purely a web-side fidelity fix, not a check on the PLC.
 - Tests: add a mock unit test in `web/tests/unit/mockGateway.test.ts` (or a mock_cell test) for the first-run defective falling into the bin, red first. Then run `npm --prefix web run test:e2e` and fix any scenario whose counts assumed the old rule (closed_loop.feature: panel/counters and bin exchange scenarios).
 - Verify: `scripts/verify.sh` must print GREEN.
+
+
+## Note 2026-10-07 (session 2)
+Do it after hand-sim-w9st: the 4jbb stash already changes web/tests/e2e/support/mock_gateway.ts (pocket drops), and mock_cell.ts sits beside it. Apply the stash first so the edits don't conflict.

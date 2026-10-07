@@ -3,7 +3,11 @@
  * Matches ROS2 arm_controller/kinematics.py analytical implementation.
  */
 
-import { WHITE_TOWER } from '../../../domain/contracts';
+import {
+  PALLET_POCKET_DEPTH_M,
+  PALLET_TRAY_HEIGHT_M,
+  WHITE_TOWER,
+} from '../../../domain/contracts';
 
 export const UR5E_DH_D: readonly number[] = [0.1625, 0.0, 0.0, 0.1333, 0.0997, 0.0996];
 export const UR5E_DH_A: readonly number[] = [0.0, -0.425, -0.3922, 0.0, 0.0, 0.0];
@@ -19,8 +23,14 @@ export const UR5E_DH_ALPHA: readonly number[] = [
 export const DEFAULT_TCP_OFFSET_M = 0.108;
 export const MIN_REACH_M = 0.2;
 export const MAX_REACH_M = 0.85;
-export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [...WHITE_TOWER];
-export const APPROACH_LIFT_OFFSET_M = 0.1;
+export const DEFAULT_SPINDLE_TOWER_COORDS: [number, number, number] = [
+  WHITE_TOWER[0],
+  WHITE_TOWER[1],
+  WHITE_TOWER[2] + PALLET_TRAY_HEIGHT_M - PALLET_POCKET_DEPTH_M,
+];
+export const APPROACH_LIFT_OFFSET_M = 0.08;
+/** D37/D38: the carried Gearwheel crosses above the seated Gearwheels' tops, with clearance. */
+export const TRANSFER_HEIGHT_M = PALLET_TRAY_HEIGHT_M - PALLET_POCKET_DEPTH_M + 0.02 + 0.04;
 
 export const HOME_JOINT_POSITIONS: readonly number[] = [0.0, -1.5708, 0.0, -1.5708, 0.0, 0.0];
 
@@ -332,7 +342,8 @@ export class PickAndPlaceTrajectoryGenerator {
     this.solver.checkReachability(xPick, yPick, zPick);
     this.solver.checkReachability(xPick, yPick, zPick + APPROACH_LIFT_OFFSET_M);
     this.solver.checkReachability(xDrop, yDrop, zDrop);
-    this.solver.checkReachability(xDrop, yDrop, zDrop + APPROACH_LIFT_OFFSET_M);
+    const zTravel = Math.max(TRANSFER_HEIGHT_M, zPick + APPROACH_LIFT_OFFSET_M, zDrop);
+    this.solver.checkReachability(xDrop, yDrop, zTravel);
 
     // Workcell (base_link) to UR5e DH frame (base_link_inertia) transformation:
     // ur5e.urdf defines base_link_inertia rotated by Math.PI (180 deg) around Z.
@@ -358,7 +369,7 @@ export class PickAndPlaceTrajectoryGenerator {
     const qLift = unwrapJointAngles(qLiftRaw, qGrasp);
 
     // 5. Tower approach
-    const posAppDrop: [number, number, number] = [xDrop, yDrop, zDrop + APPROACH_LIFT_OFFSET_M];
+    const posAppDrop: [number, number, number] = [xDrop, yDrop, zTravel];
     const qAppDropRaw = this.solver.solveIk(-posAppDrop[0], -posAppDrop[1], posAppDrop[2], qLift);
     const qAppDrop = unwrapJointAngles(qAppDropRaw, qLift);
 
@@ -371,7 +382,7 @@ export class PickAndPlaceTrajectoryGenerator {
     const qRelease = [...qDrop];
 
     // 8. Tower retreat
-    const posRetreat: [number, number, number] = [xDrop, yDrop, zDrop + APPROACH_LIFT_OFFSET_M];
+    const posRetreat: [number, number, number] = [xDrop, yDrop, zTravel];
     const qRetreatRaw = this.solver.solveIk(
       -posRetreat[0],
       -posRetreat[1],

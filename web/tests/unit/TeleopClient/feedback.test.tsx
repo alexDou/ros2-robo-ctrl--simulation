@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/preact';
 import { TeleopClient } from '@components/TeleopClient';
 import { RobotState } from '@contracts';
-import { SPINDLE_TOWERS } from '@components/RobotVisualizer/constants';
+import { PALLET_STATIONS } from '@components/RobotVisualizer/constants';
 
 // Mock WebSocket
 class MockWebSocket {
@@ -302,8 +302,8 @@ describe('TeleopClient Component', () => {
               processed: [
                 {
                   id: 'g1',
-                  x: SPINDLE_TOWERS.WHITE.x,
-                  y: SPINDLE_TOWERS.WHITE.y,
+                  x: PALLET_STATIONS.WHITE.x,
+                  y: PALLET_STATIONS.WHITE.y,
                   z: 0.0,
                   origin_x: 0.5,
                   origin_y: 0.1,
@@ -320,7 +320,7 @@ describe('TeleopClient Component', () => {
       await frame();
       expect(visualizer.isGearAttached()).toBe(false);
       expect(visualizer.getTowerGearCount()).toBe(1);
-      expect(visualizer.getTowerGears()[0].position.x).toBeCloseTo(SPINDLE_TOWERS.WHITE.x, 2);
+      expect(visualizer.getTowerGears()[0].position.x).toBeCloseTo(PALLET_STATIONS.WHITE.x, 2);
     });
   });
 });

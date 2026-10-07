@@ -22,11 +22,15 @@ describe('Unit 7.0: required color + intact on GearEntry (hand-sim-9kw2)', () =>
       contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0, color: 'RED', intact: true }),
     ).toThrow();
     expect(() => contracts.parseGearEntry({ id: 'g0', x: 0.1, y: 0.1, z: 0 })).toThrow();
-    expect(contracts.WHITE_TOWER).toEqual([-0.45, -0.26, 0.0]);
-    expect(contracts.GREEN_TOWER).toEqual([-0.45, -0.1, 0.0]);
-    expect(contracts.BLUE_TOWER).toEqual([-0.45, 0.06, 0.0]);
+    expect(contracts.WHITE_TOWER).toEqual([-0.415, -0.29, 0.0]);
+    expect(contracts.GREEN_TOWER).toEqual([-0.415, -0.04, 0.0]);
+    expect(contracts.BLUE_TOWER).toEqual([-0.415, 0.21, 0.0]);
     expect(contracts.SCRAP_BIN).toEqual([0.4, -0.75, -0.05]);
     expect(contracts.PALLET_CAPACITY).toBe(10);
+    expect([contracts.PALLET_POCKET_ROWS, contracts.PALLET_POCKET_COLS]).toEqual([5, 2]);
+    expect(contracts.PALLET_POCKET_PITCH_M).toBe(0.105);
+    expect(contracts.PALLET_TRAY_HEIGHT_M).toBe(0.03);
+    expect(contracts.PALLET_POCKET_DEPTH_M).toBe(0.01);
     expect(contracts.BELT_X_RANGE).toEqual([0.25, 0.55]);
     expect(contracts.BELT_Y_RANGE).toEqual([-0.66, 0.95]);
     expect(contracts.PICK_ZONE_Y_RANGE).toEqual([-0.51, 0.51]);

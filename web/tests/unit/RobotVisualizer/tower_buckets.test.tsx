@@ -3,7 +3,7 @@ import { render, act } from '@testing-library/preact';
 import * as THREE from 'three';
 import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
-import { SPINDLE_TOWERS } from '@components/RobotVisualizer/constants';
+import { PALLET_STATIONS } from '@components/RobotVisualizer/constants';
 
 function snapBuffer(spawned: any[] = [], inProgress: any[] = [], processed: any[] = []) {
   return {
@@ -90,48 +90,6 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       fakeRobot.add(fakeTool0Link);
 
       vi.spyOn(robotLoader, 'loadRobotModel').mockResolvedValue(fakeRobot as any);
-    });
-
-    it('mounts SpindleTower 3D fixture at the WHITE tower coords with base flange and 0.20m spindle pin', async () => {
-      let resolveLoaded: () => void;
-      const loadedPromise = new Promise<void>((res) => {
-        resolveLoaded = res;
-      });
-
-      render(
-        <RobotVisualizer
-          rendererFactory={() => mockRenderer}
-          controlsFactory={() => mockControls}
-          onRobotLoaded={() => resolveLoaded()}
-        />,
-      );
-
-      await act(async () => {
-        await loadedPromise;
-      });
-
-      const visualizer = (window as any).__robot_visualizer;
-      const towerMesh = visualizer.getSpindleTowerMesh();
-      expect(towerMesh).toBeDefined();
-      expect(towerMesh).not.toBeNull();
-      expect(towerMesh.name).toBe('spindle-tower');
-      expect(towerMesh.position.x).toBeCloseTo(SPINDLE_TOWERS.WHITE.x, 2);
-      expect(towerMesh.position.y).toBeCloseTo(SPINDLE_TOWERS.WHITE.y, 2);
-      expect(towerMesh.position.z).toBeCloseTo(0.0, 2);
-
-      const baseFlange = visualizer.getSpindleBaseFlangeMesh();
-      expect(baseFlange).toBeDefined();
-      expect(baseFlange).not.toBeNull();
-      expect(baseFlange.name).toBe('spindle-base-flange');
-
-      const pin = visualizer.getSpindlePinMesh();
-      expect(pin).toBeDefined();
-      expect(pin).not.toBeNull();
-      expect(pin.name).toBe('spindle-pin');
-      // Verify spindle pin height is 0.20m (parameters.height or geometry parameters)
-      const pinGeom = pin.geometry as THREE.CylinderGeometry;
-      expect(pinGeom.parameters.height).toBeCloseTo(0.2, 2);
-      expect(pinGeom.parameters.radiusTop).toBeCloseTo(0.007, 3);
     });
 
     it('renders spawned entry as table mesh at entry xyz verbatim', async () => {
@@ -343,7 +301,7 @@ describe('Unit 3.2: RobotVisualizer Component', () => {
       const telemetryBufferRef = snapBuffer(
         [{ id: 'g-table', x: 0.5, y: 0.0, z: 0.0, color: 'WHITE', intact: true }],
         [],
-        [{ id: 'g-tower', ...SPINDLE_TOWERS.WHITE, color: 'WHITE', intact: true }],
+        [{ id: 'g-tower', ...PALLET_STATIONS.WHITE, color: 'WHITE', intact: true }],
       );
 
       let resolveLoaded: () => void;

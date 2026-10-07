@@ -11,6 +11,7 @@ from robot_control_interfaces.srv import (
     MarkGrasped,
     SpawnObject,
 )
+from workcell_manager.pallet import pocket_coords
 from workcell_manager.workcell_node import (
     WorkcellNode,
 )
@@ -23,6 +24,11 @@ from domain import (
     STACK_STEP_M,
     WHITE_TOWER,
 )
+
+# D38: the first Gearwheel of each colour goes in pocket 0 of its Pallet's nest tray.
+WHITE_P0 = pocket_coords(WHITE_TOWER, 0)
+GREEN_P0 = pocket_coords(GREEN_TOWER, 0)
+BLUE_P0 = pocket_coords(BLUE_TOWER, 0)
 
 
 @pytest.fixture(autouse=True)
@@ -68,9 +74,9 @@ def test_sound_green_routes_to_green_tower():
         slot = _reserve(node, color="GREEN", intact=True)
         assert slot.slot_index == 0
         assert slot.overflow_occurred is False
-        assert pytest.approx(slot.drop_coords.x) == GREEN_TOWER[0]
-        assert pytest.approx(slot.drop_coords.y) == GREEN_TOWER[1]
-        assert pytest.approx(slot.drop_coords.z) == GREEN_TOWER[2]
+        assert pytest.approx(slot.drop_coords.x) == GREEN_P0[0]
+        assert pytest.approx(slot.drop_coords.y) == GREEN_P0[1]
+        assert pytest.approx(slot.drop_coords.z) == GREEN_P0[2]
         res = _cycle(node, color="GREEN", intact=True)
         assert res.success is True
         assert res.slot_index == 0
@@ -78,12 +84,12 @@ def test_sound_green_routes_to_green_tower():
         entry = node.processed[0]
         assert entry["color"] == "GREEN"
         assert entry["intact"] is True
-        assert pytest.approx(entry["x"]) == GREEN_TOWER[0]
-        assert pytest.approx(entry["y"]) == GREEN_TOWER[1]
-        assert pytest.approx(entry["z"]) == GREEN_TOWER[2]
+        assert pytest.approx(entry["x"]) == GREEN_P0[0]
+        assert pytest.approx(entry["y"]) == GREEN_P0[1]
+        assert pytest.approx(entry["z"]) == GREEN_P0[2]
         slot2 = _reserve(node, color="GREEN", intact=True)
         assert slot2.slot_index == 1
-        assert pytest.approx(slot2.drop_coords.z) == STACK_STEP_M
+        assert pytest.approx(slot2.drop_coords.y) == pocket_coords(GREEN_TOWER, 1)[1]
     finally:
         node.destroy_node()
 
@@ -92,14 +98,14 @@ def test_sound_blue_routes_to_blue_tower():
     node = WorkcellNode()
     try:
         slot = _reserve(node, color="BLUE", intact=True)
-        assert pytest.approx(slot.drop_coords.x) == BLUE_TOWER[0]
-        assert pytest.approx(slot.drop_coords.y) == BLUE_TOWER[1]
+        assert pytest.approx(slot.drop_coords.x) == BLUE_P0[0]
+        assert pytest.approx(slot.drop_coords.y) == BLUE_P0[1]
         res = _cycle(node, color="BLUE", intact=True)
         assert res.success is True
         entry = node.processed[0]
         assert entry["color"] == "BLUE"
-        assert pytest.approx(entry["x"]) == BLUE_TOWER[0]
-        assert pytest.approx(entry["y"]) == BLUE_TOWER[1]
+        assert pytest.approx(entry["x"]) == BLUE_P0[0]
+        assert pytest.approx(entry["y"]) == BLUE_P0[1]
     finally:
         node.destroy_node()
 
@@ -110,16 +116,16 @@ def test_sound_white_byte_identical_to_today():
         slot = _reserve(node)
         assert slot.slot_index == 0
         assert slot.overflow_occurred is False
-        assert pytest.approx(slot.drop_coords.x) == WHITE_TOWER[0]
-        assert pytest.approx(slot.drop_coords.y) == WHITE_TOWER[1]
-        assert pytest.approx(slot.drop_coords.z) == WHITE_TOWER[2]
+        assert pytest.approx(slot.drop_coords.x) == WHITE_P0[0]
+        assert pytest.approx(slot.drop_coords.y) == WHITE_P0[1]
+        assert pytest.approx(slot.drop_coords.z) == WHITE_P0[2]
         res = _cycle(node, color="WHITE", intact=True)
         assert res.slot_index == 0
         assert res.overflow_occurred is False
         entry = node.processed[0]
         assert entry["color"] == "WHITE"
         assert entry["intact"] is True
-        assert pytest.approx(entry["x"]) == WHITE_TOWER[0]
+        assert pytest.approx(entry["x"]) == WHITE_P0[0]
     finally:
         node.destroy_node()
 
@@ -165,10 +171,11 @@ def test_towers_independent_slot_math():
         res = _cycle(node, color="GREEN", intact=True)
         assert res.slot_index == 0
         green = node.processed[-1]
-        assert pytest.approx(green["z"]) == GREEN_TOWER[2]
+        assert pytest.approx(green["z"]) == GREEN_P0[2]
         white_slot = _reserve(node, color="WHITE", intact=True)
         assert white_slot.slot_index == 3
-        assert pytest.approx(white_slot.drop_coords.z) == 3 * STACK_STEP_M
+        assert pytest.approx(white_slot.drop_coords.x) == pocket_coords(WHITE_TOWER, 3)[0]
+        assert pytest.approx(white_slot.drop_coords.y) == pocket_coords(WHITE_TOWER, 3)[1]
         green_slot = _reserve(node, color="GREEN", intact=True)
         assert green_slot.slot_index == 1
         blue_slot = _reserve(node, color="BLUE", intact=True)
@@ -181,17 +188,17 @@ def test_default_reservation_follows_active_entry():
     node = WorkcellNode()
     try:
         slot = _reserve(node)
-        assert pytest.approx(slot.drop_coords.x) == WHITE_TOWER[0]
+        assert pytest.approx(slot.drop_coords.x) == WHITE_P0[0]
         _spawn(node, color="GREEN", intact=True)
         slot = _reserve(node)
-        assert pytest.approx(slot.drop_coords.x) == GREEN_TOWER[0]
-        assert pytest.approx(slot.drop_coords.y) == GREEN_TOWER[1]
+        assert pytest.approx(slot.drop_coords.x) == GREEN_P0[0]
+        assert pytest.approx(slot.drop_coords.y) == GREEN_P0[1]
         node.handle_mark_grasped(MarkGrasped.Request(), MarkGrasped.Response())
         node.handle_commit_drop(CommitDrop.Request(), CommitDrop.Response())
         _spawn(node, color="BLUE", intact=True)
         slot = _reserve(node)
-        assert pytest.approx(slot.drop_coords.x) == BLUE_TOWER[0]
-        assert pytest.approx(slot.drop_coords.y) == BLUE_TOWER[1]
+        assert pytest.approx(slot.drop_coords.x) == BLUE_P0[0]
+        assert pytest.approx(slot.drop_coords.y) == BLUE_P0[1]
         assert slot.overflow_occurred is False
     finally:
         node.destroy_node()

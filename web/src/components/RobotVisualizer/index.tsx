@@ -4,8 +4,7 @@ export type {
   WorkcellSnapshotView,
 } from '@/components/RobotVisualizer/types';
 export {
-  SPINDLE_TOWER_COORDS,
-  SPINDLE_TOWERS,
+  PALLET_STATIONS,
   SCRAP_BIN_COORDS,
   PALLET_CAPACITY,
   GRASP_RIDE_OFFSET_Z_M,

@@ -41,7 +41,7 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
 6. As an operator, I want each Batch to hold a naturally varying number of Gearwheels, so that the cell behaves like a real feeder rather than a scripted count.
 7. As an operator, I want Gearwheels placed upstream of the PickZone at belt stop to wait for the next Batch, so that nothing out of reach is dispatched.
 8. As an operator, I want the arm to sort the Batch one Gearwheel at a time in belt order, so that I can follow each SortCycle.
-9. As an operator, I want intact Gearwheels placed on the Pallet of their colour, so that sorting is visible and correct.
+9. As an operator, I want intact Gearwheels placed in the next free pocket of their colour's nest-tray Pallet, so that sorting is visible and correct (D38).
 10. As an operator, I want defective Gearwheels to be Rejected as soon as they are placed, never stop the belt and get no arm motion, so that the arm only handles good parts (D35).
 11. As an operator, I want Rejected Gearwheels to fall into the ScrapBin whenever a run carries them off the belt end, on the first run as on any later one, so that disposal is physical and visible (D35).
 12. As an operator, I want the ScrapBin count to rise only when a Gearwheel actually falls in, so that the count matches what I see.

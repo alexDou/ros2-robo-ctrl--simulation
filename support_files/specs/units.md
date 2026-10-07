@@ -262,3 +262,20 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
   - FlexFeeder, PalletLanes + Pallets, ScrapBin slide / tip, display panel.
 - **Unit 9.5: Integration**:
   - Seeded mock-gateway Cucumber E2E (web only) + ROS launch test of the full SIM graph with `virtual_plc`.
+
+---
+
+## Unit 10: Edge-Standing Slot Rack (idea, not yet specified)
+
+* **Objective**: Replace the D38 flat nest tray with a **slot rack Pallet**: one cell per Gearwheel, and each Gearwheel stands **on its rim** in its cell. It is a SpindleTower without the rod, turned on its side: the stack runs horizontally along the rack instead of up a pin. Proposed by the user on 2026-10-07 while D38 was being finished. Unit 9 keeps the flat tray.
+* **Why**: it is denser (10 cells at about 25–30 mm pitch fit in about 0.3 m along the PalletLane, compared with 2 × 5 × 0.105 m) and frees lane width and reach. The Gearwheel's position stays fixed for a downstream picker, and gears don't touch face to face.
+* **What changes compared with D38**:
+  - **Tool re-orientation**: today the tool always points down: it picks flat from the belt and places flat. To stand a Gearwheel on its rim, the wrist turns about 90° between the lift and the place. The planner's fixed tool-down orientation, the locked IK branch, the reach scans and the branch-stability tests all need to be redone for the tilted tool.
+  - **Placing clearance**: the Gearwheel goes in edge-first, so the side clearance is slot width minus gear thickness, not the 5.5 mm radial bore clearance. The joint-space drift during the drop (2.9 mm measured for D38) must stay inside that gap, or the final approach needs Cartesian (straight-line) interpolation.
+  - **Reusable**: schema constants (renamed, with new values), WorkcellNode slot filling (a 1-D index instead of 2-D), the tray-strike regression approach, and the web pallet asset and pocket mapping.
+* **Open questions (settle in a 10.0 decision log before any code)**:
+  1. Gearwheel orientation in the cell: face toward the arm (rack across the lane, large wrist roll) or face along the lane (X, rack along the lane)?
+  2. Gripper: can the current grasp hold a Gearwheel tilted 90° without slipping, or is a different tool or grasp point needed (for example a rim grasp)?
+  3. Fill order: nearest cell first, as in D38, or another order that keeps the tool clear of Gearwheels already standing?
+  4. Does the place happen at a reduced speed or with a guided final approach (a chamfered slot entry)?
+* **Staging**: 10.0 contracts and constants + decision log → 10.1 planner (tilted tool, IK branch, drift into the slot) → 10.2 WorkcellNode slots → 10.3 web rack asset → 10.4 integration (launch test + E2E).

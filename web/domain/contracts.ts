@@ -269,14 +269,14 @@ export const VALID_GEAR_COLORS = [
 /** Canonical default robot identifier across all services */
 export const DEFAULT_ROBOT_ID = 'arm-ur5';
 
-/** White spindle tower base coordinates in meters (REP-103 robot base frame) */
-export const WHITE_TOWER = [-0.45, -0.26, 0.0] as const;
+/** White PalletStation: centre of the Pallet's nest tray at its base, in meters (REP-103 robot base frame; D38) */
+export const WHITE_TOWER = [-0.415, -0.29, 0.0] as const;
 
-/** Green spindle tower base coordinates in meters (REP-103 robot base frame) */
-export const GREEN_TOWER = [-0.45, -0.1, 0.0] as const;
+/** Green PalletStation: centre of the Pallet's nest tray at its base, in meters (REP-103 robot base frame; D38) */
+export const GREEN_TOWER = [-0.415, -0.04, 0.0] as const;
 
-/** Blue spindle tower base coordinates in meters (REP-103 robot base frame) */
-export const BLUE_TOWER = [-0.45, 0.06, 0.0] as const;
+/** Blue PalletStation: centre of the Pallet's nest tray at its base, in meters (REP-103 robot base frame; D38) */
+export const BLUE_TOWER = [-0.415, 0.21, 0.0] as const;
 
 /** Scrap bin coordinates in meters (REP-103 robot base frame) */
 export const SCRAP_BIN = [0.4, -0.75, -0.05] as const;
@@ -296,10 +296,25 @@ export const BELT_SPEED_M_S = 0.15 as const;
 /** Maximum gears on the belt at once */
 export const BELT_CAPACITY = 10 as const;
 
-/** Maximum gears per spindle tower */
+/** Gearwheels per Pallet: one per nest-tray pocket (PALLET_POCKET_ROWS x PALLET_POCKET_COLS) */
 export const PALLET_CAPACITY = 10 as const;
 
-/** Vertical stacking step per gear in meters */
+/** Nest-tray pocket rows along the PalletLane (X); row 0 is nearest the arm (D38) */
+export const PALLET_POCKET_ROWS = 5 as const;
+
+/** Nest-tray pockets per row, across the PalletLane (Y) */
+export const PALLET_POCKET_COLS = 2 as const;
+
+/** Centre-to-centre pocket spacing in meters, both axes (a Gearwheel is 0.092 m across its teeth) */
+export const PALLET_POCKET_PITCH_M = 0.105 as const;
+
+/** Nest-tray top above the PalletStation base in meters */
+export const PALLET_TRAY_HEIGHT_M = 0.03 as const;
+
+/** Nest-pocket depth in meters (half a Gearwheel); a Gearwheel is dropped with its base on the pocket floor */
+export const PALLET_POCKET_DEPTH_M = 0.01 as const;
+
+/** Vertical step per Gearwheel in the ScrapBin pile, in meters */
 export const STACK_STEP_M = 0.02 as const;
 
 /** Scrapped Gearwheels at which a belt stop starts the BinExchange */

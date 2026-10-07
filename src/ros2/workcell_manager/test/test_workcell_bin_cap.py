@@ -15,6 +15,7 @@ from robot_control_interfaces.srv import (
     ScrapRejected,
     SpawnObject,
 )
+from workcell_manager.pallet import pocket_coords
 from workcell_manager.workcell_node import WorkcellNode
 
 from domain import (
@@ -23,6 +24,9 @@ from domain import (
     STACK_STEP_M,
     WHITE_TOWER,
 )
+
+# D38: the first Gearwheel of each colour goes in pocket 0 of its Pallet's nest tray.
+WHITE_P0 = pocket_coords(WHITE_TOWER, 0)
 
 
 @pytest.fixture(autouse=True)
@@ -144,7 +148,7 @@ def test_clear_wipes_towers_plus_bin_and_restarts_pile():
         assert len(_bin_entries(node)) == 1
         tower_slot = _reserve(node, color="WHITE", intact=True)
         assert tower_slot.slot_index == 0
-        assert pytest.approx(tower_slot.drop_coords.x) == WHITE_TOWER[0]
+        assert pytest.approx(tower_slot.drop_coords.x) == WHITE_P0[0]
     finally:
         node.destroy_node()
 

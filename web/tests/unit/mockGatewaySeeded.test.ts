@@ -8,6 +8,13 @@ import {
   SCRAP_BIN,
   STACK_STEP_M,
 } from '../../domain/contracts';
+import { pocketCoords } from '../../src/utils/pallet';
+
+/** Seeded Gearwheel position in pocket k of a Pallet (D38). */
+function pocket(station: readonly number[], k: number): { x: number; y: number; z: number } {
+  const [x, y, z] = pocketCoords(station, k);
+  return { x, y, z };
+}
 
 function wsUrl(gateway: MockGateway): string {
   return `ws://127.0.0.1:${gateway.port}/ws/teleop/robot/${DEFAULT_ROBOT_ID}`;
@@ -145,8 +152,9 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
           gateway.getWorkcellSnapshot().processed.length === 1,
       );
       const e = gateway.getWorkcellSnapshot().processed[0];
-      expect(e.x).toBeCloseTo(GREEN_TOWER[0], 4);
-      expect(e.y).toBeCloseTo(GREEN_TOWER[1], 4);
+      const [px, py] = pocketCoords(GREEN_TOWER, 0);
+      expect(e.x).toBeCloseTo(px, 4);
+      expect(e.y).toBeCloseTo(py, 4);
       expect(e.color).toBe('GREEN');
       expect(labels).toContain('GREEN');
     } finally {
@@ -179,9 +187,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
     gateway.setMotionSpeed(10); // the ~6 s exchange takes ~0.6 s
     const tower = Array.from({ length: 9 }, (_, k) => ({
       id: `white-${k}`,
-      x: WHITE_TOWER[0],
-      y: WHITE_TOWER[1],
-      z: k * STACK_STEP_M,
+      ...pocket(WHITE_TOWER, k),
       color: 'WHITE' as const,
       intact: true as const,
       origin_x: 0.5,
@@ -190,9 +196,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
     }));
     const sibling = {
       id: 'green-0',
-      x: GREEN_TOWER[0],
-      y: GREEN_TOWER[1],
-      z: 0,
+      ...pocket(GREEN_TOWER, 0),
       color: 'GREEN' as const,
       intact: true as const,
       origin_x: 0.5,
@@ -263,9 +267,7 @@ describe('Unit 7.4: MockGateway seeded hermetic classification', () => {
   it('bin never recycles itself: the 101st defective piles on top, towers untouched', async () => {
     const tower = {
       id: 'white-keep',
-      x: WHITE_TOWER[0],
-      y: WHITE_TOWER[1],
-      z: 0,
+      ...pocket(WHITE_TOWER, 0),
       color: 'WHITE' as const,
       intact: true as const,
       origin_x: 0.5,

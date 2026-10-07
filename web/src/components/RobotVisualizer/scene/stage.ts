@@ -4,16 +4,14 @@ import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/p
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
 import type { BeltGearsAssets } from '@/components/RobotVisualizer/assets/beltgears';
 import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
-import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
-import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
+import type { PalletTrayAssets } from '@/components/RobotVisualizer/assets/pallettray';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import { createConveyor } from '@/components/RobotVisualizer/assets/conveyor';
 import { createBeltGears } from '@/components/RobotVisualizer/assets/beltgears';
 import { createHopper } from '@/components/RobotVisualizer/assets/hopper';
-import { createRearStand } from '@/components/RobotVisualizer/assets/rearstand';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
-import { createSpindleTower } from '@/components/RobotVisualizer/assets/tower';
+import { createPalletTray } from '@/components/RobotVisualizer/assets/pallettray';
 import {
   createPalletLanes,
   type PalletLanesAssets,
@@ -29,13 +27,11 @@ export interface StageAssets {
   cameraTarget: THREE.Vector3;
   robotGroup: THREE.Group;
   pedestalAssets: PedestalProceduralAssets;
-  rearStandAssets: RearStandProceduralAssets;
   conveyorAssets: ConveyorProceduralAssets;
   hopperAssets: HopperProceduralAssets;
   beltGearsAssets: BeltGearsAssets;
   palletLanesAssets: PalletLanesAssets;
-  spindleTowerAssets: SpindleTowerProceduralAssets;
-  spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
+  palletTrayAssets: Record<GearColor, PalletTrayAssets>;
   scrapBinAssets: ScrapBinProceduralAssets;
 }
 
@@ -77,10 +73,6 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const pedestalAssets = createRobotPedestal();
   robotGroup.add(pedestalAssets.group);
 
-  // Rear stand carrying the towers (top flush at Z = 0)
-  const rearStandAssets = createRearStand();
-  robotGroup.add(rearStandAssets.group);
-
   // Static conveyor in front of the arm (belt top at Z = 0)
   const conveyorAssets = createConveyor();
   robotGroup.add(conveyorAssets.group);
@@ -97,16 +89,13 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const palletLanesAssets = createPalletLanes();
   robotGroup.add(palletLanesAssets.group);
 
-  // Mount three color SpindleTowers at canonical WHITE/GREEN/BLUE coords.
-  // WHITE keeps legacy position so single-tower scene renders identically.
-  const whiteTower = createSpindleTower('WHITE');
-  const greenTower = createSpindleTower('GREEN');
-  const blueTower = createSpindleTower('BLUE');
-  robotGroup.add(whiteTower.group);
-  robotGroup.add(greenTower.group);
-  robotGroup.add(blueTower.group);
-  const spindleTowerAssets = whiteTower;
-  const spindleTowerAssetsByColor = { WHITE: whiteTower, GREEN: greenTower, BLUE: blueTower };
+  // A nest-tray Pallet on each PalletStation, riding its lane (D38)
+  const palletTrayAssets = {
+    WHITE: createPalletTray('WHITE'),
+    GREEN: createPalletTray('GREEN'),
+    BLUE: createPalletTray('BLUE'),
+  };
+  for (const tray of Object.values(palletTrayAssets)) robotGroup.add(tray.group);
 
   // ScrapBin fixture at canonical SCRAP_BIN coords (open box/chute).
   const scrapBinAssets = createScrapBin();
@@ -122,13 +111,11 @@ export function createStage(container: HTMLDivElement): StageAssets {
     cameraTarget,
     robotGroup,
     pedestalAssets,
-    rearStandAssets,
     conveyorAssets,
     hopperAssets,
     beltGearsAssets,
     palletLanesAssets,
-    spindleTowerAssets,
-    spindleTowerAssetsByColor,
+    palletTrayAssets,
     scrapBinAssets,
   };
 }

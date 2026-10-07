@@ -20,18 +20,18 @@
     },
     "WHITE_TOWER": {
       "type": "array",
-      "value": [-0.45, -0.26, 0.0],
-      "description": "White spindle tower base coordinates in meters (REP-103 robot base frame)"
+      "value": [-0.415, -0.29, 0.0],
+      "description": "White PalletStation: centre of the Pallet's nest tray at its base, in meters (REP-103 robot base frame; D38)"
     },
     "GREEN_TOWER": {
       "type": "array",
-      "value": [-0.45, -0.10, 0.0],
-      "description": "Green spindle tower base coordinates in meters (REP-103 robot base frame)"
+      "value": [-0.415, -0.04, 0.0],
+      "description": "Green PalletStation: centre of the Pallet's nest tray at its base, in meters (REP-103 robot base frame; D38)"
     },
     "BLUE_TOWER": {
       "type": "array",
-      "value": [-0.45, 0.06, 0.0],
-      "description": "Blue spindle tower base coordinates in meters (REP-103 robot base frame)"
+      "value": [-0.415, 0.21, 0.0],
+      "description": "Blue PalletStation: centre of the Pallet's nest tray at its base, in meters (REP-103 robot base frame; D38)"
     },
     "SCRAP_BIN": {
       "type": "array",
@@ -66,12 +66,37 @@
     "PALLET_CAPACITY": {
       "type": "integer",
       "value": 10,
-      "description": "Maximum gears per spindle tower"
+      "description": "Gearwheels per Pallet: one per nest-tray pocket (PALLET_POCKET_ROWS x PALLET_POCKET_COLS)"
+    },
+    "PALLET_POCKET_ROWS": {
+      "type": "integer",
+      "value": 5,
+      "description": "Nest-tray pocket rows along the PalletLane (X); row 0 is nearest the arm (D38)"
+    },
+    "PALLET_POCKET_COLS": {
+      "type": "integer",
+      "value": 2,
+      "description": "Nest-tray pockets per row, across the PalletLane (Y)"
+    },
+    "PALLET_POCKET_PITCH_M": {
+      "type": "number",
+      "value": 0.105,
+      "description": "Centre-to-centre pocket spacing in meters, both axes (a Gearwheel is 0.092 m across its teeth)"
+    },
+    "PALLET_TRAY_HEIGHT_M": {
+      "type": "number",
+      "value": 0.03,
+      "description": "Nest-tray top above the PalletStation base in meters"
+    },
+    "PALLET_POCKET_DEPTH_M": {
+      "type": "number",
+      "value": 0.01,
+      "description": "Nest-pocket depth in meters (half a Gearwheel); a Gearwheel is dropped with its base on the pocket floor"
     },
     "STACK_STEP_M": {
       "type": "number",
       "value": 0.02,
-      "description": "Vertical stacking step per gear in meters"
+      "description": "Vertical step per Gearwheel in the ScrapBin pile, in meters"
     },
     "BIN_EXCHANGE_THRESHOLD": {
       "type": "integer",

@@ -16,15 +16,18 @@ from robot_control_interfaces.srv import (
     SpawnObject,
 )
 from std_msgs.msg import Int32, String
+from workcell_manager.pallet import pocket_coords
 from workcell_manager.workcell_node import (
     WorkcellNode,
 )
 
 from domain import (
     PALLET_CAPACITY,
-    STACK_STEP_M,
     WHITE_TOWER,
 )
+
+# D38: the first Gearwheel of each colour goes in pocket 0 of its Pallet's nest tray.
+WHITE_P0 = pocket_coords(WHITE_TOWER, 0)
 
 
 @pytest.fixture(autouse=True)
@@ -126,9 +129,9 @@ def test_commit_drop_moves_with_drop_xyz_and_origin():
         assert len(node.processed) == 1
         entry = node.processed[0]
         assert entry["id"] == out.gear_id
-        assert pytest.approx(entry["x"]) == WHITE_TOWER[0]
-        assert pytest.approx(entry["y"]) == WHITE_TOWER[1]
-        assert pytest.approx(entry["z"]) == WHITE_TOWER[2]
+        assert pytest.approx(entry["x"]) == WHITE_P0[0]
+        assert pytest.approx(entry["y"]) == WHITE_P0[1]
+        assert pytest.approx(entry["z"]) == WHITE_P0[2]
         assert (entry["origin_x"], entry["origin_y"], entry["origin_z"]) == (0.45, 0.10, 0.0)
         assert pytest.approx(res.drop_coords.z) == entry["z"]
         assert node.inventory == 1
@@ -165,7 +168,7 @@ def test_get_drop_slot_pure_reservation():
             GetDropSlot.Request(color="", intact=True), GetDropSlot.Response()
         )
         assert out.slot_index == 1
-        assert pytest.approx(out.drop_coords.z) == STACK_STEP_M
+        assert pytest.approx(out.drop_coords.y) == pocket_coords(WHITE_TOWER, 1)[1]
         assert node.inventory == 1
     finally:
         node.destroy_node()
