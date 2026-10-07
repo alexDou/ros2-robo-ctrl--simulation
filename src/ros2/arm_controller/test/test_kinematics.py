@@ -7,12 +7,17 @@ import pytest
 from arm_controller.kinematics import (
     CANONICAL_UR5E_JOINTS,
     DEFAULT_TCP_OFFSET_M,
+    GEARWHEEL_HEIGHT_M,
     HOME_JOINT_POSITIONS,
+    RELEASE_HEIGHT_M,
+    SPINDLE_PIN_HEIGHT_M,
+    TRANSFER_HEIGHT_M,
     ActionPhase,
     AnalyticalInverseKinematics,
     JointLimitError,
     OutOfReachError,
     PickAndPlaceTrajectoryGenerator,
+    UR5eKinematics,
     unwrap_joint_angles_within_limits,
 )
 
@@ -171,7 +176,11 @@ def test_10_step_waypoint_sequence_and_action_phases():
     urdf_drop_xyz = (-T_dh_drop[0][3], -T_dh_drop[1][3], T_dh_drop[2][3])
     assert abs(urdf_drop_xyz[0] - drop[0]) < 1e-3
     assert abs(urdf_drop_xyz[1] - drop[1]) < 1e-3
-    assert abs(urdf_drop_xyz[2] - drop[2]) < 1e-3
+    # D37: released threaded on the pin tip, the Gearwheel slides down to its slot
+    assert abs(urdf_drop_xyz[2] - RELEASE_HEIGHT_M) < 1e-3
+    # lift, transfer and retreat cross at the travel height
+    for step in (steps[3], steps[4], steps[7]):
+        assert step.cartesian_position[2] == pytest.approx(TRANSFER_HEIGHT_M)
 
 
 # --- Multi-cycle joint wind-up & branch stability (Unit 7 outer-tower regression) ---
@@ -343,3 +352,68 @@ def test_unwrap_within_limits_raises_when_no_turn_fits():
     narrow = [(-0.5, 0.5)] * 6
     with pytest.raises(JointLimitError):
         unwrap_joint_angles_within_limits([0.0, 0.0, 0.0, 2.0, 0.0, 0.0], [0.0] * 6, narrow)
+
+
+# --- D37: the arm never strikes a SpindleTower pin ---
+
+_PIN_RADIUS_M = 0.007
+_GEAR_RADIUS_M = 0.046  # teeth included
+_LINK_RADIUS_M = 0.045  # UR5e wrist housings
+_TOOL_RADIUS_M = 0.025  # DexterousPalm, hanging straight down to the TCP
+_SAMPLES_PER_SEGMENT = 40
+_THREAD_TOLERANCE_M = 0.002  # Gearwheel bore play around the pin
+
+
+def _pins_struck(solver: UR5eKinematics, q: list[float], carrying: bool) -> set[str]:
+    """Pins that the wrist links, the tool or a carried Gearwheel overlap at posture `q`.
+
+    A carried Gearwheel concentric with a pin is threaded on it, not striking it."""
+    # DH base frame -> base_link (REP-103): (x, y) -> (-x, -y)
+    points = [(-x, -y, z) for x, y, z in solver.frame_origins(q)]
+    wrist, tool = points[2:6], points[5:7]  # wrist_1 .. flange, flange .. TCP
+    volumes = []  # (a, b, radius, bottom drop below the axis)
+    volumes += [
+        (a, b, _LINK_RADIUS_M, _LINK_RADIUS_M) for a, b in zip(wrist, wrist[1:], strict=False)
+    ]
+    volumes.append((tool[0], tool[1], _TOOL_RADIUS_M, 0.0))
+    tcp = tool[1]
+    struck = set()
+    for name, (px, py) in _TOWERS.items():
+        threaded = math.hypot(tcp[0] - px, tcp[1] - py) < _THREAD_TOLERANCE_M
+        gear = [(tcp, tcp, _GEAR_RADIUS_M, GEARWHEEL_HEIGHT_M)] if carrying and not threaded else []
+        for a, b, radius, below in volumes + gear:
+            for k in range(11):
+                x, y, z = (a[i] + (b[i] - a[i]) * k / 10 for i in range(3))
+                if (
+                    z - below < SPINDLE_PIN_HEIGHT_M
+                    and math.hypot(x - px, y - py) < radius + _PIN_RADIUS_M
+                ):
+                    struck.add(name)
+    return struck
+
+
+@pytest.mark.parametrize("tower", ["WHITE", "GREEN", "BLUE"])
+@pytest.mark.parametrize("slot", [0, 4, 9])
+def test_transfer_never_strikes_a_pin(tower, slot):
+    """D37: from HOME through every segment back to HOME, no link, tool or carried Gearwheel
+    enters a pin's space, its own pin included (the Gearwheel is released on the pin tip)."""
+    gen = PickAndPlaceTrajectoryGenerator()
+    tx, ty = _TOWERS[tower]
+    picks = [(x, y, 0.0) for x in (0.32, 0.40, 0.48) for y in (-0.45, -0.2, 0.0, 0.2, 0.45)]
+    for pick in picks:
+        steps = gen.generate_trajectory(
+            pick_coords=pick,
+            drop_coords=(tx, ty, slot * STACK_STEP_M),
+            current_joints=list(HOME_JOINT_POSITIONS),
+        )
+        prev = list(HOME_JOINT_POSITIONS)
+        for step in steps:
+            carrying = step.is_grasped or step.name == "release"
+            for i in range(_SAMPLES_PER_SEGMENT + 1):
+                f = i / _SAMPLES_PER_SEGMENT
+                q = [a + (b - a) * f for a, b in zip(prev, step.joint_positions, strict=True)]
+                struck = _pins_struck(gen.solver, q, carrying)
+                assert not struck, (
+                    f"{tower} slot {slot} pick {pick}: '{step.name}' strikes {sorted(struck)}"
+                )
+            prev = step.joint_positions

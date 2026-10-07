@@ -17,6 +17,8 @@ import pytest
 from arm_controller.kinematics import (
     DEFAULT_SPINDLE_TOWER_COORDS,
     DEFAULT_TCP_OFFSET_M,
+    RELEASE_HEIGHT_M,
+    TRANSFER_HEIGHT_M,
     OutOfReachError,
     PickAndPlaceTrajectoryGenerator,
     UR5eKinematics,
@@ -253,29 +255,29 @@ class TestPickAndPlaceTrajectoryGenerator:
         assert steps[2].pause_duration_s == 0.2
         assert steps[2].joint_positions == steps[1].joint_positions
 
-        # 4. lift: z_pick + 0.10m, is_grasped=True
-        assert abs(steps[3].cartesian_position[2] - (pick[2] + 0.10)) < 1e-4
+        # 4. lift: straight up to the travel height above every pin (D37), is_grasped=True
+        assert abs(steps[3].cartesian_position[2] - TRANSFER_HEIGHT_M) < 1e-4
         assert steps[3].is_grasped
         assert steps[3].pause_duration_s == 0.0
 
-        # 5. tower_approach: z_drop + 0.10m, is_grasped=True
-        assert abs(steps[4].cartesian_position[2] - (drop[2] + 0.10)) < 1e-4
+        # 5. tower_approach: travel height, is_grasped=True
+        assert abs(steps[4].cartesian_position[2] - TRANSFER_HEIGHT_M) < 1e-4
         assert steps[4].is_grasped
         assert steps[4].pause_duration_s == 0.0
 
-        # 6. tower_drop: z_drop, is_grasped=True
-        assert abs(steps[5].cartesian_position[2] - drop[2]) < 1e-4
+        # 6. tower_drop: threaded on the pin tip, is_grasped=True
+        assert abs(steps[5].cartesian_position[2] - RELEASE_HEIGHT_M) < 1e-4
         assert steps[5].is_grasped
         assert steps[5].pause_duration_s == 0.0
 
-        # 7. release: z_drop, is_grasped=False, 200ms pause
-        assert abs(steps[6].cartesian_position[2] - drop[2]) < 1e-4
+        # 7. release: on the pin tip (the Gearwheel slides down), is_grasped=False, 200ms pause
+        assert abs(steps[6].cartesian_position[2] - RELEASE_HEIGHT_M) < 1e-4
         assert not steps[6].is_grasped
         assert steps[6].pause_duration_s == 0.2
         assert steps[6].joint_positions == steps[5].joint_positions
 
-        # 8. tower_retreat: z_drop + 0.10m, is_grasped=False
-        assert abs(steps[7].cartesian_position[2] - (drop[2] + 0.10)) < 1e-4
+        # 8. tower_retreat: travel height, is_grasped=False
+        assert abs(steps[7].cartesian_position[2] - TRANSFER_HEIGHT_M) < 1e-4
         assert not steps[7].is_grasped
         assert steps[7].pause_duration_s == 0.0
 
@@ -295,16 +297,17 @@ class TestPickAndPlaceTrajectoryGenerator:
         # drop position should match DEFAULT_SPINDLE_TOWER_COORDS
         assert abs(steps[5].cartesian_position[0] - DEFAULT_SPINDLE_TOWER_COORDS[0]) < 1e-4
         assert abs(steps[5].cartesian_position[1] - DEFAULT_SPINDLE_TOWER_COORDS[1]) < 1e-4
-        assert abs(steps[5].cartesian_position[2] - DEFAULT_SPINDLE_TOWER_COORDS[2]) < 1e-4
+        assert abs(steps[5].cartesian_position[2] - RELEASE_HEIGHT_M) < 1e-4
 
-    def test_stack_slot_height(self) -> None:
+    def test_every_slot_is_released_on_the_pin_tip(self) -> None:
         generator = PickAndPlaceTrajectoryGenerator()
         pick = (0.40, 0.10, 0.0)
-        # Drop at slot 4 (z = 4 * 0.02 = 0.08m)
-        drop = (0.40, -0.30, 0.08)
-        steps = generator.generate_trajectory(pick_coords=pick, drop_coords=drop)
-        assert abs(steps[5].cartesian_position[2] - 0.08) < 1e-4
-        assert abs(steps[4].cartesian_position[2] - 0.18) < 1e-4
+        # D37: whatever the slot, the Gearwheel is released on the pin tip and slides down
+        for slot_z in (0.0, 0.08, 0.18):
+            drop = (0.40, -0.30, slot_z)
+            steps = generator.generate_trajectory(pick_coords=pick, drop_coords=drop)
+            assert abs(steps[5].cartesian_position[2] - RELEASE_HEIGHT_M) < 1e-4
+            assert abs(steps[4].cartesian_position[2] - TRANSFER_HEIGHT_M) < 1e-4
 
     def test_trajectory_rejects_unreachable_coordinates(self) -> None:
         generator = PickAndPlaceTrajectoryGenerator()

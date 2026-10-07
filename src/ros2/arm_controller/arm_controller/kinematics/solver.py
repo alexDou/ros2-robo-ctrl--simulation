@@ -81,6 +81,16 @@ class UR5eKinematics:
         t = self.forward_kinematics(joint_positions, with_tcp=with_tcp)
         return (t[0][3], t[1][3], t[2][3])
 
+    def frame_origins(self, joint_positions: list[float]) -> list[tuple[float, float, float]]:
+        """Origins of the six joint frames, then the TCP, in the DH base frame (collision checks)."""
+        t = [[1.0 if i == j else 0.0 for j in range(4)] for i in range(4)]
+        origins = []
+        for i in range(6):
+            t = _matmul_4x4(t, _dh_matrix(joint_positions[i], self.d[i], self.a[i], self.alpha[i]))
+            origins.append((t[0][3], t[1][3], t[2][3]))
+        origins.append(self.forward_kinematics_position(joint_positions, with_tcp=True))
+        return origins
+
     def check_reachability(self, x: float, y: float, z: float = 0.0) -> None:
         """Validates that Cartesian coordinates fall within the robot's physical reach."""
         if z < 0.0:

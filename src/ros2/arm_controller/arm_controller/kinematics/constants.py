@@ -29,6 +29,13 @@ DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (
     WHITE_TOWER[2],
 )
 APPROACH_LIFT_OFFSET_M: float = 0.10  # Vertical approach and lift clearance offset
+SPINDLE_PIN_HEIGHT_M: float = 0.20  # SpindleTower pin top above the stand
+GEARWHEEL_HEIGHT_M: float = 0.02  # a carried Gearwheel hangs this far below the TCP
+# D37: the carried Gearwheel crosses the stand above every pin top, with clearance.
+TRANSFER_HEIGHT_M: float = SPINDLE_PIN_HEIGHT_M + GEARWHEEL_HEIGHT_M + 0.03
+# D37: the Gearwheel is released threaded on the pin tip and slides down to its slot; a tool
+# centred on the Gearwheel can't follow it down the pin.
+RELEASE_HEIGHT_M: float = SPINDLE_PIN_HEIGHT_M + GEARWHEEL_HEIGHT_M / 2.0
 
 # Canonical UR5e joint names matching ROS2 ros2_control / URDF
 CANONICAL_UR5E_JOINTS: list[str] = [

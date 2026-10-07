@@ -7,6 +7,8 @@ from arm_controller.kinematics.constants import (
     APPROACH_LIFT_OFFSET_M,
     DEFAULT_SPINDLE_TOWER_COORDS,
     HOME_JOINT_POSITIONS,
+    RELEASE_HEIGHT_M,
+    TRANSFER_HEIGHT_M,
     UR5E_JOINT_LIMITS,
 )
 from arm_controller.kinematics.phases import ActionPhase
@@ -51,23 +53,30 @@ class PickAndPlaceTrajectoryGenerator:
         1. approach_pick: (x_pick, y_pick, z_pick + 0.10m) -> APPROACHING (10%)
         2. pick: (x_pick, y_pick, z_pick)                 -> PICKING (20%)
         3. grasp: Grasp actuation pause (suction on)       -> GRASPING (30%)
-        4. lift: (x_pick, y_pick, z_pick + 0.10m)         -> LIFTING (40%)
-        5. tower_approach: (x_drop, y_drop, z_drop + 0.10m)-> TRANSFERRING (50%)
-        6. tower_drop: (x_drop, y_drop, z_drop)           -> DROPPING (60%)
+        4. lift: (x_pick, y_pick, z_travel)               -> LIFTING (40%)
+        5. tower_approach: (x_drop, y_drop, z_travel)     -> TRANSFERRING (50%)
+        6. tower_drop: (x_drop, y_drop, z_release)        -> DROPPING (60%)
         7. release: Release actuation pause (suction off)  -> RELEASING (70%)
-        8. tower_retreat: (x_drop, y_drop, z_drop + 0.10m) -> RETREATING (80%)
+        8. tower_retreat: (x_drop, y_drop, z_travel)      -> RETREATING (80%)
+
+        z_travel keeps the carried Gearwheel above every SpindleTower pin (D37): the arm lifts
+        straight up to it, crosses at it, and lowers straight down until the Gearwheel is threaded
+        on its pin's tip (z_release). Released there, it slides down the pin to its slot z_drop.
         9. home: HOME pose                                 -> HOMING (90%)
         10. complete: HOME pose                            -> COMPLETED (100%)
         """
         x_pick, y_pick, z_pick = pick_coords
         drop = drop_coords if drop_coords is not None else DEFAULT_SPINDLE_TOWER_COORDS
         x_drop, y_drop, z_drop = drop
+        z_release = max(RELEASE_HEIGHT_M, z_drop)
+        z_travel = max(TRANSFER_HEIGHT_M, z_pick + APPROACH_LIFT_OFFSET_M, z_release)
 
         # Validate reachability before computation
         self.solver.check_reachability(x_pick, y_pick, z_pick)
         self.solver.check_reachability(x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
-        self.solver.check_reachability(x_drop, y_drop, z_drop)
-        self.solver.check_reachability(x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
+        self.solver.check_reachability(x_pick, y_pick, z_travel)
+        self.solver.check_reachability(x_drop, y_drop, z_release)
+        self.solver.check_reachability(x_drop, y_drop, z_travel)
 
         q_ref = list(current_joints) if current_joints is not None else list(HOME_JOINT_POSITIONS)
 
@@ -122,23 +131,23 @@ class PickAndPlaceTrajectoryGenerator:
         q_grasp = list(q_pick)
 
         # 4. Lift
-        pos_lift = (x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
-        q_lift = solve((x_pick_dh, y_pick_dh, z_pick + APPROACH_LIFT_OFFSET_M), q_grasp)
+        pos_lift = (x_pick, y_pick, z_travel)
+        q_lift = solve((x_pick_dh, y_pick_dh, z_travel), q_grasp)
 
         # 5. Tower approach / transfer
-        pos_app_drop = (x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
-        q_app_drop = solve((x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M), q_lift)
+        pos_app_drop = (x_drop, y_drop, z_travel)
+        q_app_drop = solve((x_drop_dh, y_drop_dh, z_travel), q_lift)
 
         # 6. Tower drop
-        pos_drop = (x_drop, y_drop, z_drop)
-        q_drop = solve((x_drop_dh, y_drop_dh, z_drop), q_app_drop)
+        pos_drop = (x_drop, y_drop, z_release)
+        q_drop = solve((x_drop_dh, y_drop_dh, z_release), q_app_drop)
 
         # 7. Release Actuation (suction off, 200ms pause at drop position)
         q_release = list(q_drop)
 
         # 8. Tower retreat
-        pos_retreat = (x_drop, y_drop, z_drop + APPROACH_LIFT_OFFSET_M)
-        q_retreat = solve((x_drop_dh, y_drop_dh, z_drop + APPROACH_LIFT_OFFSET_M), q_release)
+        pos_retreat = (x_drop, y_drop, z_travel)
+        q_retreat = solve((x_drop_dh, y_drop_dh, z_travel), q_release)
 
         # 9. Home & 10. Complete: HOME is an absolute posture, never unwrapped relative to the
         # retreat pose. Unwrapping it added a 2*pi turn to wrist_1 whenever the retreat pose had
