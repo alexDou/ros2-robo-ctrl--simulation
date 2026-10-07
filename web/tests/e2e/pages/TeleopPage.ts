@@ -7,9 +7,9 @@ declare global {
     /** Largest belt snapshot seen while recording (the full Batch, before sorting empties the belt). */
     __batchMax?: BeltGearPosition[];
     __batchRecorder?: ReturnType<typeof setInterval>;
-    /** Every distinct display panel reading while recording, oldest first. */
-    __panelHistory?: string[][];
-    __panelRecorder?: ReturnType<typeof setInterval>;
+    /** Every distinct counters overlay reading while recording, oldest first. */
+    __countersHistory?: string[][];
+    __countersRecorder?: ReturnType<typeof setInterval>;
   }
 }
 
@@ -447,26 +447,27 @@ export class TeleopPage {
     });
   }
 
-  /** Records each distinct display panel reading (the panel shows cell_state counts, D34). */
-  async startRecordingPanel(): Promise<void> {
+  /** Records each distinct counters overlay reading (it shows cell_state counts, D34). */
+  async startRecordingCounters(): Promise<void> {
     await this.page.evaluate(() => {
-      clearInterval(window.__panelRecorder);
-      window.__panelHistory = [];
-      window.__panelRecorder = setInterval(() => {
-        const text = window.__robot_visualizer?.getDisplayPanelText() ?? [];
-        const history = window.__panelHistory!;
+      clearInterval(window.__countersRecorder);
+      window.__countersHistory = [];
+      window.__countersRecorder = setInterval(() => {
+        const spans = document.querySelectorAll('[data-testid="cell-counters"] > span');
+        const text = Array.from(spans, (s) => s.textContent ?? '');
+        const history = window.__countersHistory!;
         const last = history[history.length - 1];
         if (text.length && (!last || last.join('|') !== text.join('|'))) history.push(text);
       }, 10);
     });
   }
 
-  async panelHistory(): Promise<string[][]> {
-    return this.page.evaluate(() => window.__panelHistory ?? []);
+  async countersHistory(): Promise<string[][]> {
+    return this.page.evaluate(() => window.__countersHistory ?? []);
   }
 
-  async panelText(): Promise<string[]> {
-    return this.page.evaluate(() => window.__robot_visualizer!.getDisplayPanelText());
+  async countersText(): Promise<string[]> {
+    return this.page.getByTestId('cell-counters').locator('> span').allTextContents();
   }
 
   async expectRunFinished(): Promise<void> {

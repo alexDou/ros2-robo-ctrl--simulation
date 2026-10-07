@@ -124,7 +124,7 @@ describe('Unit 9.16: Pallet follows the station exchange state in the scene', ()
       };
       act(() => stepFrame());
     };
-    return { viz: (window as any).__robot_visualizer, report };
+    return { viz: (window as any).__robot_visualizer, report, buffer };
   }
 
   it('shows the lanes and keeps the Pallet at its station while HOME', async () => {
@@ -176,9 +176,18 @@ describe('Unit 9.16: Pallet follows the station exchange state in the scene', ()
   });
 
   it('draws the stack again once the reset snapshot has an empty then refilled Pallet', async () => {
-    const { viz, report } = await mount();
+    const { viz, report, buffer } = await mount();
     report('AWAY');
+    // cell_state says HOME before workcell_state drops the old stack: it must not flash back
     report('HOME');
+    expect(gearMeshes(viz)).toHaveLength(2);
+    expect(gearMeshes(viz).every((g) => g.visible === false)).toBe(true);
+
+    buffer.current.workcellState.processed = [];
+    report('HOME');
+    buffer.current.workcellState.processed = [stackGear('g2', 0)];
+    report('HOME');
+    expect(gearMeshes(viz)).toHaveLength(1);
     expect(gearMeshes(viz).every((g) => g.visible)).toBe(true);
   });
 });

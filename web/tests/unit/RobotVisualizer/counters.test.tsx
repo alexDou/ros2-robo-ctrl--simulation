@@ -1,11 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, act } from '@testing-library/preact';
+import { render, act, screen } from '@testing-library/preact';
 import * as THREE from 'three';
 import { RobotVisualizer } from '@components/RobotVisualizer';
 import * as robotLoader from '@utils/robotLoader';
-import { createDisplayPanel, panelLines } from '@components/RobotVisualizer/assets/panel';
-import { DISPLAY_PANEL, SCRAP_BIN } from '@contracts';
-import { panelCounts } from '@utils/towerCounts';
 
 const gear = (id: string, color: 'WHITE' | 'GREEN' | 'BLUE', intact = true) => ({
   id,
@@ -16,49 +13,7 @@ const gear = (id: string, color: 'WHITE' | 'GREEN' | 'BLUE', intact = true) => (
   intact,
 });
 
-describe('Unit 9.13: display panel', () => {
-  it('formats feeder, bin and pallet counts n/10', () => {
-    expect(
-      panelLines({
-        feederRemaining: 42,
-        binCount: 3,
-        palletCounts: { WHITE: 1, GREEN: 10, BLUE: 0 },
-      }),
-    ).toEqual(['FEEDER  42', 'BIN  3', 'WHITE  1/10', 'GREEN  10/10', 'BLUE  0/10']);
-  });
-
-  it('sits at the schema post position, clear of the ScrapBin path, facing the camera (-Y)', () => {
-    const panel = createDisplayPanel();
-    expect(panel.group.position.toArray()).toEqual([...DISPLAY_PANEL]);
-    expect(DISPLAY_PANEL[1]).toBeGreaterThan(SCRAP_BIN[1] + 0.3); // bin slides at Y = SCRAP_BIN[1]
-    const screen = panel.group.getObjectByName('display-panel-screen')!;
-    const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(screen.quaternion);
-    expect(normal.y).toBeCloseTo(-1);
-    panel.dispose();
-  });
-
-  it('takes every count from cell_state.stations as it is (D34)', () => {
-    const station = (name: 'WHITE' | 'GREEN' | 'BLUE' | 'SCRAP', count: number) => ({
-      name,
-      exchange_state: 'HOME' as const,
-      count,
-    });
-    expect(
-      panelCounts([
-        station('WHITE', 3),
-        station('GREEN', 0),
-        station('BLUE', 9),
-        station('SCRAP', 21),
-      ]),
-    ).toEqual({ binCount: 21, palletCounts: { WHITE: 3, GREEN: 0, BLUE: 9 } });
-    expect(panelCounts(undefined)).toEqual({
-      binCount: 0,
-      palletCounts: { WHITE: 0, GREEN: 0, BLUE: 0 },
-    });
-  });
-});
-
-describe('Unit 9.13: panel values follow the telemetry', () => {
+describe('Unit 9.13: counters overlay follows the telemetry', () => {
   let rafCallbacks: ((time: number) => void)[] = [];
   const stepFrame = () => rafCallbacks.splice(0).forEach((cb) => cb(performance.now()));
 
@@ -140,13 +95,15 @@ describe('Unit 9.13: panel values follow the telemetry', () => {
       await loaded;
     });
     act(() => stepFrame());
-    const viz = (window as any).__robot_visualizer;
-    expect(viz.getDisplayPanelText()).toEqual([
-      'FEEDER  37',
-      'BIN  2',
-      'WHITE  0/10',
-      'GREEN  2/10',
-      'BLUE  0/10',
+    const counters = screen.getByTestId('cell-counters');
+    expect(Array.from(counters.children, (c) => c.textContent)).toEqual([
+      'FEEDER: 37',
+      'BIN: 2',
+      'WHITE: 0/10',
+      'GREEN: 2/10',
+      'BLUE: 0/10',
     ]);
+    expect(screen.getByTestId('counter-FEEDER').textContent).toBe('FEEDER: 37');
+    expect(screen.getByTestId('tower-counter-GREEN').textContent).toBe('GREEN: 2/10');
   });
 });

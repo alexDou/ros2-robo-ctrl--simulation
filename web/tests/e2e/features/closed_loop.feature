@@ -128,14 +128,14 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
-    When the display panel is being recorded
+    When the counters are being recorded
     And the operator clicks the "Fill" button
     And the operator clicks the "Process" button
     Then the whole deck should be processed
-    And the panel should have counted every Pallet up one Gearwheel at a time to 10/10
+    And the counters should have counted every Pallet up one Gearwheel at a time to 10/10
     And every full Pallet should have been exchanged and come back empty
     And the ScrapBin should hold only what the exit eye counted, 10
-    And the display panel should read
+    And the counters should read
       | FEEDER | 0    |
       | BIN    | 10   |
       | WHITE  | 0/10 |
@@ -149,7 +149,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     When the operator opens the teleoperation visualizer for robot "arm-ur5"
     Then the connection status should indicate "CONNECTED / IDLE"
     And the 3D robot model should be fully loaded in the WebGL scene
-    When the display panel is being recorded
+    When the counters are being recorded
     And the operator clicks the "Fill" button
     And the operator clicks the "Process" button
     Then the whole deck should be processed
@@ -157,7 +157,7 @@ Feature: Closed-Loop Multi-Service Teleoperation & Safety Control
     And the operator clicks the "Process" button
     Then the whole deck should be processed
     And the ScrapBin should have been exchanged once it held 20
-    And the display panel should read
+    And the counters should read
       | FEEDER | 0    |
       | BIN    | 0    |
       | WHITE  | 0/10 |

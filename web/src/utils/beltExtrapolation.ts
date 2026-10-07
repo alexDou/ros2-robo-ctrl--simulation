@@ -1,4 +1,4 @@
-import type { CellStateSample } from '@/hooks/useTelemetryStream';
+import type { CellStateSample, WorkcellSnapshot } from '@/hooks/useTelemetryStream';
 import { BELT_SPEED_M_S, BELT_Y_RANGE, type BeltGear } from '@contracts';
 
 /** Longest span extrapolated past the last report; a lost update must not run the belt away. */
@@ -25,4 +25,17 @@ export function extrapolateBeltGears(sample: CellStateSample | null, nowMs: numb
   const travel = BELT_SPEED_M_S * movingSeconds(sample, nowMs);
   if (travel === 0) return sample.beltGears;
   return sample.beltGears.map((g) => ({ ...g, y: Math.max(BELT_Y_RANGE[0], g.y - travel) }));
+}
+
+/**
+ * cell_state keeps a Gearwheel on the belt until its SortCycle ends; once the workcell has it on the
+ * flange or a Pallet it is drawn there, so the belt copy goes.
+ */
+export function withoutLifted(
+  gears: BeltGear[],
+  workcell: Pick<WorkcellSnapshot, 'inProgress' | 'processed'> | undefined,
+): BeltGear[] {
+  if (!workcell) return gears;
+  const lifted = new Set([...workcell.inProgress, ...workcell.processed].map((e) => e.id));
+  return lifted.size ? gears.filter((g) => !lifted.has(g.id)) : gears;
 }

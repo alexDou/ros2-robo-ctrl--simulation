@@ -237,28 +237,28 @@ Then('some gears should have been sorted', async function (this: CustomWorld) {
   await this.teleopPage!.expectSomeGearsSorted();
 });
 
-When('the display panel is being recorded', async function (this: CustomWorld) {
+When('the counters are being recorded', async function (this: CustomWorld) {
   expect(this.teleopPage).toBeDefined();
-  await this.teleopPage!.startRecordingPanel();
+  await this.teleopPage!.startRecordingCounters();
 });
 
-/** The panel line for `label` in each recorded reading, in order (e.g. "GREEN  3/10"). */
-async function panelLines(world: CustomWorld, label: string): Promise<string[]> {
-  const history = await world.teleopPage!.panelHistory();
+/** The counters line for `label` in each recorded reading, in order (e.g. "GREEN: 3/10"). */
+async function counterLines(world: CustomWorld, label: string): Promise<string[]> {
+  const history = await world.teleopPage!.countersHistory();
   return history
-    .map((text) => text.find((line) => line.startsWith(`${label}  `)) ?? '')
+    .map((text) => text.find((line) => line.startsWith(`${label}: `)) ?? '')
     .filter((line, i, all) => line && line !== all[i - 1]);
 }
 
 Then(
-  'the panel should have counted every Pallet up one Gearwheel at a time to 10\\/10',
+  'the counters should have counted every Pallet up one Gearwheel at a time to 10\\/10',
   async function (this: CustomWorld) {
     for (const color of ['WHITE', 'GREEN', 'BLUE']) {
-      const lines = await panelLines(this, color);
-      const firstFull = lines.indexOf(`${color}  10/10`);
+      const lines = await counterLines(this, color);
+      const firstFull = lines.indexOf(`${color}: 10/10`);
       expect(firstFull, `${color} never reached 10/10: ${lines.join(', ')}`).toBeGreaterThan(0);
       const climb = lines.slice(0, firstFull + 1);
-      expect(climb).toEqual(Array.from({ length: 11 }, (_, n) => `${color}  ${n}/10`));
+      expect(climb).toEqual(Array.from({ length: 11 }, (_, n) => `${color}: ${n}/10`));
     }
   },
 );
@@ -267,9 +267,9 @@ Then(
   'every full Pallet should have been exchanged and come back empty',
   async function (this: CustomWorld) {
     for (const color of ['WHITE', 'GREEN', 'BLUE']) {
-      const lines = await panelLines(this, color);
-      const full = lines.indexOf(`${color}  10/10`);
-      expect(lines[full + 1], `${color} after 10/10: ${lines.join(', ')}`).toBe(`${color}  0/10`);
+      const lines = await counterLines(this, color);
+      const full = lines.indexOf(`${color}: 10/10`);
+      expect(lines[full + 1], `${color} after 10/10: ${lines.join(', ')}`).toBe(`${color}: 0/10`);
     }
   },
 );
@@ -277,7 +277,7 @@ Then(
 Then(
   'the ScrapBin should have been exchanged once it held {int}',
   async function (this: CustomWorld, threshold: number) {
-    const lines = await panelLines(this, 'BIN');
+    const lines = await counterLines(this, 'BIN');
     const counts = lines.map((line) => Number(line.split(/\s+/)[1]));
     const peak = counts.findIndex((n) => n >= threshold);
     expect(peak, `BIN never reached ${threshold}: ${lines.join(', ')}`).toBeGreaterThan(0);
@@ -288,7 +288,7 @@ Then(
 Then(
   'the ScrapBin should hold only what the exit eye counted, {int}',
   async function (this: CustomWorld, count: number) {
-    const lines = await panelLines(this, 'BIN');
+    const lines = await counterLines(this, 'BIN');
     const counts = lines.map((line) => Number(line.split(/\s+/)[1]));
     // Only exits count (D9): it never drops, and several may fall off in one belt step.
     expect(counts).toEqual([...counts].sort((x, y) => x - y));
@@ -296,10 +296,10 @@ Then(
   },
 );
 
-Then('the display panel should read', async function (this: CustomWorld, table: DataTable) {
+Then('the counters should read', async function (this: CustomWorld, table: DataTable) {
   expect(this.teleopPage).toBeDefined();
-  const expected = table.raw().map(([label, value]) => `${label}  ${value}`);
-  await expect.poll(() => this.teleopPage!.panelText()).toEqual(expected);
+  const expected = table.raw().map(([label, value]) => `${label}: ${value}`);
+  await expect.poll(() => this.teleopPage!.countersText()).toEqual(expected);
 });
 
 Then('the session should end with an EmergencyStop notice', async function (this: CustomWorld) {

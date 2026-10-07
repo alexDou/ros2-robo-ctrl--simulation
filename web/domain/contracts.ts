@@ -281,9 +281,6 @@ export const BLUE_TOWER = [-0.45, 0.06, 0.0] as const;
 /** Scrap bin coordinates in meters (REP-103 robot base frame) */
 export const SCRAP_BIN = [0.4, -0.75, -0.05] as const;
 
-/** Display panel post base in meters (REP-103 robot base frame): +X outside the belt, clear of the ScrapBin's +X exchange path (Y = -0.75), facing -Y toward the default camera */
-export const DISPLAY_PANEL = [0.85, 0.0, 0.0] as const;
-
 /** Conveyor belt X extent [min, max] in meters (REP-103 robot base frame); the PickZone shares it */
 export const BELT_X_RANGE = [0.25, 0.55] as const;
 

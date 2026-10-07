@@ -23,7 +23,6 @@ import type { BeltGearsAssets } from '@/components/RobotVisualizer/assets/beltge
 import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
-import type { DisplayPanelAssets } from '@/components/RobotVisualizer/assets/panel';
 import {
   BIN_WIDTH_X,
   type ScrapBinProceduralAssets,
@@ -36,7 +35,7 @@ import {
 } from '@/components/RobotVisualizer/scene/stage';
 import { loadRobot } from '@/components/RobotVisualizer/scene/robot';
 import { disposeMaterial } from '@/utils/three/dispose';
-import { panelCounts, towerCounts } from '@/utils/towerCounts';
+import { cellCounters, towerCounts, type CounterLine } from '@/utils/towerCounts';
 import { DECK_SIZE } from '@utils/conveyorGating';
 import {
   createSnapshotStore,
@@ -87,7 +86,7 @@ export function RobotVisualizer({
   const [errorInfo, setErrorInfo] = useState<VisualizerErrorInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [binNonEmpty, setBinNonEmpty] = useState<boolean>(false);
-  const [counts, setCounts] = useState<Record<GearColor, number>>({ WHITE: 0, GREEN: 0, BLUE: 0 });
+  const [counters, setCounters] = useState<CounterLine[]>(() => cellCounters(0, undefined, []));
 
   const jointPositionsRefProp = useRef(jointPositionsRef);
   jointPositionsRefProp.current = jointPositionsRef;
@@ -119,7 +118,7 @@ export function RobotVisualizer({
 
   const prevRobotStateRef = useRef<string>(robotState || 'IDLE');
   const binNonEmptyRef = useRef<boolean>(false);
-  const towerCountsRef = useRef<Record<GearColor, number>>({ WHITE: 0, GREEN: 0, BLUE: 0 });
+  const countersRef = useRef<string>('');
 
   useEffect(() => {
     const container = containerRef.current;
@@ -141,7 +140,6 @@ export function RobotVisualizer({
     let spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets | null> | null =
       null;
     let scrapBinAssets: ScrapBinProceduralAssets | null = null;
-    let displayPanelAssets: DisplayPanelAssets | null = null;
     let mountLink: THREE.Object3D | null = null;
     // Workcell-authority (6.7.5): no local gear truth. Meshes reconcile
     // id-keyed from buffer workcellState each frame: spawned -> mesh
@@ -174,7 +172,6 @@ export function RobotVisualizer({
     spindleTowerAssets = stage.spindleTowerAssets;
     spindleTowerAssetsByColor = stage.spindleTowerAssetsByColor;
     scrapBinAssets = stage.scrapBinAssets;
-    displayPanelAssets = stage.displayPanelAssets;
 
     // 3. Renderer instantiation
     let renderer: THREE.WebGLRenderer;
@@ -266,7 +263,6 @@ export function RobotVisualizer({
       getBeltGears: () => beltGearsAssets,
       getConveyorScroll: () => lastBeltScroll,
       getScrapBin: () => scrapBinAssets,
-      getDisplayPanel: () => displayPanelAssets,
       store,
       getLastRendered: () => Array.from(frame.lastRendered),
     });
@@ -296,6 +292,13 @@ export function RobotVisualizer({
     const renderLoop = () => {
       if (isDisposed) return;
 
+      const snap = readSnapshot(
+        telemetryBufferRefProp.current?.current
+          ? { current: telemetryBufferRefProp.current.current }
+          : undefined,
+      );
+      const onPallet = towerCounts(snap.processed);
+
       // Each Pallet slides along its lane with its exchange state; the stack rides with it.
       const offsets = palletMotion.update(
         telemetryBufferRefProp.current?.current?.cellState?.stations,
@@ -304,9 +307,9 @@ export function RobotVisualizer({
       const pallets = {
         offsetM: offsets,
         unloaded: {
-          WHITE: palletMotion.isUnloaded('WHITE'),
-          GREEN: palletMotion.isUnloaded('GREEN'),
-          BLUE: palletMotion.isUnloaded('BLUE'),
+          WHITE: palletMotion.isUnloaded('WHITE', onPallet.WHITE),
+          GREEN: palletMotion.isUnloaded('GREEN', onPallet.GREEN),
+          BLUE: palletMotion.isUnloaded('BLUE', onPallet.BLUE),
         },
       };
       for (const color of GEAR_COLORS) {
@@ -361,26 +364,16 @@ export function RobotVisualizer({
         setBinNonEmpty(scrapBinAssets.hasItems);
       }
 
-      // Tower counters n/10 derive from the authoritative processed list.
-      const nextCounts = towerCounts(
-        readSnapshot(
-          telemetryBufferRefProp.current?.current
-            ? { current: telemetryBufferRefProp.current.current }
-            : undefined,
-        ).processed,
+      // Counters overlay: FEEDER, BIN and Pallets n/10, from cell_state (D25, D34).
+      const nextCounters = cellCounters(
+        hopperCountRef.current,
+        telemetryBufferRefProp.current?.current?.cellState?.stations,
+        snap.processed,
       );
-      if (displayPanelAssets) {
-        const before = displayPanelAssets.getText().join('\n');
-        displayPanelAssets.setValues({
-          feederRemaining: hopperCountRef.current,
-          ...panelCounts(telemetryBufferRefProp.current?.current?.cellState?.stations),
-        });
-        if (displayPanelAssets.getText().join('\n') !== before) needsRender = true;
-      }
-      const prevCounts = towerCountsRef.current;
-      if (GEAR_COLORS.some((c) => nextCounts[c] !== prevCounts[c])) {
-        towerCountsRef.current = nextCounts;
-        setCounts(nextCounts);
+      const countersText = nextCounters.map((l) => l.text).join('|');
+      if (countersText !== countersRef.current) {
+        countersRef.current = countersText;
+        setCounters(nextCounters);
       }
 
       // Belt surface and the gearwheels riding it follow cell_state (offset and tracked gears).
@@ -467,11 +460,6 @@ export function RobotVisualizer({
       }
       spindleTowerAssets = null;
 
-      if (displayPanelAssets) {
-        displayPanelAssets.group.parent?.remove(displayPanelAssets.group);
-        displayPanelAssets.dispose();
-        displayPanelAssets = null;
-      }
       if (scrapBinAssets) {
         if (scrapBinAssets.group.parent) {
           scrapBinAssets.group.parent.remove(scrapBinAssets.group);
@@ -622,7 +610,7 @@ export function RobotVisualizer({
         <span>{binNonEmpty ? 'Scrap: has items' : 'Scrap: empty'}</span>
       </div>
       <div
-        data-testid="tower-counters"
+        data-testid="cell-counters"
         style={{
           position: 'absolute',
           top: '3.25rem',
@@ -641,9 +629,14 @@ export function RobotVisualizer({
           zIndex: 4,
         }}
       >
-        {GEAR_COLORS.map((c) => (
-          <span key={c} data-testid={`tower-counter-${c}`}>
-            {c}: {counts[c]}/{PALLET_CAPACITY}
+        {counters.map((l) => (
+          <span
+            key={l.key}
+            data-testid={
+              l.key === 'FEEDER' || l.key === 'BIN' ? `counter-${l.key}` : `tower-counter-${l.key}`
+            }
+          >
+            {l.text}
           </span>
         ))}
       </div>

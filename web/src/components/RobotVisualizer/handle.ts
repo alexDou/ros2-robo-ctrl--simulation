@@ -9,7 +9,6 @@ import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
 import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/assets/tower';
-import type { DisplayPanelAssets } from '@/components/RobotVisualizer/assets/panel';
 import type { PalletLanesAssets } from '@/components/RobotVisualizer/assets/palletlanes';
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 
@@ -22,7 +21,6 @@ export interface HandleDeps {
   getSpindle: () => SpindleTowerProceduralAssets | null;
   getSpindlesByColor: () => Record<GearColor, SpindleTowerProceduralAssets | null>;
   getScrapBin: () => ScrapBinProceduralAssets | null;
-  getDisplayPanel: () => DisplayPanelAssets | null;
   getPedestal: () => PedestalProceduralAssets | null;
   getRearStand: () => RearStandProceduralAssets | null;
   getPalletLanes: () => PalletLanesAssets | null;
@@ -110,8 +108,6 @@ export function createVisualizerHandle(deps: HandleDeps): RobotVisualizerGlobalH
     getSpindleBaseFlangeMesh: () => deps.getSpindle()?.flangeMesh ?? null,
     getSpindlePinMesh: () => deps.getSpindle()?.pinMesh ?? null,
     getScrapBinMesh: () => deps.getScrapBin()?.group ?? null,
-    getDisplayPanelMesh: () => deps.getDisplayPanel()?.group ?? null,
-    getDisplayPanelText: () => deps.getDisplayPanel()?.getText() ?? [],
     isScrapBinNonEmpty: () => deps.getScrapBin()?.hasItems ?? false,
     getSnapshotGearCount: () => deps.store.gears.size,
     getSnapshotGearPosition: (id: string) => {

@@ -3,7 +3,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { PalmProceduralAssets } from '@/components/RobotVisualizer/assets/palm';
 import type { ConveyorProceduralAssets } from '@/components/RobotVisualizer/assets/conveyor';
 import type { BeltGearsAssets } from '@/components/RobotVisualizer/assets/beltgears';
-import type { DisplayPanelAssets } from '@/components/RobotVisualizer/assets/panel';
 import type { HopperProceduralAssets } from '@/components/RobotVisualizer/assets/hopper';
 import type { RearStandProceduralAssets } from '@/components/RobotVisualizer/assets/rearstand';
 import type { PedestalProceduralAssets } from '@/components/RobotVisualizer/assets/pedestal';
@@ -11,7 +10,6 @@ import type { SpindleTowerProceduralAssets } from '@/components/RobotVisualizer/
 import type { ScrapBinProceduralAssets } from '@/components/RobotVisualizer/assets/scrapbin';
 import { createConveyor } from '@/components/RobotVisualizer/assets/conveyor';
 import { createBeltGears } from '@/components/RobotVisualizer/assets/beltgears';
-import { createDisplayPanel } from '@/components/RobotVisualizer/assets/panel';
 import { createHopper } from '@/components/RobotVisualizer/assets/hopper';
 import { createRearStand } from '@/components/RobotVisualizer/assets/rearstand';
 import { createRobotPedestal } from '@/components/RobotVisualizer/assets/pedestal';
@@ -39,7 +37,6 @@ export interface StageAssets {
   spindleTowerAssets: SpindleTowerProceduralAssets;
   spindleTowerAssetsByColor: Record<GearColor, SpindleTowerProceduralAssets>;
   scrapBinAssets: ScrapBinProceduralAssets;
-  displayPanelAssets: DisplayPanelAssets;
 }
 
 export function createStage(container: HTMLDivElement): StageAssets {
@@ -115,9 +112,6 @@ export function createStage(container: HTMLDivElement): StageAssets {
   const scrapBinAssets = createScrapBin();
   robotGroup.add(scrapBinAssets.group);
 
-  const displayPanelAssets = createDisplayPanel();
-  robotGroup.add(displayPanelAssets.group);
-
   const cameraTarget = repToWorld(robotGroup, DEFAULT_CAMERA_POSE.target);
   camera.position.copy(repToWorld(robotGroup, DEFAULT_CAMERA_POSE.position));
   camera.lookAt(cameraTarget);
@@ -136,7 +130,6 @@ export function createStage(container: HTMLDivElement): StageAssets {
     spindleTowerAssets,
     spindleTowerAssetsByColor,
     scrapBinAssets,
-    displayPanelAssets,
   };
 }
 

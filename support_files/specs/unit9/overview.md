@@ -6,7 +6,7 @@
   - The arm sorts the Batch in SortCycles: intact Gearwheels go to their colour's Pallet; defectives are Rejected and become Scrapped when they fall off the belt end.
   - A full Pallet (10) leaves −X on its PalletLane and comes back empty.
   - The ScrapBin leaves +X once it holds ≥ 20 Scrapped at a belt stop, dumps, and returns.
-  - A display panel beside the cell shows the FlexFeeder remaining count, the ScrapBin count and the three Pallet counts.
+  - A counters overlay in the scene's corner shows the FlexFeeder remaining count, the ScrapBin count and the three Pallet counts.
 * **Architecture**: ROS2 owns the flow (ADR 0006).
   - A `cell_orchestrator` commands the device nodes; the device nodes talk Modbus TCP to a programmable cell controller.
   - In SIM, a `virtual_plc` serves the same register map.
@@ -29,7 +29,7 @@ Every moving part becomes a ROS2-managed device, modelled on hardware a cell int
 - **ScrapBin exchange**: a pneumatic rodless slide with a tipper (Festo DGC-K + DSM / SMC MY1 + CRB class).
 - **Cell controller**: a programmable unit with a Modbus TCP server (WAGO PFC200 class) that owns the time-critical reactions.
 
-ROS2 nodes express intents and observe state. In SIM a virtual controller behaves identically, so the same ROS2 graph drives SIM and LIVE. The operator keeps the familiar Fill / Process / Stop controls and sees Pallets and the bin physically leave and return. A display panel shows the counts. Connecting, reloading or recovering from FAULT always runs one visible physical flush reset.
+ROS2 nodes express intents and observe state. In SIM a virtual controller behaves identically, so the same ROS2 graph drives SIM and LIVE. The operator keeps the familiar Fill / Process / Stop controls and sees Pallets and the bin physically leave and return. A counters overlay shows the counts. Connecting, reloading or recovering from FAULT always runs one visible physical flush reset.
 
 ## User Stories
 
@@ -63,9 +63,9 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
 28. As an operator, I want connecting or reloading the browser to run the same flush reset, so that the cell always starts clean.
 29. As an operator, I want ConveyorStatus RESETTING with every button disabled during a reset, so that I cannot interfere.
 30. As an operator, I want the reset to finish in EMPTY with Fill enabled, so that I can start again immediately.
-31. As an operator, I want a display panel at the right side of the cell showing the FlexFeeder remaining count, so that I can see how much is left.
-32. As an operator, I want the display panel to show the ScrapBin count, so that I can anticipate a BinExchange.
-33. As an operator, I want the display panel to show each Pallet's count out of 10, so that I can anticipate a PalletExchange.
+31. As an operator, I want a counters overlay showing the FlexFeeder remaining count, so that I can see how much is left.
+32. As an operator, I want the counters overlay to show the ScrapBin count, so that I can anticipate a BinExchange.
+33. As an operator, I want the counters overlay to show each Pallet's count out of 10, so that I can anticipate a PalletExchange.
 34. As an operator, I want the ScrapBin mesh to keep its green/red empty/non-empty colour, so that its state is readable at a glance.
 35. As an operator, I want to see Pallets slide off-scene to −X and come back, so that I can see the exchange happen.
 36. As an operator, I want to see the ScrapBin slide off-scene to +X, tip and come back, so that I can see the dump happen.
@@ -157,7 +157,7 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
   - Delete the deck, sequencer and belt physics.
   - Fill / Process / Stop send intents, gated by ConveyorStatus; all buttons are disabled in `RESETTING` and `FAULT`.
   - Send `CLEAR_WORKSPACE` on every connect.
-  - The scene renders from `cell_state` + WorkcellState: FlexFeeder module at the upstream end, belt Gearwheels, PalletLanes with Pallets sliding −X off-scene and back, ScrapBin slide +X with tip, and a display panel at +X beside the belt facing the default camera.
+  - The scene renders from `cell_state` + WorkcellState: FlexFeeder module at the upstream end, belt Gearwheels, PalletLanes with Pallets sliding −X off-scene and back, ScrapBin slide +X with tip, and a counters overlay in the scene's top-right corner.
   - Exchange motion is animated between reported states using the nominal durations.
 - **SIM commissioning defaults**: single belt speed with drive-side ramps; PalletExchange round trip ≈ 6 s; BinExchange ≈ 8 s; FlexFeeder cycle-time range tuned so a Batch usually holds about 3–10. `virtual_plc` generates the deck at Fill (10 defective in random colours + 30 WHITE / 30 GREEN / 30 BLUE, shuffled, optional seed).
 
@@ -195,7 +195,7 @@ ROS2 nodes express intents and observe state. In SIM a virtual controller behave
 - **9.4 vitest**:
   - Button gating per ConveyorStatus.
   - `CLEAR_WORKSPACE` sent on connect.
-  - The scene follows `cell_state`: Pallet −X and bin +X animations, display panel values.
+  - The scene follows `cell_state`: Pallet −X and bin +X animations, counters overlay values.
   - The bin mesh colour.
   - The deleted modules are gone.
 - **9.5 integration**:

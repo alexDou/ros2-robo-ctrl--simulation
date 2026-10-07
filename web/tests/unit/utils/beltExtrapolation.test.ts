@@ -3,6 +3,7 @@ import {
   extrapolateBeltGears,
   extrapolateBeltOffset,
   MAX_EXTRAPOLATION_S,
+  withoutLifted,
 } from '@utils/beltExtrapolation';
 import { BELT_SPEED_M_S, BELT_Y_RANGE } from '@contracts';
 
@@ -56,5 +57,24 @@ describe('Unit 9.08: belt gear extrapolation (hand-sim-o9vg)', () => {
     expect(extrapolateBeltGears(near, 1_000_000)[0].y).toBe(BELT_Y_RANGE[0]);
     const [capped] = extrapolateBeltGears(at('FEEDING', 0), 1_000_000);
     expect(capped.y).toBeCloseTo(0.5 - BELT_SPEED_M_S * MAX_EXTRAPOLATION_S);
+  });
+});
+
+describe('belt gears the arm has lifted', () => {
+  const entry = (id: string) => ({ id, x: 0, y: 0, z: 0, color: 'GREEN' as const, intact: true });
+  const other = { ...gear, id: 'belt-2' };
+
+  it('drops a gear riding the flange or placed on its Pallet, before cell_state stops reporting it', () => {
+    expect(withoutLifted([gear, other], { inProgress: [entry('belt-1')], processed: [] })).toEqual([
+      other,
+    ]);
+    expect(withoutLifted([gear, other], { inProgress: [], processed: [entry('belt-2')] })).toEqual([
+      gear,
+    ]);
+  });
+
+  it('keeps gears that are only registered (spawned) or not known to the workcell', () => {
+    expect(withoutLifted([gear], { inProgress: [], processed: [] })).toEqual([gear]);
+    expect(withoutLifted([gear], undefined)).toEqual([gear]);
   });
 });

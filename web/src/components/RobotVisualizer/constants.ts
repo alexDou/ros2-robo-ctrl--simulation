@@ -3,7 +3,6 @@ import {
   GREEN_TOWER,
   BLUE_TOWER,
   SCRAP_BIN,
-  DISPLAY_PANEL,
   BELT_X_RANGE,
   BELT_Y_RANGE,
   PICK_ZONE_Y_RANGE,
@@ -46,8 +45,6 @@ export const PALLET_AWAY_MS = 2000;
 export const PALLET_RETURN_MS = 2000;
 
 export const SCRAP_BIN_COORDS: SpindleTowerCoords = toCoords(SCRAP_BIN);
-
-export const DISPLAY_PANEL_COORDS: SpindleTowerCoords = toCoords(DISPLAY_PANEL);
 
 export const BELT_CAPACITY: number = DOMAIN_BELT_CAPACITY;
 export { BELT_X_RANGE, BELT_Y_RANGE, PICK_ZONE_Y_RANGE };

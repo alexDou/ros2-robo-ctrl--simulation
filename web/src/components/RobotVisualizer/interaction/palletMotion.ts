@@ -19,8 +19,12 @@ export interface PalletMotion {
     stations: readonly StationStatus[] | undefined,
     nowMs: number,
   ) => Record<GearColor, number>;
-  /** True while a Pallet is AWAY or RETURNING: its Gearwheels left with the next line. */
-  isUnloaded: (color: GearColor) => boolean;
+  /**
+   * True while a Pallet is AWAY or RETURNING: its Gearwheels left with the next line. Back HOME it
+   * stays unloaded while the workcell still lists `onPallet` Gearwheels for it: cell_state reports
+   * HOME just before workcell_state clears them.
+   */
+  isUnloaded: (color: GearColor, onPallet: number) => boolean;
 }
 
 export function createPalletMotion(): PalletMotion {
@@ -28,6 +32,7 @@ export function createPalletMotion(): PalletMotion {
     GearColor,
     StateClock<number>
   >;
+  const awaitingClear = new Set<GearColor>();
 
   return {
     update(stations, nowMs) {
@@ -38,16 +43,22 @@ export function createPalletMotion(): PalletMotion {
           clocks[color].clear();
           continue;
         }
+        const before = clocks[color].state();
         const { sinceMs, pose } = clocks[color].tick(station.exchange_state, nowMs, 0);
+        if (station.exchange_state !== 'HOME') awaitingClear.delete(color);
+        else if (before === 'AWAY' || before === 'RETURNING') awaitingClear.add(color);
         const progress = palletProgress(station.exchange_state, sinceMs, pose);
         clocks[color].set(progress);
         out[color] = progress * PALLET_LANE_TRAVEL_M;
       }
       return out;
     },
-    isUnloaded(color) {
+    isUnloaded(color, onPallet) {
       const state = clocks[color].state();
-      return state === 'AWAY' || state === 'RETURNING';
+      if (state === 'AWAY' || state === 'RETURNING') return true;
+      if (awaitingClear.has(color) && onPallet > 0) return true;
+      awaitingClear.delete(color);
+      return false;
     },
   };
 }

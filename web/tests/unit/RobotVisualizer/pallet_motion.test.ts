@@ -84,12 +84,30 @@ describe('Unit 9.16: pallet position follows exchange state', () => {
   it('reports which pallets are unloaded (AWAY and RETURNING)', () => {
     const motion = createPalletMotion();
     motion.update(stations('LEAVING'), 0);
-    expect(motion.isUnloaded('WHITE')).toBe(false);
+    expect(motion.isUnloaded('WHITE', 10)).toBe(false);
     motion.update(stations('AWAY'), 100);
-    expect(motion.isUnloaded('WHITE')).toBe(true);
+    expect(motion.isUnloaded('WHITE', 10)).toBe(true);
     motion.update(stations('RETURNING'), 200);
-    expect(motion.isUnloaded('WHITE')).toBe(true);
+    expect(motion.isUnloaded('WHITE', 10)).toBe(true);
     motion.update(stations('HOME'), 300);
-    expect(motion.isUnloaded('WHITE')).toBe(false);
+    expect(motion.isUnloaded('WHITE', 0)).toBe(false);
+  });
+
+  it('stays unloaded back HOME until the workcell has cleared its Gearwheels', () => {
+    const motion = createPalletMotion();
+    motion.update(stations('AWAY'), 0);
+    motion.update(stations('RETURNING'), 100);
+    motion.update(stations('HOME', 0), 200);
+    // cell_state says HOME before workcell_state drops the 10 old Gearwheels: no flash of them
+    expect(motion.isUnloaded('WHITE', 10)).toBe(true);
+    expect(motion.isUnloaded('WHITE', 0)).toBe(false);
+    // once cleared, the next Gearwheel placed shows
+    expect(motion.isUnloaded('WHITE', 1)).toBe(false);
+  });
+
+  it('a Pallet that never left shows its Gearwheels', () => {
+    const motion = createPalletMotion();
+    motion.update(stations('HOME', 4), 0);
+    expect(motion.isUnloaded('WHITE', 4)).toBe(false);
   });
 });

@@ -140,8 +140,6 @@ BLUE_TOWER: list[float] = [-0.45, 0.06, 0.0]
 
 SCRAP_BIN: list[float] = [0.4, -0.75, -0.05]
 
-DISPLAY_PANEL: list[float] = [0.85, 0.0, 0.0]
-
 BELT_X_RANGE: list[float] = [0.25, 0.55]
 
 BELT_Y_RANGE: list[float] = [-0.66, 0.95]
