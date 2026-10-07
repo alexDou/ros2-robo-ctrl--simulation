@@ -137,6 +137,7 @@ class Cell:
     ) -> None:
         self.model.belt_offset_m, self.model.belt_gears = offset_m, gears
         self._belt_fault = belt_fault
+        self._reject_new_defectives()
         # Edge-triggered: a latched fault raises once, and FAULT_ACK clears it before the next.
         lost = {k for k, ok in interlocks.items() if not ok and self._interlocks.get(k, True)}
         self._interlocks = interlocks
@@ -144,6 +145,19 @@ class Cell:
             self.fault("conveyor", f"DRIVE_FAULT_{belt_fault}")
         if "estop_chain_ok" in lost:
             self.fault("safety", "ESTOP_CHAIN_OPEN")
+
+    def _reject_new_defectives(self) -> None:
+        """D35: a defective rides past the PickZone eye, so it is Rejected as soon as belt
+        tracking reports it, and the exit eye always finds it Rejected when it falls."""
+        if self._closed or self.model.status in (ConveyorStatus.RESETTING, ConveyorStatus.FAULT):
+            return
+        for gear in self.model.belt_gears:
+            if gear.intact or gear.id in self.model.registered:
+                continue
+            if not self.ports.register(gear.id, gear.x, gear.y, gear.color.value, False):
+                self.fault("workcell", "REGISTER_REFUSED")
+                return
+            self.model.registered.add(gear.id)
 
     def on_feeder_status(self, remaining: int, state: str, fault: int) -> None:
         if state == "FAULT" and self._feeder_state != "FAULT":

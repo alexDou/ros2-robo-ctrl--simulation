@@ -178,8 +178,8 @@ def test_10_step_waypoint_sequence_and_action_phases():
     assert abs(urdf_drop_xyz[1] - drop[1]) < 1e-3
     # D37: released threaded on the pin tip, the Gearwheel slides down to its slot
     assert abs(urdf_drop_xyz[2] - RELEASE_HEIGHT_M) < 1e-3
-    # lift, transfer and retreat cross at the travel height
-    for step in (steps[3], steps[4], steps[7]):
+    # transfer and retreat cross at the travel height
+    for step in (steps[4], steps[7]):
         assert step.cartesian_position[2] == pytest.approx(TRANSFER_HEIGHT_M)
 
 
@@ -399,7 +399,12 @@ def test_transfer_never_strikes_a_pin(tower, slot):
     enters a pin's space, its own pin included (the Gearwheel is released on the pin tip)."""
     gen = PickAndPlaceTrajectoryGenerator()
     tx, ty = _TOWERS[tower]
-    picks = [(x, y, 0.0) for x in (0.32, 0.40, 0.48) for y in (-0.45, -0.2, 0.0, 0.2, 0.45)]
+    # Where the FlexFeeder places (belt centre +/- 30 mm) along the PickZone, the lead braked a
+    # little past its downstream edge included.
+    centre = sum(BELT_X_RANGE) / 2.0
+    xs = (centre - 0.03, centre, centre + 0.03)
+    ys = (PICK_ZONE_Y_RANGE[0] - 0.045, -0.2, 0.0, 0.2, PICK_ZONE_Y_RANGE[1])
+    picks = [(x, y, 0.0) for x in xs for y in ys]
     for pick in picks:
         steps = gen.generate_trajectory(
             pick_coords=pick,

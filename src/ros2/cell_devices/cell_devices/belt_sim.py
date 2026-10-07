@@ -2,6 +2,8 @@
 
 Pure and clock-free: callers advance it with step(dt). Positions are mm along the belt from
 its upstream end; the PickZone eye and the exit eye derive from the domain belt constants.
+The controller tracks each item from its placement record, so it knows which are intact: only
+an intact one stops a run at the PickZone eye, defectives ride on into the bin (D35).
 """
 
 from dataclasses import dataclass
@@ -29,6 +31,13 @@ class BeltParams:
         return self.speed_mm_s**2 / (2.0 * self.accel_mm_s2)
 
 
+@dataclass(frozen=True)
+class _Item:
+    offset_mm: float  # position along the belt minus travel
+    intact: bool
+    seq: int  # placement sequence (16-bit), how the arm's pick names it
+
+
 class BeltSim:
     def __init__(self, params: BeltParams | None = None) -> None:
         self.params = params or BeltParams()
@@ -40,7 +49,7 @@ class BeltSim:
         self._moving_cmd = BeltCmd.NONE
         self._settle_state = BeltState.IDLE
         self._finishing = False  # FINISH_RUN: the run ends at the eye, nothing more is placed
-        self._offsets_mm: list[float] = []
+        self._items: list[_Item] = []
 
     @property
     def encoder_counts(self) -> int:
@@ -53,11 +62,15 @@ class BeltSim:
 
     @property
     def item_positions_mm(self) -> list[float]:
-        return [self.travel_mm + offset for offset in self._offsets_mm]
+        return [self.travel_mm + item.offset_mm for item in self._items]
 
-    def add_item(self, at_mm: float) -> None:
+    def add_item(self, at_mm: float, intact: bool = True, seq: int = 0) -> None:
         """An item (placed by the FlexFeeder) enters the belt at `at_mm` along it."""
-        self._offsets_mm.append(at_mm - self.travel_mm)
+        self._items.append(_Item(at_mm - self.travel_mm, intact, seq))
+
+    def remove_item(self, seq: int) -> None:
+        """SIM physics: the arm took the item with placement `seq` off the belt."""
+        self._items = [item for item in self._items if item.seq != seq]
 
     def command(self, cmd: BeltCmd, scrap_home: bool) -> None:
         if self.fault:
@@ -71,7 +84,7 @@ class BeltSim:
                 self._moving_cmd = BeltCmd.NONE
                 self._settle_state = BeltState.HELD_BIN_AWAY
                 self.state = BeltState.HELD_BIN_AWAY
-            elif cmd == BeltCmd.FLUSH and not self._offsets_mm:
+            elif cmd == BeltCmd.FLUSH and not self._items:
                 self._moving_cmd = BeltCmd.NONE
                 self._settle(BeltState.FLUSH_DONE)
             else:
@@ -82,11 +95,12 @@ class BeltSim:
             self._settle(BeltState.IDLE)
 
     def _finish_run(self) -> None:
-        """A feed run still brings what is upstream of the eye; a flush runs out on its own."""
+        """A feed run still brings an intact item upstream of the eye; a flush runs out on its own."""
         if self._moving_cmd != BeltCmd.RUN_TO_PICKZONE:
             return
         self._finishing = True
-        if not any(pos < self.params.eye_mm for pos in self.item_positions_mm):
+        eye = self.params.eye_mm
+        if not any(i.intact and self.travel_mm + i.offset_mm < eye for i in self._items):
             self._moving_cmd = BeltCmd.NONE
             self._settle(BeltState.STOPPED_AT_EYE)
 
@@ -121,7 +135,7 @@ class BeltSim:
         self.travel_mm += self.velocity_mm_s * dt
         self._advance_items(before)
 
-        if self._moving_cmd == BeltCmd.FLUSH and not self._offsets_mm:
+        if self._moving_cmd == BeltCmd.FLUSH and not self._items:
             self._moving_cmd = BeltCmd.NONE
             self._settle_state = BeltState.FLUSH_DONE
         if self._moving_cmd == BeltCmd.NONE and self.velocity_mm_s == 0.0:
@@ -134,14 +148,14 @@ class BeltSim:
 
     def _advance_items(self, before: list[float]) -> None:
         eye = self.params.eye_mm
-        survivors: list[float] = []
-        for offset, prev in zip(self._offsets_mm, before, strict=True):
-            pos = self.travel_mm + offset
+        survivors: list[_Item] = []
+        for item, prev in zip(self._items, before, strict=True):
+            pos = self.travel_mm + item.offset_mm
             if pos >= self.params.length_mm:
                 self.exit_count = (self.exit_count + 1) % _COUNTER_MOD
                 continue
-            if self._moving_cmd == BeltCmd.RUN_TO_PICKZONE and prev < eye <= pos:
+            if self._moving_cmd == BeltCmd.RUN_TO_PICKZONE and item.intact and prev < eye <= pos:
                 self._moving_cmd = BeltCmd.NONE
                 self._settle_state = BeltState.STOPPED_AT_EYE
-            survivors.append(offset)
-        self._offsets_mm = survivors
+            survivors.append(item)
+        self._items = survivors

@@ -683,6 +683,21 @@ def test_nothing_is_registered_before_the_eye_stop(cell):
     assert fake.workcell.registered == []
 
 
+def test_a_defective_is_registered_rejected_as_soon_as_it_is_placed(cell):
+    """D35: a defective never stops the belt, so it is Rejected on placement, not at a stop."""
+    fake, states, process, _ = cell
+    _fill(fake, states)
+    assert _call(process, CellProcess.Request()).success
+    assert _wait(lambda: len(fake.goals) == 1)
+    fake.publish_encoder(300.0, [_belt_gear("belt-1", 0.6, intact=False, color="BLUE")])
+
+    assert _wait(lambda: fake.workcell.registered == [("belt-1", 0.41, 0.6, "BLUE", False)])
+    fake.publish_encoder(400.0, [_belt_gear("belt-1", 0.5, intact=False, color="BLUE")])
+    time.sleep(0.3)
+    assert len(fake.workcell.registered) == 1  # once only
+    assert states[-1].conveyor_status == ConveyorStatus.FEEDING
+
+
 def test_failed_registration_faults_the_cell(cell):
     fake, states, process, _ = cell
     fake.workcell.ok = False

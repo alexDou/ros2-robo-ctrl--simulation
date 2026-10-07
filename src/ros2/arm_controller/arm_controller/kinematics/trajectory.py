@@ -50,17 +50,19 @@ class PickAndPlaceTrajectoryGenerator:
         """Generates standard 10-step pick-and-place waypoint sequence.
 
         Sequence:
-        1. approach_pick: (x_pick, y_pick, z_pick + 0.10m) -> APPROACHING (10%)
+        1. approach_pick: (x_pick, y_pick, z_pick + 0.15m) -> APPROACHING (10%)
         2. pick: (x_pick, y_pick, z_pick)                 -> PICKING (20%)
         3. grasp: Grasp actuation pause (suction on)       -> GRASPING (30%)
-        4. lift: (x_pick, y_pick, z_travel)               -> LIFTING (40%)
+        4. lift: (x_pick, y_pick, z_pick + 0.15m)         -> LIFTING (40%)
         5. tower_approach: (x_drop, y_drop, z_travel)     -> TRANSFERRING (50%)
         6. tower_drop: (x_drop, y_drop, z_release)        -> DROPPING (60%)
         7. release: Release actuation pause (suction off)  -> RELEASING (70%)
         8. tower_retreat: (x_drop, y_drop, z_travel)      -> RETREATING (80%)
 
-        z_travel keeps the carried Gearwheel above every SpindleTower pin (D37): the arm lifts
-        straight up to it, crosses at it, and lowers straight down until the Gearwheel is threaded
+        z_travel keeps the carried Gearwheel above every SpindleTower pin (D37): the transfer
+        climbs to it on the way to the stand (the belt has no pins, and a full-height lift at the
+        far PickZone corner would need a branch switch), crosses at it, and lowers straight down
+        until the Gearwheel is threaded
         on its pin's tip (z_release). Released there, it slides down the pin to its slot z_drop.
         9. home: HOME pose                                 -> HOMING (90%)
         10. complete: HOME pose                            -> COMPLETED (100%)
@@ -74,7 +76,6 @@ class PickAndPlaceTrajectoryGenerator:
         # Validate reachability before computation
         self.solver.check_reachability(x_pick, y_pick, z_pick)
         self.solver.check_reachability(x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
-        self.solver.check_reachability(x_pick, y_pick, z_travel)
         self.solver.check_reachability(x_drop, y_drop, z_release)
         self.solver.check_reachability(x_drop, y_drop, z_travel)
 
@@ -131,8 +132,8 @@ class PickAndPlaceTrajectoryGenerator:
         q_grasp = list(q_pick)
 
         # 4. Lift
-        pos_lift = (x_pick, y_pick, z_travel)
-        q_lift = solve((x_pick_dh, y_pick_dh, z_travel), q_grasp)
+        pos_lift = (x_pick, y_pick, z_pick + APPROACH_LIFT_OFFSET_M)
+        q_lift = solve((x_pick_dh, y_pick_dh, z_pick + APPROACH_LIFT_OFFSET_M), q_grasp)
 
         # 5. Tower approach / transfer
         pos_app_drop = (x_drop, y_drop, z_travel)

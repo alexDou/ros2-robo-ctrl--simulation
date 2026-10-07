@@ -28,7 +28,7 @@ DEFAULT_SPINDLE_TOWER_COORDS: tuple[float, float, float] = (
     WHITE_TOWER[1],
     WHITE_TOWER[2],
 )
-APPROACH_LIFT_OFFSET_M: float = 0.10  # Vertical approach and lift clearance offset
+APPROACH_LIFT_OFFSET_M: float = 0.15  # Vertical approach and lift clearance offset (D37)
 SPINDLE_PIN_HEIGHT_M: float = 0.20  # SpindleTower pin top above the stand
 GEARWHEEL_HEIGHT_M: float = 0.02  # a carried Gearwheel hangs this far below the TCP
 # D37: the carried Gearwheel crosses the stand above every pin top, with clearance.

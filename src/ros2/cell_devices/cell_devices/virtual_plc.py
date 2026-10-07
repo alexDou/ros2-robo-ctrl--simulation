@@ -120,10 +120,15 @@ class VirtualPlcServer:
         with self._lock:
             return self._belt.encoder_counts
 
-    def add_belt_item(self, at_mm: float) -> None:
+    def add_belt_item(self, at_mm: float, intact: bool = True, seq: int = 0) -> None:
         """SIM seam: the FlexFeeder block puts an item on the belt."""
         with self._lock:
-            self._belt.add_item(at_mm)
+            self._belt.add_item(at_mm, intact, seq)
+
+    def remove_belt_item(self, seq: int) -> None:
+        """SIM seam: the arm took the item with placement `seq` (16-bit) off the belt."""
+        with self._lock:
+            self._belt.remove_item(seq % 2**16)
 
     def preset_exit_count(self, count: int) -> None:
         """SIM seam: start the latched exit counter at `count` (e.g. just below the 16-bit wrap)."""
@@ -256,7 +261,7 @@ class VirtualPlcServer:
         # disabled at the eye stop (the edge into STOPPED_AT_EYE, not the settled state).
         feeding = self._belt.feeding
         for placement in self._feeder.step(dt, feeding, self._belt.travel_mm):
-            self._belt.add_item(placement.at_mm)
+            self._belt.add_item(placement.at_mm, placement.intact, placement.seq)
             self._publish_placement(placement)
         if (
             self._belt.state == BeltState.STOPPED_AT_EYE

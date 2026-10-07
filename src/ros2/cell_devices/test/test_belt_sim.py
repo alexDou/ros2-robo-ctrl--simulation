@@ -155,3 +155,47 @@ def test_finish_run_lets_a_flush_run_out():
 
     _run_until(belt, lambda: belt.state == BeltState.FLUSH_DONE)
     assert belt.exit_count == 1
+
+
+# --- D35: only an intact Gearwheel still on the belt stops it at the eye ---
+
+
+def test_a_defective_rides_past_the_eye_into_the_bin_on_the_first_run():
+    belt = BeltSim(FAST)
+    belt.add_item(at_mm=0.0, intact=False)
+    belt.add_item(at_mm=-300.0, intact=True)
+    belt.command(BeltCmd.RUN_TO_PICKZONE, scrap_home=True)
+
+    _run_until(belt, lambda: belt.state == BeltState.STOPPED_AT_EYE)
+
+    (intact,) = belt.item_positions_mm  # the defective has fallen off the end
+    assert belt.exit_count == 1
+    assert FAST.eye_mm <= intact < FAST.eye_mm + 2 * FAST.braking_distance_mm
+
+
+def test_a_picked_gearwheel_no_longer_stops_the_next_run():
+    belt = BeltSim(FAST)
+    belt.add_item(at_mm=0.0, seq=1)
+    belt.add_item(at_mm=-1000.0, seq=2)
+    belt.command(BeltCmd.RUN_TO_PICKZONE, scrap_home=True)
+    _run_until(belt, lambda: belt.state == BeltState.STOPPED_AT_EYE)
+
+    belt.remove_item(seq=1)  # the arm took the Batch off the belt
+    belt.command(BeltCmd.RUN_TO_PICKZONE, scrap_home=True)
+    _run_until(belt, lambda: belt.state == BeltState.STOPPED_AT_EYE)
+
+    (pos,) = belt.item_positions_mm  # the next intact one came the full way to the eye
+    assert FAST.eye_mm <= pos < FAST.eye_mm + 2 * FAST.braking_distance_mm
+    assert belt.exit_count == 0  # a picked Gearwheel never reaches the exit eye
+
+
+def test_finish_run_with_only_defectives_upstream_ends_the_run_at_once():
+    belt = BeltSim(FAST)
+    belt.add_item(at_mm=0.0, intact=False)
+    belt.command(BeltCmd.RUN_TO_PICKZONE, scrap_home=True)
+    belt.step(0.01, scrap_home=True)
+
+    belt.command(BeltCmd.FINISH_RUN, scrap_home=True)
+
+    _run_until(belt, lambda: belt.state == BeltState.STOPPED_AT_EYE)
+    assert belt.item_positions_mm  # still on the belt: the final flush takes it

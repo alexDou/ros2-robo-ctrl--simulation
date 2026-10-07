@@ -2,7 +2,7 @@
 
 import pytest
 from cell_devices.belt_sim import BeltSim
-from cell_devices.belt_tracking import BeltTracker, batch
+from cell_devices.belt_tracking import BeltTracker, batch, placement_seq
 from cell_devices.feeder_sim import FeederParams, FeederSim
 from cell_devices.flexfeeder import PlacementRecord
 from cell_devices.register_map import BeltCmd, FeederCmd
@@ -90,3 +90,15 @@ def test_batch_is_the_gears_inside_the_pickzone_lead_first_and_upstream_ones_sta
     assert len(on_belt) == 4
     assert [g.id for g in in_batch] == ["belt-1", "belt-2", "belt-3"]
     assert "belt-4" not in [g.id for g in in_batch]  # still upstream of the PickZone
+
+
+def test_a_tracked_id_names_its_16_bit_placement_seq():
+    """virtual_plc removes a picked Gearwheel by the placement seq inside its id (D35)."""
+    tracker = _tracker()
+    tracker.add(_record(65535, encoder_mm=0.0))
+    tracker.add(_record(3, encoder_mm=200.0))  # past the wrap
+
+    ids = [g.id for g in tracker.gears(encoder_mm=200.0)]
+
+    assert [placement_seq(i) for i in ids] == [65535, 3]
+    assert placement_seq("3f2a9c") is None  # a click-spawned gear never rode the belt

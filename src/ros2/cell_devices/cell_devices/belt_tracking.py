@@ -10,6 +10,7 @@ from cell_devices.flexfeeder import PlacementRecord
 from domain import BELT_X_RANGE, BELT_Y_RANGE, PICK_ZONE_Y_RANGE
 
 _SEQ_MOD = 2**16
+_ID_PREFIX = "belt-"
 
 
 @dataclass(frozen=True)
@@ -27,6 +28,16 @@ def batch(gears: list[TrackedGear]) -> list[TrackedGear]:
     return sorted(inside, key=lambda g: g.y)
 
 
+def placement_seq(gear_id: str) -> int | None:
+    """The 16-bit placement seq a tracked Gearwheel id was made from; None for any other id."""
+    if not gear_id.startswith(_ID_PREFIX):
+        return None
+    try:
+        return int(gear_id[len(_ID_PREFIX) :]) % _SEQ_MOD
+    except ValueError:
+        return None
+
+
 class BeltTracker:
     def __init__(self, place_at_mm: float) -> None:
         self._place_at_mm = place_at_mm
@@ -40,7 +51,7 @@ class BeltTracker:
         if record.seq < self._last_seq:
             self._wraps += 1
         self._last_seq = record.seq
-        self._gears.append((f"belt-{self._wraps * _SEQ_MOD + record.seq}", record))
+        self._gears.append((f"{_ID_PREFIX}{self._wraps * _SEQ_MOD + record.seq}", record))
 
     def gears(self, encoder_mm: float) -> list[TrackedGear]:
         """Gearwheels still on the belt at `encoder_mm`; those past the exit eye are forgotten."""

@@ -15,6 +15,7 @@ import random
 
 import pytest
 from arm_controller.kinematics import (
+    APPROACH_LIFT_OFFSET_M,
     DEFAULT_SPINDLE_TOWER_COORDS,
     DEFAULT_TCP_OFFSET_M,
     RELEASE_HEIGHT_M,
@@ -239,8 +240,8 @@ class TestPickAndPlaceTrajectoryGenerator:
         assert [s.step_number for s in steps] == list(range(1, 11))
 
         # Check heights & grasp state
-        # 1. approach_pick: z_pick + 0.10m, not grasped
-        assert abs(steps[0].cartesian_position[2] - (pick[2] + 0.10)) < 1e-4
+        # 1. approach_pick: z_pick + APPROACH_LIFT_OFFSET_M, not grasped
+        assert abs(steps[0].cartesian_position[2] - (pick[2] + APPROACH_LIFT_OFFSET_M)) < 1e-4
         assert not steps[0].is_grasped
         assert steps[0].pause_duration_s == 0.0
 
@@ -255,8 +256,8 @@ class TestPickAndPlaceTrajectoryGenerator:
         assert steps[2].pause_duration_s == 0.2
         assert steps[2].joint_positions == steps[1].joint_positions
 
-        # 4. lift: straight up to the travel height above every pin (D37), is_grasped=True
-        assert abs(steps[3].cartesian_position[2] - TRANSFER_HEIGHT_M) < 1e-4
+        # 4. lift: z_pick + APPROACH_LIFT_OFFSET_M (the transfer climbs to the travel height, D37), is_grasped=True
+        assert abs(steps[3].cartesian_position[2] - (pick[2] + APPROACH_LIFT_OFFSET_M)) < 1e-4
         assert steps[3].is_grasped
         assert steps[3].pause_duration_s == 0.0
 
