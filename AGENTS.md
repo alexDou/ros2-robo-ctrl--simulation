@@ -23,7 +23,7 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
   - Rust: `cargo check --workspace --all-targets`, `cargo clippy --workspace --all-targets`, & `cargo test` / `cargo nextest run --workspace`
   - Python: `pytest`
   - Web: `npm --prefix web run test`, `npm --prefix web run lint`, & `npm --prefix web run typecheck`
-- **End-of-Task Gate (mandatory)**: Every task that changes files ends with `scripts/verify.sh` (codegen `--check` → Rust/Python/web lanes in parallel: tests + linters + formatters → semgrep). A task is not done, and must not be committed, until it prints `verify: GREEN`. Pre-existing failures outside your diff are reported by name, never hidden or silenced.
+- **End-of-Task Gate (mandatory)**: Every task that changes files ends with the verify lanes it touches (`scripts/verify/status.sh` lists them). Each lane is one part of the system with its own script in `scripts/verify/` (`contracts`, `gateway`, `edge`, `teleop-client`, `semgrep`). It runs alone and tests that part in isolation, with mocks at the contract borders. On the dev machine, run them one at a time, contracts first. `launch` (the whole SIM graph) runs only on request; CI runs them as parallel jobs from its config. A task is not done, and must not be committed, until each touched lane prints `verify <lane>: GREEN`. Pre-existing failures outside your diff are reported by name, never hidden or silenced.
 
 ## Domain Invariants
 

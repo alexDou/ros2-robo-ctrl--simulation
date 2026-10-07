@@ -6,7 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## End-of-task gate
 
-- Finish every file-changing task with `/verify` (runs `scripts/verify.sh`). Don't say "done" or commit until it prints `verify: GREEN`. A Stop hook blocks ending a turn while the working tree differs from the last green run.
+- Finish every file-changing task with `/verify`. `scripts/verify/status.sh` lists the lanes your change touches; run each one by itself, one at a time, contracts first (`scripts/verify/<lane>.sh`: contracts, gateway, edge, teleop-client, semgrep). Lanes are parts of the system, not languages. Never run lanes in parallel on the dev machine; CI parallelises them in its own config. Don't say "done" or commit until every touched lane prints `verify <lane>: GREEN`. A Stop hook blocks ending a turn while a touched lane has no green run on the current files.
+- Tests stay isolated: each lane mocks its borders at the interfaces/contracts. The `launch` lane (`scripts/verify/launch.sh`, the whole SIM graph, ~8 min) is never required: run it only when the user asks, alone.
 - Edited files are auto-formatted by a PostToolUse hook: rustfmt, `ruff format` or oxfmt, chosen by file extension.
 
 ## Commands that aren't obvious
