@@ -25,7 +25,7 @@ The operator watches a convincing Flow B cell, but only the UR5e behind it is re
 Every moving part becomes a ROS2-managed device, modelled on hardware a cell integrator would actually buy:
 - **FlexFeeder**: an RNA FlexType P class flexible-feeder module.
 - **Conveyor**: a cobot-cell belt on a VFD/BLDC drive, with an encoder and two photo-eyes.
-- **PalletLanes**: three 24 V motor-driven roller lanes (Interroll RollerDrive EC5000 + MultiControl class) carrying single-rod Pallets.
+- **PalletLanes**: three 24 V motor-driven roller lanes (Interroll RollerDrive EC5000 + MultiControl class) carrying Pallets with a 10-pocket nest tray (D38).
 - **ScrapBin exchange**: a pneumatic rodless slide with a tipper (Festo DGC-K + DSM / SMC MY1 + CRB class).
 - **Cell controller**: a programmable unit with a Modbus TCP server (WAGO PFC200 class) that owns the time-critical reactions.
 

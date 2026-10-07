@@ -105,8 +105,8 @@ Operator pause of feeding: the Conveyor and FlexFeeder freeze and no further Gea
 _Avoid_: Pause, halt, EmergencyStop
 
 **Pallet**:
-Outbound carrier with a single vertical rod holding up to 10 intact Gearwheels of one color (`WHITE`, `GREEN`, `BLUE`); when full it leaves the cell for packing or assembly and returns empty.
-_Avoid_: SpindleTower, tower, tray, peg
+Outbound carrier with a 10-pocket nest tray (2 × 5 pockets) holding up to 10 intact Gearwheels of one color (`WHITE`, `GREEN`, `BLUE`), one per pocket, filled in a fixed pocket order; when full it leaves the cell for packing or assembly and returns empty (D38).
+_Avoid_: SpindleTower, tower, peg, rod, stack
 
 **PalletStation**:
 The position within the manipulator's reach where a Pallet of one color stands while it receives Gearwheels.
