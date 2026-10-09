@@ -14,9 +14,32 @@
 
 A **Universal Robots UR5e** cobot controlled through **ROS2 Jazzy** and operated from a web page. Commands travel from the browser through a Rust Gateway and a Zenoh data fabric into the ROS2 graph. Joint telemetry travels back the same way and drives a Three.js scene of the robot.
 
-```
-TeleopClient ◀──WebSocket──▶ Gateway ◀──Zenoh──▶ edge_bridge_node ──┬─▶ workcell_node
-Preact · Three.js            Rust · Actix                            └─▶ arm_controller_node ─▶ ros2_control ─▶ UR5e
+```mermaid
+flowchart LR
+    subgraph browser["Browser"]
+        UI["<b>TeleopClient</b><br/>Preact · Three.js"]
+    end
+    subgraph edge["Edge"]
+        GW["<b>Gateway</b><br/>Rust · Actix-Web"]
+    end
+    subgraph ros["ROS2 Jazzy"]
+        direction TB
+        EB["edge_bridge_node"]
+        WC["workcell_node"]
+        AC["arm_controller_node"]
+        RC["ros2_control"]
+        EB --> WC
+        EB --> AC
+        AC --> RC
+    end
+    ARM(["UR5e"])
+
+    UI <-->|"WebSocket<br/>JSON"| GW
+    GW <-->|"Zenoh<br/>command / telemetry"| EB
+    RC --> ARM
+
+    classDef hw fill:#fde68a,stroke:#b45309,color:#000
+    class ARM hw
 ```
 
 | Node / service | Runs as | Role |
