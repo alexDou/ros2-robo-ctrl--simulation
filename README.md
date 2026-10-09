@@ -68,13 +68,13 @@ Each branch is self-contained. Exactly one flow per branch, no runtime switch.
 | Topic | Where |
 |---|---|
 | Domain vocabulary (Gearwheel, SpindleTower, ScrapBin, ...) | [`CONTEXT.md`](CONTEXT.md) |
-| Roadmap of all units | [`support_files/specs/units.md`](support_files/specs/units.md) |
-| Click-to-place workcell (Unit 5) | [`support_files/specs/unit5/overview.md`](support_files/specs/unit5/overview.md) |
-| Autonomous pick and place (Unit 6) | [`support_files/specs/unit6/overview.md`](support_files/specs/unit6/overview.md) |
-| Colour sorting and defect inspection (Unit 7) | [`support_files/specs/unit7/overview.md`](support_files/specs/unit7/overview.md) |
-| Production ROS2 refactor | [`support_files/specs/unit_refactoring-a/overview.md`](support_files/specs/unit_refactoring-a/overview.md) |
-| Technologies | [`support_files/specs/technologies.md`](support_files/specs/technologies.md) |
-| Working method | [`support_files/specs/paradigm.md`](support_files/specs/paradigm.md), [`AGENTS.md`](AGENTS.md) |
+| Roadmap of all units | [`docs_src/specs/units.md`](docs_src/specs/units.md) |
+| Click-to-place workcell (Unit 5) | [`docs_src/specs/unit5/overview.md`](docs_src/specs/unit5/overview.md) |
+| Autonomous pick and place (Unit 6) | [`docs_src/specs/unit6/overview.md`](docs_src/specs/unit6/overview.md) |
+| Colour sorting and defect inspection (Unit 7) | [`docs_src/specs/unit7/overview.md`](docs_src/specs/unit7/overview.md) |
+| Production ROS2 refactor | [`docs_src/specs/unit_refactoring-a/overview.md`](docs_src/specs/unit_refactoring-a/overview.md) |
+| Technologies | [`docs_src/specs/technologies.md`](docs_src/specs/technologies.md) |
+| Working method | [`docs_src/specs/paradigm.md`](docs_src/specs/paradigm.md), [`AGENTS.md`](AGENTS.md) |
 
 **Architecture decision records** (`docs/adr/`)
 
@@ -92,7 +92,7 @@ Each branch is self-contained. Exactly one flow per branch, no runtime switch.
  Preact · Three.js          Rust · Actix        DataFabric     Python · rclpy · ros2_control
 ```
 
-| Level | Language | Main libraries and tools |
+| Level | Language | Libraries and Tools |
 |---|---|---|
 | **TeleopClient** (`web/`) | TypeScript | Preact, Vite, Three.js, `urdf-loader`, Zod, Tailwind CSS · Vitest, Cucumber + Playwright · OXC (`oxlint`, `oxfmt`) |
 | **Gateway** (`src/gateway/`) | Rust 2021 | Actix-Web, `actix-ws`, Tokio, **Zenoh**, Serde · `cargo nextest`, Clippy |

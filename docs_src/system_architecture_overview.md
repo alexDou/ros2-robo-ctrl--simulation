@@ -481,4 +481,4 @@ Because **ROS2 Robot Controller Simulation** is engineered to run in constrained
 | **Gateway** | `src/gateway/src/main.rs`<br>`src/gateway/src/ws.rs`<br>`src/gateway/src/session.rs`<br>`src/gateway/src/fabric.rs` | Rust Actix-Web WebSocket service, session gating, and Zenoh multiplexer. |
 | **TeleopClient** | `web/src/components/TeleopClient.tsx`<br>`web/src/components/RobotVisualizer.tsx`<br>`web/src/components/TelemetryMonitor.tsx` | Preact dashboard, Three.js 3D WebGL viewport, zero-VDOM telemetry readout. |
 | **Robot Models** | `web/public/models/ur5e/ur5e.urdf`<br>`web/public/models/ur_description/` | Extracted UR5e URDF definition and Collada visual mesh files. |
-| **Specifications** | `support_files/specs/units.md`<br>`support_files/specs/technologies.md`<br>`support_files/specs/dev_phases.md` | Specification-driven development roadmaps and architectural units. |
+| **Specifications** | `docs_src/specs/units.md`<br>`docs_src/specs/technologies.md`<br>`docs_src/specs/dev_phases.md` | Specification-driven development roadmaps and architectural units. |

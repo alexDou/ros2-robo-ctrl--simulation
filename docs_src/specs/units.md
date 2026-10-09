@@ -210,7 +210,7 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
 
 ## Unit 8: Indexing Conveyor Belt & Dual-Flow Interaction Showcase
 
-* **Objective**: Implement the step-and-wait indexing conveyor belt as a second operational flow, provide mutually exclusive mode switching ("Click-to-Place" vs "Conveyor Belt"), and deliver the complete final interactive showcase from `support_files/iterations/iter-2.txt`.
+* **Objective**: Implement the step-and-wait indexing conveyor belt as a second operational flow, provide mutually exclusive mode switching ("Click-to-Place" vs "Conveyor Belt"), and deliver the complete final interactive showcase from `docs_src/iterations/iter-2.txt`.
 * **Architecture**: Contract-first development. Unit 8.0 defines conveyor operational mode schemas. Unit 8.1 implements 3D conveyor model and indexing step-and-wait animation. Unit 8.2 implements EdgeNode conveyor feed orchestration. Unit 8.3 integrates dual-flow UI mode toggle and full showcase E2E suite.
 
 ### Sub-Unit Breakdown

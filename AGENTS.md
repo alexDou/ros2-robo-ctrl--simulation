@@ -11,7 +11,7 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
 
 ## Development Methodology
 
-- **Specification Driven Development (SDD)**: Project units roadmap lives in `support_files/specs/units.md`.
+- **Specification Driven Development (SDD)**: Project units roadmap lives in `docs_src/specs/units.md`.
 - **Contract-First Staged Architecture (Spec & Ticket Generation Protocol)**:
   Every unit or phase specification and ticket breakdown strictly follows a 3-stage lifecycle:
   1. **Stage 0: Domains, Interfaces & Schemas First (`Unit X.0`)**: Single source of truth. Define or update wire schemas in `schemas/` and domain constants. Regenerate cross-language types via `scripts/generate_domain.py` (`src/domain/domain.py`, `src/domain/domain.rs`, `web/domain/contracts.ts`). Lock domain contracts with cross-language serialization unit tests before implementing nodes.
