@@ -17,7 +17,7 @@ blocked_by:
 
 Mechanical prefactor: TOWER_CAPACITY → PALLET_CAPACITY and MAX_SCRAP_BIN_CAPACITY → BIN_EXCHANGE_THRESHOLD in schemas, regenerated domain types and every call site (Python, Rust, TS, tests). Values and behaviour unchanged (10 / 100); ticket BinExchange ROS changes the threshold to 20.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

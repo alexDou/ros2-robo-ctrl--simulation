@@ -17,7 +17,7 @@ blocked_by:
 
 Conveyor node tracks every placed Gearwheel from placement records + encoder travel; cell_state.belt_gears (id, x, y, color, intact). Scene renders the FlexFeeder module at the upstream end and Gearwheels travelling to the eye stop, extrapolated between updates.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

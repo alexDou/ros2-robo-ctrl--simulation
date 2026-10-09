@@ -17,7 +17,7 @@ blocked_by:
 
 At every eye stop the orchestrator registers each Batch Gearwheel with WorkcellNode using tracked positions: intact → pickable, defective → Rejected (registered, not for processing, stays on the belt). WorkcellState schema gains Rejected.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

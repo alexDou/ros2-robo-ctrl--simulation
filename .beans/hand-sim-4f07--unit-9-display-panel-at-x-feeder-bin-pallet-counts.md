@@ -18,7 +18,7 @@ blocked_by:
 
 Post-mounted display panel at +X outside the belt, Y ≈ 0, facing the default camera, clear of the ScrapBin path: FlexFeeder remaining, ScrapBin count, Pallet counts n/10. Telemetry-driven only. Panel position via schema constant.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

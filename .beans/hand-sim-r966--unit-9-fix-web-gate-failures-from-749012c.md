@@ -15,7 +15,7 @@ parent: hand-sim-rqpy
 
 The end-of-task gate is RED on feat/conveyor-devices because of commit 749012c (op status bar visibility): ActionProgressBar is not oxfmt-formatted and two TeleopClient action-feedback tests fail (progress bar renders/updates on ACTION_FEEDBACK; progress bar clears on inbound ERROR). Every Unit 9 ticket needs a green gate.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

@@ -19,7 +19,7 @@ blocked_by:
 
 TeleopClient sends CLEAR_WORKSPACE on every connect (so reload = full system reset); RESETTING disables all buttons and the panel shows counts draining to 0.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

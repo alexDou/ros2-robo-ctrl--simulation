@@ -3,7 +3,7 @@ ITERATION 2 SPECIFICATION: DUAL-FLOW INTERACTIVE GEAR SORTING & QC SHOWCASE
 ================================================================================
 NOTE: RobotState contract is BOOTING/STANDBY/IDLE/EXECUTING/FAULT (PROCESSING removed in 6.6.0).
 NOTE: Flow B was re-designed 2026-09-28. The authoritative spec + decision log is
-      support_files/specs/unit8/ (overview.md, implementation_wireframe.md). This file is the
+      docs_src/specs/unit8/ (overview.md, implementation_wireframe.md). This file is the
       product narrative; if they disagree, unit8/ wins.
 Project: ROS2 Robot Controller Simulation
 Target Phase: Post-Phase-5 Interactive Showcase Feature

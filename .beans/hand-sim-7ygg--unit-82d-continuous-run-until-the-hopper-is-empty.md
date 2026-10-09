@@ -32,6 +32,6 @@ After a Batch the belt restarts automatically; defective leftovers ride off the 
 
 - hand-sim-as72 (08)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Delivered by 8c014b3 (runDeck batch cycling, carry-over fall-off, flush run, EMPTY gating; unit + seeded E2E). verify: GREEN, no further code needed.

@@ -17,7 +17,7 @@ blocked_by:
 
 A Rejected Gearwheel becomes Scrapped when the exit eye counts it on the next belt run; ScrapBin contents = Scrapped only (fixes counting defectives while still on the belt). WorkcellState gains Scrapped; bin mesh green/red driven by Scrapped.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

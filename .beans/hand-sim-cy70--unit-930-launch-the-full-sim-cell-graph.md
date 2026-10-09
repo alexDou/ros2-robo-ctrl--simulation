@@ -19,7 +19,7 @@ robot_nodes.launch.py starts the whole SIM cell graph beside virtual_plc: convey
 - [ ] virtual_plc:=false points the device nodes at an external controller host/port
 - [ ] verify: GREEN
 
-Spec + binding decision log: support_files/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Summary of Changes
 

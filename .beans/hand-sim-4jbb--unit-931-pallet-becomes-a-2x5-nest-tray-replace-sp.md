@@ -12,7 +12,7 @@ parent: hand-sim-rqpy
 ---
 
 ## Goal
-Replace the single-rod Pallet (SpindleTower geometry) with a **2 × 5 nest tray Pallet** (D38 in `support_files/specs/unit9/implementation_wireframe.md`; CONTEXT.md "Pallet"). Read D35–D38 first; they are binding.
+Replace the single-rod Pallet (SpindleTower geometry) with a **2 × 5 nest tray Pallet** (D38 in `docs_src/specs/unit9/implementation_wireframe.md`; CONTEXT.md "Pallet"). Read D35–D38 first; they are binding.
 
 ## Why
 The 0.20 m rods are obstacles the arm has to clear on every transfer. D37 had to raise the travel height to 0.25 m, release the gear on the rod tip, and lift the approach to 0.15 m. Even so, the planner sits at the edge of reach at the far PickZone corner (see "Current state"). Real cells put finished gears into nest trays.
@@ -47,4 +47,4 @@ Child beans: hand-sim-g9st (web scene) -> hand-sim-w9st (docs, gate, launch test
 
 
 ## Done 2026-10-07 (session 3)
-Web scene, docs and all gated verify lanes GREEN; launch lane not run (on demand, declined). Follow-up idea recorded as Unit 10 (edge-standing slot rack) in support_files/specs/units.md.
+Web scene, docs and all gated verify lanes GREEN; launch lane not run (on demand, declined). Follow-up idea recorded as Unit 10 (edge-standing slot rack) in docs_src/specs/units.md.

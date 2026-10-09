@@ -18,7 +18,7 @@ blocked_by:
 
 Wire + ROS half of the tracer bullet. Schema: CELL_PROCESS, CELL_STOP commands and cell_state (conveyor_status, belt_offset_m); codegen; cross-language contract tests. Minimal cell_orchestrator owning ConveyorStatus, publishing /cell/state on events + belt offset at 5 Hz while moving. EdgeNode maps the commands onto orchestrator services and forwards /cell/state into telemetry like /workcell/state.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

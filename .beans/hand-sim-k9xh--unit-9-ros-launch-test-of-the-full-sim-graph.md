@@ -20,7 +20,7 @@ blocked_by:
 
 Launch test with virtual_plc: Fill → Process → at least one PalletExchange per colour → BinExchange over two decks → reset to EMPTY. Proves the real ROS wiring end to end.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

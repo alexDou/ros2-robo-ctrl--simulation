@@ -17,7 +17,7 @@ blocked_by:
 
 Delete the browser deck, conveyor controller and belt feeder; the conveyor hook becomes intents + gating derived from cell_state (Fill in EMPTY, Process in LOADED/STOPPED, Stop in FEEDING/HALTED). Browser no longer sends SPAWN_OBJECT / PICK_AND_PLACE_TARGET. Scene renders Pallets at PalletStations.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

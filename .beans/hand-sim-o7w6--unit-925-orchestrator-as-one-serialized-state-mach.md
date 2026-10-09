@@ -21,7 +21,7 @@ Split cell_orchestrator/orchestrator_node.py (827 lines) along its seams: cell m
 - [ ] Regression tests for both races; all existing orchestrator tests green
 - [ ] verify: GREEN
 
-Spec + binding decision log: support_files/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Summary of Changes
 

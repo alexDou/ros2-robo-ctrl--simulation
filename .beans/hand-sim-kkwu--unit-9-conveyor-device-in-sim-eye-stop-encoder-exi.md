@@ -17,7 +17,7 @@ blocked_by:
 
 virtual_plc Conveyor block: belt motion with drive-style ramps, 32-bit encoder, PickZone eye stop as controller-local logic, latched exit-eye counter, HELD_BIN_AWAY refusal when the SCRAP station is not HOME. Conveyor device node: run-to-PickZone / flush / stop action + service, 5 Hz status poll, stop reason reported.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

@@ -20,7 +20,7 @@ blocked_by:
 
 Web-only E2E (mock gateway; never proves Gateway/ROS): full Fill → Process run, Stop/resume, EmergencyStop → RESETTING → EMPTY, reload → reset, PalletExchange, BinExchange over two Fills, panel values.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

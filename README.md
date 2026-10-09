@@ -71,13 +71,13 @@ Each branch is self-contained. Exactly one flow per branch, no runtime switch.
 | Topic | Where |
 |---|---|
 | Domain vocabulary (Gearwheel, Batch, Pallet, ...) | [`CONTEXT.md`](CONTEXT.md) |
-| Roadmap of all units | [`support_files/specs/units.md`](support_files/specs/units.md) |
-| **Unit 9 overview** (this branch) | [`support_files/specs/unit9/overview.md`](support_files/specs/unit9/overview.md) |
-| Unit 9 layout, register map, decision log | [`support_files/specs/unit9/implementation_wireframe.md`](support_files/specs/unit9/implementation_wireframe.md) |
-| Unit 9 hand-over notes | [`support_files/specs/unit9/handoff_2026-10-07.md`](support_files/specs/unit9/handoff_2026-10-07.md) |
-| Unit 8 spec (conveyor flow) | [`support_files/specs/unit8/overview.md`](support_files/specs/unit8/overview.md) |
-| Technologies | [`support_files/specs/technologies.md`](support_files/specs/technologies.md) |
-| Working method | [`support_files/specs/paradigm.md`](support_files/specs/paradigm.md), [`AGENTS.md`](AGENTS.md) |
+| Roadmap of all units | [`docs_src/specs/units.md`](docs_src/specs/units.md) |
+| **Unit 9 overview** (this branch) | [`docs_src/specs/unit9/overview.md`](docs_src/specs/unit9/overview.md) |
+| Unit 9 layout, register map, decision log | [`docs_src/specs/unit9/implementation_wireframe.md`](docs_src/specs/unit9/implementation_wireframe.md) |
+| Unit 9 hand-over notes | [`docs_src/specs/unit9/handoff_2026-10-07.md`](docs_src/specs/unit9/handoff_2026-10-07.md) |
+| Unit 8 spec (conveyor flow) | [`docs_src/specs/unit8/overview.md`](docs_src/specs/unit8/overview.md) |
+| Technologies | [`docs_src/specs/technologies.md`](docs_src/specs/technologies.md) |
+| Working method | [`docs_src/specs/paradigm.md`](docs_src/specs/paradigm.md), [`AGENTS.md`](AGENTS.md) |
 
 **Architecture decision records** (`docs/adr/`)
 
@@ -240,7 +240,7 @@ ros2 launch robot_bringup robot_nodes.launch.py \
   controller_host:=<PLC IP> controller_port:=502
 ```
 
-Real hardware needs a commissioned cell controller that exposes the register map in the [wireframe](support_files/specs/unit9/implementation_wireframe.md), plus a hardwired safety chain.
+Real hardware needs a commissioned cell controller that exposes the register map in the [wireframe](docs_src/specs/unit9/implementation_wireframe.md), plus a hardwired safety chain.
 
 ---
 

@@ -17,7 +17,7 @@ blocked_by:
 
 Gateway validates and passes through CELL_* and cell_state (throttler sample-hold keeps the latest cell_state). TeleopClient Process/Stop send intents; the belt texture scrolls from cell_state, extrapolated between 5 Hz updates. Old local belt motion is not driving the scene for this path.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

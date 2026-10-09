@@ -17,7 +17,7 @@ blocked_by:
 
 virtual_plc station blocks (WHITE, GREEN, BLUE lanes; SCRAP slide+tipper) with nominal durations (PalletExchange ≈ 6 s, BinExchange ≈ 8 s) and end-sensor timeouts. Station device node (one node type, four instances by parameter) with an exchange action: HOME → LEAVING → AWAY → RETURNING → HOME, timeout → FAULT.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

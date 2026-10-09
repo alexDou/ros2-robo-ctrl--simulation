@@ -210,7 +210,7 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
 
 ## Unit 8: Conveyor Feed Flow (Flow B)
 
-* **Objective**: Deliver iter-2 Flow B on a dedicated branch `feat/conveyor-flow` (cut from `main` after the security branch merges; `main` keeps Flow A click-to-place frozen; exactly one flow per branch, no runtime mode switch). A Conveyor replaces the WorkcellTable across the front of the arm, fed by a FeedHopper (Fill = 100-gear deck: 10% defective, 30/30/30 intact); on Process the belt feeds random Batches of 3..BeltCapacity gears, stops at the PickZone edge, and TeleopClient registers and dispatches gears one by one (intact → SpindleTower on a rear stand at −X, defective → ScrapBin via belt drop, no arm motion). Towers auto-empty at 10; the ScrapBin renders binary green/red. Full spec and decision log: `support_files/specs/unit8/`.
+* **Objective**: Deliver iter-2 Flow B on a dedicated branch `feat/conveyor-flow` (cut from `main` after the security branch merges; `main` keeps Flow A click-to-place frozen; exactly one flow per branch, no runtime mode switch). A Conveyor replaces the WorkcellTable across the front of the arm, fed by a FeedHopper (Fill = 100-gear deck: 10% defective, 30/30/30 intact); on Process the belt feeds random Batches of 3..BeltCapacity gears, stops at the PickZone edge, and TeleopClient registers and dispatches gears one by one (intact → SpindleTower on a rear stand at −X, defective → ScrapBin via belt drop, no arm motion). Towers auto-empty at 10; the ScrapBin renders binary green/red. Full spec and decision log: `docs_src/specs/unit8/`.
 * **Architecture**: Contract-first development. Unit 8.0 moves `color` + `intact` onto the `SPAWN_OBJECT` wire (UI-assigned; Gateway QcClassifier deleted) and relocates tower/bin constants. Units 8.1 (Workcell semantics + IK reach), 8.2 (Three.js scene) and 8.3 (TeleopClient conveyor controller) run in parallel against mocks. Unit 8.4 is the seeded Cucumber E2E suite. Hopper/belt/batch state is TeleopClient-local; WorkcellState is the single authority for registered gears (ADR 0005).
 
 ### Sub-Unit Breakdown
@@ -238,7 +238,7 @@ All unit specifications, task matrices, and ticket breakdowns adhere to a strict
   - At a belt stop with ≥ 20 Scrapped, the ScrapBin makes a BinExchange (+X, tip, back) while sorting continues; the belt never moves while it is away.
   - Connect, reload and RESET_FAULT run one physical flush reset (`RESETTING`).
   - A display panel beside the cell shows FlexFeeder remaining, ScrapBin count and Pallet counts.
-  - Full spec and decision log: `support_files/specs/unit9/`.
+  - Full spec and decision log: `docs_src/specs/unit9/`.
 * **Architecture**: ROS2 owns the flow (ADR 0006).
   - `cell_orchestrator` commands the device nodes (Conveyor, FlexFeeder, PalletLanes ×3, ScrapBin exchange). They talk Modbus TCP (`pymodbus`) to a programmable cell controller that owns belt stop, exit counting and interlocks.
   - In SIM, `virtual_plc` serves the same register map. Gearwheel positions come from encoder tracking; classification stays mocked in the SIM FlexFeeder.

@@ -34,7 +34,7 @@ At HALTED the controller processes gears one at a time: SPAWN_OBJECT with the ge
 - hand-sim-fe63 (07)
 - hand-sim-zzvr (05)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Implemented processBatch + TeleopClient wiring; E2E @unit-8.2c added (unseeded Batch; seeding is a follow-up).
 

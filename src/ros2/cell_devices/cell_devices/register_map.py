@@ -1,6 +1,6 @@
 """Cell controller register map, shared by device nodes and virtual_plc.
 
-Spec: support_files/specs/unit9/implementation_wireframe.md (Cell Controller Register Map).
+Spec: docs_src/specs/unit9/implementation_wireframe.md (Cell Controller Register Map).
 Every command word has a matching sequence register; the controller echoes the last
 executed sequence in the paired ack register. Bump MAP_VERSION on any layout change:
 the controller reports it in input register `map_version` so a mismatched peer is

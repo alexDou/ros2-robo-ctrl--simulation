@@ -18,7 +18,7 @@ blocked_by:
 
 Scene: ScrapBin slides toward +X off-scene, tips, returns, following SCRAP exchange state; stays clear of the display panel.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

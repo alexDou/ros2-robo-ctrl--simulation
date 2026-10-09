@@ -17,7 +17,7 @@ blocked_by:
 
 New ROS2 Python package for the cell devices. A FieldIoPort with one Modbus TCP adapter (pymodbus), a versioned register-map constant table shared by device nodes and virtual_plc, and a virtual_plc node serving that map. Launch argument (controller host/port + virtual_plc on/off) beside use_fake_hardware. Prerequisite: the user installs python3-pymodbus (apt).
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

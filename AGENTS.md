@@ -11,9 +11,9 @@ Decoupled three-tier distributed architecture following Clean Architecture & Ous
 
 ## Development Methodology
 
-- **Specification Driven Development (SDD)**: Project units roadmap lives in `support_files/specs/units.md`.
-- **Current work — Unit 9 (Conveyor Devices)**: designed and agreed, lives only on branch `feat/conveyor-devices` (cut from `feat/conveyor-flow`). ROS2 owns the flow; device nodes talk Modbus TCP to a cell controller (`virtual_plc` in SIM, polled at 5 Hz). Before any Unit 9 work, read `support_files/specs/unit9/` (the decision log in `implementation_wireframe.md` is binding; don't re-ask settled questions) and `docs/adr/0006-ros2-owned-conveyor-devices-and-field-io.md`.
-- **Unit 8 (Conveyor Flow B)**: lives on branch `feat/conveyor-flow` (`main` = Flow A click-to-place). Spec in `support_files/specs/unit8/`, ADR 0005 (partly superseded by ADR 0006 on `feat/conveyor-devices` only).
+- **Specification Driven Development (SDD)**: Project units roadmap lives in `docs_src/specs/units.md`.
+- **Current work — Unit 9 (Conveyor Devices)**: designed and agreed, lives only on branch `feat/conveyor-devices` (cut from `feat/conveyor-flow`). ROS2 owns the flow; device nodes talk Modbus TCP to a cell controller (`virtual_plc` in SIM, polled at 5 Hz). Before any Unit 9 work, read `docs_src/specs/unit9/` (the decision log in `implementation_wireframe.md` is binding; don't re-ask settled questions) and `docs/adr/0006-ros2-owned-conveyor-devices-and-field-io.md`.
+- **Unit 8 (Conveyor Flow B)**: lives on branch `feat/conveyor-flow` (`main` = Flow A click-to-place). Spec in `docs_src/specs/unit8/`, ADR 0005 (partly superseded by ADR 0006 on `feat/conveyor-devices` only).
 - **Contract-First Staged Architecture (Spec & Ticket Generation Protocol)**:
   Every unit or phase specification and ticket breakdown strictly follows a 3-stage lifecycle:
   1. **Stage 0: Domains, Interfaces & Schemas First (`Unit X.0`)**: Single source of truth. Define or update wire schemas in `schemas/` and domain constants. Regenerate cross-language types via `scripts/generate_domain.py` (`src/domain/domain.py`, `src/domain/domain.rs`, `web/domain/contracts.ts`). Lock domain contracts with cross-language serialization unit tests before implementing nodes.

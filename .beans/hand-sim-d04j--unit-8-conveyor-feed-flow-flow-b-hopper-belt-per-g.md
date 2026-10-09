@@ -9,7 +9,7 @@ created_at: 2026-09-28T16:00:03Z
 updated_at: 2026-09-28T16:00:03Z
 ---
 
-> Branch: `feat/conveyor-flow` only (`main` = Flow A click-to-place). Design + binding decision log (Q1–Q32): `support_files/specs/unit8/`. ADR 0005.
+> Branch: `feat/conveyor-flow` only (`main` = Flow A click-to-place). Design + binding decision log (Q1–Q32): `docs_src/specs/unit8/`. ADR 0005.
 
 ## Problem Statement
 

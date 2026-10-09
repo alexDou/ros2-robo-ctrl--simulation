@@ -17,7 +17,7 @@ blocked_by:
 
 virtual_plc FlexFeeder block: FILL generates the seeded deck (10 defective random colours + 30/30/30), placements only while the belt runs with ≥ 0.13 m encoder spacing and variable cycle time, disabled at eye stop, QUICK_EMPTY; placement ring buffer with mocked colour/intact (GearClassifier seam). Feeder device node. CELL_FILL + feeder_remaining end to end (schema, orchestrator, EdgeNode, Gateway, Fill button).
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

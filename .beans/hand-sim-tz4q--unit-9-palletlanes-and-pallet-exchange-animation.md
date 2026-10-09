@@ -18,7 +18,7 @@ blocked_by:
 
 Scene: PalletLanes from each PalletStation along −X; the Pallet slides off-scene and back following station exchange state, animated with nominal durations. Old tower fade removed.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

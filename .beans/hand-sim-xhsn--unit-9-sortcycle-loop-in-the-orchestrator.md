@@ -17,7 +17,7 @@ blocked_by:
 
 Orchestrator runs SortCycles in belt order: PickAndPlace to the Gearwheel's colour PalletStation, commit drop, next only after completion. Batch done → arm HOME → next feed run. FlexFeeder empty + last Batch sorted → final flush → EMPTY. PalletStation coordinates = the Unit 8 tower spots.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

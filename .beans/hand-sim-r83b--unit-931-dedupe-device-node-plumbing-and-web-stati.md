@@ -20,7 +20,7 @@ Review smells: shared connection/poll helper for conveyor, flexfeeder and statio
 - [ ] Panel ScrapBin count equals cell_state SCRAP count (unit test)
 - [ ] verify: GREEN
 
-Spec + binding decision log: support_files/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Summary of Changes
 

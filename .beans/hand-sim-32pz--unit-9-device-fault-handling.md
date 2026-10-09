@@ -17,7 +17,7 @@ blocked_by:
 
 Drive fault or station timeout → freeze all, ConveyorStatus FAULT, ERROR frame naming device + fault code. All buttons disabled in FAULT.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

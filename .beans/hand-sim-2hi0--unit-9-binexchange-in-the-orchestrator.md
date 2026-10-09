@@ -18,7 +18,7 @@ blocked_by:
 
 At a belt stop with Scrapped ≥ BIN_EXCHANGE_THRESHOLD (now 20) the BinExchange starts and overlaps sorting; next belt run waits for SCRAP HOME (controller interlock). Bin auto-empty at 100 removed. PalletExchange and BinExchange may overlap.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

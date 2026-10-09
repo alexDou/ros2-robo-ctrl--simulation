@@ -33,6 +33,6 @@ Move the three SpindleTowers onto a RearStand behind the arm (X ≈ −0.45, row
 
 - hand-sim-m9ps (01)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Towers moved to rear stand via schema consts + codegen; RearStand fixture; strict IK test for all 30 tower slots. Note: pan-swing guard in test_pick_to_retreat now compares against waypoint azimuth change (front->rear sweep is ~pi). Stale test test_drop_reachable_only_by_branch_switch_is_rejected still uses old (0.70,0.16) coords; re-point later. SCRAP_BIN relocation left for its own ticket.

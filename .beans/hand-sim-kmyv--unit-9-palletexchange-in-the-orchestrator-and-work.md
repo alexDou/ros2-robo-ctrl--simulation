@@ -18,7 +18,7 @@ blocked_by:
 
 10th drop → PalletStation FULL (no auto-empty) → arm HOME ‖ PalletExchange → ResetStation(colour) → next SortCycle starts only after both. cell_state.stations (name, exchange state, count). IK reach test for every PalletStation drop.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

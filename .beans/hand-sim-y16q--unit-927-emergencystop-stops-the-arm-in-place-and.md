@@ -22,7 +22,7 @@ D31: the orchestrator cancels its own PickAndPlace goal on EmergencyStop (today 
 - [ ] Web unit test: close after E-stop shows Connect; reconnect sends CLEAR_WORKSPACE
 - [ ] verify: GREEN
 
-Spec + binding decision log: support_files/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (D30–D34 added 2026-10-06 after the code review of 194b7ad..507f20b). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Summary of Changes
 

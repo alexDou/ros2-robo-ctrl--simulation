@@ -17,7 +17,7 @@ blocked_by:
 
 CLEAR_WORKSPACE and RESET_FAULT trigger RESETTING: cancel SortCycle, decide held-Gearwheel handling (proposal: release over ScrapBin), arm HOME, FlexFeeder quick-empty, belt flush, exchange non-empty Pallets and bin, clear WorkcellState → EMPTY. Same sequence in SIM and LIVE.
 
-Spec + binding decision log: support_files/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
+Spec + binding decision log: docs_src/specs/unit9/ (overview.md, implementation_wireframe.md). ADR 0006. Branch: feat/conveyor-devices.
 
 ## Acceptance criteria
 

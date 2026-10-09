@@ -33,6 +33,6 @@ Render the Conveyor in front of the arm (X 0.25–0.55, along Y ≈ +0.95 → �
 
 - hand-sim-m9ps (01)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Added BELT_X_RANGE/BELT_Y_RANGE/PICK_ZONE_Y_RANGE/BELT_CAPACITY schema consts, static Conveyor fixture, PickZone corner IK test. Deferred: ScrapBin still at old position (belt-exit relocation is a later Unit 8 ticket), so it overlaps the belt visually until then.
