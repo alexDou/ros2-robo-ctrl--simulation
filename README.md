@@ -6,29 +6,39 @@
 
 `feat/conveyor-devices` · Unit 9 · *real-device conveyor cell*
 
-[`main`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/main) ·
-[`feat/conveyor-flow`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/feat/conveyor-flow) ·
-**`feat/conveyor-devices`** (you are here)
-
 </div>
 
 ---
 
-## What is this project?
+## Overview
 
-This project is a **digital twin of a small factory cell**. A robot arm takes gearwheels off a moving belt, checks each one, and sorts the good ones by colour into trays. Broken gearwheels are thrown away. You watch and control everything from a web page, with a live 3D view of the cell.
+A **Universal Robots UR5e** cobot and a set of conveyor devices, all controlled through **ROS2 Jazzy** and operated from a web page. The browser sends only *intents* (Fill, Process, Stop). A ROS2 orchestrator turns them into device actions, and device nodes talk Modbus TCP to a cell controller. State flows back up the same path into a Three.js scene.
 
-**Purpose of the project**
+```
+TeleopClient ◀──WebSocket──▶ Gateway ◀──Zenoh──▶ edge_bridge_node ──┬─▶ cell_orchestrator ─┬─▶ conveyor_node ───┐
+Preact · Three.js            Rust · Actix                           │                      ├─▶ flexfeeder_node ─┼─ Modbus TCP ─▶ cell controller
+                                                                    │                      └─▶ station_node ×4 ─┘                (virtual_plc in SIM)
+                                                                    ├─▶ workcell_node
+                                                                    └─▶ arm_controller_node ─▶ ros2_control ─▶ UR5e
+```
 
-- Prove a complete, safe path from *browser button* to *robot and machine movement* without any custom C++ code.
-- Run the same software on a **simulator** (laptop only) and on **real hardware** (a UR5e arm plus industrial devices). Only a launch setting changes.
-- Show clean engineering: contract-first design, isolated tests per part, and written decision records.
+| Node / service | Runs as | Role |
+|---|---|---|
+| **TeleopClient** | Preact + Three.js app in the browser | Operator panel and 3D visualiser. Renders the cell from `cell_state` and the arm from joint telemetry |
+| **Gateway** | Rust, Actix-Web | Validates every message, allows one operator session per robot, rate-limits commands, thins telemetry to about 30 Hz |
+| **DataFabric** | Zenoh, with `zenoh-bridge-ros2dds` | Carries `robot/{id}/command` and `robot/{id}/telemetry`. Raw ROS2 traffic is never exposed to the network |
+| **edge_bridge_node** | ROS2 (`arm_controller`) | Maps `CELL_FILL`, `CELL_PROCESS`, `CELL_STOP`, reset and emergency stop onto orchestrator services, and forwards `/cell/state` into telemetry |
+| **cell_orchestrator** | ROS2 (`cell_orchestrator`) | Owns the flow: batches, sort cycles, exchanges. Commands the device nodes, never the reverse |
+| **conveyor_node, flexfeeder_node, station_node ×4** | ROS2 (`cell_devices`) | One node per device: belt, feeder, three pallet lanes and the scrap bin slide. Each reads and writes registers through `pymodbus` |
+| **virtual_plc** | ROS2 (`cell_devices`) | Simulated cell controller serving the same register map. Replaced by a real controller on hardware |
+| **workcell_node, arm_controller_node** | ROS2 (`workcell_manager`, `arm_controller`) | Gearwheel inventory, and the `PickAndPlace` action with UR5e inverse kinematics |
+| **ros2_control** | `scaled_joint_trajectory_controller`, UR driver | Executes the trajectory on the UR5e |
 
-### This branch: real devices behind the belt
+### This branch: ROS2-owned conveyor devices
 
-Earlier branches only *pretend* to feed the belt and empty the trays, inside the browser. This branch moves every moving part into the robot software and models it on **hardware you can actually buy**.
+A digital twin of a small factory unit. Earlier branches only *pretend* to feed the belt and empty the trays, inside the browser. Here every moving part is a ROS2-managed device modelled on hardware you can buy:
 
-| In the cell | What it does | Real-world class of device |
+| In the unit | What it does | Real-world class of device |
 |---|---|---|
 | **Flexible feeder** | Holds 100 gearwheels, places them one at a time on the belt | RNA FlexType P |
 | **Conveyor** | Carries gearwheels to the robot, stops at the pick zone, flushes leftovers | Dorner 2200 belt, VFD or BLDC drive |
@@ -37,7 +47,16 @@ Earlier branches only *pretend* to feed the belt and empty the trays, inside the
 | **Cell controller** | Handles the fast reactions (stop belt at sensor, count parts) | WAGO PFC200 PLC |
 | **UR5e arm** | Picks intact gearwheels and drops them in the right tray | Universal Robots UR5e |
 
-The operator only has a few buttons: **Fill**, **Process**, **Stop**, **Emergency Stop**. In the simulator a *virtual PLC* behaves like the real controller, so there is no separate "demo mode" to maintain.
+**What the buttons do**
+
+| Button | What happens |
+|---|---|
+| **Fill** | Loads the feeder with a shuffled deck of 100 gearwheels: 10 defective, plus 30 white, 30 green and 30 blue good ones. Available only while the feeder is empty and nothing is running |
+| **Process** | Starts the belt and the feeder. The belt stops when the first intact gearwheel reaches the pick-zone sensor. The arm then sorts that batch into the pallet of each colour, and the cycle repeats until the deck is empty. A last run flushes leftover defective parts into the scrap bin |
+| **Stop** | The feeder stops placing, the belt runs on to the sensor, and the current pick and any pallet or bin exchange finish. Process picks up from there |
+| **Emergency Stop** | Freezes the arm, belt, feeder, lanes and bin where they are, and ends the session. Reconnecting runs a flush reset that empties belt, pallets and bin |
+
+Design rationale: [ADR 0006](docs/adr/0006-ros2-owned-conveyor-devices-and-field-io.md).
 
 ---
 
@@ -92,12 +111,7 @@ Each branch is self-contained. Exactly one flow per branch, no runtime switch.
 
 ## Technology stack
 
-```
- Browser (TeleopClient)  ──WebSocket──▶  Gateway  ──Zenoh──▶  ROS2 Jazzy  ──Modbus TCP──▶  Cell controller ─▶ devices
- Preact · Three.js          Rust · Actix        DataFabric     Python · rclpy                 (virtual_plc in SIM)
-```
-
-| Level | Language | Main libraries and tools |
+| Level | Language | Libraries and Tools |
 |---|---|---|
 | **TeleopClient** (`web/`) | TypeScript | Preact, Vite, Three.js, `urdf-loader`, Zod, Tailwind CSS · Vitest, Cucumber + Playwright · OXC (`oxlint`, `oxfmt`) |
 | **Gateway** (`src/gateway/`) | Rust 2021 | Actix-Web, `actix-ws`, Tokio, **Zenoh**, Serde · `cargo nextest`, Clippy |
