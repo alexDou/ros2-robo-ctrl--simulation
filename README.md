@@ -14,12 +14,48 @@
 
 A **Universal Robots UR5e** cobot and a set of conveyor devices, all controlled through **ROS2 Jazzy** and operated from a web page. The browser sends only *intents* (Fill, Process, Stop). A ROS2 orchestrator turns them into device actions, and device nodes talk Modbus TCP to a cell controller. State flows back up the same path into a Three.js scene.
 
-```
-TeleopClient ◀──WebSocket──▶ Gateway ◀──Zenoh──▶ edge_bridge_node ──┬─▶ cell_orchestrator ─┬─▶ conveyor_node ───┐
-Preact · Three.js            Rust · Actix                           │                      ├─▶ flexfeeder_node ─┼─ Modbus TCP ─▶ cell controller
-                                                                    │                      └─▶ station_node ×4 ─┘                (virtual_plc in SIM)
-                                                                    ├─▶ workcell_node
-                                                                    └─▶ arm_controller_node ─▶ ros2_control ─▶ UR5e
+```mermaid
+flowchart LR
+    subgraph browser["Browser"]
+        UI["<b>TeleopClient</b><br/>Preact · Three.js"]
+    end
+    subgraph edge["Edge"]
+        GW["<b>Gateway</b><br/>Rust · Actix-Web"]
+    end
+    subgraph ros["ROS2 Jazzy"]
+        direction TB
+        EB["edge_bridge_node"]
+        ORCH["cell_orchestrator"]
+        subgraph dev["cell_devices"]
+            direction TB
+            CV["conveyor_node"]
+            FF["flexfeeder_node"]
+            ST["station_node ×4"]
+        end
+        WC["workcell_node"]
+        AC["arm_controller_node"]
+        RC["ros2_control"]
+        EB --> ORCH
+        EB --> WC
+        EB --> AC
+        ORCH --> CV & FF & ST
+        AC --> RC
+    end
+    subgraph field["Field"]
+        direction TB
+        PLC["Cell controller<br/>virtual_plc in SIM"]
+        DEV["belt · feeder<br/>pallet lanes · bin slide"]
+        PLC --- DEV
+    end
+    ARM(["UR5e"])
+
+    UI <-->|"WebSocket<br/>JSON"| GW
+    GW <-->|"Zenoh<br/>command / telemetry"| EB
+    CV & FF & ST <-->|"Modbus TCP"| PLC
+    RC --> ARM
+
+    classDef hw fill:#fde68a,stroke:#b45309,color:#000
+    class ARM,DEV hw
 ```
 
 | Node / service | Runs as | Role |
