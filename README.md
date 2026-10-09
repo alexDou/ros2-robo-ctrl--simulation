@@ -69,13 +69,13 @@ Each branch is self-contained. Exactly one flow per branch, no runtime switch.
 | Topic | Where |
 |---|---|
 | Domain vocabulary (Gearwheel, Batch, PickZone, ...) | [`CONTEXT.md`](CONTEXT.md) |
-| Roadmap of all units | [`support_files/specs/units.md`](support_files/specs/units.md) |
-| **Unit 8 overview** (this branch) | [`support_files/specs/unit8/overview.md`](support_files/specs/unit8/overview.md) |
-| Unit 8 layout and decision log | [`support_files/specs/unit8/implementation_wireframe.md`](support_files/specs/unit8/implementation_wireframe.md) |
-| Colour sorting and defect inspection (Unit 7) | [`support_files/specs/unit7/overview.md`](support_files/specs/unit7/overview.md) |
-| Production ROS2 refactor | [`support_files/specs/unit_refactoring-a/overview.md`](support_files/specs/unit_refactoring-a/overview.md) |
-| Technologies | [`support_files/specs/technologies.md`](support_files/specs/technologies.md) |
-| Working method | [`support_files/specs/paradigm.md`](support_files/specs/paradigm.md), [`AGENTS.md`](AGENTS.md) |
+| Roadmap of all units | [`docs_src/specs/units.md`](docs_src/specs/units.md) |
+| **Unit 8 overview** (this branch) | [`docs_src/specs/unit8/overview.md`](docs_src/specs/unit8/overview.md) |
+| Unit 8 layout and decision log | [`docs_src/specs/unit8/implementation_wireframe.md`](docs_src/specs/unit8/implementation_wireframe.md) |
+| Colour sorting and defect inspection (Unit 7) | [`docs_src/specs/unit7/overview.md`](docs_src/specs/unit7/overview.md) |
+| Production ROS2 refactor | [`docs_src/specs/unit_refactoring-a/overview.md`](docs_src/specs/unit_refactoring-a/overview.md) |
+| Technologies | [`docs_src/specs/technologies.md`](docs_src/specs/technologies.md) |
+| Working method | [`docs_src/specs/paradigm.md`](docs_src/specs/paradigm.md), [`AGENTS.md`](AGENTS.md) |
 
 **Architecture decision records** (`docs/adr/`)
 

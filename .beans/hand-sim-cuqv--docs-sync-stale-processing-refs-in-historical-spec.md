@@ -11,7 +11,7 @@ updated_at: 2026-09-21T11:21:51Z
 parent: hand-sim-4814
 ---
 
-Follow-up to hand-sim-jqtr (done, e80962b). Historical spec docs still describe IDLE->PROCESSING->EXECUTING, contradicting 5-state contract (BOOTING/STANDBY/IDLE/EXECUTING/FAULT). Stale files: support_files/specs/paradigm.md:29, unit4/overview.md:3 + implementation_wireframe.md:103,106-107,177, unit6/overview.md:8 + implementation_wireframe.md:117,129,188, units.md:93,105,117,154, system_architecture_overview.md:254-257, iterations/iter-2.txt:35,88. Decide per file: annotate superseded-by-6.6.0 vs rewrite. Accept: each file updated or marked historical; grep PROCESSING in support_files returns zero unmarked hits.
+Follow-up to hand-sim-jqtr (done, e80962b). Historical spec docs still describe IDLE->PROCESSING->EXECUTING, contradicting 5-state contract (BOOTING/STANDBY/IDLE/EXECUTING/FAULT). Stale files: docs_src/specs/paradigm.md:29, unit4/overview.md:3 + implementation_wireframe.md:103,106-107,177, unit6/overview.md:8 + implementation_wireframe.md:117,129,188, units.md:93,105,117,154, system_architecture_overview.md:254-257, iterations/iter-2.txt:35,88. Decide per file: annotate superseded-by-6.6.0 vs rewrite. Accept: each file updated or marked historical; grep PROCESSING in docs_src returns zero unmarked hits.
 
 ## Summary of Changes
 

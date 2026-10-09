@@ -32,6 +32,6 @@ Delete Flow A from `feat/conveyor-flow` so exactly one flow lives on the branch 
 
 - None (can start immediately)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Web-side Flow A removed. Deferred: gateway QcClassifier + mock SPAWN_OBJECT path (Unit 8.0 schema work); palm-grasp closed_loop E2E dropped (needs spawn; re-cover in Unit 8 E2E). clearWorkspace no longer gated on session hasActiveGear (flag never set now).

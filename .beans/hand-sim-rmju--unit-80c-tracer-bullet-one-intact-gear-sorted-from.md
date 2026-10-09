@@ -36,6 +36,6 @@ First end-to-end path. `SPAWN_OBJECT` carries required `color` + `intact`; the G
 - hand-sim-wie8 (02)
 - hand-sim-323x (03)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Done: spawn requires color+intact (schema/codegen/contract tests in py/rs/ts), Gateway classifier deleted (verbatim pass-through), EdgeNode reads payload fields and no longer auto-dispatches a pick after spawn (user decision: per-gear SPAWN then explicit PICK_AND_PLACE_TARGET; the arm asks the workcell for the active gear's tower). Minimal controller (web/src/utils/conveyorController.ts) + Process button; mock gateway takes classification from the payload; E2E scenario @unit-8.0c. Deferred to later tickets: Fill/Stop state machine and Process gating (8.3), defective-spawn direct scrap (8.1), tower routing asserted only in E2E (workcell picks the drop), local hasActiveGear flag duplicates snapshot state.

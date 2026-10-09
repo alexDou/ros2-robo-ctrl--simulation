@@ -34,6 +34,6 @@ Choose a default camera on the robot's right side (start REP (0.2, −1.9, 1.4) 
 - hand-sim-wie8 (02)
 - hand-sim-323x (03)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Default camera locked at REP (0.6,-2.0,1.5)->(0.1,0.05,0.3) after 8 screenshot candidates; test in web/tests/unit/RobotVisualizer/cameraPose.test.ts. Not checked at a folded HOME pose (screenshots were STANDBY).

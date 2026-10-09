@@ -32,6 +32,6 @@ On FAULT (incl. after EmergencyStop) and on every TeleopClient connect, the cont
 
 - hand-sim-as72 (08)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Implemented: TeleopSession sends CLEAR_WORKSPACE on connect and on entering FAULT (not IDLE-gated); local reset already existed in useConveyor. Vitest, pytest and 2 E2E scenarios added; mock gateway now accepts clear in FAULT like the real edge.

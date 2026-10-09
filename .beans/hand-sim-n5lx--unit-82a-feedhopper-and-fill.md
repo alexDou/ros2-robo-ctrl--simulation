@@ -33,6 +33,6 @@ FeedHopper fixture at the belt's upstream end (Y ≈ +0.85). Fill generates the 
 
 - hand-sim-rmju (04)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Implemented: seedable buildDeck, ConveyorStatus gating (Fill/Process), FeedHopper asset with fill level, E2E. verify GREEN. Deferred to 8.3: deck consumption, HALTED/STOPPED transitions, CLEAR_WORKSPACE on reset.

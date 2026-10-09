@@ -35,6 +35,6 @@ A spawned `intact == false` gear is committed straight to ScrapBin inventory by 
 
 - hand-sim-rmju (04)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Done, verify GREEN. Deferred to 8.2: defective gear stays visually on the belt (snapshot renders it in the bin for now). ScrapBin moved to [0.4,-0.75,-0.05]; SCRAP reach case dropped from test_kinematics (arm no longer visits the bin).

@@ -32,6 +32,6 @@ The commit that brings a tower to TOWER_CAPACITY (10) empties it (count → 0), 
 
 - hand-sim-rmju (04)
 
-Spec + decision log: `support_files/specs/unit8/`.
+Spec + decision log: `docs_src/specs/unit8/`.
 
 Done: 10th commit empties tower (workcell + mock), TeleopClient fade 1.5 s, n/10 counters overlay, E2E scenario. verify GREEN.
