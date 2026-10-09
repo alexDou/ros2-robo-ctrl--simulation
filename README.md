@@ -6,27 +6,32 @@
 
 `main` · *click-to-place (Flow A)*
 
-**`main`** (you are here) ·
-[`feat/conveyor-flow`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/feat/conveyor-flow) ·
-[`feat/conveyor-devices`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/feat/conveyor-devices)
-
 </div>
 
 ---
 
-## What is this project?
+## Overview
 
-This project is a **digital twin of a small factory cell**. A robot arm picks up gearwheels, checks each one, and sorts the good ones by colour onto towers. Broken gearwheels go into a scrap bin. You watch and control everything from a web page, with a live 3D view of the cell.
+A **Universal Robots UR5e** cobot controlled through **ROS2 Jazzy** and operated from a web page. Commands travel from the browser through a Rust Gateway and a Zenoh data fabric into the ROS2 graph. Joint telemetry travels back the same way and drives a Three.js scene of the robot.
 
-**Purpose of the project**
+```
+TeleopClient ◀──WebSocket──▶ Gateway ◀──Zenoh──▶ edge_bridge_node ──┬─▶ workcell_node
+Preact · Three.js            Rust · Actix                            └─▶ arm_controller_node ─▶ ros2_control ─▶ UR5e
+```
 
-- Prove a complete, safe path from *browser click* to *robot movement* without any custom C++ code.
-- Keep the robot software ready for a **real UR5e arm**: the same ROS2 graph runs on the simulator and on hardware, and only a launch setting changes.
-- Show clean engineering: contract-first design, isolated tests per part, and written decision records.
+| Node / service | Runs as | Role |
+|---|---|---|
+| **TeleopClient** | Preact + Three.js app in the browser | Renders the UR5e from its URDF model and the work area in 3D, animates it from telemetry, and sends operator commands |
+| **Gateway** | Rust, Actix-Web | The only door into the system: validates every message against the shared schemas, allows one operator session per robot, rate-limits commands, and thins the telemetry stream to about 30 Hz |
+| **DataFabric** | Zenoh, with `zenoh-bridge-ros2dds` | Carries `robot/{id}/command` and `robot/{id}/telemetry` between the Gateway and ROS2. Raw ROS2 traffic is never exposed to the network |
+| **edge_bridge_node** | ROS2 (`arm_controller`) | Translates commands into ROS2 services and actions, and joint states into telemetry events |
+| **workcell_node** | ROS2 (`workcell_manager`) | Keeps the inventory: which gearwheel sits where, what is in each destination |
+| **arm_controller_node** | ROS2 (`arm_controller`) | `PickAndPlace` action server: solves UR5e inverse kinematics and sends the trajectory |
+| **ros2_control** | `scaled_joint_trajectory_controller`, UR driver | Executes the trajectory on the UR5e |
 
 ### This branch: click-to-place (Flow A)
 
-This is the stable baseline. The operator clicks on the work table in the 3D view and a gearwheel appears there. The arm then does the rest on its own:
+A digital twin of a small factory unit. The operator clicks on the work table in the 3D view and a gearwheel appears there. The arm then does the rest on its own:
 
 1. Plan a path to the gearwheel and pick it up.
 2. Check it (colour: white, green or blue; about 1 in 5 is defective).
@@ -86,11 +91,6 @@ Each branch is self-contained. Exactly one flow per branch, no runtime switch.
 ---
 
 ## Technology stack
-
-```
- Browser (TeleopClient)  ──WebSocket──▶  Gateway  ──Zenoh──▶  ROS2 Jazzy (EdgeNode, arm, workcell)
- Preact · Three.js          Rust · Actix        DataFabric     Python · rclpy · ros2_control
-```
 
 | Level | Language | Libraries and Tools |
 |---|---|---|
