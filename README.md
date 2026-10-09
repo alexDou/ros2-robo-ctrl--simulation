@@ -41,7 +41,7 @@ A **Universal Robots UR5e** cobot and a set of conveyor devices, all controlled 
 ┌────────────────────────┴───────────────────────┐
 │ UR5e arm          ◀── ros2_control (RTDE)      │
 │                                                │
-│ Cell controller    ◀── Modbus TCP (device nodes) │
+│ Cell controller    ◀── Modbus TCP (nodes)      │
 │   (virtual_plc in SIM)                         │
 │   └─▶ belt · feeder · pallet lanes · bin slide │
 └────────────────────────────────────────────────┘
