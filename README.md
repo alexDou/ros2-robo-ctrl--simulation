@@ -1,8 +1,8 @@
 <div align="center">
 
-# GearSort Cell
+# Web-Controlled Cobot Simulation
 
-**A web-operated robot sorting cell: simulate it today, wire it to real machines tomorrow.**
+*based on [Universal Robots](https://www.universal-robots.com/products/ur5e/) UR5e*
 
 `feat/conveyor-flow` · Unit 8 · *conveyor feed (Flow B)*
 
@@ -16,7 +16,7 @@
 
 ## What is this project?
 
-GearSort Cell is a **digital twin of a small factory cell**. A robot arm takes gearwheels off a belt, checks each one, and sorts the good ones by colour into towers. Broken gearwheels are carried off the end of the belt into a scrap bin. You watch and control everything from a web page, with a live 3D view of the cell.
+This project is a **digital twin of a small factory cell**. A robot arm takes gearwheels off a belt, checks each one, and sorts the good ones by colour into towers. Broken gearwheels are carried off the end of the belt into a scrap bin. You watch and control everything from a web page, with a live 3D view of the cell.
 
 **Purpose of the project**
 
