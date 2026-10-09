@@ -6,37 +6,40 @@
 
 `feat/conveyor-flow` · Unit 8 · *conveyor feed (Flow B)*
 
-[`main`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/main) ·
-**`feat/conveyor-flow`** (you are here) ·
-[`feat/conveyor-devices`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/feat/conveyor-devices)
-
 </div>
 
 ---
 
-## What is this project?
+## Overview
 
-This project is a **digital twin of a small factory cell**. A robot arm takes gearwheels off a belt, checks each one, and sorts the good ones by colour into towers. Broken gearwheels are carried off the end of the belt into a scrap bin. You watch and control everything from a web page, with a live 3D view of the cell.
+A **Universal Robots UR5e** cobot controlled through **ROS2 Jazzy** and operated from a web page. Commands travel from the browser through a Rust Gateway and a Zenoh data fabric into the ROS2 graph. Joint telemetry travels back the same way and drives a Three.js scene of the robot. In this branch the conveyor lives in the browser: the ROS2 side sees only the gearwheels the browser registers.
 
-**Purpose of the project**
+```
+TeleopClient ◀──WebSocket──▶ Gateway ◀──Zenoh──▶ edge_bridge_node ──┬─▶ workcell_node
+Preact · Three.js            Rust · Actix                            └─▶ arm_controller_node ─▶ ros2_control ─▶ UR5e
+```
 
-- Prove a complete, safe path from *browser button* to *robot movement* without any custom C++ code.
-- Keep the robot software ready for a **real UR5e arm**: the same ROS2 graph runs on the simulator and on hardware, and only a launch setting changes.
-- Show clean engineering: contract-first design, isolated tests per part, and written decision records.
+| Node / service | Runs as | Role |
+|---|---|---|
+| **TeleopClient** | Preact + Three.js app in the browser | Renders the UR5e from its URDF model and the conveyor line in 3D, and sends operator commands. Also simulates the feed hopper, belt and batches, and sequences the sorting one gearwheel at a time |
+| **Gateway** | Rust, Actix-Web | The only door into the system: validates every message against the shared schemas, allows one operator session per robot, rate-limits commands, and thins the telemetry stream to about 30 Hz |
+| **DataFabric** | Zenoh, with `zenoh-bridge-ros2dds` | Carries `robot/{id}/command` and `robot/{id}/telemetry` between the Gateway and ROS2. Raw ROS2 traffic is never exposed to the network |
+| **edge_bridge_node** | ROS2 (`arm_controller`) | Translates commands into ROS2 services and actions, and joint states into telemetry events |
+| **workcell_node** | ROS2 (`workcell_manager`) | Keeps the inventory: which gearwheel sits where, what is in each destination |
+| **arm_controller_node** | ROS2 (`arm_controller`) | `PickAndPlace` action server: solves UR5e inverse kinematics and sends the trajectory |
+| **ros2_control** | `scaled_joint_trajectory_controller`, UR driver | Executes the trajectory on the UR5e |
 
-### This branch: the conveyor showcase (Flow B)
+### This branch: the conveyor line (Flow B)
 
-The click-to-place table of [`main`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/main) is replaced by a **production-style line**:
+A digital twin of a small factory unit. The click-to-place table of [`main`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/main) is replaced by a belt-fed line:
 
-1. Press **Fill**. The feed hopper loads a shuffled deck of 100 gearwheels: 10 defective, plus 30 white, 30 green and 30 blue good ones.
-2. Press **Process**. The belt runs and the hopper drops gearwheels onto it one by one, at random spacing.
-3. The belt stops when the first gearwheel reaches the **pick zone** in front of the arm. Those gearwheels form a *batch* (3 to a belt-full).
-4. The arm sorts the batch one at a time: good ones go to the tower of their colour. Defective ones are never touched; they fall off the belt end into the scrap bin on the next run.
-5. When a tower holds 10 it empties itself. When the hopper is empty a final run clears the belt.
+1. **Fill** loads the feed hopper with a shuffled deck of 100 gearwheels: 10 defective, plus 30 white, 30 green and 30 blue good ones.
+2. **Process** runs the belt. The hopper drops gearwheels onto it one by one, at random spacing.
+3. The belt stops when the first gearwheel reaches the **pick zone** in front of the arm. The gearwheels standing there form a *batch*.
+4. The arm sorts the batch one gearwheel at a time. Good ones go to the tower of their colour. Defective ones are never touched: they fall off the belt end into the scrap bin on the next run.
+5. A tower that holds 10 empties itself. When the hopper is empty, a final run clears the belt.
 
-**Stop** pauses safely after the current pick. **Emergency Stop** freezes the arm. Reloading or reconnecting resets everything.
-
-> **Where the logic lives.** In this branch the hopper, belt and batches are simulated *inside the browser* ([ADR 0005](docs/adr/0005-conveyor-branch-client-owned-feed-and-classification.md)). The robot side only knows about gearwheels the browser registers. For ROS2-owned devices, see [`feat/conveyor-devices`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/feat/conveyor-devices).
+**Stop** pauses after the current pick, and Process resumes. **Emergency Stop** freezes the arm. Reloading or reconnecting resets everything. Design rationale: [ADR 0005](docs/adr/0005-conveyor-branch-client-owned-feed-and-classification.md). For ROS2-owned devices, see [`feat/conveyor-devices`](https://github.com/alexDou/ros2-robo-ctrl--simulation/tree/feat/conveyor-devices).
 
 ---
 
@@ -89,13 +92,7 @@ Each branch is self-contained. Exactly one flow per branch, no runtime switch.
 
 ## Technology stack
 
-```
- Browser (TeleopClient)  ──WebSocket──▶  Gateway  ──Zenoh──▶  ROS2 Jazzy (EdgeNode, arm, workcell)
- Preact · Three.js          Rust · Actix        DataFabric     Python · rclpy · ros2_control
- + hopper, belt, batches
-```
-
-| Level | Language | Main libraries and tools |
+| Level | Language | Libraries and Tools |
 |---|---|---|
 | **TeleopClient** (`web/`) | TypeScript | Preact, Vite, Three.js, `urdf-loader`, Zod, Tailwind CSS · Vitest, Cucumber + Playwright · OXC (`oxlint`, `oxfmt`). Also runs the deck, belt and sorting sequencer |
 | **Gateway** (`src/gateway/`) | Rust 2021 | Actix-Web, `actix-ws`, Tokio, **Zenoh**, Serde · `cargo nextest`, Clippy |
